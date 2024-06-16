@@ -1,6 +1,6 @@
 import { SearchResult, Suggestion } from "./types";
 
-const baseUrl = "http://localhost:8080"; //import.meta.env.BASE_URL;
+const baseUrl = "https://slask-finder.tornberg.me"; //import.meta.env.BASE_URL;
 //console.log(baseUrl);
 
 export const autoSuggest = (term: string): Promise<Suggestion[]> =>

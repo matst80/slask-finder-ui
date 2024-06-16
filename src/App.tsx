@@ -1,5 +1,6 @@
 import "./App.css";
 import { AutoSuggest } from "./components/AutoSuggest";
+import { Paging } from "./components/Paging";
 import { SearchResultList } from "./components/SearchResultList";
 import { SearchContextProvider } from "./SearchContext";
 
@@ -14,6 +15,7 @@ function App() {
         <div>
           <SearchResultList />
         </div>
+        <Paging />
       </div>
     </SearchContextProvider>
   );

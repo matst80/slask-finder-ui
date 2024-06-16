@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchContext } from "../SearchContext";
 import { Suggestion } from "../types";
+import { autoSuggest } from "../api";
 
 export const AutoSuggest = () => {
   const ctx = useSearchContext();
@@ -10,11 +11,9 @@ export const AutoSuggest = () => {
     if (term.length < 3) {
       return;
     }
-    fetch(`http://localhost:8080/suggest?q=${term}`)
-      .then((res) => res.json())
-      .then((data: Suggestion[]) => {
-        setResults(data);
-      });
+    autoSuggest(term).then((data: Suggestion[]) => {
+      setResults(data);
+    });
   }, [term]);
   return (
     <>
@@ -34,7 +33,7 @@ export const AutoSuggest = () => {
       <datalist id="suggestions">
         {results.map(({ hits, match }, idx) => (
           <option key={`word-${idx}`} value={match}>
-            ${match}: ${hits}
+            {match}: {hits}
           </option>
         ))}
       </datalist>

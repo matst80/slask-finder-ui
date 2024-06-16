@@ -4,19 +4,24 @@ export const SearchResultList = () => {
   const { results } = useSearchContext();
 
   return results != null ? (
-    <ul className="hits">
-      {results.items.map(({ id, title, props }) => (
-        <li key={id}>
-          <h3>{title}</h3>
-          <img src={props.img} alt={title} />
-          <ul>
-            {props.bp.map((bp) => (
-              <li key={bp}>{bp}</li>
-            ))}
-          </ul>
-        </li>
-      ))}
-    </ul>
+    <div>
+      <strong>Total hits: {results.totalHits}</strong>
+      <ul className="hits">
+        {results.items.map(({ id, title, props }) => (
+          <li key={id}>
+            <strong>{title}</strong>
+            <img src={props.img} alt={title} />
+            <ul>
+              {props.bp
+                .filter((d) => d?.length)
+                .map((bp) => (
+                  <li key={bp}>{bp}</li>
+                ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </div>
   ) : (
     <div>No results</div>
   );

@@ -3,10 +3,26 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   flex-wrap: wrap;
   justify-content: center;
+  list-style: none;
+  gap: 1rem;
 
   img {
     width: 200px;
     height: 200px;
     margin: 10px;
+    object-fit: contain;
   }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input {
+  padding: 0.5rem;
+  margin: 1rem;
+  width: 100%;
+  font-size: large;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
