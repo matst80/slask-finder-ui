@@ -1,5 +1,6 @@
 import "./App.css";
-import { AutoSuggest } from "./components/autosuggest";
+import { AutoSuggest } from "./components/AutoSuggest";
+import { SearchResultList } from "./components/SearchResultList";
 import { SearchContextProvider } from "./SearchContext";
 
 function App() {
@@ -7,6 +8,12 @@ function App() {
     <SearchContextProvider pageSize={25}>
       <div>
         <AutoSuggest />
+      </div>
+      <div>
+        <div></div>
+        <div>
+          <SearchResultList />
+        </div>
       </div>
     </SearchContextProvider>
   );

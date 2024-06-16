@@ -1,4 +1,12 @@
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { SearchResult } from "./types";
+import { search } from "./api";
 
 type SearchContextType = {
   term: string;
@@ -6,6 +14,7 @@ type SearchContextType = {
   page: number;
   setPage: (page: number) => void;
   pageSize: number;
+  results?: SearchResult;
 };
 
 const SearchContext = createContext<SearchContextType | null>(null);
@@ -16,8 +25,19 @@ export const SearchContextProvider = ({
 }: PropsWithChildren<{ pageSize: number }>) => {
   const [term, setTerm] = useState("");
   const [page, setPage] = useState(0);
+  const [results, setResults] = useState<SearchResult | undefined>(undefined);
+  useEffect(() => {
+    if (term.length < 3) {
+      return;
+    }
+    search(term, page, pageSize).then((data) => {
+      setResults(data);
+    });
+  }, [term, page, pageSize]);
   return (
-    <SearchContext.Provider value={{ term, setTerm, page, setPage, pageSize }}>
+    <SearchContext.Provider
+      value={{ term, setTerm, page, setPage, pageSize, results }}
+    >
       {children}
     </SearchContext.Provider>
   );

@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchContext } from "../SearchContext";
-
-type Suggestion = {
-  match: string;
-  hits: number;
-};
+import { Suggestion } from "../types";
 
 export const AutoSuggest = () => {
   const ctx = useSearchContext();
@@ -25,6 +21,7 @@ export const AutoSuggest = () => {
       <input
         type="search"
         value={term}
+        list="suggestions"
         onBlur={() => ctx.setTerm(term)}
         onKeyUp={(e) => {
           if (e.key === "Enter") {
@@ -34,13 +31,13 @@ export const AutoSuggest = () => {
         }}
         onChange={(e) => setTerm(e.target.value)}
       />
-      <ul>
-        {results.map(({ hits, match: word }, idx) => (
-          <li key={`word-${idx}`}>
-            <strong>{word}</strong> <span>{hits}</span>
-          </li>
+      <datalist id="suggestions">
+        {results.map(({ hits, match }, idx) => (
+          <option key={`word-${idx}`} value={match}>
+            ${match}: ${hits}
+          </option>
         ))}
-      </ul>
+      </datalist>
     </>
   );
 };

@@ -1,0 +1,12 @@
+.hits {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  flex-wrap: wrap;
+  justify-content: center;
+
+  img {
+    width: 200px;
+    height: 200px;
+    margin: 10px;
+  }
+}
