@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchContext } from "../SearchContext";
 
 type Suggestion = {
   match: string;
@@ -6,6 +7,7 @@ type Suggestion = {
 };
 
 export const AutoSuggest = () => {
+  const ctx = useSearchContext();
   const [term, setTerm] = useState("");
   const [results, setResults] = useState<Suggestion[]>([]);
   useEffect(() => {
@@ -23,6 +25,13 @@ export const AutoSuggest = () => {
       <input
         type="search"
         value={term}
+        onBlur={() => ctx.setTerm(term)}
+        onKeyUp={(e) => {
+          if (e.key === "Enter") {
+            ctx.setTerm(term);
+            ctx.setPage(0);
+          }
+        }}
         onChange={(e) => setTerm(e.target.value)}
       />
       <ul>
