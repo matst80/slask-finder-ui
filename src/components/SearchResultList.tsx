@@ -11,7 +11,7 @@ export const SearchResultList = () => {
           <li key={id}>
             <strong>{title}</strong>
             <img
-              src={props.img.replace(".jpg", "--pdp_main-640.jpg")}
+              src={props.img?.replace(".jpg", "--pdp_main-640.jpg")}
               alt={title}
             />
             <ul>

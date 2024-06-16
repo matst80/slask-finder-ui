@@ -15,6 +15,10 @@ export const AutoSuggest = () => {
       setResults(data);
     });
   }, [term]);
+  const termParts = term.split(" ");
+  if (termParts.length > 0) {
+    termParts.pop();
+  }
   return (
     <>
       <input
@@ -30,9 +34,10 @@ export const AutoSuggest = () => {
         }}
         onChange={(e) => setTerm(e.target.value)}
       />
+
       <datalist id="suggestions">
         {results.map(({ hits, match }, idx) => (
-          <option key={`word-${idx}`} value={match}>
+          <option key={`word-${idx}`} value={[...termParts, match].join(" ")}>
             {match}: {hits}
           </option>
         ))}
