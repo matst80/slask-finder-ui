@@ -10,10 +10,15 @@ export const SearchResultList = () => {
         {results.items.map(({ id, title, props }) => (
           <li key={id}>
             <strong>{title}</strong>
-            <img
-              src={props.img?.replace(".jpg", "--pdp_main-640.jpg")}
-              alt={title}
-            />
+            {props.img != null && (
+              <img
+                src={
+                  "https://www.elgiganten.se" +
+                  props.img?.replace(".jpg", "--pdp_main-640.jpg")
+                }
+                alt={title}
+              />
+            )}
             <ul>
               {props.bp
                 .filter((d) => d?.length)
