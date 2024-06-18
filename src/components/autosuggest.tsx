@@ -36,11 +36,13 @@ export const AutoSuggest = () => {
       />
 
       <datalist id="suggestions">
-        {results.map(({ hits, match }, idx) => (
-          <option key={`word-${idx}`} value={[...termParts, match].join(" ")}>
-            {match}: {hits}
-          </option>
-        ))}
+        {results
+          .sort((a, b) => b.hits - a.hits)
+          .map(({ match }, idx) => (
+            <option key={`word-${idx}`} value={[...termParts, match].join(" ")}>
+              {match}
+            </option>
+          ))}
       </datalist>
     </>
   );
