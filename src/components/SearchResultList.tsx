@@ -39,7 +39,7 @@ export const SearchResultList = () => {
               )}
               <ul>
                 {props.bp
-                  .filter((d) => d?.length)
+                  ?.filter((d) => d?.length)
                   .map((bp) => (
                     <li key={bp}>{bp}</li>
                   ))}
