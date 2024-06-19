@@ -3,11 +3,18 @@ export type Suggestion = {
   hits: number;
 };
 
+export type ItemValues = {
+  [key: string]: string | number | undefined;
+  "4": number;
+  "5"?: number;
+  "8"?: number;
+};
+
 export type Item = {
   id: string;
   title: string;
   props: ItemProps;
-  values: Record<string, string | number>;
+  values: ItemValues;
 };
 
 export type ItemProps = {
@@ -42,6 +49,7 @@ export type NumberFacet = {
 export type Facets = {
   fields: KeyFacet[];
   integerFields: NumberFacet[];
+  numberFields: NumberFacet[];
 };
 
 export type SearchResult = {
@@ -50,4 +58,13 @@ export type SearchResult = {
   page: number;
   pageSize: number;
   facets?: Facets;
+};
+
+export type Query = {
+  query?: string;
+  page?: number;
+  pageSize?: number;
+  string?: { id: number; value: string }[];
+  number?: { id: number; min: number; max: number }[];
+  integer?: { id: number; min: number; max: number }[];
 };

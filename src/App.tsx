@@ -1,5 +1,6 @@
 import "./App.css";
 import { AutoSuggest } from "./components/AutoSuggest";
+import { Facets } from "./components/Facets";
 import { Paging } from "./components/Paging";
 import { SearchResultList } from "./components/SearchResultList";
 import { SearchContextProvider } from "./SearchContext";
@@ -10,12 +11,14 @@ function App() {
       <div>
         <AutoSuggest />
       </div>
-      <div>
-        <div></div>
-        <div>
-          <SearchResultList />
+      <div className="results">
+        <div className="sidebar">
+          <Facets />
         </div>
-        <Paging />
+        <div className="flex-1">
+          <SearchResultList />
+          <Paging />
+        </div>
       </div>
     </SearchContextProvider>
   );
