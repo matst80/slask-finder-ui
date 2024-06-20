@@ -46,50 +46,58 @@ const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
   );
 };
 
+type SliderProps = {
+  min: number;
+  max: number;
+  onChange: (min: number, max: number) => void;
+};
+
+const Slider = ({ min, max, onChange }: SliderProps) => {
+  const [minValue, setMinValue] = useState(min);
+  const [maxValue, setMaxValue] = useState(max);
+  return (
+    <div className="flex">
+      <input
+        type="number"
+        min={min}
+        max={max}
+        onChange={(e) => {
+          const nr = Number(e.target.value);
+          if (nr < max && nr == e.target.value) setMinValue(nr);
+        }}
+        onBlur={() => onChange(minValue, max)}
+        value={minValue}
+      />
+      <input
+        type="number"
+        min={min}
+        max={max}
+        onChange={(e) => {
+          const nr = Number(e.target.value);
+          if (nr > min && nr == e.target.value) setMaxValue(nr);
+        }}
+        onBlur={() => onChange(maxValue, max)}
+        value={maxValue}
+      />
+    </div>
+  );
+};
 const NumberFacetSelector = ({ name, min, max, count, id }: NumberFacet) => {
-  const { integerFilters, setIntegerFilters, setPage } = useSearchContext();
+  const { setIntegerFilters, setPage } = useSearchContext();
   return (
     <div>
       <h3>{name}</h3>
-      <label>
-        From:{" "}
-        <input
-          type="range"
-          value={integerFilters[id]?.min ?? min}
-          min={min}
-          max={max}
-          onChange={(e) => {
-            const value = e.target.value;
-            console.log(id, value);
-            setPage(0);
-            setIntegerFilters((prev) => ({
-              ...prev,
-              [id]: {
-                min: value === "" ? min : Number(value),
-                max: prev[id]?.max ?? max,
-              },
-            }));
-          }}
-        />
-      </label>
-      {/* <label>
-        Max:{" "}
-        <input
-          type="number"
-          value={integerFilters[id]?.max ?? ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            setPage(0);
-            setIntegerFilters((prev) => ({
-              ...prev,
-              [id]: {
-                min: prev[id]?.min ?? min,
-                max: value === "" ? max : Number(value),
-              },
-            }));
-          }}
-        />
-      </label> */}
+      <Slider
+        min={min}
+        max={max}
+        onChange={(min, max) => {
+          setPage(0);
+          setIntegerFilters((prev) => ({
+            ...prev,
+            [id]: { min, max },
+          }));
+        }}
+      />
       <em>({count})</em>
     </div>
   );
