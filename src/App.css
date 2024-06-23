@@ -62,10 +62,10 @@ body {
   box-shadow: none;
   background-color: #0b1a2c;
   color: #fff;
-  padding-left: 5rem;
+  padding-left: 3rem;
   border-radius: 0;
   border: 0;
-  font-size: 32px;
+  font-size: 18px;
   position: fixed;
   height: 60px !important;
   overflow: hidden;
@@ -224,4 +224,20 @@ ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
+}
+
+.numbers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.numbers input {
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  background-color: transparent;
+  color: #fff;
+  border: 0;
+  appearance: none;
 }

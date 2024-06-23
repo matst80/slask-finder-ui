@@ -56,14 +56,14 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
   const [minValue, setMinValue] = useState(min);
   const [maxValue, setMaxValue] = useState(max);
   return (
-    <div className="flex">
+    <div className="flex numbers">
       <input
         type="number"
         min={min}
         max={max}
         onChange={(e) => {
           const nr = Number(e.target.value);
-          if (nr < max && nr == e.target.value) setMinValue(nr);
+          if (nr < max) setMinValue(nr);
         }}
         onBlur={() => onChange(minValue, max)}
         value={minValue}
@@ -74,7 +74,7 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
         max={max}
         onChange={(e) => {
           const nr = Number(e.target.value);
-          if (nr > min && nr == e.target.value) setMaxValue(nr);
+          if (nr > min) setMaxValue(nr);
         }}
         onBlur={() => onChange(maxValue, max)}
         value={maxValue}
