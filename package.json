@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "deploy": "scp dist/index.html dev:/srv/shared/static-web/find",
+    "deploy-assets": "scp dist/assets/* dev:/srv/shared/static-web/assets",
+    "deploy-all": "npm run build && npm run deploy && npm run deploy-assets",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

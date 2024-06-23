@@ -1,7 +1,7 @@
-import { SearchResult, Suggestion } from "./types";
+import { Query, SearchResult, Suggestion } from "./types";
 
-const baseUrl = "https://slask-finder.tornberg.me"; //import.meta.env.BASE_URL;
-//console.log(baseUrl);
+// const baseUrl = "http://localhost:8080";
+const baseUrl = "https://slask-finder.tornberg.me";
 
 export const autoSuggest = (term: string): Promise<Suggestion[]> =>
   fetch(`${baseUrl}/suggest?q=${term}`).then((d) =>
@@ -9,6 +9,14 @@ export const autoSuggest = (term: string): Promise<Suggestion[]> =>
   );
 
 export const search = (term: string, page: number, pageSize: number) =>
-  fetch(`${baseUrl}/search?q=${term}&page=${page}&pageSize=${pageSize}`).then(
-    (d) => (d.ok ? (d.json() as Promise<SearchResult>) : Promise.reject(d))
+  fetch(`${baseUrl}/search?q=${term}&p=${page}&pz=${pageSize}`).then((d) =>
+    d.ok ? (d.json() as Promise<SearchResult>) : Promise.reject(d)
+  );
+
+export const filter = (query: Query) =>
+  fetch(`${baseUrl}/filter`, {
+    method: "POST",
+    body: JSON.stringify(query),
+  }).then((d) =>
+    d.ok ? (d.json() as Promise<SearchResult>) : Promise.reject(d)
   );
