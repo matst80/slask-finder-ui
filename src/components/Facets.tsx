@@ -107,7 +107,7 @@ export const Facets = () => {
   const { results } = useSearchContext();
 
   return results?.facets?.fields != null ? (
-    <div>
+    <div className="sidebarMenuInner">
       {results.facets.fields?.map((facet) => (
         <KeyFacetSelector key={`keyfield-${facet.id}`} {...facet} />
       ))}
