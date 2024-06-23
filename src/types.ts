@@ -10,23 +10,22 @@ export type ItemValues = {
   "8"?: number;
 };
 
-export type Item = {
+export type Item = ItemProps & {
   id: string;
   title: string;
-  props: ItemProps;
   values: ItemValues;
 };
 
 export type ItemProps = {
   advertisingText: string;
   badgeUrl: string;
-  bp: string[];
+  bp: string;
   img: string;
   presaleDate: string;
   releaseDate: string;
   restock: string;
   saleStatus: string;
-  tree: string[];
+  //tree: string[];
   url: string;
 };
 
