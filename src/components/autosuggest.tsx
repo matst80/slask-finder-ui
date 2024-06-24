@@ -36,6 +36,7 @@ export const AutoSuggest = () => {
             id: `suggestion-${idx}`,
             value: [...parts, match].join(" "),
           }))
+          .slice(0, Math.min(10, data.length))
       );
     });
   }, [term]);
@@ -50,6 +51,7 @@ export const AutoSuggest = () => {
         className="suggest-input"
         type="search"
         value={term}
+        placeholder="Search..."
         list="suggestions"
         onBlur={() => ctx.setTerm(term)}
         onKeyUp={(e) => {
