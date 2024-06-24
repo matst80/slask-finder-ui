@@ -67,7 +67,15 @@ const getPrice = (values: ItemValues): Price => {
   };
 };
 
-const ResultItem = ({ id, title, img, values, bp }: Item) => {
+const ResultItem = ({
+  id,
+  title,
+  img,
+  badgeUrl,
+  values,
+  bp,
+  advertisingText,
+}: Item) => {
   return (
     <li key={`item-${id}`}>
       <strong>{title}</strong>
@@ -83,6 +91,13 @@ const ResultItem = ({ id, title, img, values, bp }: Item) => {
           alt={title}
         />
       )}
+      {badgeUrl != null && (
+        <img
+          className="badge"
+          src={"https://www.elgiganten.se" + badgeUrl}
+          alt={title}
+        />
+      )}
       <ul>
         {bp
           ?.split("\n")
@@ -92,6 +107,7 @@ const ResultItem = ({ id, title, img, values, bp }: Item) => {
           ))}
       </ul>
       <Price values={values} />
+      {advertisingText != null && <em>{advertisingText}</em>}
     </li>
   );
 };

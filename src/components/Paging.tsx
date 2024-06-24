@@ -14,11 +14,11 @@ export const Paging = () => {
         &lt;
       </button>
       <span>
-        Page {page}/{totalPages}
+        Page {page + 1}/{totalPages}
       </span>
       <strong>Total hits: {results?.totalHits}</strong>
       <button
-        disabled={page >= totalPages}
+        disabled={page >= totalPages - 1}
         onClick={() => setPage(page + 1)}
         title="Next"
       >
