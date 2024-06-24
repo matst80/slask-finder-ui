@@ -1,6 +1,6 @@
 import { Query, SearchResult, Suggestion } from "./types";
 
-// const baseUrl = "http://localhost:8080";
+//const baseUrl = "http://localhost:8080";
 const baseUrl = "https://slask-finder.tornberg.me";
 
 export const autoSuggest = (term: string): Promise<Suggestion[]> =>

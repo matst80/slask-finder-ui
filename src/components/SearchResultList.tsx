@@ -1,5 +1,5 @@
 import { useSearchContext } from "../SearchContext";
-import { ItemValues } from "../types";
+import { Item, ItemValues } from "../types";
 
 const SEK = new Intl.NumberFormat("se-SV", {
   style: "currency",
@@ -67,42 +67,43 @@ const getPrice = (values: ItemValues): Price => {
   };
 };
 
+const ResultItem = ({ id, title, img, values, bp }: Item) => {
+  return (
+    <li key={`item-${id}`}>
+      <strong>{title}</strong>
+      <div>
+        <em>{id}</em>
+      </div>
+      {img != null && (
+        <img
+          src={
+            "https://www.elgiganten.se" +
+            img?.replace(".jpg", "--pdp_main-640.jpg")
+          }
+          alt={title}
+        />
+      )}
+      <ul>
+        {bp
+          ?.split("\n")
+          .filter((d) => d?.length)
+          .map((bp) => (
+            <li key={bp}>{bp}</li>
+          ))}
+      </ul>
+      <Price values={values} />
+    </li>
+  );
+};
+
 export const SearchResultList = () => {
   const { results } = useSearchContext();
 
   return results != null ? (
     <ul className="hits">
-      {results.items.map((item) => {
-        //console.log(item);
-        const { id, title, img, values, bp } = item;
-
-        return (
-          <li key={`item-${id}`}>
-            <strong>{title}</strong>
-            <div>
-              <em>{id}</em>
-            </div>
-            {img != null && (
-              <img
-                src={
-                  "https://www.elgiganten.se" +
-                  img?.replace(".jpg", "--pdp_main-640.jpg")
-                }
-                alt={title}
-              />
-            )}
-            <ul>
-              {bp
-                ?.split("\n")
-                .filter((d) => d?.length)
-                .map((bp) => (
-                  <li key={bp}>{bp}</li>
-                ))}
-            </ul>
-            <Price values={values} />
-          </li>
-        );
-      })}
+      {results.items.map((item) => (
+        <ResultItem key={item.id} {...item} />
+      ))}
     </ul>
   ) : (
     <div>No results</div>
