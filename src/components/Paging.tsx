@@ -1,17 +1,29 @@
 import { useSearchContext } from "../SearchContext";
 
 export const Paging = () => {
-  const ctx = useSearchContext();
+  const { results, page, setPage } = useSearchContext();
+  if (results == null) return null;
+  const totalPages = Math.ceil(results.totalHits / results.pageSize);
   return (
-    <>
+    <div className="paging">
       <button
-        disabled={ctx.page === 0}
-        onClick={() => ctx.setPage(ctx.page - 1)}
+        disabled={page === 0}
+        onClick={() => setPage(page - 1)}
+        title="Previous"
       >
-        Previous
+        &lt;
       </button>
-      <span>Page {ctx.page}</span>
-      <button onClick={() => ctx.setPage(ctx.page + 1)}>Next</button>
-    </>
+      <span>
+        Page {page}/{totalPages}
+      </span>
+      <strong>Total hits: {results?.totalHits}</strong>
+      <button
+        disabled={page >= totalPages}
+        onClick={() => setPage(page + 1)}
+        title="Next"
+      >
+        &gt;
+      </button>
+    </div>
   );
 };

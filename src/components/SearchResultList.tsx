@@ -71,42 +71,39 @@ export const SearchResultList = () => {
   const { results } = useSearchContext();
 
   return results != null ? (
-    <div>
-      <strong>Total hits: {results.totalHits}</strong>
-      <ul className="hits">
-        {results.items.map((item) => {
-          //console.log(item);
-          const { id, title, img, values, bp } = item;
+    <ul className="hits">
+      {results.items.map((item) => {
+        //console.log(item);
+        const { id, title, img, values, bp } = item;
 
-          return (
-            <li key={`item-${id}`}>
-              <strong>{title}</strong>
-              <div>
-                <em>{id}</em>
-              </div>
-              {img != null && (
-                <img
-                  src={
-                    "https://www.elgiganten.se" +
-                    img?.replace(".jpg", "--pdp_main-640.jpg")
-                  }
-                  alt={title}
-                />
-              )}
-              <ul>
-                {bp
-                  ?.split("\n")
-                  .filter((d) => d?.length)
-                  .map((bp) => (
-                    <li key={bp}>{bp}</li>
-                  ))}
-              </ul>
-              <Price values={values} />
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+        return (
+          <li key={`item-${id}`}>
+            <strong>{title}</strong>
+            <div>
+              <em>{id}</em>
+            </div>
+            {img != null && (
+              <img
+                src={
+                  "https://www.elgiganten.se" +
+                  img?.replace(".jpg", "--pdp_main-640.jpg")
+                }
+                alt={title}
+              />
+            )}
+            <ul>
+              {bp
+                ?.split("\n")
+                .filter((d) => d?.length)
+                .map((bp) => (
+                  <li key={bp}>{bp}</li>
+                ))}
+            </ul>
+            <Price values={values} />
+          </li>
+        );
+      })}
+    </ul>
   ) : (
     <div>No results</div>
   );
