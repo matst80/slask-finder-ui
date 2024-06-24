@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Query, SearchResult } from "./types";
+import { Query, SearchResult, Sort } from "./types";
 import { filter } from "./api";
 
 type KeyFilters = {
@@ -19,6 +19,8 @@ type NumberFilters = {
 
 type SearchContextType = {
   term: string;
+  sort?: Sort;
+  setSort: React.Dispatch<React.SetStateAction<Sort>>;
   setTerm: (term: string) => void;
   page: number;
   setPage: (page: number) => void;
@@ -47,6 +49,7 @@ export const SearchContextProvider = ({
 }: PropsWithChildren<{ pageSize: number }>) => {
   const [term, setTerm] = useState("");
   const [page, setPage] = useState(0);
+  const [sort, setSort] = useState<Sort>("popular");
   const [keyFilters, setKeyFilters] = useState<KeyFilters>({});
   const [numberFilters, setNumberFilters] = useState<NumberFilters>({});
   const [integerFilters, setIntegerFilters] = useState<NumberFilters>({
@@ -57,6 +60,7 @@ export const SearchContextProvider = ({
     return {
       query: term,
       page,
+      sort,
       pageSize,
       string: Object.entries(keyFilters)
         .filter(hasValue)
@@ -77,7 +81,7 @@ export const SearchContextProvider = ({
           ...props!,
         })),
     } satisfies Query;
-  }, [term, page, pageSize, keyFilters, numberFilters, integerFilters]);
+  }, [term, page, pageSize, keyFilters, numberFilters, integerFilters, sort]);
   useEffect(() => {
     filter(query).then((data) => {
       setResults(data);
@@ -90,6 +94,8 @@ export const SearchContextProvider = ({
         setTerm,
         page,
         setPage,
+        sort,
+        setSort,
         pageSize,
         results,
         keyFilters,

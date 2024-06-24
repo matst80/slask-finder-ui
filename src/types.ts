@@ -10,6 +10,8 @@ export type ItemValues = {
   "8"?: number;
 };
 
+export type Sort = "popular" | "price" | "price_desc";
+
 export type Item = ItemProps & {
   id: string;
   title: string;
@@ -62,6 +64,7 @@ export type SearchResult = {
 export type Query = {
   query?: string;
   page?: number;
+  sort?: string;
   pageSize?: number;
   string?: { id: number; value: string }[];
   number?: { id: number; min: number; max: number }[];

@@ -3,6 +3,7 @@ import { AutoSuggest } from "./components/AutoSuggest";
 import { Facets } from "./components/Facets";
 import { Paging } from "./components/Paging";
 import { SearchResultList } from "./components/SearchResultList";
+import { Sorting } from "./components/Sorting";
 import { SearchContextProvider } from "./SearchContext";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <div className="spinner diagonal part-2"></div>
       </label>
       <div id="sidebarMenu">
+        <Sorting />
         <Facets />
       </div>
       <div id="center" className="main center">

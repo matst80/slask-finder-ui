@@ -67,7 +67,7 @@ export const AutoSuggest = () => {
 
       <datalist id="suggestions">
         {results.map(({ match, value }, idx) => (
-          <option key={`word-${idx}`} value={value}>
+          <option key={`wrd-${idx}`} value={value}>
             {match}
           </option>
         ))}
