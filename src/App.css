@@ -166,6 +166,12 @@ body {
   text-decoration: none;
 }
 
+#sorting {
+  width: auto;
+  padding: 10px;
+  margin-inline: 20px;
+}
+
 input[type="checkbox"]:checked~#sidebarMenu {
   transform: translateX(0);
 }
