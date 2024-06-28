@@ -65,7 +65,7 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
           const nr = Number(e.target.value);
           if (nr < max) setMinValue(nr);
         }}
-        onBlur={() => onChange(minValue, max)}
+        onBlur={() => onChange(minValue, maxValue)}
         value={minValue}
       />
       <input
@@ -76,7 +76,7 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
           const nr = Number(e.target.value);
           if (nr > min) setMaxValue(nr);
         }}
-        onBlur={() => onChange(maxValue, max)}
+        onBlur={() => onChange(minValue, maxValue)}
         value={maxValue}
       />
     </div>
