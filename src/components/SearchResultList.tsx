@@ -1,3 +1,4 @@
+import { trackClick } from "../api";
 import { useSearchContext } from "../SearchContext";
 import { Item, ItemValues } from "../types";
 
@@ -74,10 +75,14 @@ const ResultItem = ({
   badgeUrl,
   values,
   bp,
+  position,
   advertisingText,
-}: Item) => {
+}: Item & { position: number }) => {
+  const doTrackClick = () => {
+    trackClick(id, position);
+  };
   return (
-    <li key={`item-${id}`}>
+    <li key={`item-${id}`} onClick={doTrackClick}>
       <strong>{title}</strong>
       <div>
         <em>{id}</em>
@@ -113,12 +118,12 @@ const ResultItem = ({
 };
 
 export const SearchResultList = () => {
-  const { results } = useSearchContext();
-
+  const { results, page, pageSize } = useSearchContext();
+  const start = page * pageSize;
   return results != null ? (
     <ul className="hits">
-      {results.items.map((item) => (
-        <ResultItem key={item.id} {...item} />
+      {results.items.map((item, idx) => (
+        <ResultItem key={item.id} {...item} position={start + idx} />
       ))}
     </ul>
   ) : (

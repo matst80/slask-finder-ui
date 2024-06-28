@@ -52,9 +52,7 @@ export const SearchContextProvider = ({
   const [sort, setSort] = useState<Sort>("popular");
   const [keyFilters, setKeyFilters] = useState<KeyFilters>({});
   const [numberFilters, setNumberFilters] = useState<NumberFilters>({});
-  const [integerFilters, setIntegerFilters] = useState<NumberFilters>({
-    4: { min: 0, max: 140000000 },
-  });
+  const [integerFilters, setIntegerFilters] = useState<NumberFilters>({});
   const [results, setResults] = useState<SearchResult | undefined>(undefined);
   const query = useMemo(() => {
     return {
