@@ -1,7 +1,6 @@
 import { Query, SearchResult, Suggestion } from "./types";
 
-//const baseUrl = "http://localhost:8080";
-const baseUrl = ""; //"https://slask-finder.tornberg.me";
+const baseUrl = "";
 
 export const autoSuggest = (term: string): Promise<Suggestion[]> =>
   fetch(`${baseUrl}/api/suggest?q=${term}`).then((d) =>
@@ -19,6 +18,11 @@ export const filter = (query: Query) =>
     body: JSON.stringify(query),
   }).then((d) =>
     d.ok ? (d.json() as Promise<SearchResult>) : Promise.reject(d)
+  );
+
+export const getRawData = (id: string) =>
+  fetch(`${baseUrl}/admin/get/${id}`).then((d) =>
+    d.ok ? (d.json() as Promise<unknown>) : Promise.reject(d)
   );
 
 export const trackClick = (id: string, position: number) =>

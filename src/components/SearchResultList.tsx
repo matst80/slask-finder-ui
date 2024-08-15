@@ -1,4 +1,4 @@
-import { trackClick } from "../api";
+import { getRawData, trackClick } from "../api";
 import { useSearchContext } from "../SearchContext";
 import { Item, ItemValues } from "../types";
 
@@ -80,6 +80,9 @@ const ResultItem = ({
 }: Item & { position: number }) => {
   const doTrackClick = () => {
     trackClick(id, position);
+    getRawData(id).then((data) => {
+      console.log(data);
+    });
   };
   return (
     <li key={`item-${id}`} onClick={doTrackClick}>

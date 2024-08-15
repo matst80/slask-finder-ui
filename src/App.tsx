@@ -8,22 +8,25 @@ import { SearchContextProvider } from "./SearchContext";
 
 function App() {
   return (
-    <SearchContextProvider pageSize={25}>
-      <AutoSuggest />
-
-      <input type="checkbox" className="openSidebarMenu" id="openSidebarMenu" />
+    <SearchContextProvider pageSize={40}>
+      <div id="topbar">
+        <AutoSuggest />
+        <Sorting />
+      </div>
+      {/* <input type="checkbox" className="openSidebarMenu" id="openSidebarMenu" />
       <label htmlFor="openSidebarMenu" className="sidebarIconToggle">
         <div className="spinner diagonal part-1"></div>
         <div className="spinner horizontal"></div>
         <div className="spinner diagonal part-2"></div>
-      </label>
-      <div id="sidebarMenu">
-        <Sorting />
-        <Facets />
-      </div>
-      <div id="center" className="main center">
-        <SearchResultList />
-        <Paging />
+      </label> */}
+      <div id="cnt">
+        <div id="sidebarMenu">
+          <Facets />
+        </div>
+        <div className="main">
+          <SearchResultList />
+          <Paging />
+        </div>
       </div>
     </SearchContextProvider>
   );

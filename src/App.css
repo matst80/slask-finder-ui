@@ -1,6 +1,9 @@
 .hits {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  background-color: #f3f1f9;
+  gap: 2rem;
+  padding: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   flex-wrap: wrap;
   list-style: none;
 
@@ -8,7 +11,7 @@
   img {
     width: 200px;
     height: 200px;
-    margin: 10px;
+    margin: 5px;
     object-fit: contain;
   }
 }
@@ -31,6 +34,7 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
+  font-size: 13px;
   outline: 0px solid #fff;
   background-image: linear-gradient(45deg, #fff 0%, #f9f9f9 100%);
 
@@ -38,8 +42,6 @@
 }
 
 .hits>li:hover {
-  background-image: linear-gradient(45deg, #fff 0%, #fff 100%);
-  outline: 20px solid #fff;
   box-shadow: 0 0 50px 0 rgba(0, 0, 0, 0.1);
   transform: scale(1.05);
 }
@@ -66,29 +68,43 @@ body {
   font-family: 'Varela Round', sans-serif;
 }
 
-.suggest-input {
-  display: block;
-  margin: 0 auto;
+#topbar {
   width: 100%;
-  max-width: 100%;
+  display: flex;
+  z-index: 10;
   box-shadow: none;
   background-color: #0b1a2c;
+  top: 0;
+  position: sticky;
+  height: 60px !important;
+}
+
+.suggest-input {
+  display: block;
+  background-color: #0b1a2c;
+  flex: 1;
   color: #fff;
-  padding-left: 3rem;
+  padding-left: 20px;
+  font-size: 14px;
   border-radius: 0;
   border: 0;
-  font-size: 18px;
-  position: fixed;
+
   height: 60px !important;
   overflow: hidden;
-  z-index: 10;
+
 }
 
 .main {
-  margin: 0 auto;
-  display: block;
   height: 100%;
-  margin-top: 60px;
+}
+
+#cnt {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
 .mainInner {
@@ -117,14 +133,11 @@ body {
 
 #sidebarMenu {
   height: 100%;
-  position: fixed;
   z-index: 5;
-  overflow-y: auto;
   left: 0;
-  width: 350px;
-  margin-top: 60px;
-  transform: translateX(-350px);
-  transition: transform 250ms ease-in-out;
+
+
+
   background: #0b1a2c;
 }
 
@@ -134,10 +147,16 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.10);
 }
 
+.sidebarMenuInner button {
+  appearance: none;
+  background-color: transparent;
+  border: 0;
+  color: #ccc;
+}
+
 .sidebarMenuInner h3 {
   padding-inline: 20px;
   color: #fff;
-  opacity: 0.5;
   font-size: 1.2em;
   letter-spacing: 1.25px;
 }
@@ -145,11 +164,19 @@ body {
 .sidebarMenuInner li {
   list-style: none;
   color: #fff;
-  text-transform: uppercase;
-  font-weight: bold;
-  padding: 20px;
+  opacity: 0.7;
+  font-weight: normal;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 10px 20px;
   cursor: pointer;
   border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.sidebarMenuInner li.selected {
+  opacity: 1;
 }
 
 .sidebarMenuInner li span {

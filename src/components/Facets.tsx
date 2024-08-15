@@ -15,10 +15,18 @@ const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
 
   return (
     <div>
-      <h3>{name}</h3>
+      <h3>
+        {name}{" "}
+        {allSorted.length > 10 ? (
+          <button onClick={() => setExpanded((p) => !p)}>Toggle</button>
+        ) : null}
+      </h3>
       <ul>
         {toShow.map(({ value, count }) => (
-          <li key={value}>
+          <li
+            key={value}
+            className={keyFilters[id] === value ? "selected" : ""}
+          >
             <label htmlFor={value}>
               <input
                 type="checkbox"
@@ -38,9 +46,6 @@ const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
             </label>
           </li>
         ))}
-        {allSorted.length > 10 ? (
-          <button onClick={() => setExpanded((p) => !p)}>Toggle</button>
-        ) : null}
       </ul>
     </div>
   );
