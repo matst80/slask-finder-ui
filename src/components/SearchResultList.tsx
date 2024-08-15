@@ -3,25 +3,21 @@ import { useSearchContext } from "../SearchContext";
 import { Item, ItemValues } from "../types";
 
 const SEK = new Intl.NumberFormat("se-SV", {
-  style: "currency",
-  compactDisplay: "short",
-  unitDisplay: "narrow",
-  currencyDisplay: "narrowSymbol",
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
-  signDisplay: "auto",
+
   currency: "SEK",
 });
 
 const PriceValue = ({ value }: { value: number }) => (
-  <span>{SEK.format(value / 100)}</span>
+  <span>{SEK.format(value / 100)}.-</span>
 );
 
 const Price = ({ values }: ValueProps) => {
   const prc = getPrice(values);
   if (prc.isDiscounted) {
     return (
-      <div>
+      <div className="price discounted">
         <span style={{ textDecoration: "line-through" }}>
           <PriceValue value={prc.original} />
         </span>{" "}
@@ -30,7 +26,11 @@ const Price = ({ values }: ValueProps) => {
       </div>
     );
   }
-  return <PriceValue value={prc.current} />;
+  return (
+    <div className="price">
+      <PriceValue value={prc.current} />
+    </div>
+  );
 };
 
 type Price =
@@ -124,7 +124,7 @@ export const SearchResultList = () => {
   const { results, page, pageSize } = useSearchContext();
   const start = page * pageSize;
   return results != null ? (
-    <ul className="hits">
+    <ul className="hits" id="results">
       {results.items.map((item, idx) => (
         <ResultItem key={item.id} {...item} position={start + idx} />
       ))}

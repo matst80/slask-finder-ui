@@ -11,6 +11,18 @@ function App() {
     <SearchContextProvider pageSize={40}>
       <div id="topbar">
         <AutoSuggest />
+        <div
+          className="only-mobile"
+          onClick={() => {
+            document.getElementById("sidebarMenu")?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+              inline: "start",
+            });
+          }}
+        >
+          <span>Filter</span>
+        </div>
         <Sorting />
       </div>
       {/* <input type="checkbox" className="openSidebarMenu" id="openSidebarMenu" />

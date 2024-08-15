@@ -83,6 +83,15 @@ export const SearchContextProvider = ({
   useEffect(() => {
     filter(query).then((data) => {
       setResults(data);
+      if (data?.items.length > 0 && results?.items.length) {
+        setTimeout(() => {
+          document.getElementById("results")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "start",
+          });
+        }, 200);
+      }
     });
   }, [query]);
   return (
