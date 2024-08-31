@@ -91,7 +91,7 @@ const NumberFacetSelector = ({ name, min, max, count, id }: NumberFacet) => {
   const { setIntegerFilters, setPage } = useSearchContext();
   return (
     <div>
-      <h3>{name}</h3>
+      <h3 title={String(id)}>{name}</h3>
       <Slider
         min={min}
         max={max}
