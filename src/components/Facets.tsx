@@ -15,7 +15,7 @@ const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
 
   return (
     <div>
-      <h3>
+      <h3 title={String(id)}>
         {name}{" "}
         {allSorted.length > 10 ? (
           <button onClick={() => setExpanded((p) => !p)}>Toggle</button>

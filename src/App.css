@@ -134,9 +134,8 @@ body {
 }
 
 #sidebarMenu {
-  z-index: 5;
-  left: 0;
   background: #0b1a2c;
+  min-height: 100vh;
 }
 
 select {
@@ -146,21 +145,29 @@ select {
 }
 
 .price {
-  background-color: #0b1a2c;
   color: #fff;
   font-weight: bolder;
   position: absolute;
   bottom: 0;
   right: 0;
   font-size: 24px;
-  padding: 5px 10px;
 }
 
-.sidebarMenuInner {
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.10);
+.price span {
+  padding: 5px 10px;
+  background-color: #0b1a2c;
+  display: block;
+  text-align: right;
 }
+
+.price .org {
+  padding: 3px 10px;
+  text-decoration: line-through;
+  opacity: 0.5;
+  color: #ccc;
+  font-size: 16px;
+}
+
 
 .sidebarMenuInner button {
   appearance: none;
@@ -214,9 +221,6 @@ select {
   margin-inline: 20px;
 }
 
-input[type="checkbox"]:checked~#sidebarMenu {
-  transform: translateX(0);
-}
 
 input[type=checkbox] {
   transition: all 0.3s;

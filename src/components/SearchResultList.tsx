@@ -9,18 +9,21 @@ const SEK = new Intl.NumberFormat("se-SV", {
   currency: "SEK",
 });
 
-const PriceValue = ({ value }: { value: number }) => (
-  <span>{SEK.format(value / 100)}.-</span>
-);
+const PriceValue = ({
+  value,
+  className,
+}: {
+  value: number;
+  className?: string;
+}) => <span className={className}>{SEK.format(value / 100)}</span>;
 
 const Price = ({ values }: ValueProps) => {
   const prc = getPrice(values);
   if (prc.isDiscounted) {
     return (
       <div className="price discounted">
-        <span style={{ textDecoration: "line-through" }}>
-          <PriceValue value={prc.original} />
-        </span>{" "}
+        <PriceValue value={prc.original} className="org" />
+
         <PriceValue value={prc.current} />
         {/* <span> ({prc.discount})</span> */}
       </div>
