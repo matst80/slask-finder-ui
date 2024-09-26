@@ -1,4 +1,4 @@
-import { Query, SearchResult, Suggestion } from "./types";
+import { Item, Query, SearchResult, Suggestion } from "./types";
 
 const baseUrl = "";
 
@@ -19,6 +19,44 @@ export const filter = (query: Query) =>
   }).then((d) =>
     d.ok ? (d.json() as Promise<SearchResult>) : Promise.reject(d)
   );
+
+export const streamFacets = (query: Query) =>
+  fetch(`${baseUrl}/api/stream/facets`, {
+    method: "POST",
+    body: JSON.stringify(query),
+  }).then((d) =>
+    d.ok ? (d.json() as Promise<SearchResult>) : Promise.reject(d)
+  );
+
+export const streamItems = (
+  query: Query,
+  onResults: (data: Item[]) => void
+) => {
+  return fetch(`${baseUrl}/api/stream/items`, {
+    method: "POST",
+    body: JSON.stringify(query),
+  }).then((d) => {
+    const reader = d.body?.getReader();
+    const pump = (): unknown => {
+      return reader?.read().then(({ done, value }) => {
+        if (done) {
+          return;
+        }
+
+        const text = new TextDecoder().decode(value).split("\n");
+        onResults(
+          text
+            .filter((line) => line.length > 2)
+            .map((line) => {
+              return JSON.parse(line) as Item;
+            })
+        );
+        return pump();
+      });
+    };
+    return pump();
+  });
+};
 
 export const getRawData = (id: string) =>
   fetch(`${baseUrl}/admin/get/${id}`).then((d) =>

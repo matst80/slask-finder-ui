@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { Query, SearchResult, Sort } from "./types";
-import { filter } from "./api";
+import { filter, streamItems } from "./api";
 
 type KeyFilters = {
   [key: number]: string | undefined;
@@ -53,13 +53,16 @@ export const SearchContextProvider = ({
   const [keyFilters, setKeyFilters] = useState<KeyFilters>({});
   const [numberFilters, setNumberFilters] = useState<NumberFilters>({});
   const [integerFilters, setIntegerFilters] = useState<NumberFilters>({});
-  const [results, setResults] = useState<SearchResult | undefined>(undefined);
+  const [results, setResults] = useState<Partial<SearchResult> | undefined>(
+    undefined
+  );
+
+  const itemsQuery = useMemo(() => {
+    return { sort, page, pageSize };
+  }, [sort, page, pageSize]);
   const query = useMemo(() => {
     return {
       query: term,
-      page,
-      sort,
-      pageSize,
       string: Object.entries(keyFilters)
         .filter(hasValue)
         .map(([id, value]) => ({
@@ -79,21 +82,41 @@ export const SearchContextProvider = ({
           ...props!,
         })),
     } satisfies Query;
-  }, [term, page, pageSize, keyFilters, numberFilters, integerFilters, sort]);
+  }, [term, keyFilters, numberFilters, integerFilters]);
   useEffect(() => {
-    filter(query).then((data) => {
-      setResults(data);
-      if (data?.items.length > 0 && results?.items.length) {
-        setTimeout(() => {
-          document.getElementById("results")?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-            inline: "start",
-          });
-        }, 200);
-      }
+    filter(query).then(({ items: _, ...rest }) => {
+      setResults((prev) => ({ ...prev, ...rest }));
+      // if (data?.items.length > 0 && numberOfItems) {
+      //   setTimeout(() => {
+      //     document.getElementById("results")?.scrollIntoView({
+      //       behavior: "smooth",
+      //       block: "start",
+      //       inline: "start",
+      //     });
+      //   }, 200);
+      // }
     });
   }, [query]);
+  useEffect(() => {
+    setResults((prev) => {
+      if (prev == null) {
+        return { items: [] };
+      }
+      return { ...prev, items: [] };
+    });
+    streamItems({ ...query, ...itemsQuery }, (data) => {
+      console.log(data);
+      setResults((prev) => {
+        if (prev == null) {
+          return { items: data };
+        }
+        return {
+          ...prev,
+          items: [...(prev.items ?? []), ...data],
+        };
+      });
+    });
+  }, [query, itemsQuery]);
   return (
     <SearchContext.Provider
       value={{
