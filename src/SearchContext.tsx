@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { Query, SearchResult, Sort } from "./types";
-import { filter, streamItems } from "./api";
+import { facets, streamItems } from "./api";
 
 type KeyFilters = {
   [key: number]: string | undefined;
@@ -53,9 +53,7 @@ export const SearchContextProvider = ({
   const [keyFilters, setKeyFilters] = useState<KeyFilters>({});
   const [numberFilters, setNumberFilters] = useState<NumberFilters>({});
   const [integerFilters, setIntegerFilters] = useState<NumberFilters>({});
-  const [results, setResults] = useState<Partial<SearchResult> | undefined>(
-    undefined
-  );
+  const [results, setResults] = useState<SearchResult | undefined>(undefined);
 
   const itemsQuery = useMemo(() => {
     return { sort, page, pageSize };
@@ -84,8 +82,13 @@ export const SearchContextProvider = ({
     } satisfies Query;
   }, [term, keyFilters, numberFilters, integerFilters]);
   useEffect(() => {
-    filter(query).then(({ items: _, ...rest }) => {
-      setResults((prev) => ({ ...prev, ...rest }));
+    facets(query).then((data) => {
+      setResults((prev) => ({
+        items: prev?.items ?? [],
+        pageSize: prev?.pageSize ?? 0,
+        ...prev,
+        ...data,
+      }));
       // if (data?.items.length > 0 && numberOfItems) {
       //   setTimeout(() => {
       //     document.getElementById("results")?.scrollIntoView({
@@ -100,15 +103,24 @@ export const SearchContextProvider = ({
   useEffect(() => {
     setResults((prev) => {
       if (prev == null) {
-        return { items: [] };
+        return {
+          items: [],
+          totalHits: 0,
+          pageSize: itemsQuery.pageSize,
+          page: itemsQuery.page,
+        };
       }
       return { ...prev, items: [] };
     });
     streamItems({ ...query, ...itemsQuery }, (data) => {
-      console.log(data);
+      //console.log(data);
       setResults((prev) => {
         if (prev == null) {
-          return { items: data };
+          return {
+            items: data,
+            totalHits: data.length,
+            pageSize: itemsQuery.pageSize,
+          };
         }
         return {
           ...prev,

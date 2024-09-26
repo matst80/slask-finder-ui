@@ -3,6 +3,7 @@ import { useSearchContext } from "../SearchContext";
 export const Paging = () => {
   const { results, page, setPage } = useSearchContext();
   if (results == null) return null;
+  // console.log(results.totalHits, results.pageSize);
   const totalPages = Math.ceil(results.totalHits / results.pageSize);
   return (
     <div className="paging">

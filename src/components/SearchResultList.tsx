@@ -90,6 +90,7 @@ const ResultItem = ({
   return (
     <li key={`item-${id}`} onClick={doTrackClick}>
       <strong>{title}</strong>
+      <span>{values["6"] ?? ""}</span>
       <div>
         <em>{id}</em>
       </div>
@@ -128,7 +129,7 @@ export const SearchResultList = () => {
   const start = page * pageSize;
   return results != null ? (
     <ul className="hits" id="results">
-      {results.items.map((item, idx) => (
+      {results.items?.map((item, idx) => (
         <ResultItem key={item.id} {...item} position={start + idx} />
       ))}
     </ul>

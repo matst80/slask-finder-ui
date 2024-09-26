@@ -12,12 +12,14 @@ export const search = (term: string, page: number, pageSize: number) =>
     d.ok ? (d.json() as Promise<SearchResult>) : Promise.reject(d)
   );
 
-export const filter = (query: Query) =>
+export const facets = (query: Query) =>
   fetch(`${baseUrl}/api/filter`, {
     method: "POST",
     body: JSON.stringify(query),
   }).then((d) =>
-    d.ok ? (d.json() as Promise<SearchResult>) : Promise.reject(d)
+    d.ok
+      ? (d.json() as Promise<Omit<SearchResult, "items" | "pageSize" | "page">>)
+      : Promise.reject(d)
   );
 
 export const streamFacets = (query: Query) =>
@@ -32,25 +34,34 @@ export const streamItems = (
   query: Query,
   onResults: (data: Item[]) => void
 ) => {
-  return fetch(`${baseUrl}/api/stream/items`, {
+  return fetch(`${baseUrl}/api/stream`, {
     method: "POST",
     body: JSON.stringify(query),
   }).then((d) => {
     const reader = d.body?.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
     const pump = (): unknown => {
       return reader?.read().then(({ done, value }) => {
         if (done) {
           return;
         }
 
-        const text = new TextDecoder().decode(value).split("\n");
-        onResults(
-          text
-            .filter((line) => line.length > 2)
-            .map((line) => {
-              return JSON.parse(line) as Item;
-            })
-        );
+        buffer += decoder.decode(value);
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        const items = lines
+          .map((line) => {
+            if (!line || line.length < 2) {
+              return;
+            }
+            return JSON.parse(line) as Item;
+          })
+          .filter((d) => d != null) as Item[];
+        if (items.length > 0) {
+          onResults(items);
+        }
+
         return pump();
       });
     };

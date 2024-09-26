@@ -56,7 +56,7 @@ export type Facets = {
 export type SearchResult = {
   items: Item[];
   totalHits: number;
-  page: number;
+  //page: number;
   pageSize: number;
   facets?: Facets;
 };
