@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchContext } from "../SearchContext";
 import { Suggestion } from "../types";
 import { autoSuggest } from "../api";
+import { Search } from "lucide-react";
 
 type MappedSuggestion = {
   match: string;
@@ -11,8 +12,8 @@ type MappedSuggestion = {
 };
 
 export const AutoSuggest = () => {
-  const ctx = useSearchContext();
-  const [term, setTerm] = useState("");
+  const { term, setTerm, setPage } = useSearchContext();
+
   const [results, setResults] = useState<MappedSuggestion[]>([]);
   useEffect(() => {
     if (term.length < 2) {
@@ -36,24 +37,25 @@ export const AutoSuggest = () => {
             id: `suggestion-${idx}`,
             value: [...parts, match].join(" "),
           }))
-          .slice(0, Math.min(10, data.length))
+          .slice(0, Math.min(10, data.length)),
       );
     });
   }, [term]);
 
   const applySuggestion = (value: string) => {
-    ctx.setTerm(value);
-    ctx.setPage(0);
+    setTerm(value);
+    setPage(0);
   };
+
   return (
-    <>
+    <div className="mb-6 relative">
       <input
-        className="suggest-input"
+        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         type="search"
         value={term}
         placeholder="Search..."
         list="suggestions"
-        onBlur={() => ctx.setTerm(term)}
+        onBlur={() => applySuggestion(term)}
         onKeyUp={(e) => {
           if (e.key === "Enter") {
             applySuggestion(term);
@@ -64,6 +66,10 @@ export const AutoSuggest = () => {
         }}
         onChange={(e) => setTerm(e.target.value)}
       />
+      <Search
+        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+        size={20}
+      />
 
       <datalist id="suggestions">
         {results.map(({ match, value }, idx) => (
@@ -72,6 +78,6 @@ export const AutoSuggest = () => {
           </option>
         ))}
       </datalist>
-    </>
+    </div>
   );
 };

@@ -10,12 +10,33 @@ export type ItemValues = {
   "8"?: number;
 };
 
-export type Sort = "popular" | "price" | "price_desc";
+export const Sort = {
+  POPULAR_SORT: "popular",
+  PRICE_SORT: "price",
+  UPDATED_SORT: "updated",
+  CREATED_SORT: "created",
+  UPDATED_DESC_SORT: "updated_desc",
+  CREATED_DESC_SORT: "created_desc",
+};
+
+export type Sort =
+  | typeof Sort.POPULAR_SORT
+  | typeof Sort.PRICE_SORT
+  | typeof Sort.UPDATED_SORT
+  | typeof Sort.CREATED_SORT
+  | typeof Sort.UPDATED_DESC_SORT
+  | typeof Sort.CREATED_DESC_SORT;
 
 export type Item = ItemProps & {
   id: string;
   title: string;
   values: ItemValues;
+  stock?: Stock[];
+};
+
+export type Stock = {
+  id: string;
+  level: string;
 };
 
 export type ItemProps = {
@@ -66,6 +87,7 @@ export type Query = {
   page?: number;
   sort?: string;
   pageSize?: number;
+  stock?: string;
   string?: { id: number; value: string }[];
   number?: { id: number; min: number; max: number }[];
   integer?: { id: number; min: number; max: number }[];

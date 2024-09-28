@@ -27,6 +27,8 @@ type SearchContextType = {
   pageSize: number;
   results?: SearchResult;
   keyFilters: KeyFilters;
+  locationId?: string;
+  setLocationId: React.Dispatch<React.SetStateAction<string | undefined>>;
   setKeyFilters: React.Dispatch<React.SetStateAction<KeyFilters>>;
   numberFilters: NumberFilters;
   setNumberFilters: React.Dispatch<React.SetStateAction<NumberFilters>>;
@@ -50,6 +52,7 @@ export const SearchContextProvider = ({
   const [term, setTerm] = useState("");
   const [page, setPage] = useState(0);
   const [sort, setSort] = useState<Sort>("popular");
+  const [locationId, setLocationId] = useState<string | undefined>(undefined);
   const [keyFilters, setKeyFilters] = useState<KeyFilters>({});
   const [numberFilters, setNumberFilters] = useState<NumberFilters>({});
   const [integerFilters, setIntegerFilters] = useState<NumberFilters>({});
@@ -61,6 +64,7 @@ export const SearchContextProvider = ({
   const query = useMemo(() => {
     return {
       query: term,
+      stock: locationId,
       string: Object.entries(keyFilters)
         .filter(hasValue)
         .map(([id, value]) => ({
@@ -80,7 +84,7 @@ export const SearchContextProvider = ({
           ...props!,
         })),
     } satisfies Query;
-  }, [term, keyFilters, numberFilters, integerFilters]);
+  }, [term, keyFilters, numberFilters, integerFilters, locationId]);
   useEffect(() => {
     facets(query).then((data) => {
       setResults((prev) => ({
@@ -124,7 +128,7 @@ export const SearchContextProvider = ({
         }
         return {
           ...prev,
-          items: [...(prev.items ?? []), ...data],
+          items: data,
         };
       });
     });
@@ -138,6 +142,8 @@ export const SearchContextProvider = ({
         setPage,
         sort,
         setSort,
+        locationId,
+        setLocationId,
         pageSize,
         results,
         keyFilters,
@@ -157,8 +163,58 @@ export const useSearchContext = () => {
   const context = useContext(SearchContext);
   if (context == null) {
     throw new Error(
-      "useSearchContext must be used within a SearchContextProvider"
+      "useSearchContext must be used within a SearchContextProvider",
     );
   }
   return context;
+};
+
+export const useFilters = () => {
+  const {
+    setPage,
+    keyFilters,
+    setKeyFilters,
+    numberFilters,
+    setNumberFilters,
+    integerFilters,
+    setIntegerFilters,
+  } = useSearchContext();
+  return {
+    keyFilters,
+    addKeyFilter: (key: number, value: string) => {
+      setKeyFilters((prev) => ({ ...prev, [key]: value }));
+      setPage(0);
+    },
+    removeKeyFilter: (key: number) => {
+      setKeyFilters((prev) => {
+        const { [key]: _, ...rest } = prev;
+        return rest;
+      });
+      setPage(0);
+    },
+    numberFilters,
+    addNumberFilter: (key: number, min: number, max: number) => {
+      setNumberFilters((prev) => ({ ...prev, [key]: { min, max } }));
+      setPage(0);
+    },
+    removeNumberFilter: (key: number) => {
+      setNumberFilters((prev) => {
+        const { [key]: _, ...rest } = prev;
+        return rest;
+      });
+      setPage(0);
+    },
+    integerFilters,
+    addIntegerFilter: (key: number, min: number, max: number) => {
+      setIntegerFilters((prev) => ({ ...prev, [key]: { min, max } }));
+      setPage(0);
+    },
+    removeIntegerFilter: (key: number) => {
+      setIntegerFilters((prev) => {
+        const { [key]: _, ...rest } = prev;
+        return rest;
+      });
+      setPage(0);
+    },
+  };
 };
