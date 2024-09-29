@@ -9,6 +9,10 @@ export default defineConfig({
         target: "https://slask-finder.tornberg.me",
         changeOrigin: true,
       },
+      "/cart": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
       "/admin": {
         target: "https://slask-finder.tornberg.me",
         changeOrigin: true,

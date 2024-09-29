@@ -67,7 +67,7 @@ export const usePopularityContext = () => {
   const context = useContext(PopularityContext);
   if (context == null) {
     throw new Error(
-      "usePopularityContext must be used within a PopularityContextProvider",
+      "usePopularityContext must be used within a PopularityContextProvider"
     );
   }
   return context;
@@ -111,7 +111,7 @@ export const SearchContextProvider = ({
         };
       });
     },
-    [pageSize],
+    [pageSize]
   );
 
   const itemsQuery = useMemo(() => {
@@ -204,7 +204,7 @@ export const useSearchContext = () => {
   const context = useContext(SearchContext);
   if (context == null) {
     throw new Error(
-      "useSearchContext must be used within a SearchContextProvider",
+      "useSearchContext must be used within a SearchContextProvider"
     );
   }
   return context;

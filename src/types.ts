@@ -97,3 +97,18 @@ export type Query = {
   number?: { id: number; min: number; max: number }[];
   integer?: { id: number; min: number; max: number }[];
 };
+
+export type Cart = {
+  id: string;
+  items: CartItem[];
+  total_price: number;
+};
+
+export type CartItem = {
+  id: number;
+  sku: string;
+  title: string;
+  price: number;
+  image: string;
+  qty: number;
+};

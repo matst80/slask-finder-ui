@@ -1,8 +1,9 @@
 import { Save, ShoppingCart, Star, Zap } from "lucide-react";
-import { getRawData, trackClick, updatePopularity } from "../api";
+import { addToCart, getRawData, trackClick, updatePopularity } from "../api";
 import { usePopularityContext, useSearchContext } from "../SearchContext";
 import { Item, ItemValues } from "../types";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAddToCart } from "../cartHooks";
 
 const SEK = new Intl.NumberFormat("se-SV", {
   minimumFractionDigits: 0,
@@ -136,7 +137,10 @@ const PopularityOverride = ({ id }: { id: string }) => {
   );
 };
 
-const makeImageUrl = (pathOrUrl: string, size = "--pdp_main-640.jpg") => {
+export const makeImageUrl = (
+  pathOrUrl: string,
+  size = "--pdp_main-640.jpg"
+) => {
   if (pathOrUrl.startsWith("http")) {
     return pathOrUrl;
   }
@@ -172,6 +176,7 @@ const ResultItem = ({
     () => (updated ?? 0) > Date.now() - 1000 * 60 * 60,
     [updated]
   );
+  const { trigger: addToCart } = useAddToCart();
 
   return (
     <div
@@ -228,10 +233,14 @@ const ResultItem = ({
           |{" "}
           <span
             className={`text-sm ${
-              stockLevel != null ? "text-green-500" : "text-yellow-500"
+              stockLevel != null && stockLevel != "0"
+                ? "text-green-500"
+                : "text-yellow-500"
             }`}
           >
-            {stockLevel != null ? `Online: ${stockLevel}` : "Inte i lager"}
+            {stockLevel != null && stockLevel != "0"
+              ? `Online: ${stockLevel}`
+              : "Inte i lager"}
           </span>
         </div>
 
@@ -248,7 +257,10 @@ const ResultItem = ({
           <span className="text-xl font-bold">
             <Price values={values} />
           </span>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+            onClick={() => addToCart({ id, quantity: 1 })}
+          >
             <ShoppingCart />
           </button>
         </div>
