@@ -29,46 +29,56 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
           <p className="text-gray-500 text-center">Your cart is empty</p>
         ) : (
           <>
-            <ul className="divide-y divide-gray-200">
-              {items.map((item) => (
-                <li key={item.id} className="py-4 flex items-center">
-                  {item.image ? (
-                    <img
-                      src={makeImageUrl(item.image)}
-                      alt={item.title}
-                      className="h-16 w-16 rounded object-cover mr-4"
-                    />
-                  ) : (
-                    <div>.</div>
-                  )}
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium">{item.title}</h3>
-                    <p className="text-sm text-gray-500">
-                      {(item.price / 100).toFixed(2)} kr
-                    </p>
-                  </div>
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => {
-                        changeQuantity({ id: item.id, quantity: item.qty - 1 });
-                      }}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      <Minus size={16} />
-                    </button>
-                    <span className="mx-2 text-gray-700">{item.qty}</span>
-                    <button
-                      onClick={() => {
-                        changeQuantity({ id: item.id, quantity: item.qty + 1 });
-                      }}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      <Plus size={16} />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            {isLoading ? (
+              <div>Loading...</div>
+            ) : (
+              <ul className="divide-y divide-gray-200">
+                {items.map((item) => (
+                  <li key={item.id} className="py-4 flex items-center">
+                    {item.image ? (
+                      <img
+                        src={makeImageUrl(item.image)}
+                        alt={item.title}
+                        className="h-16 w-16 rounded object-cover mr-4"
+                      />
+                    ) : (
+                      <div>.</div>
+                    )}
+                    <div className="flex-1">
+                      <h3 className="text-sm font-medium">{item.title}</h3>
+                      <p className="text-sm text-gray-500">
+                        {(item.price / 100).toFixed(2)} kr
+                      </p>
+                    </div>
+                    <div className="flex items-center">
+                      <button
+                        onClick={() => {
+                          changeQuantity({
+                            id: item.id,
+                            quantity: item.qty - 1,
+                          });
+                        }}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <span className="mx-2 text-gray-700">{item.qty}</span>
+                      <button
+                        onClick={() => {
+                          changeQuantity({
+                            id: item.id,
+                            quantity: item.qty + 1,
+                          });
+                        }}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="mt-4 flex justify-between items-center">
               <span className="text-lg font-bold">Total:</span>
               <span className="text-lg font-bold">{totalPrice / 100} kr</span>

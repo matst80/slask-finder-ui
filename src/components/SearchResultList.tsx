@@ -1,5 +1,5 @@
 import { Save, ShoppingCart, Star, Zap } from "lucide-react";
-import { addToCart, getRawData, trackClick, updatePopularity } from "../api";
+import { getRawData, trackClick, updatePopularity } from "../api";
 import { usePopularityContext, useSearchContext } from "../SearchContext";
 import { Item, ItemValues } from "../types";
 import { useCallback, useEffect, useMemo, useState } from "react";
