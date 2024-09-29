@@ -1,8 +1,8 @@
-import { Save, ShoppingCart, Star } from "lucide-react";
+import { Save, ShoppingCart, Star, Zap } from "lucide-react";
 import { getRawData, trackClick, updatePopularity } from "../api";
 import { usePopularityContext, useSearchContext } from "../SearchContext";
 import { Item, ItemValues } from "../types";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const SEK = new Intl.NumberFormat("se-SV", {
   minimumFractionDigits: 0,
@@ -104,7 +104,7 @@ const useItemPopularity = (id: string) => {
       setPopularity(updated);
       setDirty(true);
     },
-    [id, popularity, setPopularity],
+    [id, popularity, setPopularity]
   );
   const commit = useCallback(() => {
     updatePopularity(popularity).then(() => {
@@ -151,6 +151,7 @@ const ResultItem = ({
   values,
   stock,
   bp,
+  lastUpdate: updated,
   position,
   stockLevel,
   advertisingText,
@@ -167,11 +168,15 @@ const ResultItem = ({
   const hasRating = values["6"] != null && values["7"] != null;
   const stockOnLocation = stock?.find((d) => d.id === locationId);
   const storesWithStock = stock?.length ?? 0;
+  const recentlyUpdated = useMemo(
+    () => (updated ?? 0) > Date.now() - 1000 * 60 * 60,
+    [updated]
+  );
 
   return (
     <div
       key={`item-${id}`}
-      className={`bg-white rounded-sm shadow overflow-hidden`}
+      className={`bg-white rounded-sm shadow overflow-hidden relative`}
       onClick={doTrackClick}
     >
       <div className="relative mt-2">
@@ -201,22 +206,30 @@ const ResultItem = ({
         )}
 
         <div className="flex items-center gap-2 mt-2">
-          {stockOnLocation ? (
+          {locationId != null ? (
             <span
-              className={`text-sm ${stockOnLocation != null ? "text-green-500" : "text-yellow-500"}`}
+              className={`text-sm ${
+                stockOnLocation != null ? "text-green-500" : "text-yellow-500"
+              }`}
             >
-              {`I din butik: ${stockOnLocation?.level}` ?? "Slut i din butik"}
+              {stockOnLocation != null
+                ? `I din butik: ${stockOnLocation.level}`
+                : "Slut i din butik"}
             </span>
           ) : (
             <span
-              className={`text-sm ${storesWithStock > 0 ? "text-green-500" : "text-yellow-500"}`}
+              className={`text-sm ${
+                storesWithStock > 0 ? "text-green-500" : "text-yellow-500"
+              }`}
             >
               Finns i {storesWithStock} butiker
             </span>
           )}{" "}
           |{" "}
           <span
-            className={`text-sm ${stockLevel != null ? "text-green-500" : "text-yellow-500"}`}
+            className={`text-sm ${
+              stockLevel != null ? "text-green-500" : "text-yellow-500"
+            }`}
           >
             {stockLevel != null ? `Online: ${stockLevel}` : "Inte i lager"}
           </span>
@@ -226,7 +239,9 @@ const ResultItem = ({
           {bp
             ?.split("\n")
             .filter((d) => d?.length)
-            .map((bp) => <li key={bp}>{bp}</li>)}
+            .map((bp) => (
+              <li key={bp}>{bp}</li>
+            ))}
         </ul>
 
         <div className="flex justify-between items-center">
@@ -237,12 +252,57 @@ const ResultItem = ({
             <ShoppingCart />
           </button>
         </div>
+        {recentlyUpdated && (
+          <div className="flex items-center p-1 bg-yellow-300 text-xs gap-2 absolute top-0 right-0">
+            <Zap size={18} />
+            <TimeAgo ts={updated} />
+          </div>
+        )}
         {advertisingText != null && (
           <em className="italic text-xs">{advertisingText}</em>
         )}
       </div>
     </div>
   );
+};
+
+const timeDiff = 7200000;
+
+const TimeAgo = ({ ts }: { ts?: number }) => {
+  const now = Date.now();
+  const [diff, setDiff] = useState(now + timeDiff - (ts ?? 0));
+
+  useEffect(() => {
+    if (ts == null) {
+      return;
+    }
+    const interval = setInterval(() => {
+      setDiff(Date.now() + timeDiff - ts);
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [ts]);
+  if (ts == null) {
+    return null;
+  }
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  if (diff < 0) {
+    return <span>Just nu</span>;
+  }
+  if (days > 0) {
+    return <span>{days} dagar sedan</span>;
+  }
+  if (hours > 0) {
+    return <span>{hours} timmar sedan</span>;
+  }
+  if (minutes > 0) {
+    return <span>{minutes} minuter sedan</span>;
+  }
+  return <span>{seconds} sekunder sedan</span>;
 };
 
 export const SearchResultList = () => {

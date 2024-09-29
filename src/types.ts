@@ -40,6 +40,8 @@ export type Stock = {
 };
 
 export type ItemProps = {
+  created?: number;
+  lastUpdate?: number;
   advertisingText: string;
   stockLevel?: string;
   badgeUrl: string;
