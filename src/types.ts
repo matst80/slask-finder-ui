@@ -41,6 +41,7 @@ export type Stock = {
 
 export type ItemProps = {
   advertisingText: string;
+  stockLevel?: string;
   badgeUrl: string;
   bp: string;
   img: string;
@@ -54,6 +55,7 @@ export type ItemProps = {
 
 export type KeyFacet = {
   id: number;
+  type: string;
   name: string;
   description: string;
   values: Record<string, number>;
@@ -61,6 +63,7 @@ export type KeyFacet = {
 
 export type NumberFacet = {
   id: number;
+  type: string;
   name: string;
   description: string;
   min: number;

@@ -1,13 +1,15 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapPin } from "lucide-react";
-import { stores } from "../stores";
+import { storeBounds, stores } from "../stores";
 import { useRef, useMemo, useState } from "react";
 import { useSearchContext } from "../SearchContext";
 
 export const SelectedStore = () => {
   const { locationId, setLocationId } = useSearchContext();
+  const bounds = useMemo(() => {
+    return storeBounds;
+  }, []);
   const ref = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
   const selectedStore = useMemo(() => {
@@ -15,11 +17,6 @@ export const SelectedStore = () => {
       ? stores.find((store) => store.id === locationId)
       : null;
   }, [locationId]);
-
-  const center = selectedStore?.address.location ?? {
-    lat: 60.605034,
-    lng: 15.665223,
-  };
 
   const openMap = () => {
     ref.current?.showModal();
@@ -40,8 +37,7 @@ export const SelectedStore = () => {
           <h2 className="text-lg font-semibold mb-2">Välj butik</h2>
           {open && (
             <MapContainer
-              center={[center.lat, center.lng]}
-              zoom={8}
+              bounds={bounds}
               style={{ height: "100%", width: "100%" }}
             >
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />

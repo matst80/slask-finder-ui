@@ -77,4 +77,18 @@ export const getRawData = (id: string) =>
   );
 
 export const trackClick = (id: string, position: number) =>
-  fetch(`${baseUrl}/track/click?id=${id}&pos=${position}`).then((d) => d.ok);
+  fetch(`${baseUrl}/api/track/click?id=${id}&pos=${position}`).then(
+    (d) => d.ok,
+  );
+
+export const getPopularity = () =>
+  fetch(`${baseUrl}/admin/sort/popular`).then((d) =>
+    d.ok ? (d.json() as Promise<Record<string, number>>) : Promise.reject(d),
+  );
+
+export const updatePopularity = (overrides: Record<string, number>) => {
+  return fetch(`${baseUrl}/admin/sort/popular`, {
+    method: "POST",
+    body: JSON.stringify(overrides),
+  }).then((d) => d.ok);
+};

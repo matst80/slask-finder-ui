@@ -1,13 +1,14 @@
 import {
   createContext,
   PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { Query, SearchResult, Sort } from "./types";
-import { facets, streamItems } from "./api";
+import { Item, Query, SearchResult, Sort } from "./types";
+import { facets, getPopularity, streamItems } from "./api";
 
 type KeyFilters = {
   [key: number]: string | undefined;
@@ -21,11 +22,14 @@ type SearchContextType = {
   term: string;
   sort?: Sort;
   setSort: React.Dispatch<React.SetStateAction<Sort>>;
+  loadingFacets: boolean;
+  loadingItems: boolean;
   setTerm: (term: string) => void;
   page: number;
   setPage: (page: number) => void;
   pageSize: number;
   results?: SearchResult;
+  setItems: (items: Item[]) => void;
   keyFilters: KeyFilters;
   locationId?: string;
   setLocationId: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -36,7 +40,38 @@ type SearchContextType = {
   setIntegerFilters: React.Dispatch<React.SetStateAction<NumberFilters>>;
 };
 
+type PopularityContextType = {
+  popularity: Record<string, number>;
+  setPopularity: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+};
+
 const SearchContext = createContext<SearchContextType | null>(null);
+
+const PopularityContext = createContext<PopularityContextType | null>(null);
+
+export const PopularityContextProvider = ({ children }: PropsWithChildren) => {
+  const [popularity, setPopularity] = useState<Record<string, number>>({});
+  useEffect(() => {
+    getPopularity().then((data) => {
+      setPopularity(data);
+    });
+  }, []);
+  return (
+    <PopularityContext.Provider value={{ popularity, setPopularity }}>
+      {children}
+    </PopularityContext.Provider>
+  );
+};
+
+export const usePopularityContext = () => {
+  const context = useContext(PopularityContext);
+  if (context == null) {
+    throw new Error(
+      "usePopularityContext must be used within a PopularityContextProvider",
+    );
+  }
+  return context;
+};
 
 type KeyValue<T> = [string | number, T | undefined];
 type ValidKeyValue<T> = [string | number, NonNullable<T>];
@@ -52,11 +87,32 @@ export const SearchContextProvider = ({
   const [term, setTerm] = useState("");
   const [page, setPage] = useState(0);
   const [sort, setSort] = useState<Sort>("popular");
+  const [loadingFacets, setLoadingFacets] = useState(false);
+  const [loadingItems, setLoadingItems] = useState(false);
   const [locationId, setLocationId] = useState<string | undefined>(undefined);
   const [keyFilters, setKeyFilters] = useState<KeyFilters>({});
   const [numberFilters, setNumberFilters] = useState<NumberFilters>({});
   const [integerFilters, setIntegerFilters] = useState<NumberFilters>({});
   const [results, setResults] = useState<SearchResult | undefined>(undefined);
+
+  const setItems = useCallback(
+    (items: Item[]) => {
+      setResults((prev) => {
+        if (prev == null) {
+          return {
+            items: items,
+            totalHits: items.length,
+            pageSize: pageSize,
+          };
+        }
+        return {
+          ...prev,
+          items: items,
+        };
+      });
+    },
+    [pageSize],
+  );
 
   const itemsQuery = useMemo(() => {
     return { sort, page, pageSize };
@@ -86,53 +142,35 @@ export const SearchContextProvider = ({
     } satisfies Query;
   }, [term, keyFilters, numberFilters, integerFilters, locationId]);
   useEffect(() => {
-    facets(query).then((data) => {
-      setResults((prev) => ({
-        items: prev?.items ?? [],
-        pageSize: prev?.pageSize ?? 0,
-        ...prev,
-        ...data,
-      }));
-      // if (data?.items.length > 0 && numberOfItems) {
-      //   setTimeout(() => {
-      //     document.getElementById("results")?.scrollIntoView({
-      //       behavior: "smooth",
-      //       block: "start",
-      //       inline: "start",
-      //     });
-      //   }, 200);
-      // }
-    });
+    setLoadingFacets(true);
+    facets(query)
+      .then((data) => {
+        setResults((prev) => ({
+          items: prev?.items ?? [],
+          pageSize: prev?.pageSize ?? 0,
+          ...prev,
+          ...data,
+        }));
+        // if (data?.items.length > 0 && numberOfItems) {
+        //   setTimeout(() => {
+        //     document.getElementById("results")?.scrollIntoView({
+        //       behavior: "smooth",
+        //       block: "start",
+        //       inline: "start",
+        //     });
+        //   }, 200);
+        // }
+      })
+      .finally(() => setLoadingFacets(false));
   }, [query]);
   useEffect(() => {
-    setResults((prev) => {
-      if (prev == null) {
-        return {
-          items: [],
-          totalHits: 0,
-          pageSize: itemsQuery.pageSize,
-          page: itemsQuery.page,
-        };
-      }
-      return { ...prev, items: [] };
-    });
+    setItems([]);
+    setLoadingItems(true);
     streamItems({ ...query, ...itemsQuery }, (data) => {
-      //console.log(data);
-      setResults((prev) => {
-        if (prev == null) {
-          return {
-            items: data,
-            totalHits: data.length,
-            pageSize: itemsQuery.pageSize,
-          };
-        }
-        return {
-          ...prev,
-          items: data,
-        };
-      });
+      setLoadingItems(false);
+      setItems(data);
     });
-  }, [query, itemsQuery]);
+  }, [query, itemsQuery, setItems]);
   return (
     <SearchContext.Provider
       value={{
@@ -143,8 +181,11 @@ export const SearchContextProvider = ({
         sort,
         setSort,
         locationId,
+        loadingItems,
+        loadingFacets,
         setLocationId,
         pageSize,
+        setItems,
         results,
         keyFilters,
         setKeyFilters,

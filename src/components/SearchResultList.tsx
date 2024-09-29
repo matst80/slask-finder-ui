@@ -1,9 +1,8 @@
-import { MapPin, ShoppingCart, Star } from "lucide-react";
-import { getRawData, trackClick } from "../api";
-import { useSearchContext } from "../SearchContext";
+import { Save, ShoppingCart, Star } from "lucide-react";
+import { getRawData, trackClick, updatePopularity } from "../api";
+import { usePopularityContext, useSearchContext } from "../SearchContext";
 import { Item, ItemValues } from "../types";
-import { useMemo } from "react";
-import { stores } from "../stores";
+import { useCallback, useMemo, useState } from "react";
 
 const SEK = new Intl.NumberFormat("se-SV", {
   minimumFractionDigits: 0,
@@ -27,7 +26,9 @@ const Price = ({ values }: ValueProps) => {
       <div className="flex gap-1 items-end">
         <PriceValue value={prc.current} className="bold" />
         <PriceValue value={prc.original} className="opacity-50 text-sm" />
-        {/* <span> ({prc.discount})</span> */}
+        <span className="text-sm bg-yellow-400 py-1 px-2">
+          -{Math.round((prc.discount / prc.original) * 100)}%
+        </span>
       </div>
     );
   }
@@ -93,6 +94,55 @@ const Stars = ({
   );
 };
 
+const useItemPopularity = (id: string) => {
+  const { popularity, setPopularity } = usePopularityContext();
+  const [dirty, setDirty] = useState(false);
+  const value = useMemo(() => popularity[id], [id, popularity]);
+  const setValue = useCallback(
+    (value: number) => {
+      const updated = { ...popularity, [id]: value };
+      setPopularity(updated);
+      setDirty(true);
+    },
+    [id, popularity, setPopularity],
+  );
+  const commit = useCallback(() => {
+    updatePopularity(popularity).then(() => {
+      setDirty(false);
+    });
+  }, [popularity]);
+  return { value, setValue, commit, dirty };
+};
+
+const PopularityOverride = ({ id }: { id: string }) => {
+  const { value, setValue, dirty, commit } = useItemPopularity(id);
+  return (
+    <div className="absolute top-2 left-0 bg-gray-200 p-1 rounded-br-md rounded-tr-md flex items-center">
+      <Star size={18} />
+      <span className="text-xs text-gray-600">
+        <input
+          type="number"
+          value={value ?? 0}
+          className="w-16 bg-gray-200 text-center border-none focus:ring-0"
+          onChange={(e) => setValue(Number(e.target.value))}
+        />
+      </span>
+      {dirty && (
+        <button onClick={commit}>
+          <Save size={18} />
+        </button>
+      )}
+    </div>
+  );
+};
+
+const makeImageUrl = (pathOrUrl: string, size = "--pdp_main-640.jpg") => {
+  if (pathOrUrl.startsWith("http")) {
+    return pathOrUrl;
+  }
+  return "https://www.elgiganten.se" + pathOrUrl?.replace(".jpg", size);
+};
+
 const ResultItem = ({
   id,
   title,
@@ -102,8 +152,11 @@ const ResultItem = ({
   stock,
   bp,
   position,
+  stockLevel,
   advertisingText,
-}: Item & { position: number }) => {
+}: Item & {
+  position: number;
+}) => {
   const doTrackClick = () => {
     trackClick(id, position);
     getRawData(id).then((data) => {
@@ -113,26 +166,26 @@ const ResultItem = ({
   const { locationId } = useSearchContext();
   const hasRating = values["6"] != null && values["7"] != null;
   const stockOnLocation = stock?.find((d) => d.id === locationId);
+  const storesWithStock = stock?.length ?? 0;
+
   return (
     <div
       key={`item-${id}`}
-      className="bg-white rounded-sm shadow overflow-hidden"
+      className={`bg-white rounded-sm shadow overflow-hidden`}
       onClick={doTrackClick}
     >
       <div className="relative mt-2">
+        <PopularityOverride id={id} />
         {img != null && (
           <img
             className="w-full h-48 object-contain"
-            src={
-              "https://www.elgiganten.se" +
-              img?.replace(".jpg", "--pdp_main-640.jpg")
-            }
+            src={makeImageUrl(img)}
             alt={title}
           />
         )}
         {badgeUrl != null && (
           <img
-            src={"https://www.elgiganten.se" + badgeUrl}
+            src={makeImageUrl(badgeUrl)}
             alt={title}
             className="size-16 object-contain absolute top-4 right-4"
           />
@@ -146,12 +199,29 @@ const ResultItem = ({
             numberOfRatings={Number(values["7"])}
           />
         )}
-        {locationId != null && (
-          <div className="flex items-center gap-2 mt-2">
-            <MapPin />
-            <span className="text-sm">{stockOnLocation?.level ?? "0"}</span>
-          </div>
-        )}
+
+        <div className="flex items-center gap-2 mt-2">
+          {stockOnLocation ? (
+            <span
+              className={`text-sm ${stockOnLocation != null ? "text-green-500" : "text-yellow-500"}`}
+            >
+              {`I din butik: ${stockOnLocation?.level}` ?? "Slut i din butik"}
+            </span>
+          ) : (
+            <span
+              className={`text-sm ${storesWithStock > 0 ? "text-green-500" : "text-yellow-500"}`}
+            >
+              Finns i {storesWithStock} butiker
+            </span>
+          )}{" "}
+          |{" "}
+          <span
+            className={`text-sm ${stockLevel != null ? "text-green-500" : "text-yellow-500"}`}
+          >
+            {stockLevel != null ? `Online: ${stockLevel}` : "Inte i lager"}
+          </span>
+        </div>
+
         <ul className="text-sm">
           {bp
             ?.split("\n")
@@ -176,16 +246,21 @@ const ResultItem = ({
 };
 
 export const SearchResultList = () => {
-  const { results, page, pageSize } = useSearchContext();
-  const start = page * pageSize;
+  const { results, page, pageSize, loadingItems } = useSearchContext();
 
-  return results != null ? (
-    <>
-      {results.items?.map((item, idx) => (
+  const start = page * pageSize;
+  if (loadingItems && (!results || !results.items.length)) {
+    return <div>Loading...</div>;
+  }
+
+  if (!results || !results.items.length) {
+    return <div>No results</div>;
+  }
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {results?.items.map((item, idx) => (
         <ResultItem key={item.id} {...item} position={start + idx} />
       ))}
-    </>
-  ) : (
-    <div>No results</div>
+    </div>
   );
 };

@@ -1,3 +1,5 @@
+import L from 'leaflet'
+
 export const stores = [
   {
     "displayName": "Elgiganten Kungsbacka",
@@ -33606,3 +33608,8 @@ export const stores = [
     "shipFromStore": null
   }
 ]
+
+export const storeBounds = L.latLngBounds(stores.map(store => {
+  const location = store.address.location
+  return [location.lat, location.lng]
+}))

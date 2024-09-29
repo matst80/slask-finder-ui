@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useFilters, useSearchContext } from "../SearchContext";
 import { KeyFacet, NumberFacet } from "../types";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -97,6 +97,7 @@ type SliderProps = {
 const Slider = ({ min, max, onChange }: SliderProps) => {
   const [minValue, setMinValue] = useState(min);
   const [maxValue, setMaxValue] = useState(max);
+
   return (
     <>
       <input
@@ -127,48 +128,97 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
     </>
   );
 };
-const NumberFacetSelector = ({ name, min, max, id }: NumberFacet) => {
-  const { addIntegerFilter } = useFilters();
+const NumberFacetSelector = ({
+  name,
+  min,
+  max,
+  type,
+  updateFilerValue,
+}: NumberFacet & { updateFilerValue: (min: number, max: number) => void }) => {
+  const [open, setOpen] = useState(Boolean(type?.length));
+  const { toDisplayValue, fromDisplayValue } = useMemo(
+    () => converters(type),
+    [type],
+  );
 
   return (
     <div className="mb-4 border-b border-gray-100 pb-2">
-      <h3 className="font-medium mb-2">{name}</h3>
+      <button
+        className="font-medium bold mb-2 flex items-center justify-between w-full text-left"
+        onClick={() => setOpen((p) => !p)}
+      >
+        {name}
+        {open ? (
+          <ChevronUp className="size-4" />
+        ) : (
+          <ChevronDown className="size-4" />
+        )}
+      </button>
 
-      <div className="flex gap-2">
-        <Slider
-          min={min}
-          max={max}
-          onChange={(min, max) => {
-            addIntegerFilter(id, min, max);
-          }}
-        />
-      </div>
+      {open && (
+        <div className="flex gap-2">
+          <Slider
+            min={toDisplayValue(min)}
+            max={toDisplayValue(max)}
+            onChange={(min, max) => {
+              updateFilerValue(fromDisplayValue(min), fromDisplayValue(max));
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
-const FloatFacetSelector = ({ name, min, max, id }: NumberFacet) => {
+const toDisplayValue = (type: string) => (value: number) => {
+  if (type === "currency") {
+    return value / 100;
+  }
+  return value;
+};
+const fromDisplayValue = (type: string) => (value: number) => {
+  if (type === "currency") {
+    return Math.round(value * 100);
+  }
+  return value;
+};
+
+const converters = (type: string) => {
+  return {
+    toDisplayValue: toDisplayValue(type),
+    fromDisplayValue: fromDisplayValue(type),
+  };
+};
+
+const FloatFacetSelector = (facet: NumberFacet) => {
   const { addNumberFilter } = useFilters();
 
   return (
-    <div className="mb-4">
-      <h3 className="font-medium mb-2">{name}</h3>
+    <NumberFacetSelector
+      {...facet}
+      updateFilerValue={(min, max) => {
+        addNumberFilter(facet.id, min, max);
+      }}
+    />
+  );
+};
 
-      <div className="flex gap-2">
-        <Slider
-          min={min}
-          max={max}
-          onChange={(min, max) => {
-            addNumberFilter(id, min, max);
-          }}
-        />
-      </div>
-    </div>
+const IntegerFacetSelector = (facet: NumberFacet) => {
+  const { addIntegerFilter } = useFilters();
+
+  return (
+    <NumberFacetSelector
+      {...facet}
+      updateFilerValue={(min, max) => {
+        addIntegerFilter(facet.id, min, max);
+      }}
+    />
   );
 };
 
 export const Facets = () => {
-  const { results, setLocationId, locationId } = useSearchContext();
+  const { results, setLocationId, locationId, loadingFacets } =
+    useSearchContext();
 
   // <div>
   //   <h3 className="font-medium mb-2">Color</h3>
@@ -184,6 +234,9 @@ export const Facets = () => {
   //     ))}
   //   </div>
   // </div>
+  if (loadingFacets) {
+    return <div></div>;
+  }
 
   return results?.facets?.fields != null ? (
     <>
@@ -191,7 +244,7 @@ export const Facets = () => {
         <KeyFacetSelector key={`keyfield-${facet.id}`} {...facet} />
       ))}
       {results.facets.integerFields?.map((facet) => (
-        <NumberFacetSelector key={`intfield-${facet.id}`} {...facet} />
+        <IntegerFacetSelector key={`intfield-${facet.id}`} {...facet} />
       ))}
       {results.facets.numberFields?.map((facet) => (
         <FloatFacetSelector key={`floatfield-${facet.id}`} {...facet} />
