@@ -97,7 +97,7 @@ type SliderProps = {
 const Slider = ({ min, max, onChange }: SliderProps) => {
   const [minValue, setMinValue] = useState(min);
   const [maxValue, setMaxValue] = useState(max);
-
+  const isDirty = min !== minValue || max !== maxValue;
   return (
     <>
       <input
@@ -122,7 +122,11 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
           const nr = Number(e.target.value);
           if (nr > min) setMaxValue(nr);
         }}
-        onBlur={() => onChange(minValue, maxValue)}
+        onBlur={() => {
+          if (isDirty) {
+            onChange(minValue, maxValue);
+          }
+        }}
         value={maxValue}
       />
     </>
@@ -136,6 +140,7 @@ const NumberFacetSelector = ({
   updateFilerValue,
 }: NumberFacet & { updateFilerValue: (min: number, max: number) => void }) => {
   const [open, setOpen] = useState(Boolean(type?.length));
+
   const { toDisplayValue, fromDisplayValue } = useMemo(
     () => converters(type),
     [type],
