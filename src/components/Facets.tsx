@@ -30,7 +30,10 @@ const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
         className="font-medium bold mb-2 flex items-center justify-between w-full text-left"
         onClick={() => setOpen((p) => !p)}
       >
-        {name} ({allSorted.length}){" "}
+        <span>
+          {name}{" "}
+          <span className="text-gray-500 text-sm">({allSorted.length})</span>
+        </span>
         {open ? (
           <ChevronUp className="size-4" />
         ) : (

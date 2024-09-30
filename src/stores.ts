@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 
 
 export const stores = [
@@ -4283,3 +4284,9 @@ export const stores = [
         "shipFromStore": null
     }
 ]
+
+export const useStoreWithId = (id:string) => {
+  return useMemo(() => {
+    return stores.find(d=>d.id === id)
+  }, [id])
+}

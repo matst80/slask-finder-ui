@@ -1,22 +1,11 @@
 import useSWR from "swr";
-import useSWRMutation, { SWRMutationConfiguration } from "swr/mutation";
 import { addToCart, changeQuantity, getCart, removeFromCart } from "./api";
+import { useFetchMutation } from "./utils";
 
 const cartKey = "/cart";
 
 export const useCart = () => {
   return useSWR(cartKey, getCart, {});
-};
-
-const useFetchMutation = <T, U>(
-  key: string,
-  fn: (payload: U) => Promise<T>,
-  config?: SWRMutationConfiguration<T, Error, string, U>
-) => {
-  return useSWRMutation(key, (_, { arg }) => fn(arg), {
-    ...config,
-    populateCache: true,
-  });
 };
 
 export const useAddToCart = () => {

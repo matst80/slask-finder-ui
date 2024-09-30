@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { Item, Query, SearchResult, Sort } from "./types";
-import { facets, getPopularity, streamItems } from "./api";
+import { facets, streamItems } from "./api";
 import { remove } from "./utils";
 
 type KeyFilters = {
@@ -41,38 +41,7 @@ type SearchContextType = {
   setIntegerFilters: React.Dispatch<React.SetStateAction<NumberFilters>>;
 };
 
-type PopularityContextType = {
-  popularity: Record<string, number>;
-  setPopularity: React.Dispatch<React.SetStateAction<Record<string, number>>>;
-};
-
 const SearchContext = createContext<SearchContextType | null>(null);
-
-const PopularityContext = createContext<PopularityContextType | null>(null);
-
-export const PopularityContextProvider = ({ children }: PropsWithChildren) => {
-  const [popularity, setPopularity] = useState<Record<string, number>>({});
-  useEffect(() => {
-    getPopularity().then((data) => {
-      setPopularity(data);
-    });
-  }, []);
-  return (
-    <PopularityContext.Provider value={{ popularity, setPopularity }}>
-      {children}
-    </PopularityContext.Provider>
-  );
-};
-
-export const usePopularityContext = () => {
-  const context = useContext(PopularityContext);
-  if (context == null) {
-    throw new Error(
-      "usePopularityContext must be used within a PopularityContextProvider"
-    );
-  }
-  return context;
-};
 
 type KeyValue<T> = [string | number, T | undefined];
 type ValidKeyValue<T> = [string | number, NonNullable<T>];
@@ -112,7 +81,7 @@ export const SearchContextProvider = ({
         };
       });
     },
-    [pageSize]
+    [pageSize],
   );
 
   const itemsQuery = useMemo(() => {
@@ -170,7 +139,7 @@ export const SearchContextProvider = ({
     streamItems({ ...query, ...itemsQuery }, (data) => {
       setLoadingItems(false);
       setItems(data);
-    });
+    }).finally(() => setLoadingItems(false));
   }, [query, itemsQuery, setItems]);
   return (
     <SearchContext.Provider
@@ -205,7 +174,7 @@ export const useSearchContext = () => {
   const context = useContext(SearchContext);
   if (context == null) {
     throw new Error(
-      "useSearchContext must be used within a SearchContextProvider"
+      "useSearchContext must be used within a SearchContextProvider",
     );
   }
   return context;
