@@ -54,7 +54,7 @@ export const streamItems = (
         const parsedItems = lines
           .map((line) => {
             if (!line || line.length < 2) {
-              return;
+              return items;
             }
             return JSON.parse(line) as Item;
           })

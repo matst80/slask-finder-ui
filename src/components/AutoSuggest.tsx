@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchContext } from "../SearchContext";
 import { Suggestion } from "../types";
 import { autoSuggest } from "../api";
@@ -12,7 +12,7 @@ type MappedSuggestion = {
 };
 
 export const AutoSuggest = () => {
-  const { term, setTerm, setPage } = useSearchContext();
+  const { setTerm, setPage } = useSearchContext();
 
   const [value, setValue] = useState("");
 
