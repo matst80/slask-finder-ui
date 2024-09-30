@@ -1,7 +1,7 @@
 import { Minus, Plus, ShoppingCart, X } from "lucide-react";
 import { useState } from "react";
 
-import { makeImageUrl } from "./SearchResultList";
+import { makeImageUrl } from "../utils";
 import { useCart, useChangeQuantity } from "../cartHooks";
 
 type CartDialogProps = {
@@ -47,7 +47,13 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                     <div className="flex-1">
                       <h3 className="text-sm font-medium">{item.title}</h3>
                       <p className="text-sm text-gray-500">
-                        {(item.price / 100).toFixed(2)} kr
+                        {(item.price / 100).toFixed(2)} kr{" "}
+                        {item.original_price &&
+                          item.original_price > item.price && (
+                            <span className="line-through text-gray-400">
+                              {(item.original_price / 100).toFixed(2)} kr
+                            </span>
+                          )}
                       </p>
                     </div>
                     <div className="flex items-center">

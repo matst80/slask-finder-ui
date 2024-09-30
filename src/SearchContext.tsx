@@ -9,6 +9,7 @@ import {
 } from "react";
 import { Item, Query, SearchResult, Sort } from "./types";
 import { facets, getPopularity, streamItems } from "./api";
+import { remove } from "./utils";
 
 type KeyFilters = {
   [key: number]: string | undefined;
@@ -227,10 +228,7 @@ export const useFilters = () => {
       setPage(0);
     },
     removeKeyFilter: (key: number) => {
-      setKeyFilters((prev) => {
-        const { [key]: _, ...rest } = prev;
-        return rest;
-      });
+      setKeyFilters(remove(key));
       setPage(0);
     },
     numberFilters,
@@ -239,10 +237,7 @@ export const useFilters = () => {
       setPage(0);
     },
     removeNumberFilter: (key: number) => {
-      setNumberFilters((prev) => {
-        const { [key]: _, ...rest } = prev;
-        return rest;
-      });
+      setNumberFilters(remove(key));
       setPage(0);
     },
     integerFilters,
@@ -251,10 +246,7 @@ export const useFilters = () => {
       setPage(0);
     },
     removeIntegerFilter: (key: number) => {
-      setIntegerFilters((prev) => {
-        const { [key]: _, ...rest } = prev;
-        return rest;
-      });
+      setIntegerFilters(remove(key));
       setPage(0);
     },
   };

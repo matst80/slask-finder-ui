@@ -109,6 +109,7 @@ export type CartItem = {
   sku: string;
   title: string;
   price: number;
+  original_price?: number;
   image: string;
   qty: number;
 };

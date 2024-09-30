@@ -37,7 +37,7 @@ export const AutoSuggest = () => {
             id: `suggestion-${idx}`,
             value: [...parts, match].join(" "),
           }))
-          .slice(0, Math.min(10, data.length)),
+          .slice(0, Math.min(10, data.length))
       );
     });
   }, [term]);
@@ -48,7 +48,7 @@ export const AutoSuggest = () => {
   };
 
   return (
-    <div className="mb-6 relative">
+    <div className="relative flex-1">
       <input
         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         type="search"

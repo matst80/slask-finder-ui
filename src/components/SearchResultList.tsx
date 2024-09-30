@@ -4,6 +4,7 @@ import { usePopularityContext, useSearchContext } from "../SearchContext";
 import { Item, ItemValues } from "../types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAddToCart } from "../cartHooks";
+import { makeImageUrl } from "../utils";
 
 const SEK = new Intl.NumberFormat("se-SV", {
   minimumFractionDigits: 0,
@@ -137,16 +138,6 @@ const PopularityOverride = ({ id }: { id: string }) => {
   );
 };
 
-export const makeImageUrl = (
-  pathOrUrl: string,
-  size = "--pdp_main-640.jpg"
-) => {
-  if (pathOrUrl.startsWith("http")) {
-    return pathOrUrl;
-  }
-  return "https://www.elgiganten.se" + pathOrUrl?.replace(".jpg", size);
-};
-
 const ResultItem = ({
   id,
   title,
@@ -278,18 +269,23 @@ const ResultItem = ({
   );
 };
 
-const timeDiff = 7200000;
+//const timeDiff = 7200000;
+
+const utcNow = () => {
+  const d = new Date();
+  return d.getTime();
+};
 
 const TimeAgo = ({ ts }: { ts?: number }) => {
-  const now = Date.now();
-  const [diff, setDiff] = useState(now + timeDiff - (ts ?? 0));
+  const now = utcNow();
+  const [diff, setDiff] = useState(now - (ts ?? 0));
 
   useEffect(() => {
     if (ts == null) {
       return;
     }
     const interval = setInterval(() => {
-      setDiff(Date.now() + timeDiff - ts);
+      setDiff(utcNow() - ts);
     }, 1000);
     return () => {
       clearInterval(interval);

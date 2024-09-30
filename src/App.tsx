@@ -11,42 +11,39 @@ import {
   SearchContextProvider,
 } from "./SearchContext";
 
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-
 function App() {
   return (
     <SearchContextProvider pageSize={40}>
       <PopularityContextProvider>
-        <DndProvider backend={HTML5Backend}>
-          <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row gap-8">
-              <aside className="w-full md:w-72">
-                <h2 className="text-lg font-semibold mb-4">Filter</h2>
-                <Facets />
-              </aside>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row gap-8">
+            <aside className="w-full md:w-72">
+              <h2 className="text-lg font-semibold mb-4">Filter</h2>
+              <Facets />
+            </aside>
 
-              <main className="flex-1">
+            <main className="flex-1">
+              <div className="flex gap-2 items-center mb-6 sticky top-0 z-10 bg-white p-2">
                 <AutoSuggest />
+                <MiniCart />
+              </div>
 
-                <CurrentFilters />
+              <CurrentFilters />
 
-                <header className="flex justify-between items-center mb-6">
-                  <h1 className="text-2xl font-bold">Produkter</h1>
-                  <SelectedStore />
-                  <div className="relative">
-                    <Sorting />
-                  </div>
-                  <MiniCart />
-                </header>
+              <header className="flex justify-between gap-2 items-center mb-6">
+                <h1 className="md:text-2xl font-bold">Produkter</h1>
+                <SelectedStore />
+                <div className="relative">
+                  <Sorting />
+                </div>
+              </header>
 
-                <SearchResultList />
+              <SearchResultList />
 
-                <Paging />
-              </main>
-            </div>
+              <Paging />
+            </main>
           </div>
-        </DndProvider>
+        </div>
       </PopularityContextProvider>
     </SearchContextProvider>
   );

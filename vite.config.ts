@@ -13,6 +13,10 @@ export default defineConfig({
         target: "http://localhost:8080",
         changeOrigin: true,
       },
+      "/promotion": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
       "/admin": {
         target: "https://slask-finder.tornberg.me",
         changeOrigin: true,

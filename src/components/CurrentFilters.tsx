@@ -1,18 +1,18 @@
 import { useMemo } from "react";
-import { useSearchContext } from "../SearchContext";
+import { useFilters, useSearchContext } from "../SearchContext";
 import { X } from "lucide-react";
 import { Facets } from "../types";
 import { stores } from "../stores";
 
 type KeyFilter = {
-  key: string;
+  key: number;
   name?: string;
   type: "key";
   value: string;
 };
 
 type NumberFilter = {
-  key: string;
+  key: number;
   name?: string;
   type: "integer" | "float";
   value: {
@@ -38,13 +38,13 @@ const hasValue = (filter: unknown): filter is Filter => {
 
 function toFilter(type: "integer" | "float" | "key", facets?: Facets) {
   return ([key, value]: [
-    string,
-    undefined | string | { min: number; max: number },
+    number | string,
+    undefined | string | { min: number; max: number }
   ]): KeyFilter | NumberFilter => {
     if (type === "key" && typeof value === "string") {
       return {
-        key,
-        name: facets?.fields.find((field) => String(field.id) === key)?.name,
+        key: Number(key),
+        name: facets?.fields.find((field) => field.id === Number(key))?.name,
         type: "key",
         value: value || "",
       };
@@ -56,8 +56,8 @@ function toFilter(type: "integer" | "float" | "key", facets?: Facets) {
       const fields =
         type === "integer" ? facets?.integerFields : facets?.numberFields;
       return {
-        key,
-        name: fields?.find((field) => String(field.id) === key)?.name,
+        key: Number(key),
+        name: fields?.find((field) => field.id === Number(key))?.name,
         type,
         value,
       };
@@ -66,12 +66,6 @@ function toFilter(type: "integer" | "float" | "key", facets?: Facets) {
   };
 }
 
-function remove<T>(key: string) {
-  return (prev: { [key: string]: T }) => {
-    const { [key]: _, ...rest } = prev;
-    return rest;
-  };
-}
 type FilterItemProps = { name?: string; value: string; onClick: () => void };
 const FilterItem = ({ name, value, onClick }: FilterItemProps) => {
   return (
@@ -88,35 +82,30 @@ const FilterItem = ({ name, value, onClick }: FilterItemProps) => {
 };
 
 export const CurrentFilters = () => {
+  const { results, term, setTerm, locationId, setLocationId } =
+    useSearchContext();
   const {
     keyFilters,
     numberFilters,
     integerFilters,
-    results,
-    setIntegerFilters,
-    setKeyFilters,
-    setNumberFilters,
-    term,
-    setTerm,
-    locationId,
-    setLocationId,
-  } = useSearchContext();
+    removeIntegerFilter,
+    removeKeyFilter,
+    removeNumberFilter,
+  } = useFilters();
 
   const selectedFilters = useMemo(() => {
     return [
       ...Object.entries(keyFilters).map(toFilter("key", results?.facets)),
       ...Object.entries(numberFilters).map(toFilter("float", results?.facets)),
       ...Object.entries(integerFilters).map(
-        toFilter("integer", results?.facets),
+        toFilter("integer", results?.facets)
       ),
     ].filter(hasValue);
   }, [keyFilters, numberFilters, integerFilters, results]);
   return (
     (selectedFilters.length > 0 || term != "" || locationId != null) && (
-      <div className="mb-6">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">
-          Selected Filters:
-        </h3>
+      <div className="mb-6 flex flex-col md:flex-row items-center gap-2">
+        <h3 className="text-sm font-medium text-gray-700">Selected Filters:</h3>
         <div className="flex flex-wrap gap-2">
           {locationId != null && (
             <FilterItem
@@ -146,11 +135,11 @@ export const CurrentFilters = () => {
               }
               onClick={() => {
                 if (filter.type === "key") {
-                  setKeyFilters(remove(filter.key));
+                  removeKeyFilter(filter.key);
                 } else if (filter.type === "float") {
-                  setNumberFilters(remove(filter.key));
+                  removeNumberFilter(filter.key);
                 } else if (filter.type === "integer") {
-                  setIntegerFilters(remove(filter.key));
+                  removeIntegerFilter(filter.key);
                 }
               }}
             />
