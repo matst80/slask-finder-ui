@@ -5,11 +5,13 @@ import { Item, ItemValues } from "../types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAddToCart } from "../cartHooks";
 import { makeImageUrl } from "../utils";
+import { stores } from "../stores";
 
 const SEK = new Intl.NumberFormat("se-SV", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
-
+  currencySign: "accounting",
+  currencyDisplay: "symbol",
   currency: "SEK",
 });
 
@@ -106,7 +108,7 @@ const useItemPopularity = (id: string) => {
       setPopularity(updated);
       setDirty(true);
     },
-    [id, popularity, setPopularity]
+    [id, popularity, setPopularity],
   );
   const commit = useCallback(() => {
     updatePopularity(popularity).then(() => {
@@ -165,7 +167,7 @@ const ResultItem = ({
   const storesWithStock = stock?.length ?? 0;
   const recentlyUpdated = useMemo(
     () => (updated ?? 0) > Date.now() - 1000 * 60 * 60,
-    [updated]
+    [updated],
   );
   const { trigger: addToCart } = useAddToCart();
 
@@ -214,11 +216,21 @@ const ResultItem = ({
             </span>
           ) : (
             <span
-              className={`text-sm ${
+              className={`text-sm relative ${
                 storesWithStock > 0 ? "text-green-500" : "text-yellow-500"
               }`}
             >
               Finns i {storesWithStock} butiker
+              {/* <div className="absolute bg-white p-4">
+                {stock?.map(({ id, level }) => {
+                  const storeName = stores.find((d) => d.id === id)?.name ?? id;
+                  return (
+                    <div>
+                      {storeName}: {level}
+                    </div>
+                  );
+                })}
+              </div> */}
             </span>
           )}{" "}
           |{" "}
@@ -239,9 +251,7 @@ const ResultItem = ({
           {bp
             ?.split("\n")
             .filter((d) => d?.length)
-            .map((bp) => (
-              <li key={bp}>{bp}</li>
-            ))}
+            .map((bp) => <li key={bp}>{bp}</li>)}
         </ul>
 
         <div className="flex justify-between items-center">
@@ -325,7 +335,7 @@ export const SearchResultList = () => {
     return <div>No results</div>;
   }
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
       {results?.items.map((item, idx) => (
         <ResultItem key={item.id} {...item} position={start + idx} />
       ))}
