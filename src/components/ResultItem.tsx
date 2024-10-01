@@ -58,7 +58,7 @@ const StockIndicator = ({
 const UpdatedBanner = ({ lastUpdate }: Pick<Item, "lastUpdate">) => {
   const recentlyUpdated = useMemo(
     () => (lastUpdate ?? 0) > Date.now() - 1000 * 60 * 60,
-    [lastUpdate],
+    [lastUpdate]
   );
   return recentlyUpdated ? (
     <div className="flex items-center p-1 bg-yellow-300 text-xs gap-2 absolute top-0 right-0">
@@ -75,6 +75,7 @@ export const ResultItem = ({
   badgeUrl,
   values,
   stock,
+  url,
   bp,
   lastUpdate: updated,
   position,
@@ -118,7 +119,11 @@ export const ResultItem = ({
         )}
       </div>
       <div className="p-4 pt-0">
-        <h2 className="text-lg font-semibold mb-2">{title}</h2>
+        <h2 className="text-lg font-semibold mb-2">
+          <a target="_blank" href={`https://elgiganten.se${url}`}>
+            {title}
+          </a>
+        </h2>
         {hasRating && (
           <Stars
             rating={Number(values["6"]) / 10}
@@ -134,7 +139,9 @@ export const ResultItem = ({
           {bp
             ?.split("\n")
             .filter((d) => d?.length)
-            .map((bp) => <li key={bp}>{bp}</li>)}
+            .map((bp) => (
+              <li key={bp}>{bp}</li>
+            ))}
         </ul>
 
         <div className="flex justify-between items-center">
