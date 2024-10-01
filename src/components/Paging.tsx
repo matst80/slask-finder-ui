@@ -1,28 +1,67 @@
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useSearchContext } from "../SearchContext";
 
 export const Paging = () => {
-  const { results, page, setPage } = useSearchContext();
+  const {
+    results,
+    page: currentPage,
+    setPage: changePage,
+  } = useSearchContext();
   if (results == null) return null;
-  const totalPages = Math.ceil(results.totalHits / results.pageSize);
+  // console.log(results.totalHits, results.pageSize);
+  const totalPages = Math.ceil(results.totalHits / results.pageSize) - 1;
+  if (totalPages <= 1) return null;
   return (
-    <div className="paging">
+    <div className="mt-8 flex items-center justify-center">
       <button
-        disabled={page === 0}
-        onClick={() => setPage(page - 1)}
-        title="Previous"
+        onClick={() => changePage(currentPage - 1)}
+        disabled={currentPage === 0}
+        className="p-2 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label="Previous page"
       >
-        &lt;
+        <ChevronLeft size={20} />
       </button>
-      <span>
-        Page {page + 1}/{totalPages}
-      </span>
-      <strong>Total hits: {results?.totalHits}</strong>
+      <div className="mx-4 flex items-center">
+        {[...Array(totalPages)].map((_, index) => {
+          const pageNumber = index;
+          if (
+            pageNumber === 1 ||
+            pageNumber === totalPages ||
+            (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+          ) {
+            return (
+              <button
+                key={pageNumber}
+                onClick={() => changePage(pageNumber)}
+                className={`mx-1 px-3 py-1 rounded-md ${
+                  currentPage === pageNumber
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {pageNumber + 1}
+              </button>
+            );
+          } else if (
+            pageNumber === currentPage - 2 ||
+            pageNumber === currentPage + 2
+          ) {
+            return (
+              <span key={pageNumber} className="mx-1">
+                ...
+              </span>
+            );
+          }
+          return null;
+        })}
+      </div>
       <button
-        disabled={page >= totalPages - 1}
-        onClick={() => setPage(page + 1)}
-        title="Next"
+        onClick={() => changePage(currentPage + 1)}
+        disabled={currentPage >= totalPages}
+        className="p-2 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        aria-label="Next page"
       >
-        &gt;
+        <ChevronRight size={20} />
       </button>
     </div>
   );

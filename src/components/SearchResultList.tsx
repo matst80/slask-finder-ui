@@ -1,138 +1,90 @@
-import { getRawData, trackClick } from "../api";
-import { useSearchContext } from "../SearchContext";
-import { Item, ItemValues } from "../types";
+import { useState } from "react";
+import { useCategories } from "../categoryHooks";
+import { useFilters, useSearchContext } from "../SearchContext";
+import { Category } from "../types";
+import { ResultItem } from "./ResultItem";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
-const SEK = new Intl.NumberFormat("se-SV", {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
+const textSize = (level: number) => {
+  switch (level) {
+    case 1:
+      return "text-xl";
+    case 2:
+      return "text-lg";
+    case 3:
+      return "text-base";
+    default:
+      return "text-sm";
+  }
+};
 
-  currency: "SEK",
-});
-
-const PriceValue = ({
+const CategoryItem = ({
   value,
-  className,
-}: {
-  value: number;
-  className?: string;
-}) => <span className={className}>{SEK.format(value / 100)}</span>;
-
-const Price = ({ values }: ValueProps) => {
-  const prc = getPrice(values);
-  if (prc.isDiscounted) {
-    return (
-      <div className="price discounted">
-        <PriceValue value={prc.original} className="org" />
-
-        <PriceValue value={prc.current} />
-        {/* <span> ({prc.discount})</span> */}
-      </div>
-    );
-  }
+  children,
+  level,
+}: Category & { level: number }) => {
+  const { addKeyFilter } = useFilters();
+  const [open, setOpen] = useState(false);
   return (
-    <div className="price">
-      <PriceValue value={prc.current} />
-    </div>
-  );
-};
-
-type Price =
-  | {
-      isDiscounted: false;
-      current: number;
-    }
-  | {
-      isDiscounted: true;
-      current: number;
-      original: number;
-      discount: number;
-    };
-
-type ValueProps = {
-  values: ItemValues;
-};
-
-const getPrice = (values: ItemValues): Price => {
-  const current = Number(values["4"]);
-  const original = values["5"] != null ? Number(values["5"]) : null;
-  const discount = values["8"] != null ? Number(values["8"]) : null;
-
-  if (original != null && original > current) {
-    return {
-      isDiscounted: true,
-      current,
-      original,
-      discount: discount ?? original - current,
-    };
-  }
-  return {
-    isDiscounted: false,
-    current: Number(current ?? 0),
-  };
-};
-
-const ResultItem = ({
-  id,
-  title,
-  img,
-  badgeUrl,
-  values,
-  bp,
-  position,
-  advertisingText,
-}: Item & { position: number }) => {
-  const doTrackClick = () => {
-    trackClick(id, position);
-    getRawData(id).then((data) => {
-      console.log(data);
-    });
-  };
-  return (
-    <li key={`item-${id}`} onClick={doTrackClick}>
-      <strong>{title}</strong>
-      <div>
-        <em>{id}</em>
+    <li>
+      <div className="flex gap-4 items-center">
+        <button
+          className={textSize(level)}
+          onClick={() => addKeyFilter(9 + level, value)}
+        >
+          {value}
+        </button>
+        <button onClick={() => setOpen((p) => !p)}>
+          {open ? (
+            <ChevronUp className="size-6" />
+          ) : (
+            <ChevronDown className="size-6" />
+          )}
+        </button>
       </div>
-      {img != null && (
-        <img
-          src={
-            "https://www.elgiganten.se" +
-            img?.replace(".jpg", "--pdp_main-640.jpg")
-          }
-          alt={title}
-        />
+      {open && (
+        <ul className="pl-4">
+          {children &&
+            children.map((child: Category) => (
+              <CategoryItem key={child.value} {...child} level={level + 1} />
+            ))}
+        </ul>
       )}
-      {badgeUrl != null && (
-        <img
-          className="badge"
-          src={"https://www.elgiganten.se" + badgeUrl}
-          alt={title}
-        />
-      )}
-      <ul>
-        {bp
-          ?.split("\n")
-          .filter((d) => d?.length)
-          .map((bp) => (
-            <li key={bp}>{bp}</li>
-          ))}
-      </ul>
-      <Price values={values} />
-      {advertisingText != null && <em>{advertisingText}</em>}
     </li>
   );
 };
 
+const NoResults = () => {
+  const { data } = useCategories();
+  return (
+    <div>
+      <h2 className="text-2xl">Inga resultat 😭</h2>
+      <p>Sök eller välj en kategori för att börja</p>
+      <ul className="mt-10">
+        {data?.map((category) => (
+          <CategoryItem key={category.value} {...category} level={1} />
+        ))}
+      </ul>
+    </div>
+  );
+};
+
 export const SearchResultList = () => {
-  const { results, page, pageSize } = useSearchContext();
+  const { results, page, pageSize, loadingItems } = useSearchContext();
+
   const start = page * pageSize;
-  return results != null ? (
-    <ul className="hits" id="results">
-      {results.items.map((item, idx) => (
+  if (loadingItems && (!results || !results.items.length)) {
+    return <div>Loading...</div>;
+  }
+
+  if (!results || !results.items.length) {
+    return <NoResults />;
+  }
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      {results?.items.map((item, idx) => (
         <ResultItem key={item.id} {...item} position={start + idx} />
       ))}
-    </ul>
-  ) : (
-    <div>No results</div>
+    </div>
   );
 };

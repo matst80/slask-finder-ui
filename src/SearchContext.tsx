@@ -1,13 +1,15 @@
 import {
   createContext,
   PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { Query, SearchResult, Sort } from "./types";
-import { filter } from "./api";
+import { Item, Query, SearchResult, Sort } from "./types";
+import { facets, streamItems } from "./api";
+import { remove } from "./utils";
 
 type KeyFilters = {
   [key: number]: string | undefined;
@@ -21,12 +23,17 @@ type SearchContextType = {
   term: string;
   sort?: Sort;
   setSort: React.Dispatch<React.SetStateAction<Sort>>;
+  loadingFacets: boolean;
+  loadingItems: boolean;
   setTerm: (term: string) => void;
   page: number;
   setPage: (page: number) => void;
   pageSize: number;
   results?: SearchResult;
+  setItems: (items: Item[]) => void;
   keyFilters: KeyFilters;
+  locationId?: string;
+  setLocationId: React.Dispatch<React.SetStateAction<string | undefined>>;
   setKeyFilters: React.Dispatch<React.SetStateAction<KeyFilters>>;
   numberFilters: NumberFilters;
   setNumberFilters: React.Dispatch<React.SetStateAction<NumberFilters>>;
@@ -50,16 +57,40 @@ export const SearchContextProvider = ({
   const [term, setTerm] = useState("");
   const [page, setPage] = useState(0);
   const [sort, setSort] = useState<Sort>("popular");
+  const [loadingFacets, setLoadingFacets] = useState(false);
+  const [loadingItems, setLoadingItems] = useState(false);
+  const [locationId, setLocationId] = useState<string | undefined>(undefined);
   const [keyFilters, setKeyFilters] = useState<KeyFilters>({});
   const [numberFilters, setNumberFilters] = useState<NumberFilters>({});
   const [integerFilters, setIntegerFilters] = useState<NumberFilters>({});
   const [results, setResults] = useState<SearchResult | undefined>(undefined);
+
+  const setItems = useCallback(
+    (items: Item[]) => {
+      setResults((prev) => {
+        if (prev == null) {
+          return {
+            items: items,
+            totalHits: items.length,
+            pageSize: pageSize,
+          };
+        }
+        return {
+          ...prev,
+          items: items,
+        };
+      });
+    },
+    [pageSize],
+  );
+
+  const itemsQuery = useMemo(() => {
+    return { sort, page, pageSize };
+  }, [sort, page, pageSize]);
   const query = useMemo(() => {
     return {
       query: term,
-      page,
-      sort,
-      pageSize,
+      stock: locationId,
       string: Object.entries(keyFilters)
         .filter(hasValue)
         .map(([id, value]) => ({
@@ -79,21 +110,37 @@ export const SearchContextProvider = ({
           ...props!,
         })),
     } satisfies Query;
-  }, [term, page, pageSize, keyFilters, numberFilters, integerFilters, sort]);
+  }, [term, keyFilters, numberFilters, integerFilters, locationId]);
   useEffect(() => {
-    filter(query).then((data) => {
-      setResults(data);
-      if (data?.items.length > 0 && results?.items.length) {
-        setTimeout(() => {
-          document.getElementById("results")?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-            inline: "start",
-          });
-        }, 200);
-      }
-    });
+    setLoadingFacets(true);
+    facets(query)
+      .then((data) => {
+        setResults((prev) => ({
+          items: prev?.items ?? [],
+          pageSize: prev?.pageSize ?? 0,
+          ...prev,
+          ...data,
+        }));
+        // if (data?.items.length > 0 && numberOfItems) {
+        //   setTimeout(() => {
+        //     document.getElementById("results")?.scrollIntoView({
+        //       behavior: "smooth",
+        //       block: "start",
+        //       inline: "start",
+        //     });
+        //   }, 200);
+        // }
+      })
+      .finally(() => setLoadingFacets(false));
   }, [query]);
+  useEffect(() => {
+    setItems([]);
+    setLoadingItems(true);
+    streamItems({ ...query, ...itemsQuery }, (data) => {
+      setLoadingItems(false);
+      setItems(data);
+    }).finally(() => setLoadingItems(false));
+  }, [query, itemsQuery, setItems]);
   return (
     <SearchContext.Provider
       value={{
@@ -103,7 +150,12 @@ export const SearchContextProvider = ({
         setPage,
         sort,
         setSort,
+        locationId,
+        loadingItems,
+        loadingFacets,
+        setLocationId,
         pageSize,
+        setItems,
         results,
         keyFilters,
         setKeyFilters,
@@ -122,8 +174,49 @@ export const useSearchContext = () => {
   const context = useContext(SearchContext);
   if (context == null) {
     throw new Error(
-      "useSearchContext must be used within a SearchContextProvider"
+      "useSearchContext must be used within a SearchContextProvider",
     );
   }
   return context;
+};
+
+export const useFilters = () => {
+  const {
+    setPage,
+    keyFilters,
+    setKeyFilters,
+    numberFilters,
+    setNumberFilters,
+    integerFilters,
+    setIntegerFilters,
+  } = useSearchContext();
+  return {
+    keyFilters,
+    addKeyFilter: (key: number, value: string) => {
+      setKeyFilters((prev) => ({ ...prev, [key]: value }));
+      setPage(0);
+    },
+    removeKeyFilter: (key: number) => {
+      setKeyFilters(remove(key));
+      setPage(0);
+    },
+    numberFilters,
+    addNumberFilter: (key: number, min: number, max: number) => {
+      setNumberFilters((prev) => ({ ...prev, [key]: { min, max } }));
+      setPage(0);
+    },
+    removeNumberFilter: (key: number) => {
+      setNumberFilters(remove(key));
+      setPage(0);
+    },
+    integerFilters,
+    addIntegerFilter: (key: number, min: number, max: number) => {
+      setIntegerFilters((prev) => ({ ...prev, [key]: { min, max } }));
+      setPage(0);
+    },
+    removeIntegerFilter: (key: number) => {
+      setIntegerFilters(remove(key));
+      setPage(0);
+    },
+  };
 };
