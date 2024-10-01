@@ -34,7 +34,10 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
             ) : (
               <ul className="divide-y divide-gray-200">
                 {items.map((item) => (
-                  <li key={item.id} className="py-4 flex items-center">
+                  <li
+                    key={item.id + item.sku}
+                    className="py-4 flex items-center"
+                  >
                     {item.image ? (
                       <img
                         src={makeImageUrl(item.image)}
@@ -105,7 +108,7 @@ export const MiniCart = () => {
 
   const totalItems = isLoading
     ? "~"
-    : cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0;
+    : (cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0);
   return (
     <>
       <button

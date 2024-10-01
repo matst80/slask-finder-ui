@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useCategories } from "../categoryHooks";
-import { useFilters, useSearchContext } from "../SearchContext";
 import { Category } from "../types";
 import { ResultItem } from "./ResultItem";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useFilters, useHashQuery, useHashResultItems } from "../searchHooks";
 
 const textSize = (level: number) => {
   switch (level) {
@@ -70,19 +70,21 @@ const NoResults = () => {
 };
 
 export const SearchResultList = () => {
-  const { results, page, pageSize, loadingItems } = useSearchContext();
-
-  const start = page * pageSize;
-  if (loadingItems && (!results || !results.items.length)) {
+  const { data: results, isLoading: loadingItems } = useHashResultItems();
+  const {
+    query: { page, pageSize },
+  } = useHashQuery();
+  const start = (page ?? 0) * (pageSize ?? 40);
+  if (loadingItems && (!results || !results.length)) {
     return <div>Loading...</div>;
   }
 
-  if (!results || !results.items.length) {
+  if (!results || !results.length) {
     return <NoResults />;
   }
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-      {results?.items.map((item, idx) => (
+      {results?.map((item, idx) => (
         <ResultItem key={item.id} {...item} position={start + idx} />
       ))}
     </div>

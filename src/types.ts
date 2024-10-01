@@ -86,24 +86,34 @@ export type Facets = {
   numberFields: NumberFacet[];
 };
 
-export type SearchResult = {
-  items: Item[];
+export type FacetResult = {
   totalHits: number;
-  //page: number;
-  pageSize: number;
   facets?: Facets;
 };
 
-export type Query = {
+export type ItemResult = Item[];
+
+export type NumberField = { id: number; min: number; max: number };
+
+export type KeyField = { id: number; value: string };
+
+export type Field = NumberField | KeyField;
+
+export type FilteringQuery = {
   query?: string;
+  stock?: string;
+  string?: KeyField[];
+  number?: NumberField[];
+  integer?: NumberField[];
+};
+
+export type ItemsQuery = FilteringQuery & {
   page?: number;
   sort?: string;
   pageSize?: number;
-  stock?: string;
-  string?: { id: number; value: string }[];
-  number?: { id: number; min: number; max: number }[];
-  integer?: { id: number; min: number; max: number }[];
 };
+
+export type FacetQuery = FilteringQuery;
 
 export type Cart = {
   id: string;

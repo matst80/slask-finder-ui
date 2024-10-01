@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useSearchContext } from "../SearchContext";
 import { Suggestion } from "../types";
 import { autoSuggest } from "../api";
 import { Search } from "lucide-react";
+import { useQueryHelpers } from "../searchHooks";
 
 type MappedSuggestion = {
   match: string;
@@ -12,11 +12,17 @@ type MappedSuggestion = {
 };
 
 export const AutoSuggest = () => {
-  const { setTerm, setPage } = useSearchContext();
+  const {
+    query: { query },
+    setTerm,
+  } = useQueryHelpers();
 
   const [value, setValue] = useState("");
 
   useEffect(() => {
+    if (value.length < 2 && (query == null || query.length < 2)) {
+      return;
+    }
     const timeout = setTimeout(() => {
       setTerm(value);
     }, 500);
@@ -24,7 +30,7 @@ export const AutoSuggest = () => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [value]);
+  }, [value, setTerm, query]);
 
   const [results, setResults] = useState<MappedSuggestion[]>([]);
   useEffect(() => {
@@ -56,7 +62,6 @@ export const AutoSuggest = () => {
 
   const applySuggestion = (value: string) => {
     setTerm(value);
-    setPage(0);
   };
 
   return (

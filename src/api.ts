@@ -1,4 +1,13 @@
-import { Cart, Category, Item, Query, SearchResult, Suggestion } from "./types";
+import {
+  Cart,
+  Category,
+  FacetQuery,
+  Item,
+  ItemResult,
+  ItemsQuery,
+  FacetResult,
+  Suggestion,
+} from "./types";
 
 const baseUrl = "";
 
@@ -12,60 +21,62 @@ export const autoSuggest = (term: string): Promise<Suggestion[]> =>
 //     d.ok ? (d.json() as Promise<SearchResult>) : Promise.reject(d),
 //   );
 
-export const facets = (query: Query) =>
+export const facets = (query: ItemsQuery) =>
   fetch(`${baseUrl}/api/filter`, {
     method: "POST",
     body: JSON.stringify(query),
   }).then((d) =>
     d.ok
-      ? (d.json() as Promise<Omit<SearchResult, "items" | "pageSize" | "page">>)
+      ? (d.json() as Promise<Omit<FacetResult, "items" | "pageSize" | "page">>)
       : Promise.reject(d),
   );
 
-export const streamFacets = (query: Query) =>
+export const streamFacets = (query: FacetQuery) =>
   fetch(`${baseUrl}/api/stream/facets`, {
     method: "POST",
     body: JSON.stringify(query),
   }).then((d) =>
-    d.ok ? (d.json() as Promise<SearchResult>) : Promise.reject(d),
+    d.ok ? (d.json() as Promise<FacetResult>) : Promise.reject(d),
   );
 
 export const streamItems = (
-  query: Query,
-  onResults: (data: Item[]) => void,
-) => {
+  query: ItemsQuery,
+  //onResults: (data: ItemResult) => void,
+): Promise<ItemResult> => {
   return fetch(`${baseUrl}/api/stream`, {
     method: "POST",
     body: JSON.stringify(query),
   }).then((d) => {
-    const reader = d.body?.getReader();
+    if (!d.ok) {
+      return Promise.reject(d);
+    }
+    if (d.body == null) {
+      return [];
+    }
+    const reader = d.body.getReader();
     const decoder = new TextDecoder();
-    let items: Item[] = [];
+    let items: ItemResult = [];
     let buffer = "";
-    const pump = (): unknown => {
-      return reader?.read().then(({ done, value }) => {
-        if (done) {
-          return;
-        }
+    const pump = async (): Promise<ItemResult> => {
+      return reader
+        ?.read()
+        .then(async ({ done, value }): Promise<ItemResult> => {
+          if (done) {
+            return items;
+          }
 
-        buffer += decoder.decode(value);
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-        const parsedItems = lines
-          .map((line) => {
-            if (!line || line.length < 2) {
-              return items;
-            }
-            return JSON.parse(line) as Item;
-          })
-          .filter((d) => d != null) as Item[];
-        items = items.concat(parsedItems);
-        if (items.length > 0) {
-          onResults(items);
-        }
+          buffer += decoder.decode(value);
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+          const parsedItems = lines
+            .map((line) => {
+              return JSON.parse(line) as Item;
+            })
+            .filter((d) => d != null);
+          items = items.concat(parsedItems);
 
-        return pump();
-      });
+          return pump();
+        });
     };
     return pump();
   });

@@ -8,13 +8,15 @@ import { Stars } from "./Stars";
 import { useAddToCart } from "../cartHooks";
 import { TimeAgo } from "./TimeAgo";
 import { useMemo } from "react";
-import { useSearchContext } from "../SearchContext";
+import { useHashQuery } from "../searchHooks";
 
 const StockIndicator = ({
   stock,
   stockLevel,
 }: Pick<Item, "stock" | "stockLevel">) => {
-  const { locationId } = useSearchContext();
+  const {
+    query: { stock: locationId },
+  } = useHashQuery();
   const stockOnLocation = stock?.find((d) => d.id === locationId);
   const storesWithStock = stock?.length ?? 0;
 
@@ -103,8 +105,7 @@ export const ResultItem = ({
       className={`bg-white rounded-sm shadow overflow-hidden relative`}
       onClick={doTrackClick}
     >
-      <PopularityOverride id={id} />
-      <div className="relative mt-2">
+      <div className="mt-2">
         {img != null && (
           <img
             className="w-full h-48 object-contain"
@@ -163,11 +164,13 @@ export const ResultItem = ({
             </button>
           )}
         </div>
-        <UpdatedBanner lastUpdate={updated} />
+
         {advertisingText != null && (
           <em className="italic text-xs">{advertisingText}</em>
         )}
       </div>
+      <PopularityOverride id={id} />
+      <UpdatedBanner lastUpdate={updated} />
     </div>
   );
 };

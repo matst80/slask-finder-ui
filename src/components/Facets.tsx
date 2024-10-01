@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-import { useFilters, useSearchContext } from "../SearchContext";
+
 import { KeyFacet, NumberFacet } from "../types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { stores } from "../stores";
+import { useFilters, useHashFacets, useQueryHelpers } from "../searchHooks";
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
@@ -61,7 +62,9 @@ const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
                   type="checkbox"
                   id={value}
                   value={value}
-                  checked={keyFilters[id] === value}
+                  checked={keyFilters.some(
+                    (d) => d.value === value && d.id === id,
+                  )}
                   onChange={(e) => {
                     const checked = e.target.checked;
                     if (checked) {
@@ -225,9 +228,11 @@ const IntegerFacetSelector = (facet: NumberFacet) => {
 };
 
 export const Facets = () => {
-  const { results, setLocationId, locationId, loadingFacets } =
-    useSearchContext();
-
+  const { data: results, isLoading: loadingFacets } = useHashFacets();
+  const {
+    query: { stock },
+    setStock,
+  } = useQueryHelpers();
   // <div>
   //   <h3 className="font-medium mb-2">Color</h3>
   //   <div className="flex flex-wrap gap-2">
@@ -260,9 +265,9 @@ export const Facets = () => {
       <div className="mb-4">
         <h3 className="font-medium mb-2">Select Store</h3>
         <select
-          value={locationId}
+          value={stock}
           onChange={(e) =>
-            setLocationId(e.target.value === "" ? undefined : e.target.value)
+            setStock(e.target.value === "" ? undefined : e.target.value)
           }
           className="w-full p-2 border border-gray-300 rounded-md"
         >

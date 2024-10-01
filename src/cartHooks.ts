@@ -5,7 +5,9 @@ import { useFetchMutation } from "./utils";
 const cartKey = "/cart";
 
 export const useCart = () => {
-  return useSWR(cartKey, getCart, {});
+  return useSWR(cartKey, getCart, {
+    keepPreviousData: true,
+  });
 };
 
 export const useAddToCart = () => {

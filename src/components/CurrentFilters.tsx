@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { useFilters, useSearchContext } from "../SearchContext";
 import { X } from "lucide-react";
-import { Facets } from "../types";
+import { Facets, Field, KeyField, NumberField } from "../types";
 import { stores } from "../stores";
+import { useFilters, useHashFacets, useQueryHelpers } from "../searchHooks";
 
 type KeyFilter = {
   key: number;
@@ -36,30 +36,39 @@ const hasValue = (filter: unknown): filter is Filter => {
   return (filter as { value: unknown }).value !== undefined;
 };
 
+const isKeyField = (filter: Field): filter is KeyField => {
+  return typeof (filter as KeyField).value === "string";
+};
+
+const isNumberField = (filter: Field): filter is NumberField => {
+  return "min" in filter && "max" in filter;
+};
+
 function toFilter(type: "integer" | "float" | "key", facets?: Facets) {
-  return ([key, value]: [
-    number | string,
-    undefined | string | { min: number; max: number }
-  ]): KeyFilter | NumberFilter => {
-    if (type === "key" && typeof value === "string") {
+  return (data: Field): KeyFilter | NumberFilter => {
+    if (type === "key" && isKeyField(data)) {
+      const field = facets?.fields.find((field) => field.id === data.id);
+
       return {
-        key: Number(key),
-        name: facets?.fields.find((field) => field.id === Number(key))?.name,
+        key: data.id,
+        name: field?.name,
         type: "key",
-        value: value || "",
+        value: data.value,
       };
     }
-    if (type === "integer" || type === "float") {
-      if (typeof value !== "object" || !("min" in value) || !("max" in value)) {
-        throw new Error("Invalid number filter");
-      }
+    if ((type === "integer" || type === "float") && isNumberField(data)) {
       const fields =
         type === "integer" ? facets?.integerFields : facets?.numberFields;
+      const field = fields?.find((field) => field.id === data.id);
+
       return {
-        key: Number(key),
-        name: fields?.find((field) => field.id === Number(key))?.name,
+        key: data.id,
+        name: field?.name,
         type,
-        value,
+        value: {
+          min: data.min,
+          max: data.max,
+        },
       };
     }
     throw new Error("Invalid filter type");
@@ -82,8 +91,12 @@ const FilterItem = ({ name, value, onClick }: FilterItemProps) => {
 };
 
 export const CurrentFilters = () => {
-  const { results, term, setTerm, locationId, setLocationId } =
-    useSearchContext();
+  const { data: results } = useHashFacets();
+  const {
+    query: { query: term, stock: locationId },
+    setStock,
+    setTerm,
+  } = useQueryHelpers();
   const {
     keyFilters,
     numberFilters,
@@ -95,15 +108,15 @@ export const CurrentFilters = () => {
 
   const selectedFilters = useMemo(() => {
     return [
-      ...Object.entries(keyFilters).map(toFilter("key", results?.facets)),
-      ...Object.entries(numberFilters).map(toFilter("float", results?.facets)),
-      ...Object.entries(integerFilters).map(
-        toFilter("integer", results?.facets)
-      ),
+      ...keyFilters.map(toFilter("key", results?.facets)),
+      ...numberFilters.map(toFilter("float", results?.facets)),
+      ...integerFilters.map(toFilter("integer", results?.facets)),
     ].filter(hasValue);
   }, [keyFilters, numberFilters, integerFilters, results]);
   return (
-    (selectedFilters.length > 0 || term != "" || locationId != null) && (
+    (selectedFilters.length > 0 ||
+      (term != null && term != "") ||
+      locationId != null) && (
       <div className="mb-6 flex flex-col md:flex-row items-center gap-2">
         <h3 className="text-sm font-medium text-gray-700">Selected Filters:</h3>
         <div className="flex flex-wrap gap-2">
@@ -114,10 +127,10 @@ export const CurrentFilters = () => {
                 stores.find((d) => d.id === locationId)?.displayName ??
                 "Unknown store"
               }
-              onClick={() => setLocationId(undefined)}
+              onClick={() => setStock(undefined)}
             />
           )}
-          {term != "" && (
+          {term != null && term != "" && (
             <FilterItem
               name="Sökning"
               value={term}
