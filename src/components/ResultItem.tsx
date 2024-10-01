@@ -58,10 +58,10 @@ const StockIndicator = ({
 const UpdatedBanner = ({ lastUpdate }: Pick<Item, "lastUpdate">) => {
   const recentlyUpdated = useMemo(
     () => (lastUpdate ?? 0) > Date.now() - 1000 * 60 * 60,
-    [lastUpdate]
+    [lastUpdate],
   );
   return recentlyUpdated ? (
-    <div className="flex items-center p-1 bg-yellow-300 text-xs gap-2 absolute top-0 right-0">
+    <div className="flex items-center rounded-bl-md p-1 bg-yellow-300 text-xs gap-2 absolute top-0 right-0">
       <Zap size={18} />
       <TimeAgo ts={lastUpdate} />
     </div>
@@ -80,6 +80,8 @@ export const ResultItem = ({
   lastUpdate: updated,
   position,
   stockLevel,
+  buyable,
+  buyableInStore,
   advertisingText,
 }: Item & {
   position: number;
@@ -101,8 +103,8 @@ export const ResultItem = ({
       className={`bg-white rounded-sm shadow overflow-hidden relative`}
       onClick={doTrackClick}
     >
+      <PopularityOverride id={id} />
       <div className="relative mt-2">
-        <PopularityOverride id={id} />
         {img != null && (
           <img
             className="w-full h-48 object-contain"
@@ -115,6 +117,12 @@ export const ResultItem = ({
             src={makeImageUrl(badgeUrl)}
             alt={title}
             className="size-16 object-contain absolute top-4 right-4"
+          />
+        )}
+        {values["10"] == "Outlet" && (
+          <img
+            className="size-16 object-contain absolute top-4 left-4"
+            src="https://www.elgiganten.se/content/SE/outlet/outlet.svg"
           />
         )}
       </div>
@@ -139,21 +147,21 @@ export const ResultItem = ({
           {bp
             ?.split("\n")
             .filter((d) => d?.length)
-            .map((bp) => (
-              <li key={bp}>{bp}</li>
-            ))}
+            .map((bp) => <li key={bp}>{bp}</li>)}
         </ul>
 
         <div className="flex justify-between items-center">
           <span className="text-xl font-bold">
             <Price values={values} />
           </span>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-            onClick={() => addToCart({ id, quantity: 1 })}
-          >
-            <ShoppingCart />
-          </button>
+          {(buyable || buyableInStore) && (
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+              onClick={() => addToCart({ id, quantity: 1 })}
+            >
+              <ShoppingCart />
+            </button>
+          )}
         </div>
         <UpdatedBanner lastUpdate={updated} />
         {advertisingText != null && (

@@ -48,6 +48,8 @@ export type ItemProps = {
   created?: number;
   lastUpdate?: number;
   advertisingText: string;
+  buyable: boolean;
+  buyableInStore: boolean;
   stockLevel?: string;
   badgeUrl: string;
   bp: string;
