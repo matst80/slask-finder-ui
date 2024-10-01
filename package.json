@@ -18,7 +18,6 @@
     "swr": "^2.2.5"
   },
   "devDependencies": {
-    "@types/leaflet": "^1.9.12",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",

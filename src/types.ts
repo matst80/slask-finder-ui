@@ -19,6 +19,11 @@ export const Sort = {
   CREATED_DESC_SORT: "created_desc",
 };
 
+export type Category = {
+  value: string;
+  children?: Category[];
+};
+
 export type Sort =
   | typeof Sort.POPULAR_SORT
   | typeof Sort.PRICE_SORT
@@ -113,3 +118,15 @@ export type CartItem = {
   image: string;
   qty: number;
 };
+
+export type Price =
+  | {
+      isDiscounted: false;
+      current: number;
+    }
+  | {
+      isDiscounted: true;
+      current: number;
+      original: number;
+      discount: number;
+    };

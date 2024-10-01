@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://slask-finder.tornberg.me",
+        target: "http://localhost:8080",
         changeOrigin: true,
       },
       "/cart": {

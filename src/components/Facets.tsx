@@ -30,7 +30,10 @@ const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
         className="font-medium bold mb-2 flex items-center justify-between w-full text-left"
         onClick={() => setOpen((p) => !p)}
       >
-        {name} ({allSorted.length}){" "}
+        <span>
+          {name}{" "}
+          <span className="text-gray-500 text-sm">({allSorted.length})</span>
+        </span>
         {open ? (
           <ChevronUp className="size-4" />
         ) : (
@@ -97,7 +100,7 @@ type SliderProps = {
 const Slider = ({ min, max, onChange }: SliderProps) => {
   const [minValue, setMinValue] = useState(min);
   const [maxValue, setMaxValue] = useState(max);
-
+  const isDirty = min !== minValue || max !== maxValue;
   return (
     <>
       <input
@@ -122,7 +125,11 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
           const nr = Number(e.target.value);
           if (nr > min) setMaxValue(nr);
         }}
-        onBlur={() => onChange(minValue, maxValue)}
+        onBlur={() => {
+          if (isDirty) {
+            onChange(minValue, maxValue);
+          }
+        }}
         value={maxValue}
       />
     </>
@@ -136,6 +143,7 @@ const NumberFacetSelector = ({
   updateFilerValue,
 }: NumberFacet & { updateFilerValue: (min: number, max: number) => void }) => {
   const [open, setOpen] = useState(Boolean(type?.length));
+
   const { toDisplayValue, fromDisplayValue } = useMemo(
     () => converters(type),
     [type],
