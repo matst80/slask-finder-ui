@@ -32,8 +32,14 @@ export const queryFromHash = (hash: string): ItemsQuery => {
   const query = hashData.q;
   const stock = hashData.stock;
   const sort = hashData.sort ?? "popular";
-  const page = Number(hashData.page) ?? 0;
-  const pageSize = Number(hashData.pageSize) ?? 40;
+  let page = Number(hashData.page) ?? 0;
+  let pageSize = Number(hashData.pageSize) ?? 40;
+  if (isNaN(pageSize)) {
+    pageSize = 40;
+  }
+  if (isNaN(page)) {
+    page = 0;
+  }
   return { integer, number, sort, page, pageSize, query, stock, string };
 };
 
@@ -54,13 +60,13 @@ export const queryToHash = ({
     query,
     string,
   });
-  if (sort != null) {
+  if (sort != null && sort !== "popular") {
     filterObj.sort = sort;
   }
   if (page != null) {
     filterObj.page = page.toString();
   }
-  if (pageSize != null) {
+  if (pageSize != null && pageSize !== 40) {
     filterObj.pageSize = pageSize.toString();
   }
   return new URLSearchParams(filterObj).toString();
@@ -158,7 +164,7 @@ export const useHashQuery = () => {
       // console.trace("update Query", resultQuery);
       globalThis.location.hash = queryToHash(resultQuery);
     },
-    [query],
+    [query]
   );
 
   const partialUpdate = useCallback(
@@ -174,7 +180,7 @@ export const useHashQuery = () => {
           return { ...prev, [key]: value };
         });
       },
-    [setQuery],
+    [setQuery]
   );
 
   return {
