@@ -8,7 +8,7 @@ export const Paging = () => {
   const { setPage: changePage } = useQueryHelpers();
   const { data: results } = useHashFacets();
   if (results == null) return null;
-  console.log({ pageSize, currentPage });
+
   const totalPages = Math.ceil(results.totalHits / pageSize) - 1;
   if (totalPages <= 1) return null;
   return (

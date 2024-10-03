@@ -3,9 +3,8 @@ import { CurrentFilters } from "./components/CurrentFilters";
 import { Facets } from "./components/Facets";
 import { MiniCart } from "./components/MiniCart";
 import { Paging } from "./components/Paging";
+import { ResultHeader } from "./components/ResultHeader";
 import { SearchResultList } from "./components/SearchResultList";
-import { Sorting } from "./components/Sorting";
-import { SelectedStore } from "./components/StoreSelector";
 
 function App() {
   return (
@@ -24,13 +23,7 @@ function App() {
 
           <CurrentFilters />
 
-          <header className="flex justify-between gap-2 items-center mb-6">
-            <h1 className="md:text-2xl font-bold">Produkter</h1>
-            <SelectedStore />
-            <div className="relative">
-              <Sorting />
-            </div>
-          </header>
+          <ResultHeader />
 
           <SearchResultList />
 

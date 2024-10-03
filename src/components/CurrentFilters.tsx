@@ -93,9 +93,8 @@ const FilterItem = ({ name, value, onClick }: FilterItemProps) => {
 export const CurrentFilters = () => {
   const { data: results } = useHashFacets();
   const {
-    query: { query: term, stock: locationId },
+    query: { stock: locationId },
     setStock,
-    setTerm,
   } = useQueryHelpers();
   const {
     keyFilters,
@@ -114,9 +113,7 @@ export const CurrentFilters = () => {
     ].filter(hasValue);
   }, [keyFilters, numberFilters, integerFilters, results]);
   return (
-    (selectedFilters.length > 0 ||
-      (term != null && term != "") ||
-      locationId != null) && (
+    (selectedFilters.length > 0 || locationId != null) && (
       <div className="mb-6 flex flex-col md:flex-row items-center gap-2">
         <h3 className="text-sm font-medium text-gray-700">Selected Filters:</h3>
         <div className="flex flex-wrap gap-2">
@@ -128,13 +125,6 @@ export const CurrentFilters = () => {
                 "Unknown store"
               }
               onClick={() => setStock(undefined)}
-            />
-          )}
-          {term != null && term != "" && (
-            <FilterItem
-              name="Sökning"
-              value={term}
-              onClick={() => setTerm("")}
             />
           )}
           {selectedFilters.map((filter) => (
