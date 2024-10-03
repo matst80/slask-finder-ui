@@ -128,13 +128,13 @@ const facetsKey = (data: FacetQuery) => facetQueryToHash(data);
 
 export const useItemsSearch = (query: ItemsQuery) => {
   return useSWR(itemsKey(query), () => streamItems(query), {
-    keepPreviousData: true,
+    //keepPreviousData: true,
   });
 };
 
 export const useFacets = (data: FacetQuery) => {
   return useSWR(facetsKey(data), () => facets(data), {
-    keepPreviousData: true,
+    //keepPreviousData: true,
   });
 };
 
