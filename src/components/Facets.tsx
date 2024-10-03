@@ -10,7 +10,12 @@ const toSorted = (values: Record<string, number>) =>
     .sort((a, b) => b[1] - a[1])
     .map(([value, count]) => ({ value, count }));
 
-const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
+const KeyFacetSelector = ({
+  name,
+  values,
+  id,
+  defaultOpen,
+}: KeyFacet & { defaultOpen: boolean }) => {
   const { keyFilters, addKeyFilter, removeKeyFilter } = useFilters();
   const [filter, setFilter] = useState("");
   const allSorted = toSorted(values);
@@ -20,7 +25,7 @@ const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
           value.toLowerCase().includes(filter.toLowerCase()),
         )
       : allSorted;
-  const [open, setOpen] = useState(allSorted.length < 10);
+  const [open, setOpen] = useState(defaultOpen && allSorted.length < 10);
   const [expanded, setExpanded] = useState(false);
 
   const toShow = expanded ? filtered : filtered.slice(0, 15);
@@ -55,7 +60,7 @@ const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
           {toShow.map(({ value, count }) => (
             <label
               key={value}
-              className="flex items-center line-clamp-1 overflow-ellipsis justify-between text-sm"
+              className="flex items-center line-clamp-1 overflow-ellipsis justify-between p-1 text-sm rounded-md hover:bg-gray-100"
             >
               <div>
                 <input
@@ -144,8 +149,12 @@ const NumberFacetSelector = ({
   max,
   type,
   updateFilerValue,
-}: NumberFacet & { updateFilerValue: (min: number, max: number) => void }) => {
-  const [open, setOpen] = useState(Boolean(type?.length));
+  defaultOpen,
+}: NumberFacet & {
+  updateFilerValue: (min: number, max: number) => void;
+  defaultOpen: boolean;
+}) => {
+  const [open, setOpen] = useState(defaultOpen);
 
   const { toDisplayValue, fromDisplayValue } = useMemo(
     () => converters(type),
@@ -207,6 +216,7 @@ const FloatFacetSelector = (facet: NumberFacet) => {
   return (
     <NumberFacetSelector
       {...facet}
+      defaultOpen={false}
       updateFilerValue={(min, max) => {
         addNumberFilter(facet.id, min, max);
       }}
@@ -220,6 +230,7 @@ const IntegerFacetSelector = (facet: NumberFacet) => {
   return (
     <NumberFacetSelector
       {...facet}
+      defaultOpen={false}
       updateFilerValue={(min, max) => {
         addIntegerFilter(facet.id, min, max);
       }}
@@ -248,21 +259,41 @@ export const Facets = () => {
   //   </div>
   // </div>
   if (loadingFacets) {
-    return <div></div>;
+    return <aside className="w-full md:w-72"></aside>;
   }
-
-  return results?.facets?.fields != null ? (
+  const hasFacets = Boolean(
+    results?.facets?.fields?.length ||
+      results?.facets?.integerFields?.length ||
+      results?.facets?.numberFields?.length,
+  );
+  return hasFacets && results?.facets != null ? (
     <aside className="w-full md:w-72">
       <h2 className="text-lg font-semibold mb-4">Filter</h2>
-      {results.facets.fields?.map((facet) => (
-        <KeyFacetSelector key={`keyfield-${facet.id}`} {...facet} />
-      ))}
-      {results.facets.integerFields?.map((facet) => (
-        <IntegerFacetSelector key={`intfield-${facet.id}`} {...facet} />
-      ))}
-      {results.facets.numberFields?.map((facet) => (
-        <FloatFacetSelector key={`floatfield-${facet.id}`} {...facet} />
-      ))}
+      <div>
+        {results.facets.fields.map((facet, i) => (
+          <KeyFacetSelector
+            {...facet}
+            key={`keyfield-${facet.id}`}
+            defaultOpen={i < 5}
+          />
+        ))}
+      </div>
+      <div>
+        {results.facets.integerFields.map((facet) => (
+          <IntegerFacetSelector
+            {...facet}
+            key={`intfield-${facet.id}-${facet.name}`}
+          />
+        ))}
+      </div>
+      <div>
+        {results.facets.numberFields.map((facet) => (
+          <FloatFacetSelector
+            {...facet}
+            key={`floatfield-${facet.id}-${facet.name}`}
+          />
+        ))}
+      </div>
       <div className="mb-4">
         <h3 className="font-medium mb-2">Select Store</h3>
         <select

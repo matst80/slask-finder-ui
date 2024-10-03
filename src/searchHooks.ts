@@ -115,11 +115,12 @@ export const filteringQueryToHash = ({
 export const facetQueryToHash = ({
   integer,
   number,
+  query,
   stock,
   string,
 }: FacetQuery): string => {
-  const obj = filteringQueryToHash({ integer, number, stock, string });
-  return new URLSearchParams(obj).toString();
+  const obj = filteringQueryToHash({ integer, number, stock, string, query });
+  return `facets` + new URLSearchParams(obj).toString();
 };
 
 const itemsKey = (data: ItemsQuery) => queryToHash(data);
@@ -128,13 +129,13 @@ const facetsKey = (data: FacetQuery) => facetQueryToHash(data);
 
 export const useItemsSearch = (query: ItemsQuery) => {
   return useSWR(itemsKey(query), () => streamItems(query), {
-    //keepPreviousData: true,
+    keepPreviousData: true,
   });
 };
 
 export const useFacets = (data: FacetQuery) => {
   return useSWR(facetsKey(data), () => facets(data), {
-    //keepPreviousData: true,
+    keepPreviousData: true,
   });
 };
 
@@ -164,7 +165,7 @@ export const useHashQuery = () => {
       // console.trace("update Query", resultQuery);
       globalThis.location.hash = queryToHash(resultQuery);
     },
-    [query]
+    [query],
   );
 
   const partialUpdate = useCallback(
@@ -180,7 +181,7 @@ export const useHashQuery = () => {
           return { ...prev, [key]: value };
         });
       },
-    [setQuery]
+    [setQuery],
   );
 
   return {
@@ -200,6 +201,7 @@ export const useHashFacets = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     query: { sort, pageSize, page, ...facetQuery },
   } = useHashQuery();
+  console.log("facetQuery", facetQuery);
   return useFacets(facetQuery);
 };
 

@@ -49,6 +49,7 @@ export type ItemProps = {
   lastUpdate?: number;
   advertisingText: string;
   buyable: boolean;
+  disclaimer?: string;
   buyableInStore: boolean;
   stockLevel?: string;
   badgeUrl: string;

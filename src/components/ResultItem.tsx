@@ -83,6 +83,7 @@ export const ResultItem = ({
   position,
   stockLevel,
   buyable,
+  disclaimer,
   buyableInStore,
   advertisingText,
 }: Item & {
@@ -153,7 +154,7 @@ export const ResultItem = ({
 
         <div className="flex justify-between items-center">
           <span className="text-xl font-bold">
-            <Price values={values} />
+            <Price values={values} disclaimer={disclaimer} />
           </span>
           {(buyable || buyableInStore) && (
             <button
