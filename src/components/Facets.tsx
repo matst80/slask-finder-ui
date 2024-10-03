@@ -252,7 +252,8 @@ export const Facets = () => {
   }
 
   return results?.facets?.fields != null ? (
-    <>
+    <aside className="w-full md:w-72">
+      <h2 className="text-lg font-semibold mb-4">Filter</h2>
       {results.facets.fields?.map((facet) => (
         <KeyFacetSelector key={`keyfield-${facet.id}`} {...facet} />
       ))}
@@ -279,6 +280,6 @@ export const Facets = () => {
           ))}
         </select>
       </div>
-    </>
+    </aside>
   ) : null;
 };
