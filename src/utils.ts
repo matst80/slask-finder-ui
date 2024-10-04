@@ -144,3 +144,10 @@ export const converters = (type: string) => {
     fromDisplayValue: fromDisplayValue(type),
   };
 };
+
+type PrioProps = {
+  prio?: number;
+};
+
+export const byPrio = (a: PrioProps, b: PrioProps) =>
+  (b.prio ?? 0) - (a.prio ?? 0);

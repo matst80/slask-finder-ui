@@ -7,6 +7,7 @@ import {
   ItemsQuery,
   FacetResult,
   Suggestion,
+  ItemDetail,
 } from "./types";
 
 const baseUrl = "";
@@ -91,7 +92,7 @@ async function toJson<T>(response: Response): Promise<T> {
 
 export const getRawData = (id: string) =>
   fetch(`${baseUrl}/admin/get/${id}`).then((d) =>
-    d.ok ? (d.json() as Promise<Item>) : Promise.reject(d),
+    d.ok ? (d.json() as Promise<ItemDetail>) : Promise.reject(d),
   );
 
 export const trackClick = (id: string, position: number) =>
@@ -99,8 +100,16 @@ export const trackClick = (id: string, position: number) =>
     (d) => d.ok,
   );
 
+type FacetListItem = {
+  id: number;
+  name: string;
+  prio?: number;
+  count: number;
+  description?: string;
+};
+
 export const getFacetList = () =>
-  fetch(`${baseUrl}/api/facet-list`).then((d) => toJson(d));
+  fetch(`${baseUrl}/api/facet-list`).then((d) => toJson<FacetListItem[]>(d));
 
 export const getCategories = () =>
   fetch(`${baseUrl}/api/categories`).then((d) => toJson<Category[]>(d));
