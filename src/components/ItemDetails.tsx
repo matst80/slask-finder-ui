@@ -25,7 +25,11 @@ const StockList = ({ stock }: Pick<ItemDetail, "stock">) => {
           {stock.map((s) => {
             const store = stores.find((store) => store.id === s.id);
             if (!store) return null;
-            return <li key={s.id}>{store?.name}</li>;
+            return (
+              <li key={s.id} className="line-clamp-1 overflow-ellipsis">
+                {store?.name}
+              </li>
+            );
           })}
         </ul>
       )}
@@ -79,7 +83,9 @@ const Properties = (
   }, [details, data]);
   return (
     <>
-      <h3 className="text-xl font-bold">Egenskaper ({fields.length})</h3>
+      <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
+        Egenskaper ({fields.length})
+      </h3>
       <div className="grid grid-cols-2 gap-2">
         {fields.map((field) => (
           <div key={field.id} className="mb-2">
