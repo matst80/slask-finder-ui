@@ -27,7 +27,7 @@ const useItemPopularity = (id: string) => {
 export const PopularityOverride = ({ id }: { id: string }) => {
   const { value, setValue, dirty, commit } = useItemPopularity(id);
   return (
-    <div className="absolute top-0 left-0 bg-gray-200 p-1 rounded-br-md z-10 flex items-center">
+    <div className="absolute top-0 left-0 bg-gray-200 p-1 rounded-br-md flex items-center">
       <Star size={18} />
       <span className="text-xs text-gray-600">
         <input

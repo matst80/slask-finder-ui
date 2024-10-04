@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useCategories } from "../categoryHooks";
-import { useFilters, useSearchContext } from "../SearchContext";
 import { Category } from "../types";
 import { ResultItem } from "./ResultItem";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { SquareMinus, SquarePlus } from "lucide-react";
+import { useFilters, useHashQuery, useHashResultItems } from "../searchHooks";
 
 const textSize = (level: number) => {
   switch (level) {
@@ -28,18 +28,20 @@ const CategoryItem = ({
   return (
     <li>
       <div className="flex gap-4 items-center">
+        <button onClick={() => setOpen((p) => !p)}>
+          {open ? (
+            <SquareMinus className="size-5" color="gray" />
+          ) : children?.length ? (
+            <SquarePlus className="size-5" color="gray" />
+          ) : (
+            <div className="size-5"></div>
+          )}
+        </button>
         <button
           className={textSize(level)}
           onClick={() => addKeyFilter(9 + level, value)}
         >
           {value}
-        </button>
-        <button onClick={() => setOpen((p) => !p)}>
-          {open ? (
-            <ChevronUp className="size-6" />
-          ) : (
-            <ChevronDown className="size-6" />
-          )}
         </button>
       </div>
       {open && (
@@ -65,24 +67,40 @@ const NoResults = () => {
           <CategoryItem key={category.value} {...category} level={1} />
         ))}
       </ul>
+      <div className="flex gap-4 mt-6">
+        <a
+          className="bg-gray-200 rounded-lg px-3 py-1"
+          href="#i=4%3D1-99999999900"
+        >
+          Alla produkter
+        </a>
+        <a
+          className="bg-gray-200 rounded-lg px-3 py-1"
+          href="#i=5%3D1-99999999900"
+        >
+          Rabatterade produkter
+        </a>
+      </div>
     </div>
   );
 };
 
 export const SearchResultList = () => {
-  const { results, page, pageSize, loadingItems } = useSearchContext();
-
-  const start = page * pageSize;
-  if (loadingItems && (!results || !results.items.length)) {
+  const { data: results, isLoading: loadingItems } = useHashResultItems();
+  const {
+    query: { page, pageSize },
+  } = useHashQuery();
+  const start = (page ?? 0) * (pageSize ?? 40);
+  if (loadingItems && (!results || !results.length)) {
     return <div>Loading...</div>;
   }
 
-  if (!results || !results.items.length) {
+  if (!results || !results.length) {
     return <NoResults />;
   }
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-      {results?.items.map((item, idx) => (
+      {results?.map((item, idx) => (
         <ResultItem key={item.id} {...item} position={start + idx} />
       ))}
     </div>

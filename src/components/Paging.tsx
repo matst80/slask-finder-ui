@@ -1,15 +1,15 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useSearchContext } from "../SearchContext";
+import { useHashFacets, useHashQuery, useQueryHelpers } from "../searchHooks";
 
 export const Paging = () => {
   const {
-    results,
-    page: currentPage,
-    setPage: changePage,
-  } = useSearchContext();
+    query: { page: currentPage = 0, pageSize = 40 },
+  } = useHashQuery();
+  const { setPage: changePage } = useQueryHelpers();
+  const { data: results } = useHashFacets();
   if (results == null) return null;
-  // console.log(results.totalHits, results.pageSize);
-  const totalPages = Math.ceil(results.totalHits / results.pageSize) - 1;
+
+  const totalPages = Math.ceil(results.totalHits / pageSize) - 1;
   if (totalPages <= 1) return null;
   return (
     <div className="mt-8 flex items-center justify-center">

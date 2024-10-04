@@ -1,25 +1,33 @@
 import { useMemo, useState } from "react";
-import { useFilters, useSearchContext } from "../SearchContext";
+
 import { KeyFacet, NumberFacet } from "../types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { stores } from "../stores";
+import { useFilters, useHashFacets, useQueryHelpers } from "../searchHooks";
+import { colourNameToHex, converters } from "../utils";
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
     .sort((a, b) => b[1] - a[1])
     .map(([value, count]) => ({ value, count }));
 
-const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
+const KeyFacetSelector = ({
+  name,
+  values,
+  id,
+  defaultOpen,
+}: KeyFacet & { defaultOpen: boolean }) => {
   const { keyFilters, addKeyFilter, removeKeyFilter } = useFilters();
   const [filter, setFilter] = useState("");
-  const allSorted = toSorted(values);
-  const filtered =
-    filter.length > 2
+  const allSorted = useMemo(() => toSorted(values), [values]);
+  const filtered = useMemo(() => {
+    return filter.length > 2
       ? allSorted.filter(({ value }) =>
           value.toLowerCase().includes(filter.toLowerCase()),
         )
       : allSorted;
-  const [open, setOpen] = useState(allSorted.length < 10);
+  }, [allSorted, filter]);
+  const [open, setOpen] = useState(defaultOpen && allSorted.length < 10);
   const [expanded, setExpanded] = useState(false);
 
   const toShow = expanded ? filtered : filtered.slice(0, 15);
@@ -54,14 +62,16 @@ const KeyFacetSelector = ({ name, values, id }: KeyFacet) => {
           {toShow.map(({ value, count }) => (
             <label
               key={value}
-              className="flex items-center line-clamp-1 overflow-ellipsis justify-between text-sm"
+              className="flex items-center line-clamp-1 overflow-ellipsis justify-between p-1 text-sm rounded-md hover:bg-gray-100"
             >
               <div>
                 <input
                   type="checkbox"
                   id={value}
                   value={value}
-                  checked={keyFilters[id] === value}
+                  checked={keyFilters.some(
+                    (d) => d.value === value && d.id === id,
+                  )}
                   onChange={(e) => {
                     const checked = e.target.checked;
                     if (checked) {
@@ -135,14 +145,19 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
     </>
   );
 };
+
 const NumberFacetSelector = ({
   name,
   min,
   max,
   type,
   updateFilerValue,
-}: NumberFacet & { updateFilerValue: (min: number, max: number) => void }) => {
-  const [open, setOpen] = useState(Boolean(type?.length));
+  defaultOpen,
+}: NumberFacet & {
+  updateFilerValue: (min: number, max: number) => void;
+  defaultOpen: boolean;
+}) => {
+  const [open, setOpen] = useState(defaultOpen);
 
   const { toDisplayValue, fromDisplayValue } = useMemo(
     () => converters(type),
@@ -178,32 +193,13 @@ const NumberFacetSelector = ({
   );
 };
 
-const toDisplayValue = (type: string) => (value: number) => {
-  if (type === "currency") {
-    return value / 100;
-  }
-  return value;
-};
-const fromDisplayValue = (type: string) => (value: number) => {
-  if (type === "currency") {
-    return Math.round(value * 100);
-  }
-  return value;
-};
-
-const converters = (type: string) => {
-  return {
-    toDisplayValue: toDisplayValue(type),
-    fromDisplayValue: fromDisplayValue(type),
-  };
-};
-
 const FloatFacetSelector = (facet: NumberFacet) => {
   const { addNumberFilter } = useFilters();
 
   return (
     <NumberFacetSelector
       {...facet}
+      defaultOpen={false}
       updateFilerValue={(min, max) => {
         addNumberFilter(facet.id, min, max);
       }}
@@ -217,6 +213,7 @@ const IntegerFacetSelector = (facet: NumberFacet) => {
   return (
     <NumberFacetSelector
       {...facet}
+      defaultOpen={false}
       updateFilerValue={(min, max) => {
         addIntegerFilter(facet.id, min, max);
       }}
@@ -224,56 +221,133 @@ const IntegerFacetSelector = (facet: NumberFacet) => {
   );
 };
 
-export const Facets = () => {
-  const { results, setLocationId, locationId, loadingFacets } =
-    useSearchContext();
+const ColorFacetSelector = ({ id, values }: KeyFacet) => {
+  const { addKeyFilter } = useFilters();
 
-  // <div>
-  //   <h3 className="font-medium mb-2">Color</h3>
-  //   <div className="flex flex-wrap gap-2">
-  //     {['red', 'blue', 'green', 'yellow', 'black', 'white'].map((color) => (
-  //       <button
-  //         key={color}
-  //         className={`w-6 h-6 rounded-full border border-gray-300`}
-  //         style={{ backgroundColor: color }}
-  //         aria-label={`Filter by ${color}`}
-  //         onClick={() => addFilter(color)}
-  //       />
-  //     ))}
-  //   </div>
-  // </div>
+  return (
+    <div className="mb-4 border-b border-gray-100 pb-2">
+      <h3 className="font-medium mb-2">Färg</h3>
+      <div className="flex flex-wrap gap-2">
+        {Object.keys(values).map((color) => {
+          const colorHex = colourNameToHex(color);
+          if (!colorHex) {
+            return null;
+          }
+          return (
+            <button
+              key={color}
+              title={color}
+              className={`w-6 h-6 rounded-full border border-gray-300`}
+              style={{ backgroundColor: colorHex }}
+              aria-label={`Filter by ${color}`}
+              onClick={() => addKeyFilter(id, color)}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+type PrioProps = {
+  prio?: number;
+};
+
+const byPrio = (a: PrioProps, b: PrioProps) => (b.prio ?? 0) - (a.prio ?? 0);
+
+export const Facets = () => {
+  const { data: results, isLoading: loadingFacets } = useHashFacets();
+  const {
+    query: { stock },
+    setStock,
+  } = useQueryHelpers();
+
+  const allFacets = useMemo(
+    () =>
+      [
+        ...(results?.facets?.fields?.map((d) => {
+          return { ...d, fieldType: "string" } satisfies KeyFacet & {
+            fieldType: "string";
+          };
+        }) ?? []),
+        ...(results?.facets?.integerFields?.map((d) => {
+          return { ...d, fieldType: "integer" } satisfies NumberFacet & {
+            fieldType: "integer";
+          };
+        }) ?? []),
+        ...(results?.facets?.numberFields?.map((d) => {
+          return { ...d, fieldType: "number" } satisfies NumberFacet & {
+            fieldType: "number";
+          };
+        }) ?? []),
+      ].sort(byPrio),
+    [results],
+  );
+
   if (loadingFacets) {
-    return <div></div>;
+    return <aside className="w-full md:w-72"></aside>;
   }
 
-  return results?.facets?.fields != null ? (
-    <>
-      {results.facets.fields?.map((facet) => (
-        <KeyFacetSelector key={`keyfield-${facet.id}`} {...facet} />
-      ))}
-      {results.facets.integerFields?.map((facet) => (
-        <IntegerFacetSelector key={`intfield-${facet.id}`} {...facet} />
-      ))}
-      {results.facets.numberFields?.map((facet) => (
-        <FloatFacetSelector key={`floatfield-${facet.id}`} {...facet} />
-      ))}
-      <div className="mb-4">
-        <h3 className="font-medium mb-2">Select Store</h3>
-        <select
-          value={locationId}
-          onChange={(e) =>
-            setLocationId(e.target.value === "" ? undefined : e.target.value)
-          }
-          className="w-full p-2 border border-gray-300 rounded-md"
-        >
-          <option value="">Ingen butik</option>
-          {stores.map((store) => (
-            <option key={store.id} value={store.id}>
-              {store.displayName.replace("Elgiganten ", "")}
-            </option>
-          ))}
-        </select>
-      </div>
-    </>
-  ) : null;
+  const hasFacets = allFacets.length > 0;
+  return (
+    hasFacets && (
+      <aside className="w-full md:w-72">
+        <h2 className="text-lg font-semibold mb-4">Filter</h2>
+        <div>
+          {allFacets.map((facet, i) => {
+            if (facet.type === "color" && facet.fieldType === "string") {
+              return (
+                <ColorFacetSelector
+                  {...facet}
+                  key={`fld-${facet.id}-${facet.name}`}
+                />
+              );
+            }
+            if (facet.fieldType === "number") {
+              return (
+                <FloatFacetSelector
+                  {...facet}
+                  key={`fld-${facet.id}-${facet.name}`}
+                />
+              );
+            }
+            if (facet.fieldType === "integer") {
+              return (
+                <IntegerFacetSelector
+                  {...facet}
+                  key={`fld-${facet.id}-${facet.name}`}
+                />
+              );
+            }
+
+            return (
+              <KeyFacetSelector
+                {...facet}
+                key={`fld-${facet.id}-${facet.name}`}
+                defaultOpen={i < 5}
+              />
+            );
+          })}
+        </div>
+
+        <div className="mb-4">
+          <h3 className="font-medium mb-2">Select Store</h3>
+          <select
+            value={stock}
+            onChange={(e) =>
+              setStock(e.target.value === "" ? undefined : e.target.value)
+            }
+            className="w-full p-2 border border-gray-300 rounded-md"
+          >
+            <option value="">Ingen butik</option>
+            {stores.map((store) => (
+              <option key={store.id} value={store.id}>
+                {store.displayName.replace("Elgiganten ", "")}
+              </option>
+            ))}
+          </select>
+        </div>
+      </aside>
+    )
+  );
 };

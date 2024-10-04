@@ -1,10 +1,12 @@
 import { MapPin } from "lucide-react";
 import { stores } from "../stores";
 import { useMemo } from "react";
-import { useSearchContext } from "../SearchContext";
+import { useQueryHelpers } from "../searchHooks";
 
 export const SelectedStore = () => {
-  const { locationId } = useSearchContext();
+  const {
+    query: { stock: locationId },
+  } = useQueryHelpers();
 
   const selectedStore = useMemo(() => {
     return locationId != null

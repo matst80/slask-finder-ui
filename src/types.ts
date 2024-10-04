@@ -49,6 +49,7 @@ export type ItemProps = {
   lastUpdate?: number;
   advertisingText: string;
   buyable: boolean;
+  disclaimer?: string;
   buyableInStore: boolean;
   stockLevel?: string;
   badgeUrl: string;
@@ -62,19 +63,19 @@ export type ItemProps = {
   url: string;
 };
 
-export type KeyFacet = {
+export type BaseFacet = {
   id: number;
   type: string;
   name: string;
+  prio?: number;
   description: string;
+};
+
+export type KeyFacet = BaseFacet & {
   values: Record<string, number>;
 };
 
-export type NumberFacet = {
-  id: number;
-  type: string;
-  name: string;
-  description: string;
+export type NumberFacet = BaseFacet & {
   min: number;
   max: number;
   count: number;
@@ -86,24 +87,34 @@ export type Facets = {
   numberFields: NumberFacet[];
 };
 
-export type SearchResult = {
-  items: Item[];
+export type FacetResult = {
   totalHits: number;
-  //page: number;
-  pageSize: number;
   facets?: Facets;
 };
 
-export type Query = {
+export type ItemResult = Item[];
+
+export type NumberField = { id: number; min: number; max: number };
+
+export type KeyField = { id: number; value: string };
+
+export type Field = NumberField | KeyField;
+
+export type FilteringQuery = {
   query?: string;
+  stock?: string;
+  string?: KeyField[];
+  number?: NumberField[];
+  integer?: NumberField[];
+};
+
+export type ItemsQuery = FilteringQuery & {
   page?: number;
   sort?: string;
   pageSize?: number;
-  stock?: string;
-  string?: { id: number; value: string }[];
-  number?: { id: number; min: number; max: number }[];
-  integer?: { id: number; min: number; max: number }[];
 };
+
+export type FacetQuery = FilteringQuery;
 
 export type Cart = {
   id: string;

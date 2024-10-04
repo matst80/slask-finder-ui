@@ -7,14 +7,16 @@ import { Price } from "./Price";
 import { Stars } from "./Stars";
 import { useAddToCart } from "../cartHooks";
 import { TimeAgo } from "./TimeAgo";
-import { useMemo } from "react";
-import { useSearchContext } from "../SearchContext";
+import { useMemo, useState } from "react";
+import { useHashQuery } from "../searchHooks";
 
 const StockIndicator = ({
   stock,
   stockLevel,
 }: Pick<Item, "stock" | "stockLevel">) => {
-  const { locationId } = useSearchContext();
+  const {
+    query: { stock: locationId },
+  } = useHashQuery();
   const stockOnLocation = stock?.find((d) => d.id === locationId);
   const storesWithStock = stock?.length ?? 0;
 
@@ -68,6 +70,27 @@ const UpdatedBanner = ({ lastUpdate }: Pick<Item, "lastUpdate">) => {
   ) : null;
 };
 
+const ImageWithPlaceHolder = ({ img, title }: Pick<Item, "img" | "title">) => {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="relative w-full h-48">
+      {img != null && (
+        <img
+          className={`w-full h-48 object-contain top-0 left-0 ${
+            loaded ? "opacity-100" : "opacity-0"
+          }`}
+          src={makeImageUrl(img)}
+          alt={title}
+          onLoad={() => setLoaded(true)}
+        />
+      )}
+      {!loaded && (
+        <div className="flex items-center justify-center w-full h-48 absolute top-0 left-0"></div>
+      )}
+    </div>
+  );
+};
+
 export const ResultItem = ({
   id,
   title,
@@ -81,6 +104,7 @@ export const ResultItem = ({
   position,
   stockLevel,
   buyable,
+  disclaimer,
   buyableInStore,
   advertisingText,
 }: Item & {
@@ -103,15 +127,9 @@ export const ResultItem = ({
       className={`bg-white rounded-sm shadow overflow-hidden relative`}
       onClick={doTrackClick}
     >
-      <PopularityOverride id={id} />
-      <div className="relative mt-2">
-        {img != null && (
-          <img
-            className="w-full h-48 object-contain"
-            src={makeImageUrl(img)}
-            alt={title}
-          />
-        )}
+      <div className="mt-2">
+        <ImageWithPlaceHolder img={img} title={title} />
+
         {badgeUrl != null && (
           <img
             src={makeImageUrl(badgeUrl)}
@@ -147,12 +165,16 @@ export const ResultItem = ({
           {bp
             ?.split("\n")
             .filter((d) => d?.length)
-            .map((bp) => <li key={bp}>{bp}</li>)}
+            .map((bp) => (
+              <li key={bp} className="line-clamp-1 overflow-ellipsis">
+                {bp}
+              </li>
+            ))}
         </ul>
 
         <div className="flex justify-between items-center">
           <span className="text-xl font-bold">
-            <Price values={values} />
+            <Price values={values} disclaimer={disclaimer} />
           </span>
           {(buyable || buyableInStore) && (
             <button
@@ -163,11 +185,13 @@ export const ResultItem = ({
             </button>
           )}
         </div>
-        <UpdatedBanner lastUpdate={updated} />
+
         {advertisingText != null && (
           <em className="italic text-xs">{advertisingText}</em>
         )}
       </div>
+      <PopularityOverride id={id} />
+      <UpdatedBanner lastUpdate={updated} />
     </div>
   );
 };
