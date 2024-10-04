@@ -161,9 +161,7 @@ export const useHashQuery = () => {
 
   const setQuery = useCallback(
     (fn: (data: ItemsQuery) => ItemsQuery) => {
-      const resultQuery = fn(query);
-      // console.trace("update Query", resultQuery);
-      globalThis.location.hash = queryToHash(resultQuery);
+      globalThis.location.hash = queryToHash(fn(query));
     },
     [query],
   );
@@ -201,7 +199,7 @@ export const useHashFacets = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     query: { sort, pageSize, page, ...facetQuery },
   } = useHashQuery();
-  console.log("facetQuery", facetQuery);
+
   return useFacets(facetQuery);
 };
 
