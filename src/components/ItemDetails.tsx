@@ -1,4 +1,4 @@
-import { SquarePlus, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useDetails } from "../appState";
 import { useFacetList } from "../searchHooks";
 import { useMemo } from "react";
