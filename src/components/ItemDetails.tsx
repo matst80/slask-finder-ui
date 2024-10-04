@@ -1,8 +1,8 @@
 import { ShoppingCart, X } from "lucide-react";
 import { useDetails } from "../appState";
 import { useFacetList, useRelatedItems } from "../searchHooks";
-import { useMemo } from "react";
-import { byPrio, makeImageUrl } from "../utils";
+import { useMemo, useState } from "react";
+import { byPriority, makeImageUrl } from "../utils";
 import { ItemDetail } from "../types";
 import { stores } from "../stores";
 import { ResultItem } from "./ResultItem";
@@ -11,21 +11,24 @@ import { useAddToCart } from "../cartHooks";
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
 const StockList = ({ stock }: Pick<ItemDetail, "stock">) => {
+  const [open, setOpen] = useState(false);
   if (stock == null) return null;
   return (
-    <div>
+    <div
+      onClick={() => setOpen((p) => !p)}
+      className="py-2 px-4 border border-gray-500 rounded-md mt-4"
+    >
       <h3 className="text-lg font-bold">Lager</h3>
-      <ul>
-        {stock.map((s) => {
-          const store = stores.find((store) => store.id === s.id);
-          if (!store) return null;
-          return (
-            <li key={s.id}>
-              {store?.name}: {s.level}
-            </li>
-          );
-        })}
-      </ul>
+      <p>Finns i lager i {stock.length} butiker</p>
+      {open && (
+        <ul className="max-h-screen overflow-y-auto">
+          {stock.map((s) => {
+            const store = stores.find((store) => store.id === s.id);
+            if (!store) return null;
+            return <li key={s.id}>{store?.name}</li>;
+          })}
+        </ul>
+      )}
     </div>
   );
 };
@@ -48,10 +51,10 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
   );
 };
 
-export const ItemDetails = () => {
-  const [details, setDetails] = useDetails();
+const Properties = (
+  details: Pick<ItemDetail, "values" | "numberValues" | "integerValues">
+) => {
   const { data } = useFacetList();
-  const { trigger: addToCart } = useAddToCart();
   const fields = useMemo(() => {
     if (!details) return [];
     const { values, numberValues, integerValues } = details;
@@ -72,8 +75,30 @@ export const ItemDetails = () => {
         };
       })
       .filter((value) => value != null)
-      .sort(byPrio);
+      .sort(byPriority);
   }, [details, data]);
+  return (
+    <>
+      <h3 className="text-xl font-bold">Egenskaper ({fields.length})</h3>
+      <div className="grid grid-cols-2 gap-2">
+        {fields.map((field) => (
+          <div key={field.id} className="mb-2">
+            <h3 className="text-lg font-bold flex gap-4 items-center">
+              {field.name}
+            </h3>
+            <p className="text-gray-700">{field.value}</p>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
+
+export const ItemDetails = () => {
+  const [details, setDetails] = useDetails();
+
+  const { trigger: addToCart } = useAddToCart();
+
   if (!details) return null;
   const { title, img, bp, stockLevel, stock, buyable, buyableInStore, id } =
     details;
@@ -97,7 +122,7 @@ export const ItemDetails = () => {
         </div>
         <div className="pb-6">
           {img != null && (
-            <div className="px-6">
+            <div className="px-6 pb-6">
               <img
                 className={`w-full h-auto object-contain`}
                 src={makeImageUrl(img)}
@@ -106,7 +131,11 @@ export const ItemDetails = () => {
             </div>
           )}
           <div className="flex justify-between">
-            <ul>{bp?.split("\n").map((txt) => <li key={txt}>{txt}</li>)}</ul>
+            <ul>
+              {bp?.split("\n").map((txt) => (
+                <li key={txt}>{txt}</li>
+              ))}
+            </ul>
             {(buyable || buyableInStore) && (
               <div>
                 <button
@@ -115,23 +144,18 @@ export const ItemDetails = () => {
                 >
                   Lägg i kundvagn <ShoppingCart />
                 </button>
+                <StockList stock={stock} />
               </div>
             )}
           </div>
           {stockLevel != null && <p>I lager online: {stockLevel}</p>}
-          <StockList stock={stock} />
         </div>
         <RelatedItems id={details.id} />
-        <div className="grid grid-cols-2 gap-2">
-          {fields.map((field) => (
-            <div key={field.id} className="mb-2">
-              <h3 className="text-lg font-bold flex gap-4 items-center">
-                {field.name}
-              </h3>
-              <p className="text-gray-700">{field.value}</p>
-            </div>
-          ))}
-        </div>
+        <Properties
+          integerValues={details.integerValues}
+          values={details.values}
+          numberValues={details.integerValues}
+        />
       </div>
     </div>
   );

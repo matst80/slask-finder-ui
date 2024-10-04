@@ -4,7 +4,7 @@ import { KeyFacet, NumberFacet } from "../types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { stores } from "../stores";
 import { useFilters, useHashFacets, useQueryHelpers } from "../searchHooks";
-import { byPrio, colourNameToHex, converters } from "../utils";
+import { byPriority, colourNameToHex, converters } from "../utils";
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
@@ -23,7 +23,7 @@ const KeyFacetSelector = ({
   const filtered = useMemo(() => {
     return filter.length > 2
       ? allSorted.filter(({ value }) =>
-          value.toLowerCase().includes(filter.toLowerCase()),
+          value.toLowerCase().includes(filter.toLowerCase())
         )
       : allSorted;
   }, [allSorted, filter]);
@@ -70,7 +70,7 @@ const KeyFacetSelector = ({
                   id={value}
                   value={value}
                   checked={keyFilters.some(
-                    (d) => d.value === value && d.id === id,
+                    (d) => d.value === value && d.id === id
                   )}
                   onChange={(e) => {
                     const checked = e.target.checked;
@@ -161,7 +161,7 @@ const NumberFacetSelector = ({
 
   const { toDisplayValue, fromDisplayValue } = useMemo(
     () => converters(type),
-    [type],
+    [type]
   );
 
   return (
@@ -274,8 +274,8 @@ export const Facets = () => {
             fieldType: "number";
           };
         }) ?? []),
-      ].sort(byPrio),
-    [results],
+      ].sort(byPriority),
+    [results]
   );
 
   if (loadingFacets) {
