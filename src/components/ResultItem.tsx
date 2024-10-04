@@ -9,6 +9,7 @@ import { useAddToCart } from "../cartHooks";
 import { TimeAgo } from "./TimeAgo";
 import { useMemo } from "react";
 import { useHashQuery } from "../searchHooks";
+import { useDetails } from "../appState";
 
 const StockIndicator = ({
   stock,
@@ -33,13 +34,13 @@ const StockIndicator = ({
             : "Slut i din butik"}
         </span>
       ) : (
-        <span
-          className={`text-sm relative ${
+        <button
+          className={`text-sm relative line-clamp-1 ${
             storesWithStock > 0 ? "text-green-500" : "text-yellow-500"
           }`}
         >
           Finns i {storesWithStock} butiker
-        </span>
+        </button>
       )}{" "}
       |{" "}
       <span
@@ -88,10 +89,12 @@ export const ResultItem = ({
 }: Item & {
   position: number;
 }) => {
+  const [_, setDetails] = useDetails();
   const doTrackClick = () => {
     trackClick(id, position);
     getRawData(id).then((data) => {
       console.log(data);
+      setDetails(data);
     });
   };
 

@@ -91,13 +91,16 @@ async function toJson<T>(response: Response): Promise<T> {
 
 export const getRawData = (id: string) =>
   fetch(`${baseUrl}/admin/get/${id}`).then((d) =>
-    d.ok ? (d.json() as Promise<unknown>) : Promise.reject(d),
+    d.ok ? (d.json() as Promise<Item>) : Promise.reject(d),
   );
 
 export const trackClick = (id: string, position: number) =>
   fetch(`${baseUrl}/api/track/click?id=${id}&pos=${position}`).then(
     (d) => d.ok,
   );
+
+export const getFacetList = () =>
+  fetch(`${baseUrl}/api/facet-list`).then((d) => toJson(d));
 
 export const getCategories = () =>
   fetch(`${baseUrl}/api/categories`).then((d) => toJson<Category[]>(d));

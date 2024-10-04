@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { facets, streamItems } from "./api";
+import { facets, getFacetList, streamItems } from "./api";
 import { FacetQuery, FilteringQuery, ItemsQuery } from "./types";
 import { useEffect, useState, useCallback } from "react";
 
@@ -164,7 +164,7 @@ export const useHashQuery = () => {
       // console.trace("update Query", resultQuery);
       globalThis.location.hash = queryToHash(resultQuery);
     },
-    [query]
+    [query],
   );
 
   const partialUpdate = useCallback(
@@ -180,7 +180,7 @@ export const useHashQuery = () => {
           return { ...prev, [key]: value };
         });
       },
-    [setQuery]
+    [setQuery],
   );
 
   return {
@@ -261,4 +261,8 @@ export const useFilters = () => {
       //setPage(0);
     },
   };
+};
+
+export const useFacetList = () => {
+  return useSWR("facet-list", getFacetList);
 };
