@@ -14,7 +14,7 @@ const baseUrl = "";
 
 export const autoSuggest = (term: string): Promise<Suggestion[]> =>
   fetch(`${baseUrl}/api/suggest?q=${term}`).then((d) =>
-    d.ok ? (d.json() as Promise<Suggestion[]>) : Promise.reject(d),
+    d.ok ? (d.json() as Promise<Suggestion[]>) : Promise.reject(d)
   );
 
 // export const search = (term: string, page: number, pageSize: number) =>
@@ -29,7 +29,7 @@ export const facets = (query: ItemsQuery) =>
   }).then((d) =>
     d.ok
       ? (d.json() as Promise<Omit<FacetResult, "items" | "pageSize" | "page">>)
-      : Promise.reject(d),
+      : Promise.reject(d)
   );
 
 export const streamFacets = (query: FacetQuery) =>
@@ -37,11 +37,11 @@ export const streamFacets = (query: FacetQuery) =>
     method: "POST",
     body: JSON.stringify(query),
   }).then((d) =>
-    d.ok ? (d.json() as Promise<FacetResult>) : Promise.reject(d),
+    d.ok ? (d.json() as Promise<FacetResult>) : Promise.reject(d)
   );
 
 export const streamItems = (
-  query: ItemsQuery,
+  query: ItemsQuery
   //onResults: (data: ItemResult) => void,
 ): Promise<ItemResult> => {
   return fetch(`${baseUrl}/api/stream`, {
@@ -92,12 +92,12 @@ async function toJson<T>(response: Response): Promise<T> {
 
 export const getRawData = (id: string) =>
   fetch(`${baseUrl}/admin/get/${id}`).then((d) =>
-    d.ok ? (d.json() as Promise<ItemDetail>) : Promise.reject(d),
+    d.ok ? (d.json() as Promise<ItemDetail>) : Promise.reject(d)
   );
 
 export const trackClick = (id: string, position: number) =>
   fetch(`${baseUrl}/api/track/click?id=${id}&pos=${position}`).then(
-    (d) => d.ok,
+    (d) => d.ok
   );
 
 type FacetListItem = {
@@ -116,7 +116,7 @@ export const getCategories = () =>
 
 export const getPopularity = () =>
   fetch(`${baseUrl}/admin/sort/popular`).then((d) =>
-    toJson<Record<string, number>>(d),
+    toJson<Record<string, number>>(d)
   );
 
 export const updatePopularity = (overrides: Record<string, number>) => {
