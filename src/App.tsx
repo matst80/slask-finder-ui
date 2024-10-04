@@ -1,6 +1,7 @@
 import { AutoSuggest } from "./components/AutoSuggest";
 import { CurrentFilters } from "./components/CurrentFilters";
 import { Facets } from "./components/Facets";
+import { ItemDetails } from "./components/ItemDetails";
 import { MiniCart } from "./components/MiniCart";
 import { Paging } from "./components/Paging";
 import { ResultHeader } from "./components/ResultHeader";
@@ -27,6 +28,7 @@ function App() {
           <Paging />
         </main>
       </div>
+      <ItemDetails />
     </div>
   );
 }

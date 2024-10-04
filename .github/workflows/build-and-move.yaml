@@ -1,0 +1,30 @@
+name: Build and Deploy Vite Project
+
+on:
+  push:
+    branches:
+      - main # Trigger the workflow on push to the main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted # Use the self-hosted runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20" # Specify the Node.js version you need
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the Vite project
+        run: npm run build
+
+      - name: Copy dist folder to /srv/slask-finder-web
+        run: |
+          #sudo rm -rf /srv/slask-finder-web/*
+          cp -r dist/* /srv/shared/slask-finder-web/

@@ -141,7 +141,9 @@ export const CurrentFilters = () => {
               value={
                 isNumberFilter(filter)
                   ? filter.type === "currency"
-                    ? `${filter.value.min / 100}kr - ${filter.value.max / 100} kr`
+                    ? `${filter.value.min / 100}kr - ${
+                        filter.value.max / 100
+                      } kr`
                     : `${filter.value.min} - ${filter.value.max}`
                   : filter.value
               }
