@@ -41,8 +41,7 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
   const { data, isLoading } = useRelatedItems(id);
 
   return (
-    <div>
-      <h3 className="text-lg font-bold">Relaterade produkter</h3>
+    <div className="-mx-6">
       <div className="max-w-full overflow-y-auto snap-y">
         <div className="flex w-fit">
           {isLoading && <p>Laddar...</p>}
@@ -156,7 +155,11 @@ export const ItemDetails = () => {
           </div>
           {stockLevel != null && <p>I lager online: {stockLevel}</p>}
         </div>
+        <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
+          Relaterade produkter
+        </h3>
         <RelatedItems id={details.id} />
+
         <Properties
           integerValues={details.integerValues}
           values={details.values}
