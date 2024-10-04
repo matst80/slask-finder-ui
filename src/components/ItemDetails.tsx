@@ -78,8 +78,14 @@ export const ItemDetails = () => {
   const { title, img, bp, stockLevel, stock, buyable, buyableInStore, id } =
     details;
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full lg:min-w-[800px] max-w-lg max-h-screen overflow-y-auto">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={() => setDetails(null)}
+    >
+      <div
+        className="bg-white rounded-lg shadow-lg p-6 w-full lg:min-w-[800px] max-w-lg max-h-screen overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">{title}</h2>
           <button
