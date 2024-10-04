@@ -36,8 +36,8 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
   return (
     <div>
       <h3 className="text-lg font-bold">Relaterade produkter</h3>
-      <div className="max-w-full overflow-y-auto">
-        <div className="flex w-fit snap-y">
+      <div className="max-w-full overflow-y-auto snap-y">
+        <div className="flex w-fit">
           {isLoading && <p>Laddar...</p>}
           {data?.map((item, idx) => (
             <ResultItem key={item.id} {...item} position={idx} />
@@ -105,7 +105,7 @@ export const ItemDetails = () => {
               <div>
                 <button
                   className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors flex"
-                  onClick={() => addToCart({ id, quantity: 1 })}
+                  onClick={() => addToCart({ id: String(id), quantity: 1 })}
                 >
                   Lägg i kundvagn <ShoppingCart />
                 </button>
