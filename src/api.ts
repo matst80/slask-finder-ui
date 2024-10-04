@@ -102,6 +102,7 @@ export const trackClick = (id: string, position: number) =>
 
 type FacetListItem = {
   id: number;
+  type?: string;
   name: string;
   prio?: number;
   count: number;
