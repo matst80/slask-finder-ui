@@ -25,7 +25,7 @@ export const AutoSuggest = () => {
     }
     const timeout = setTimeout(() => {
       setTerm(value);
-    }, 500);
+    }, 250);
 
     return () => {
       clearTimeout(timeout);

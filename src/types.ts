@@ -49,6 +49,7 @@ export type ItemProps = {
   lastUpdate?: number;
   advertisingText: string;
   buyable: boolean;
+  disclaimer?: string;
   buyableInStore: boolean;
   stockLevel?: string;
   badgeUrl: string;
@@ -62,19 +63,19 @@ export type ItemProps = {
   url: string;
 };
 
-export type KeyFacet = {
+export type BaseFacet = {
   id: number;
   type: string;
   name: string;
+  prio?: number;
   description: string;
+};
+
+export type KeyFacet = BaseFacet & {
   values: Record<string, number>;
 };
 
-export type NumberFacet = {
-  id: number;
-  type: string;
-  name: string;
-  description: string;
+export type NumberFacet = BaseFacet & {
   min: number;
   max: number;
   count: number;

@@ -7,14 +7,16 @@ import { useFilters, useHashFacets, useQueryHelpers } from "../searchHooks";
 type KeyFilter = {
   key: number;
   name?: string;
-  type: "key";
+  type?: string;
+  fieldType: "key";
   value: string;
 };
 
 type NumberFilter = {
   key: number;
   name?: string;
-  type: "integer" | "float";
+  type?: string;
+  fieldType: "integer" | "float";
   value: {
     min: number;
     max: number;
@@ -44,27 +46,32 @@ const isNumberField = (filter: Field): filter is NumberField => {
   return "min" in filter && "max" in filter;
 };
 
-function toFilter(type: "integer" | "float" | "key", facets?: Facets) {
+function toFilter(fieldType: "integer" | "float" | "key", facets?: Facets) {
   return (data: Field): KeyFilter | NumberFilter => {
-    if (type === "key" && isKeyField(data)) {
+    if (fieldType === "key" && isKeyField(data)) {
       const field = facets?.fields.find((field) => field.id === data.id);
 
       return {
         key: data.id,
         name: field?.name,
-        type: "key",
+        type: field?.type,
+        fieldType: "key",
         value: data.value,
       };
     }
-    if ((type === "integer" || type === "float") && isNumberField(data)) {
+    if (
+      (fieldType === "integer" || fieldType === "float") &&
+      isNumberField(data)
+    ) {
       const fields =
-        type === "integer" ? facets?.integerFields : facets?.numberFields;
+        fieldType === "integer" ? facets?.integerFields : facets?.numberFields;
       const field = fields?.find((field) => field.id === data.id);
 
       return {
         key: data.id,
         name: field?.name,
-        type,
+        type: field?.type,
+        fieldType,
         value: {
           min: data.min,
           max: data.max,
@@ -133,15 +140,19 @@ export const CurrentFilters = () => {
               name={filter.name}
               value={
                 isNumberFilter(filter)
-                  ? `${filter.value.min}-${filter.value.max}`
+                  ? filter.type === "currency"
+                    ? `${filter.value.min / 100}kr - ${
+                        filter.value.max / 100
+                      } kr`
+                    : `${filter.value.min} - ${filter.value.max}`
                   : filter.value
               }
               onClick={() => {
-                if (filter.type === "key") {
+                if (filter.fieldType === "key") {
                   removeKeyFilter(filter.key);
-                } else if (filter.type === "float") {
+                } else if (filter.fieldType === "float") {
                   removeNumberFilter(filter.key);
-                } else if (filter.type === "integer") {
+                } else if (filter.fieldType === "integer") {
                   removeIntegerFilter(filter.key);
                 }
               }}
