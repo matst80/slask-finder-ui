@@ -4,7 +4,7 @@ import { KeyFacet, NumberFacet } from "../types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { stores } from "../stores";
 import { useFilters, useHashFacets, useQueryHelpers } from "../searchHooks";
-import { colourNameToHex, converters } from "../utils";
+import { byPrio, colourNameToHex, converters } from "../utils";
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
@@ -248,12 +248,6 @@ const ColorFacetSelector = ({ id, values }: KeyFacet) => {
     </div>
   );
 };
-
-type PrioProps = {
-  prio?: number;
-};
-
-const byPrio = (a: PrioProps, b: PrioProps) => (b.prio ?? 0) - (a.prio ?? 0);
 
 export const Facets = () => {
   const { data: results, isLoading: loadingFacets } = useHashFacets();

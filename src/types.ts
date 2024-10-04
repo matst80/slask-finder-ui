@@ -39,6 +39,20 @@ export type Item = ItemProps & {
   stock?: Stock[];
 };
 
+export type FieldValue<T> = {
+  id: number;
+  value: T;
+};
+
+export type ItemDetail = ItemProps & {
+  id: string;
+  title: string;
+  values: FieldValue<string>[];
+  numberValues: FieldValue<number>[];
+  integerValues: FieldValue<number>[];
+  stock?: Stock[];
+};
+
 export type Stock = {
   id: string;
   level: string;
