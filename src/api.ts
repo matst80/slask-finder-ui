@@ -3,7 +3,6 @@ import {
   Category,
   FacetQuery,
   Item,
-  ItemResult,
   ItemsQuery,
   FacetResult,
   Suggestion,
@@ -14,7 +13,7 @@ const baseUrl = "";
 
 export const autoSuggest = (term: string): Promise<Suggestion[]> =>
   fetch(`${baseUrl}/api/suggest?q=${term}`).then((d) =>
-    d.ok ? (d.json() as Promise<Suggestion[]>) : Promise.reject(d)
+    d.ok ? (d.json() as Promise<Suggestion[]>) : Promise.reject(d),
   );
 
 // export const search = (term: string, page: number, pageSize: number) =>
@@ -29,7 +28,7 @@ export const facets = (query: ItemsQuery) =>
   }).then((d) =>
     d.ok
       ? (d.json() as Promise<Omit<FacetResult, "items" | "pageSize" | "page">>)
-      : Promise.reject(d)
+      : Promise.reject(d),
   );
 
 export const streamFacets = (query: FacetQuery) =>
@@ -37,50 +36,54 @@ export const streamFacets = (query: FacetQuery) =>
     method: "POST",
     body: JSON.stringify(query),
   }).then((d) =>
-    d.ok ? (d.json() as Promise<FacetResult>) : Promise.reject(d)
+    d.ok ? (d.json() as Promise<FacetResult>) : Promise.reject(d),
   );
 
+export const getRelated = (id: number) =>
+  fetch(`${baseUrl}/api/related/${id}`).then((d) => readStreamed<Item>(d));
+
+const readStreamed = <T>(d: Response): Promise<T[]> => {
+  if (!d.ok) {
+    return Promise.reject(d);
+  }
+  if (d.body == null) {
+    return Promise.resolve([] as T[]);
+  }
+  const reader = d.body.getReader();
+  const decoder = new TextDecoder();
+  let items: T[] = [];
+  let buffer = "";
+  const pump = async (): Promise<T[]> => {
+    return reader?.read().then(async ({ done, value }): Promise<T[]> => {
+      if (done) {
+        console.log("done", items);
+        return items;
+      }
+
+      buffer += decoder.decode(value);
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+      const parsedItems = lines
+        .map((line) => {
+          return JSON.parse(line) as T;
+        })
+        .filter((d) => d != null);
+      items = items.concat(...parsedItems);
+
+      return pump();
+    });
+  };
+  return pump();
+};
+
 export const streamItems = (
-  query: ItemsQuery
+  query: ItemsQuery,
   //onResults: (data: ItemResult) => void,
-): Promise<ItemResult> => {
+): Promise<Item[]> => {
   return fetch(`${baseUrl}/api/stream`, {
     method: "POST",
     body: JSON.stringify(query),
-  }).then((d) => {
-    if (!d.ok) {
-      return Promise.reject(d);
-    }
-    if (d.body == null) {
-      return [];
-    }
-    const reader = d.body.getReader();
-    const decoder = new TextDecoder();
-    let items: ItemResult = [];
-    let buffer = "";
-    const pump = async (): Promise<ItemResult> => {
-      return reader
-        ?.read()
-        .then(async ({ done, value }): Promise<ItemResult> => {
-          if (done) {
-            return items;
-          }
-
-          buffer += decoder.decode(value);
-          const lines = buffer.split("\n");
-          buffer = lines.pop() ?? "";
-          const parsedItems = lines
-            .map((line) => {
-              return JSON.parse(line) as Item;
-            })
-            .filter((d) => d != null);
-          items = items.concat(parsedItems);
-
-          return pump();
-        });
-    };
-    return pump();
-  });
+  }).then((d) => readStreamed<Item>(d));
 };
 
 async function toJson<T>(response: Response): Promise<T> {
@@ -92,12 +95,12 @@ async function toJson<T>(response: Response): Promise<T> {
 
 export const getRawData = (id: string) =>
   fetch(`${baseUrl}/admin/get/${id}`).then((d) =>
-    d.ok ? (d.json() as Promise<ItemDetail>) : Promise.reject(d)
+    d.ok ? (d.json() as Promise<ItemDetail>) : Promise.reject(d),
   );
 
 export const trackClick = (id: string, position: number) =>
   fetch(`${baseUrl}/api/track/click?id=${id}&pos=${position}`).then(
-    (d) => d.ok
+    (d) => d.ok,
   );
 
 type FacetListItem = {
@@ -117,7 +120,7 @@ export const getCategories = () =>
 
 export const getPopularity = () =>
   fetch(`${baseUrl}/admin/sort/popular`).then((d) =>
-    toJson<Record<string, number>>(d)
+    toJson<Record<string, number>>(d),
   );
 
 export const updatePopularity = (overrides: Record<string, number>) => {

@@ -45,7 +45,7 @@ export type FieldValue<T> = {
 };
 
 export type ItemDetail = ItemProps & {
-  id: string;
+  id: number;
   title: string;
   values: FieldValue<string>[];
   numberValues: FieldValue<number>[];

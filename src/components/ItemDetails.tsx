@@ -1,10 +1,11 @@
 import { X } from "lucide-react";
 import { useDetails } from "../appState";
-import { useFacetList } from "../searchHooks";
+import { useFacetList, useRelatedItems } from "../searchHooks";
 import { useMemo } from "react";
 import { byPrio, makeImageUrl } from "../utils";
 import { ItemDetail } from "../types";
 import { stores } from "../stores";
+import { ResultItem } from "./ResultItem";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -23,6 +24,22 @@ const StockList = ({ stock }: Pick<ItemDetail, "stock">) => {
           );
         })}
       </ul>
+    </div>
+  );
+};
+
+export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
+  const { data, isLoading } = useRelatedItems(id);
+
+  return (
+    <div>
+      <h3 className="text-lg font-bold">Relaterade produkter</h3>
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+        {isLoading && <p>Laddar...</p>}
+        {data?.map((item, idx) => (
+          <ResultItem key={item.id} {...item} position={idx} />
+        ))}
+      </div>
     </div>
   );
 };
@@ -77,6 +94,7 @@ export const ItemDetails = () => {
           {stockLevel != null && <p>I lager online: {stockLevel}</p>}
           <StockList stock={stock} />
         </div>
+        <RelatedItems id={details.id} />
         <div className="grid grid-cols-2 gap-2">
           {fields.map((field) => (
             <div key={field.id} className="mb-2">

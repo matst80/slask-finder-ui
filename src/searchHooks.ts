@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { facets, getFacetList, streamItems } from "./api";
+import { facets, getFacetList, getRelated, streamItems } from "./api";
 import { FacetQuery, FilteringQuery, ItemsQuery } from "./types";
 import { useEffect, useState, useCallback } from "react";
 
@@ -163,7 +163,7 @@ export const useHashQuery = () => {
     (fn: (data: ItemsQuery) => ItemsQuery) => {
       globalThis.location.hash = queryToHash(fn(query));
     },
-    [query]
+    [query],
   );
 
   const partialUpdate = useCallback(
@@ -179,7 +179,7 @@ export const useHashQuery = () => {
           return { ...prev, [key]: value };
         });
       },
-    [setQuery]
+    [setQuery],
   );
 
   return {
@@ -264,4 +264,8 @@ export const useFilters = () => {
 
 export const useFacetList = () => {
   return useSWR("facet-list", getFacetList);
+};
+
+export const useRelatedItems = (id: number) => {
+  return useSWR(`related-items-${id}`, () => getRelated(id));
 };
