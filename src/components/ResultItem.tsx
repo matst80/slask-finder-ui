@@ -1,11 +1,10 @@
-import { ShoppingCart, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import { getRawData, trackClick } from "../api";
 import { Item } from "../types";
 import { makeImageUrl } from "../utils";
 import { PopularityOverride } from "./PopularityOverride";
 import { Price } from "./Price";
 import { Stars } from "./Stars";
-import { useAddToCart } from "../cartHooks";
 import { TimeAgo } from "./TimeAgo";
 import { useMemo, useState } from "react";
 import { useHashQuery } from "../searchHooks";
@@ -61,7 +60,7 @@ const StockIndicator = ({
 const UpdatedBanner = ({ lastUpdate }: Pick<Item, "lastUpdate">) => {
   const recentlyUpdated = useMemo(
     () => (lastUpdate ?? 0) > Date.now() - 1000 * 60 * 60,
-    [lastUpdate]
+    [lastUpdate],
   );
   return recentlyUpdated ? (
     <div className="flex items-center rounded-bl-md p-1 bg-yellow-300 text-xs gap-2 absolute top-0 right-0">
@@ -104,9 +103,7 @@ export const ResultItem = ({
   lastUpdate: updated,
   position,
   stockLevel,
-  buyable,
   disclaimer,
-  buyableInStore,
   advertisingText,
 }: Item & {
   position: number;
@@ -122,12 +119,10 @@ export const ResultItem = ({
 
   const hasRating = values["6"] != null && values["7"] != null;
 
-  const { trigger: addToCart } = useAddToCart();
-
   return (
     <div
       key={`item-${id}`}
-      className={`bg-white rounded-sm shadow overflow-hidden relative`}
+      className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col`}
       onClick={doTrackClick}
     >
       <div className="mt-2">
@@ -179,20 +174,12 @@ export const ResultItem = ({
           <span className="text-xl font-bold">
             <Price values={values} disclaimer={disclaimer} />
           </span>
-          {(buyable || buyableInStore) && (
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-              onClick={() => addToCart({ id, quantity: 1 })}
-            >
-              <ShoppingCart />
-            </button>
-          )}
         </div>
-
         {advertisingText != null && (
           <em className="italic text-xs">{advertisingText}</em>
         )}
       </div>
+
       <PopularityOverride id={id} />
       <UpdatedBanner lastUpdate={updated} />
     </div>

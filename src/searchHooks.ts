@@ -120,12 +120,12 @@ export const facetQueryToHash = ({
   string,
 }: FacetQuery): string => {
   const obj = filteringQueryToHash({ integer, number, stock, string, query });
-  return `facets` + new URLSearchParams(obj).toString();
+  return new URLSearchParams(obj).toString();
 };
 
-const itemsKey = (data: ItemsQuery) => queryToHash(data);
+const itemsKey = (data: ItemsQuery) => `items-` + queryToHash(data);
 
-const facetsKey = (data: FacetQuery) => facetQueryToHash(data);
+const facetsKey = (data: FacetQuery) => "facets-" + facetQueryToHash(data);
 
 export const useItemsSearch = (query: ItemsQuery) => {
   return useSWR(itemsKey(query), () => streamItems(query), {
