@@ -56,6 +56,21 @@ const CategoryItem = ({
   );
 };
 
+const searchList = [
+  {
+    title: "I lager i falun",
+    href: "#stock=2299&page=0",
+  },
+  {
+    title: "Alla produkter",
+    href: "#i=4%3D1-99999999900",
+  },
+  {
+    title: "Rabatterade produkter",
+    href: "#i=5%3D1-99999999900",
+  },
+];
+
 const NoResults = () => {
   const { data } = useCategories();
   return (
@@ -68,18 +83,11 @@ const NoResults = () => {
         ))}
       </ul>
       <div className="flex gap-4 mt-6">
-        <a
-          className="bg-gray-200 rounded-lg px-3 py-1"
-          href="#i=4%3D1-99999999900"
-        >
-          Alla produkter
-        </a>
-        <a
-          className="bg-gray-200 rounded-lg px-3 py-1"
-          href="#i=5%3D1-99999999900"
-        >
-          Rabatterade produkter
-        </a>
+        {searchList.map(({ title, href }) => (
+          <a className="bg-gray-200 rounded-lg px-3 py-1" href={href}>
+            {title}
+          </a>
+        ))}
       </div>
     </div>
   );
