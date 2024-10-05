@@ -30,7 +30,7 @@ export const queryFromHash = (hash: string): ItemsQuery => {
       return { id: Number(id), value };
     });
   const query = hashData.q;
-  const stock = hashData.stock;
+  const stock = hashData.stock?.split(FIELD_SEPARATOR) ?? [];
   const sort = hashData.sort ?? "popular";
   let page = Number(hashData.page) ?? 0;
   let pageSize = Number(hashData.pageSize) ?? 40;
@@ -81,7 +81,7 @@ export const filteringQueryToHash = ({
 }: FilteringQuery): Record<string, string> => {
   const result: Record<string, string> = {};
   if (stock != null) {
-    result.stock = stock;
+    result.stock = stock.join(FIELD_SEPARATOR);
   }
   if (query != null && query.length > 0) {
     result.q = query;
@@ -163,7 +163,7 @@ export const useHashQuery = () => {
     (fn: (data: ItemsQuery) => ItemsQuery) => {
       globalThis.location.hash = queryToHash(fn(query));
     },
-    [query],
+    [query]
   );
 
   const partialUpdate = useCallback(
@@ -179,7 +179,7 @@ export const useHashQuery = () => {
           return { ...prev, [key]: value };
         });
       },
-    [setQuery],
+    [setQuery]
   );
 
   return {
