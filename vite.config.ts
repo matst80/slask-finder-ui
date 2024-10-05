@@ -6,19 +6,19 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://slask-finder.knatofs.se",
+        target: "http://localhost:8080",
         changeOrigin: true,
       },
       "/cart": {
-        target: "https://slask-finder.knatofs.se",
+        target: "http://localhost:8080",
         changeOrigin: true,
       },
       "/promotion": {
-        target: "https://slask-finder.knatofs.se",
+        target: "http://localhost:8080",
         changeOrigin: true,
       },
       "/admin": {
-        target: "https://slask-finder.knatofs.se",
+        target: "http://localhost:8080",
         changeOrigin: true,
       },
     },

@@ -30,7 +30,10 @@ export const PopularityOverride = ({ id }: { id: string }) => {
   const { value, setValue, dirty, commit } = useItemPopularity(id);
   if (!admin) return null;
   return (
-    <div className="absolute top-0 left-0 bg-gray-200 p-1 rounded-br-md flex items-center">
+    <div
+      className="absolute top-0 left-0 bg-gray-200 p-1 rounded-br-md flex items-center"
+      onClick={(e) => e.stopPropagation()}
+    >
       <Star size={18} />
       <span className="text-xs text-gray-600">
         <input
