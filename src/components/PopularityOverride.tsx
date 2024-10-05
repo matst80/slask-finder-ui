@@ -1,6 +1,7 @@
 import { Star, Save } from "lucide-react";
 import { useState, useMemo, useCallback } from "react";
 import { useItemsPopularity, useUpdatePopularity } from "../popularityHooks";
+import { useAdmin } from "../appState";
 
 const useItemPopularity = (id: string) => {
   const { data: popularity, mutate } = useItemsPopularity();
@@ -12,7 +13,7 @@ const useItemPopularity = (id: string) => {
       mutate({ ...popularity, [id]: value }, { revalidate: false });
       setDirty(true);
     },
-    [id, popularity, mutate],
+    [id, popularity, mutate]
   );
   const commit = useCallback(() => {
     if (dirty && popularity != null) {
@@ -25,7 +26,9 @@ const useItemPopularity = (id: string) => {
 };
 
 export const PopularityOverride = ({ id }: { id: string }) => {
+  const [admin] = useAdmin();
   const { value, setValue, dirty, commit } = useItemPopularity(id);
+  if (!admin) return null;
   return (
     <div className="absolute top-0 left-0 bg-gray-200 p-1 rounded-br-md flex items-center">
       <Star size={18} />

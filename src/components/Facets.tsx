@@ -107,20 +107,32 @@ type SliderProps = {
   onChange: (min: number, max: number) => void;
 };
 
+const cm = (...arg: (string | string[])[]) =>
+  arg
+    .flat()
+    .flatMap((d) => d.split(" "))
+    .join(" ");
+
 const Slider = ({ min, max, onChange }: SliderProps) => {
   const [minValue, setMinValue] = useState(min);
   const [maxValue, setMaxValue] = useState(max);
+  const validMin = min <= minValue && minValue <= max;
+  const validMax = min <= maxValue && maxValue <= max;
+  const valid = validMax && validMin;
   const isDirty = min !== minValue || max !== maxValue;
   return (
     <>
       <input
         type="number"
-        className="text-sm text-gray-600 text-left px-2 bg-gray-200 rounded-lg flex-1"
+        className={cm(
+          "text-sm text-gray-600 text-left px-2 bg-gray-200 rounded-lg flex-1",
+          validMin ? "" : "border border-red-500"
+        )}
         min={0}
         max={max}
         onChange={(e) => {
           const nr = Number(e.target.value);
-          if (nr < max) setMinValue(nr);
+          if (!isNaN(nr)) setMinValue(nr);
         }}
         onBlur={() => onChange(minValue, maxValue)}
         value={minValue}
@@ -128,15 +140,18 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
       <span>-</span>
       <input
         type="number"
-        className="text-sm text-gray-600 text-right px-2 bg-gray-200 rounded-lg flex-1"
+        className={cm(
+          "text-sm text-gray-600 text-right px-2 bg-gray-200 rounded-lg flex-1",
+          validMax ? "" : "border border-red-500"
+        )}
         min={0}
         max={max}
         onChange={(e) => {
           const nr = Number(e.target.value);
-          if (nr > min) setMaxValue(nr);
+          if (!isNaN(nr)) setMaxValue(nr);
         }}
         onBlur={() => {
-          if (isDirty) {
+          if (isDirty && valid) {
             onChange(minValue, maxValue);
           }
         }}

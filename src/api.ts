@@ -109,10 +109,29 @@ export const getFacetList = () =>
 export const getCategories = () =>
   fetch(`${baseUrl}/api/categories`).then((d) => toJson<Category[]>(d));
 
+export const getItemIds = (query: ItemsQuery) =>
+  fetch(`${baseUrl}/api/ids`, {
+    method: "POST",
+    body: JSON.stringify(query),
+  })
+    .then((d) => toJson<Record<number, never>>(d))
+    .then((d) => Object.keys(d).map((nr) => Number(nr)));
+
 export const getPopularity = () =>
   fetch(`${baseUrl}/admin/sort/popular`).then((d) =>
     toJson<Record<string, number>>(d)
   );
+
+export const updateCategories = (
+  ids: number[],
+  updates: { id: number; value: string }[]
+) =>
+  fetch(`${baseUrl}/admin/key-values`, {
+    method: "PUT",
+    body: JSON.stringify({ ids, updates }),
+  }).then((d) => {
+    return d.ok;
+  });
 
 export const updatePopularity = (overrides: Record<string, number>) => {
   return fetch(`${baseUrl}/admin/sort/popular`, {
