@@ -5,12 +5,12 @@ import { Search } from "lucide-react";
 import { useQueryHelpers } from "../searchHooks";
 import { makeImageUrl } from "../utils";
 
-type MappedSuggestion = {
-  match: string;
-  hits: number;
-  id: string;
-  value: string;
-};
+// type MappedSuggestion = {
+//   match: string;
+//   hits: number;
+//   id: string;
+//   value: string;
+// };
 
 const useAutoSuggest = () => {
   const [value, setValue] = useState<string | null>(null);
