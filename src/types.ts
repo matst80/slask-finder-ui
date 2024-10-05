@@ -86,6 +86,7 @@ export type BaseFacet = {
 };
 
 export type KeyFacet = BaseFacet & {
+  categoryLevel?: number;
   values: Record<string, number>;
 };
 

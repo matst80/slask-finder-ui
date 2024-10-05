@@ -5,17 +5,27 @@ import {
   Item,
   ItemsQuery,
   FacetResult,
-  Suggestion,
   ItemDetail,
   FacetListItem,
 } from "./types";
 
 const baseUrl = "";
 
-export const autoSuggest = (term: string): Promise<Suggestion[]> =>
-  fetch(`${baseUrl}/api/suggest?q=${term}`).then((d) =>
-    d.ok ? (d.json() as Promise<Suggestion[]>) : Promise.reject(d)
-  );
+export const autoSuggestResponse = (
+  term: string
+): { promise: Promise<Response>; cancel: () => void } => {
+  const cancellationToken = new AbortController();
+
+  const doCancel = () => {
+    cancellationToken.abort();
+  };
+  return {
+    promise: fetch(`${baseUrl}/api/suggest?q=${term}`, {
+      signal: cancellationToken.signal,
+    }),
+    cancel: doCancel,
+  };
+};
 
 // export const search = (term: string, page: number, pageSize: number) =>
 //   fetch(`${baseUrl}/api/search?q=${term}&p=${page}&pz=${pageSize}`).then((d) =>
