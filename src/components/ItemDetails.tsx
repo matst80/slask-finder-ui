@@ -145,7 +145,7 @@ export const ItemDetails = () => {
               <div>
                 <button
                   className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors flex"
-                  onClick={() => addToCart({ id: String(id), quantity: 1 })}
+                  onClick={() => addToCart({ id, quantity: 1 })}
                 >
                   Lägg i kundvagn <ShoppingCart />
                 </button>
