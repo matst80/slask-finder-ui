@@ -7,6 +7,7 @@ import {
   FacetResult,
   Suggestion,
   ItemDetail,
+  FacetListItem,
 } from "./types";
 
 const baseUrl = "";
@@ -56,7 +57,6 @@ const readStreamed = <T>(d: Response): Promise<T[]> => {
   const pump = async (): Promise<T[]> => {
     return reader?.read().then(async ({ done, value }): Promise<T[]> => {
       if (done) {
-        console.log("done", items);
         return items;
       }
 
@@ -102,15 +102,6 @@ export const trackClick = (id: string, position: number) =>
   fetch(`${baseUrl}/api/track/click?id=${id}&pos=${position}`).then(
     (d) => d.ok
   );
-
-type FacetListItem = {
-  id: number;
-  type?: string;
-  name: string;
-  prio?: number;
-  count: number;
-  description?: string;
-};
 
 export const getFacetList = () =>
   fetch(`${baseUrl}/api/facet-list`).then((d) => toJson<FacetListItem[]>(d));

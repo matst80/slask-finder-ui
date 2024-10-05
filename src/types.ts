@@ -157,3 +157,11 @@ export type Price =
       original: number;
       discount: number;
     };
+export type FacetListItem = {
+  id: number;
+  type?: string;
+  name: string;
+  prio?: number;
+  count: number;
+  description?: string;
+};

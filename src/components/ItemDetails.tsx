@@ -54,14 +54,13 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
   );
 };
 
-const Properties = (
-  details: Pick<ItemDetail, "values" | "numberValues" | "integerValues">
-) => {
+const Properties = ({
+  values,
+  numberValues,
+  integerValues,
+}: Pick<ItemDetail, "values" | "numberValues" | "integerValues">) => {
   const { data } = useFacetList();
   const fields = useMemo(() => {
-    if (!details) return [];
-    const { values, numberValues, integerValues } = details;
-
     return [
       ...(values ?? []),
       ...(numberValues ?? []),
@@ -79,7 +78,7 @@ const Properties = (
       })
       .filter((value) => value != null)
       .sort(byPriority);
-  }, [details, data]);
+  }, [values, numberValues, integerValues, data]);
   return (
     <>
       <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">

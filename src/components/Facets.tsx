@@ -116,7 +116,7 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
       <input
         type="number"
         className="text-sm text-gray-600 text-left px-2 bg-gray-200 rounded-lg flex-1"
-        min={min}
+        min={0}
         max={max}
         onChange={(e) => {
           const nr = Number(e.target.value);
@@ -129,7 +129,7 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
       <input
         type="number"
         className="text-sm text-gray-600 text-right px-2 bg-gray-200 rounded-lg flex-1"
-        min={min}
+        min={0}
         max={max}
         onChange={(e) => {
           const nr = Number(e.target.value);

@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { X } from "lucide-react";
-import { Facets, Field, KeyField, NumberField } from "../types";
+import { FacetListItem, Field, KeyField, NumberField } from "../types";
 import { stores } from "../stores";
-import { useFilters, useHashFacets, useQueryHelpers } from "../searchHooks";
+import { useFacetList, useFilters, useQueryHelpers } from "../searchHooks";
 
 type KeyFilter = {
   key: number;
@@ -46,11 +46,13 @@ const isNumberField = (filter: Field): filter is NumberField => {
   return "min" in filter && "max" in filter;
 };
 
-function toFilter(fieldType: "integer" | "float" | "key", facets?: Facets) {
+function toFilter(
+  fieldType: "integer" | "float" | "key",
+  facets?: FacetListItem[]
+) {
   return (data: Field): KeyFilter | NumberFilter => {
+    const field = facets?.find((field) => field.id === data.id);
     if (fieldType === "key" && isKeyField(data)) {
-      const field = facets?.fields.find((field) => field.id === data.id);
-
       return {
         key: data.id,
         name: field?.name,
@@ -63,10 +65,6 @@ function toFilter(fieldType: "integer" | "float" | "key", facets?: Facets) {
       (fieldType === "integer" || fieldType === "float") &&
       isNumberField(data)
     ) {
-      const fields =
-        fieldType === "integer" ? facets?.integerFields : facets?.numberFields;
-      const field = fields?.find((field) => field.id === data.id);
-
       return {
         key: data.id,
         name: field?.name,
@@ -98,7 +96,7 @@ const FilterItem = ({ name, value, onClick }: FilterItemProps) => {
 };
 
 export const CurrentFilters = () => {
-  const { data: results } = useHashFacets();
+  const { data } = useFacetList();
   const {
     query: { stock: locationId },
     setStock,
@@ -114,11 +112,11 @@ export const CurrentFilters = () => {
 
   const selectedFilters = useMemo(() => {
     return [
-      ...keyFilters.map(toFilter("key", results?.facets)),
-      ...numberFilters.map(toFilter("float", results?.facets)),
-      ...integerFilters.map(toFilter("integer", results?.facets)),
+      ...keyFilters.map(toFilter("key", data)),
+      ...numberFilters.map(toFilter("float", data)),
+      ...integerFilters.map(toFilter("integer", data)),
     ].filter(hasValue);
-  }, [keyFilters, numberFilters, integerFilters, results]);
+  }, [keyFilters, numberFilters, integerFilters, data]);
   return (
     (selectedFilters.length > 0 || locationId != null) && (
       <div className="mb-6 flex flex-col md:flex-row items-center gap-2">
