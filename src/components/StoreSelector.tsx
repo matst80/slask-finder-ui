@@ -5,8 +5,10 @@ import { useQueryHelpers } from "../searchHooks";
 
 export const SelectedStore = () => {
   const {
-    query: { stock: locationId },
+    query: { stock },
   } = useQueryHelpers();
+
+  const locationId = stock?.[0];
 
   const selectedStore = useMemo(() => {
     return locationId != null

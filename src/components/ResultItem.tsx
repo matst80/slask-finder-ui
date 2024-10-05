@@ -15,8 +15,9 @@ const StockIndicator = ({
   stockLevel,
 }: Pick<Item, "stock" | "stockLevel">) => {
   const {
-    query: { stock: locationId },
+    query: { stock: stockQuery },
   } = useHashQuery();
+  const locationId = stockQuery?.[0];
   const stockOnLocation = stock?.find((d) => d.id === locationId);
   const storesWithStock = stock?.length ?? 0;
 
@@ -60,7 +61,7 @@ const StockIndicator = ({
 const UpdatedBanner = ({ lastUpdate }: Pick<Item, "lastUpdate">) => {
   const recentlyUpdated = useMemo(
     () => (lastUpdate ?? 0) > Date.now() - 1000 * 60 * 60,
-    [lastUpdate],
+    [lastUpdate]
   );
   return recentlyUpdated ? (
     <div className="flex items-center rounded-bl-md p-1 bg-yellow-300 text-xs gap-2 absolute top-0 right-0">

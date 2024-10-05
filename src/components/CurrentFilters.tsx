@@ -98,9 +98,10 @@ const FilterItem = ({ name, value, onClick }: FilterItemProps) => {
 export const CurrentFilters = () => {
   const { data } = useFacetList();
   const {
-    query: { stock: locationId },
+    query: { stock },
     setStock,
   } = useQueryHelpers();
+  const locationId = stock?.[0];
   const {
     keyFilters,
     numberFilters,
