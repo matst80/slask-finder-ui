@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Item, KeyFacet, Suggestion } from "../types";
 import { autoSuggestResponse, getRawData } from "../api";
 import { Search } from "lucide-react";
-import { useFilters, useQueryHelpers } from "../searchHooks";
+import { queryToHash, useFilters, useQueryHelpers } from "../searchHooks";
 import { makeImageUrl } from "../utils";
 import { useDetails } from "../appState";
 
@@ -70,8 +70,13 @@ const useAutoSuggest = () => {
   return { results, items, facets, setValue };
 };
 
-const MatchingFacets = ({ facets }: { facets: KeyFacet[] }) => {
-  const { addKeyFilter } = useFilters();
+const MatchingFacets = ({
+  facets,
+  query,
+}: {
+  facets: KeyFacet[];
+  query: string;
+}) => {
   const toShow = useMemo(() => {
     const hasType = facets.some((d) => d.type === "type");
     if (hasType) {
@@ -101,7 +106,14 @@ const MatchingFacets = ({ facets }: { facets: KeyFacet[] }) => {
               .map(([value, hits]) => (
                 <span
                   className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
-                  onClick={() => addKeyFilter(f.id, value)}
+                  onClick={() => {
+                    globalThis.location.hash = queryToHash({
+                      string: [{ id: f.id, value }],
+                      query,
+                      stock: [],
+                      page: 0,
+                    });
+                  }}
                 >
                   {value}
                   <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
@@ -200,14 +212,14 @@ export const AutoSuggest = () => {
                 onClick={() => {
                   const query = [...r.other, r.match].join(" ");
                   setValue(query);
-                  setTerm(query);
+                  //setTerm(query);
                 }}
               >
                 {r.match} ({r.hits})
               </div>
             ))}
           </div>
-          <MatchingFacets facets={facets} />
+          <MatchingFacets facets={facets} query={value} />
           <div className="lg:grid grid-cols-2">
             {items.map((i) => (
               <div
