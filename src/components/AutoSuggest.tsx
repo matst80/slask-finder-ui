@@ -206,7 +206,7 @@ export const AutoSuggest = () => {
         >
           <div>
             {results.slice(undefined, 6).map((r) => (
-              <div
+              <button
                 key={r.match}
                 className="p-2 hover:bg-gray-100"
                 onClick={() => {
@@ -216,13 +216,13 @@ export const AutoSuggest = () => {
                 }}
               >
                 {r.match} ({r.hits})
-              </div>
+              </button>
             ))}
           </div>
           <MatchingFacets facets={facets} query={value} />
           <div className="lg:grid grid-cols-2">
             {items.map((i) => (
-              <div
+              <button
                 key={i.id}
                 onClick={loadItem(i.id)}
                 className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer"
@@ -233,7 +233,7 @@ export const AutoSuggest = () => {
                   className="w-10 h-10"
                 />
                 {i.title}
-              </div>
+              </button>
             ))}
           </div>
         </div>
