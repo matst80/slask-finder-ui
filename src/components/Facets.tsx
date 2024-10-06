@@ -263,7 +263,7 @@ const ColorFacetSelector = ({ id, values }: KeyFacet) => {
               aria-label={`Filter by ${color}`}
               onClick={() => {
                 selected != null
-                  ? removeKeyFilter(id, color)
+                  ? removeKeyFilter(id)
                   : addKeyFilter(id, color);
               }}
             />
