@@ -1,5 +1,6 @@
 export type Suggestion = {
   match: string;
+  other: string[];
   hits: number;
 };
 

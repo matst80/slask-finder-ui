@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Item, KeyFacet, Suggestion } from "../types";
-import { autoSuggestResponse } from "../api";
+import { autoSuggestResponse, getRawData } from "../api";
 import { Search } from "lucide-react";
-import { useQueryHelpers } from "../searchHooks";
+import { useFilters, useQueryHelpers } from "../searchHooks";
 import { makeImageUrl } from "../utils";
+import { useDetails } from "../appState";
 
 // type MappedSuggestion = {
 //   match: string;
@@ -70,7 +71,12 @@ const useAutoSuggest = () => {
 };
 
 const MatchingFacets = ({ facets }: { facets: KeyFacet[] }) => {
+  const { addKeyFilter } = useFilters();
   const toShow = useMemo(() => {
+    const hasType = facets.some((d) => d.type === "type");
+    if (hasType) {
+      return facets.filter((d) => d.type === "type");
+    }
     const hasCategories = facets.some(
       (d) => d.categoryLevel != null && d.categoryLevel > 0
     );
@@ -80,10 +86,7 @@ const MatchingFacets = ({ facets }: { facets: KeyFacet[] }) => {
           (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type"
       );
     }
-    const hasType = facets.some((d) => d.type === "type");
-    if (hasType) {
-      return facets.filter((d) => d.type === "type");
-    }
+
     return facets;
   }, [facets]);
   return (
@@ -96,7 +99,10 @@ const MatchingFacets = ({ facets }: { facets: KeyFacet[] }) => {
               .sort((a, b) => b[1] - a[1])
               .slice(undefined, 5)
               .map(([value, hits]) => (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer">
+                <span
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
+                  onClick={() => addKeyFilter(f.id, value)}
+                >
                   {value}
                   <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
                     {hits}
@@ -112,12 +118,14 @@ const MatchingFacets = ({ facets }: { facets: KeyFacet[] }) => {
 
 export const AutoSuggest = () => {
   const { setTerm } = useQueryHelpers();
+  const [_, setDetails] = useDetails();
   const { facets, items, results, setValue: setSuggestTerm } = useAutoSuggest();
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (value.length < 2) {
+      setOpen(false);
       return;
     }
     const timeout = setTimeout(() => {
@@ -136,15 +144,24 @@ export const AutoSuggest = () => {
 
   const applySuggestion = (value: string) => {
     setTerm(value);
-    setOpen(false);
   };
 
   const showItems =
     open && (items.length > 0 || facets.length > 0 || results.length > 0);
 
+  useEffect(() => {
+    const close = () => setOpen(false);
+    globalThis.document.addEventListener("click", close);
+    return () => globalThis.document.removeEventListener("click", close);
+  }, []);
+
+  const loadItem = (id: string) => () => {
+    getRawData(id).then(setDetails);
+  };
+
   return (
     <>
-      <div className="relative flex-1">
+      <div className="relative flex-1" onClick={(e) => e.stopPropagation()}>
         <input
           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           type="search"
@@ -156,8 +173,11 @@ export const AutoSuggest = () => {
             if (e.key === "Enter") {
               applySuggestion(value);
             } else if (e.key === "ArrowRight" && results.length > 0) {
-              setValue(results[0].match);
-              applySuggestion(results[0].match);
+              const query = [...results[0].other, results[0].match]
+                .filter((d) => d != null && d.length > 0)
+                .join(" ");
+              setValue(query);
+              applySuggestion(query);
             }
           }}
           onChange={(e) => setValue(e.target.value)}
@@ -168,10 +188,21 @@ export const AutoSuggest = () => {
         />
       </div>
       {showItems && (
-        <div className="absolute block top-12 left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-xl max-h-[50vh] overflow-y-auto divide-y space-y-2">
+        <div
+          className="absolute block top-12 left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-xl max-h-[50vh] overflow-y-auto divide-y space-y-2"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div>
             {results.slice(undefined, 6).map((r) => (
-              <div key={r.match} className="p-2 hover:bg-gray-100">
+              <div
+                key={r.match}
+                className="p-2 hover:bg-gray-100"
+                onClick={() => {
+                  const query = [...r.other, r.match].join(" ");
+                  setValue(query);
+                  setTerm(query);
+                }}
+              >
                 {r.match} ({r.hits})
               </div>
             ))}
@@ -181,6 +212,7 @@ export const AutoSuggest = () => {
             {items.map((i) => (
               <div
                 key={i.id}
+                onClick={loadItem(i.id)}
                 className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer"
               >
                 <img
