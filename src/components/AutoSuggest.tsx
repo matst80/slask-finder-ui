@@ -235,43 +235,54 @@ export const AutoSuggest = () => {
       </div>
       {showItems && (
         <div
-          className="absolute block top-12 left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-xl max-h-[50vh] overflow-y-auto divide-y space-y-2"
+          className="absolute block top-12 left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-xl max-h-[50vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
-          <div>
-            {results.slice(undefined, 6).map((r) => (
-              <button
-                key={r.match}
-                className="p-2 hover:bg-gray-100"
-                onClick={() => {
-                  const query = [...r.other, r.match].join(" ");
-                  setValue(query);
-                }}
-              >
-                {r.match} ({r.hits})
-              </button>
-            ))}
+          <div className="border-b border-gray-300">
+            <h2 className="font-bold p-2">Förslag:</h2>
+            <div className="flex gap-2">
+              {results.slice(undefined, 6).map(({ hits, match, other }) => (
+                <button
+                  key={match}
+                  className="p-2 hover:bg-gray-100"
+                  onClick={() => {
+                    const query = [...other, match].join(" ");
+                    setValue(query);
+                  }}
+                >
+                  {match}
+                  <span className="ml-2 text-sm inline-flex items-center justify-center px-2 h-4 rounded-full bg-blue-200 text-blue-500">
+                    {hits}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
-          <MatchingFacets
-            facets={facets}
-            query={value}
-            close={() => setOpen(false)}
-          />
-          <div className="lg:grid grid-cols-2">
-            {items.map((i) => (
-              <button
-                key={i.id}
-                onClick={loadItem(i.id)}
-                className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer"
-              >
-                <img
-                  src={makeImageUrl(i.img)}
-                  alt={i.title}
-                  className="w-10 h-10"
-                />
-                {i.title}
-              </button>
-            ))}
+          <div className="border-b border-gray-300">
+            <MatchingFacets
+              facets={facets}
+              query={value}
+              close={() => setOpen(false)}
+            />
+          </div>
+          <div>
+            <h2 className="font-bold p-2">Produkter:</h2>
+            <div className="lg:grid grid-cols-2">
+              {items.map((i) => (
+                <button
+                  key={i.id}
+                  onClick={loadItem(i.id)}
+                  className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer"
+                >
+                  <img
+                    src={makeImageUrl(i.img)}
+                    alt={i.title}
+                    className="w-10 h-10"
+                  />
+                  {i.title}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
