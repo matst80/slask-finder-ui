@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Item, KeyFacet, Suggestion } from "../types";
 import { autoSuggestResponse, getRawData } from "../api";
 import { Search } from "lucide-react";
-import { queryToHash, useFilters, useQueryHelpers } from "../searchHooks";
+import { queryToHash, useQueryHelpers } from "../searchHooks";
 import { makeImageUrl } from "../utils";
 import { useDetails } from "../appState";
 
