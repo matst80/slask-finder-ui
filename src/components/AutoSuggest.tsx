@@ -73,7 +73,9 @@ const useAutoSuggest = () => {
 const MatchingFacets = ({
   facets,
   query,
+  close,
 }: {
+  close: () => void;
   facets: KeyFacet[];
   query: string;
 }) => {
@@ -113,6 +115,7 @@ const MatchingFacets = ({
                       stock: [],
                       page: 0,
                     });
+                    close();
                   }}
                 >
                   {value}
@@ -233,7 +236,11 @@ export const AutoSuggest = () => {
               </button>
             ))}
           </div>
-          <MatchingFacets facets={facets} query={value} />
+          <MatchingFacets
+            facets={facets}
+            query={value}
+            close={() => setOpen(false)}
+          />
           <div className="lg:grid grid-cols-2">
             {items.map((i) => (
               <button
