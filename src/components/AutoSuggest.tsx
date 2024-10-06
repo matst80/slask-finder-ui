@@ -46,7 +46,7 @@ const useAutoSuggest = () => {
             if (line.length < 2) {
               part++;
               setItems(items);
-              setResults(suggestions);
+              setResults(suggestions.sort((a, b) => b.hits - a.hits));
             } else {
               const item = JSON.parse(line);
               if (part === 0) {
@@ -76,7 +76,8 @@ const MatchingFacets = ({ facets }: { facets: KeyFacet[] }) => {
     );
     if (hasCategories) {
       return facets.filter(
-        (d) => d.categoryLevel != null && d.categoryLevel > 0
+        (d) =>
+          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type"
       );
     }
     const hasType = facets.some((d) => d.type === "type");
@@ -88,18 +89,21 @@ const MatchingFacets = ({ facets }: { facets: KeyFacet[] }) => {
   return (
     <div>
       {toShow.map((f) => (
-        <div key={f.id} className="p-2">
-          <h2 className="font-bold">{f.name}</h2>
-          <ul className="flex gap-2 flex-wrap">
-            {Object.entries(f.values).map(([value, hits]) => (
-              <li
-                key={value}
-                className="bg-gray-500 rounded-full p-1 flex-grow-0"
-              >
-                {value} ({hits})
-              </li>
-            ))}
-          </ul>
+        <div className="p-2">
+          <h2 className="font-bold">{f.name}:</h2>
+          <div className="flex gap-2 flex-wrap">
+            {Object.entries(f.values)
+              .sort((a, b) => b[1] - a[1])
+              .slice(undefined, 5)
+              .map(([value, hits]) => (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer">
+                  {value}
+                  <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
+                    {hits}
+                  </span>
+                </span>
+              ))}
+          </div>
         </div>
       ))}
     </div>
@@ -164,18 +168,21 @@ export const AutoSuggest = () => {
         />
       </div>
       {showItems && (
-        <div className="absolute top-12 left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-lg max-h-[50vh] overflow-y-auto">
+        <div className="absolute block top-12 left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-xl max-h-[50vh] overflow-y-auto divide-y space-y-2">
           <div>
-            {results.map((r) => (
+            {results.slice(undefined, 6).map((r) => (
               <div key={r.match} className="p-2 hover:bg-gray-100">
-                {r.match}
+                {r.match} ({r.hits})
               </div>
             ))}
           </div>
           <MatchingFacets facets={facets} />
-          <div>
+          <div className="lg:grid grid-cols-2">
             {items.map((i) => (
-              <div key={i.id} className="p-2 hover:bg-gray-100 flex gap-2">
+              <div
+                key={i.id}
+                className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer"
+              >
                 <img
                   src={makeImageUrl(i.img)}
                   alt={i.title}
