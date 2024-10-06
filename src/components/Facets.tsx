@@ -344,7 +344,7 @@ export const Facets = () => {
           <select
             value={stock}
             onChange={(e) =>
-              setStock(e.target.value === "" ? undefined : [e.target.value])
+              setStock(e.target.value === "" ? [] : [e.target.value])
             }
             className="w-full p-2 border border-gray-300 rounded-md"
           >

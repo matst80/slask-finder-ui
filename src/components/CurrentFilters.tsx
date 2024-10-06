@@ -130,7 +130,7 @@ export const CurrentFilters = () => {
                 stores.find((d) => d.id === locationId)?.displayName ??
                 "Unknown store"
               }
-              onClick={() => setStock(undefined)}
+              onClick={() => setStock([])}
             />
           )}
           {selectedFilters.map((filter) => (

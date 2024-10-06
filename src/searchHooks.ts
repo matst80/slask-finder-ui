@@ -80,7 +80,7 @@ export const filteringQueryToHash = ({
   stock,
 }: FilteringQuery): Record<string, string> => {
   const result: Record<string, string> = {};
-  if (stock != null) {
+  if (stock != null && stock.length > 0) {
     result.stock = stock.join(FIELD_SEPARATOR);
   }
   if (query != null && query.length > 0) {
@@ -139,12 +139,12 @@ export const useFacets = (data: FacetQuery) => {
   });
 };
 
-const getLocationHashData = () => {
+const getLocationHashData = (): ItemsQuery => {
   const hash = globalThis.location.hash;
   if (hash.length > 1) {
     return queryFromHash(hash.substring(1));
   }
-  return {};
+  return { stock: [], page: 0, pageSize: 40, sort: "popular" };
 };
 
 export const useHashQuery = () => {
