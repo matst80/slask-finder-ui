@@ -17,7 +17,7 @@ export const autoSuggestResponse = (
   const cancellationToken = new AbortController();
 
   const doCancel = () => {
-    cancellationToken.abort();
+    cancellationToken.abort("new search started");
   };
   return {
     promise: fetch(`${baseUrl}/api/suggest?q=${term}`, {
