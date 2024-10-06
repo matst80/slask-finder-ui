@@ -23,7 +23,7 @@ const KeyFacetSelector = ({
   const filtered = useMemo(() => {
     return filter.length > 2
       ? allSorted.filter(({ value }) =>
-          value.toLowerCase().includes(filter.toLowerCase())
+          value.toLowerCase().includes(filter.toLowerCase()),
         )
       : allSorted;
   }, [allSorted, filter]);
@@ -70,7 +70,7 @@ const KeyFacetSelector = ({
                   id={value}
                   value={value}
                   checked={keyFilters.some(
-                    (d) => d.value === value && d.id === id
+                    (d) => d.value === value && d.id === id,
                   )}
                   onChange={(e) => {
                     const checked = e.target.checked;
@@ -126,7 +126,7 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
         type="number"
         className={cm(
           "text-sm text-gray-600 text-left px-2 bg-gray-200 rounded-lg flex-1",
-          validMin ? "" : "border border-red-500"
+          validMin ? "" : "border border-red-500",
         )}
         min={0}
         max={max}
@@ -142,7 +142,7 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
         type="number"
         className={cm(
           "text-sm text-gray-600 text-right px-2 bg-gray-200 rounded-lg flex-1",
-          validMax ? "" : "border border-red-500"
+          validMax ? "" : "border border-red-500",
         )}
         min={0}
         max={max}
@@ -176,7 +176,7 @@ const NumberFacetSelector = ({
 
   const { toDisplayValue, fromDisplayValue } = useMemo(
     () => converters(type),
-    [type]
+    [type],
   );
 
   return (
@@ -237,7 +237,7 @@ const IntegerFacetSelector = (facet: NumberFacet) => {
 };
 
 const ColorFacetSelector = ({ id, values }: KeyFacet) => {
-  const { addKeyFilter } = useFilters();
+  const { addKeyFilter, keyFilters, removeKeyFilter } = useFilters();
 
   return (
     <div className="mb-4 border-b border-gray-100 pb-2">
@@ -248,14 +248,24 @@ const ColorFacetSelector = ({ id, values }: KeyFacet) => {
           if (!colorHex) {
             return null;
           }
+          const selected = keyFilters.find(
+            (f) => f.id === id && f.value === color,
+          );
           return (
             <button
               key={color}
               title={color}
-              className={`w-6 h-6 rounded-full border border-gray-300`}
-              style={{ backgroundColor: colorHex }}
+              className={cm(
+                `w-6 h-6 rounded-full border`,
+                selected ? "border-blue-500" : "border-gray-300",
+              )}
+              style={colorHex}
               aria-label={`Filter by ${color}`}
-              onClick={() => addKeyFilter(id, color)}
+              onClick={() => {
+                selected != null
+                  ? removeKeyFilter(id, color)
+                  : addKeyFilter(id, color);
+              }}
             />
           );
         })}
@@ -290,7 +300,7 @@ export const Facets = () => {
           };
         }) ?? []),
       ].sort(byPriority),
-    [results]
+    [results],
   );
 
   if (loadingFacets) {
