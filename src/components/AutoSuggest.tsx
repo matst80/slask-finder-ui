@@ -129,7 +129,10 @@ const MatchingFacets = ({
 };
 
 export const AutoSuggest = () => {
-  const { setTerm } = useQueryHelpers();
+  const {
+    setTerm,
+    query: { query },
+  } = useQueryHelpers();
   const [_, setDetails] = useDetails();
   const { facets, items, results, setValue: setSuggestTerm } = useAutoSuggest();
   const [value, setValue] = useState("");
@@ -137,7 +140,6 @@ export const AutoSuggest = () => {
 
   useEffect(() => {
     if (value.length < 2) {
-      setOpen(false);
       return;
     }
     const timeout = setTimeout(() => {
@@ -153,6 +155,12 @@ export const AutoSuggest = () => {
       clearTimeout(timeout);
     };
   }, [value, setSuggestTerm]);
+
+  useEffect(() => {
+    if (query != null && query.length > 0) {
+      setValue(query);
+    }
+  }, [query]);
 
   const applySuggestion = (value: string) => {
     setTerm(value);
@@ -170,10 +178,16 @@ export const AutoSuggest = () => {
   const loadItem = (id: string) => () => {
     getRawData(id).then(setDetails);
   };
-
+  console.log({ open, showItems });
   return (
     <>
-      <div className="relative flex-1" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="relative flex-1"
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(true);
+        }}
+      >
         <input
           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           type="search"

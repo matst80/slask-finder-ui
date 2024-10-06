@@ -342,7 +342,7 @@ export const Facets = () => {
         <div className="mb-4">
           <h3 className="font-medium mb-2">Select Store</h3>
           <select
-            value={stock}
+            value={stock?.[0] ?? ""}
             onChange={(e) =>
               setStock(e.target.value === "" ? [] : [e.target.value])
             }
