@@ -85,12 +85,12 @@ const MatchingFacets = ({
       return facets.filter((d) => d.type === "type");
     }
     const hasCategories = facets.some(
-      (d) => d.categoryLevel != null && d.categoryLevel > 0,
+      (d) => d.categoryLevel != null && d.categoryLevel > 0
     );
     if (hasCategories) {
       return facets.filter(
         (d) =>
-          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type",
+          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type"
       );
     }
 
@@ -109,13 +109,6 @@ const MatchingFacets = ({
                 <span
                   className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
                   onClick={() => {
-                    console.log({
-                      query,
-                      value,
-                      includes: value
-                        .toLowerCase()
-                        .includes(query.toLowerCase()),
-                    });
                     globalThis.location.hash = queryToHash({
                       string: [{ id: f.id, value }],
                       query: value.toLowerCase().includes(query.toLowerCase())

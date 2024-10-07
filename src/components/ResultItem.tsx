@@ -61,7 +61,7 @@ const StockIndicator = ({
 const UpdatedBanner = ({ lastUpdate }: Pick<Item, "lastUpdate">) => {
   const recentlyUpdated = useMemo(
     () => (lastUpdate ?? 0) > Date.now() - 1000 * 60 * 60,
-    [lastUpdate],
+    [lastUpdate]
   );
   return recentlyUpdated ? (
     <div className="flex items-center rounded-bl-md p-1 bg-yellow-300 text-xs gap-2 absolute top-0 right-0">
@@ -119,7 +119,7 @@ export const ResultItem = ({
   };
 
   const hasRating = values["6"] != null && values["7"] != null;
-
+  const soldBy = values["9"];
   return (
     <div
       key={`item-${id}`}
@@ -181,6 +181,9 @@ export const ResultItem = ({
         )}
         {values["10"] == "Outlet" && values["20"] != null && (
           <em className="italic text-xs">{values["20"]}</em>
+        )}
+        {soldBy != null && soldBy != "Elgiganten" && (
+          <em className="italic text-xs">Säljs av: {soldBy}</em>
         )}
       </div>
 
