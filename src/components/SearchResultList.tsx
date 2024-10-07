@@ -18,6 +18,8 @@ const textSize = (level: number) => {
   }
 };
 
+const byName = (a: Category, b: Category) => a.value.localeCompare(b.value);
+
 const CategoryItem = ({
   value,
   children,
@@ -47,9 +49,11 @@ const CategoryItem = ({
       {open && (
         <ul className="pl-4">
           {children &&
-            children.map((child: Category) => (
-              <CategoryItem key={child.value} {...child} level={level + 1} />
-            ))}
+            children
+              .sort(byName)
+              .map((child: Category) => (
+                <CategoryItem key={child.value} {...child} level={level + 1} />
+              ))}
         </ul>
       )}
     </li>

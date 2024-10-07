@@ -1,6 +1,6 @@
 import { ShoppingCart, X } from "lucide-react";
 import { useDetails } from "../appState";
-import { useFacetList, useRelatedItems } from "../searchHooks";
+import { queryToHash, useFacetList, useRelatedItems } from "../searchHooks";
 import { useMemo, useState } from "react";
 import { byPriority, makeImageUrl } from "../utils";
 import { ItemDetail } from "../types";
@@ -86,11 +86,31 @@ const Properties = ({
       </h3>
       <div className="grid grid-cols-2 gap-2">
         {fields.map((field) => (
-          <div key={field.id} className="mb-2">
+          <div key={`prop-${field.id}-${field.type}`} className="mb-2">
             <h3 className="text-lg font-bold flex gap-4 items-center">
               {field.name}
             </h3>
-            <p className="text-gray-700">{field.value}</p>
+            <p className="text-gray-700">
+              {field.value}{" "}
+              {field.linkedId != null &&
+                field.linkedId > 0 &&
+                field.value != null && (
+                  <button
+                    className="text-blue-500 hover:underline"
+                    onClick={() => {
+                      globalThis.location.hash = queryToHash({
+                        string: [
+                          { id: field.linkedId!, value: String(field.value!) },
+                        ],
+                        page: 0,
+                        stock: [],
+                      });
+                    }}
+                  >
+                    Visa kompatibla
+                  </button>
+                )}
+            </p>
           </div>
         ))}
       </div>

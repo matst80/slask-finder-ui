@@ -164,6 +164,7 @@ export type FacetListItem = {
   type?: string;
   name: string;
   prio?: number;
+  linkedId?: number;
   count: number;
   description?: string;
 };
