@@ -82,7 +82,7 @@ const NoResults = () => {
       <h2 className="text-2xl">Inga resultat 😭</h2>
       <p>Sök eller välj en kategori för att börja</p>
       <ul className="mt-10">
-        {data?.map((category) => (
+        {data?.sort(byName).map((category) => (
           <CategoryItem key={category.value} {...category} level={1} />
         ))}
       </ul>
