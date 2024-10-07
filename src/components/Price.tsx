@@ -1,6 +1,7 @@
 import { InfoIcon } from "lucide-react";
 import { ItemValues } from "../types";
 import { getPrice } from "../utils";
+import { useAdmin } from "../appState";
 
 const SEK = new Intl.NumberFormat("se-SV", {
   minimumFractionDigits: 0,

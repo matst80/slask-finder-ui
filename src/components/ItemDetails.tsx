@@ -3,10 +3,11 @@ import { useDetails } from "../appState";
 import { queryToHash, useFacetList, useRelatedItems } from "../searchHooks";
 import { useMemo, useState } from "react";
 import { byPriority, makeImageUrl } from "../utils";
-import { ItemDetail } from "../types";
+import { ItemDetail, ItemValues } from "../types";
 import { stores } from "../stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../cartHooks";
+import { Price } from "./Price";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -124,42 +125,55 @@ export const ItemDetails = () => {
   const { trigger: addToCart } = useAddToCart();
 
   if (!details) return null;
-  const { title, img, bp, stockLevel, stock, buyable, buyableInStore, id } =
-    details;
+  const {
+    title,
+    img,
+    bp,
+    stockLevel,
+    stock,
+    buyable,
+    buyableInStore,
+    id,
+    integerValues,
+    disclaimer,
+  } = details;
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       onClick={() => setDetails(null)}
     >
       <div
-        className="bg-white rounded-lg shadow-lg p-6 w-full lg:min-w-[800px] max-w-lg max-h-screen overflow-y-auto"
+        className="bg-white rounded-lg shadow-lg p-6 w-full lg:min-w-[800px] max-w-lg max-h-screen overflow-y-auto relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={() => setDetails(null)}
+          className="text-gray-500 hover:text-gray-700 absolute top-2 right-2 p-2"
+        >
+          <X size={24} />
+        </button>
+
+        <div className="pb-6 flex flex-col gap-4">
+          <div className="px-6 pb-6">
+            <img
+              className={`w-full h-auto object-contain`}
+              src={makeImageUrl(img)}
+              alt={title}
+            />
+          </div>
           <h2 className="text-xl font-bold">{title}</h2>
-          <button
-            onClick={() => setDetails(null)}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <X size={24} />
-          </button>
-        </div>
-        <div className="pb-6">
-          {img != null && (
-            <div className="px-6 pb-6">
-              <img
-                className={`w-full h-auto object-contain`}
-                src={makeImageUrl(img)}
-                alt={title}
-              />
-            </div>
-          )}
+          <span className="text-xl font-bold">
+            <Price
+              values={
+                Object.fromEntries(
+                  integerValues.map(({ id, value }) => [String(id), value]),
+                ) as ItemValues
+              }
+              disclaimer={disclaimer}
+            />
+          </span>
           <div className="flex justify-between">
-            <ul>
-              {bp?.split("\n").map((txt) => (
-                <li key={txt}>{txt}</li>
-              ))}
-            </ul>
+            <ul>{bp?.split("\n").map((txt) => <li key={txt}>{txt}</li>)}</ul>
             {(buyable || buyableInStore) && (
               <div>
                 <button
