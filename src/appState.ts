@@ -10,7 +10,6 @@ export const useKeyboardAdminToggle = () => {
   const [_, setAdmin] = useAtom(adminAtom);
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
-      console.log(e);
       if (e.key === "F2") {
         setAdmin((a) => !a);
       }
