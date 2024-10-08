@@ -161,7 +161,7 @@ type AddToCartArgs = {
 };
 
 export const addToCart = (payload: AddToCartArgs) => {
-  return fetch(`${baseUrl}/cart`, {
+  return fetch(`${baseUrl}/cart/`, {
     method: "POST",
     body: JSON.stringify(payload),
   }).then((d) => toJson<Cart>(d));
@@ -173,7 +173,7 @@ type ChangeQuantityArgs = {
 };
 
 export const changeQuantity = (payload: ChangeQuantityArgs) => {
-  return fetch(`${baseUrl}/cart`, {
+  return fetch(`${baseUrl}/cart/`, {
     method: "PUT",
     body: JSON.stringify(payload),
   }).then((d) => toJson<Cart>(d));
@@ -185,4 +185,4 @@ export const removeFromCart = ({ id }: { id: number }) =>
   }).then((d) => toJson<Cart>(d));
 
 export const getCart = () =>
-  fetch(`${baseUrl}/cart`).then((d) => toJson<Cart>(d));
+  fetch(`${baseUrl}/cart/`).then((d) => toJson<Cart>(d));
