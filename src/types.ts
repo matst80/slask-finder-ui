@@ -198,7 +198,14 @@ export type TrackedEvent =
   | CartEvent
   | ImpressionEvent
   | SearchEvent
-  | ClickEvent;
+  | ClickEvent
+  | ActionEvent;
+
+export type ActionEvent = BaseEvent & {
+  event: 6;
+  action: string;
+  reason: string;
+};
 
 export type CartEvent = BaseEvent & {
   event: 3 | 4;

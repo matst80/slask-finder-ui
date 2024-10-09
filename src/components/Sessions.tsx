@@ -7,10 +7,11 @@ import {
   ClickEvent,
   CartEvent,
   ImpressionEvent,
+  ActionEvent,
 } from "../types";
 import { cm, isDefined } from "../utils";
 import { useFacetList } from "../searchHooks";
-import { Eye, Search, ShoppingCart } from "lucide-react";
+import { Eye, Flashlight, Search, ShoppingCart } from "lucide-react";
 
 const SearchEventElement = ({ string }: SearchEvent) => {
   const { data } = useFacetList();
@@ -55,6 +56,14 @@ const ImpressionEventElement = (props: ImpressionEvent) => (
   </div>
 );
 
+const ActionEventElement = ({ action, reason }: ActionEvent) => {
+  return (
+    <div className="font-bold">
+      <Flashlight className="size-5 inline-block" /> {action} ({reason})
+    </div>
+  );
+};
+
 const Event = (props: TrackedEvent) => {
   switch (props.event) {
     case 1:
@@ -66,6 +75,8 @@ const Event = (props: TrackedEvent) => {
       return <CartEventElement {...props} />;
     case 5:
       return <ImpressionEventElement {...props} />;
+    case 6:
+      return <ActionEventElement {...props} />;
   }
 };
 
@@ -108,7 +119,7 @@ const Session = ({ user_agent, ip, language, events }: SessionData) => {
   const [open, setOpen] = useState(false);
   return (
     <div>
-      <button className="block" onClick={() => setOpen((p) => !p)}>
+      <button className="block min-w-fit" onClick={() => setOpen((p) => !p)}>
         <span>{user_agent}</span> | <span>{ip}</span> | <span>{language}</span>
       </button>
       {open && <EventList events={events} />}
