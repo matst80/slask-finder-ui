@@ -119,8 +119,12 @@ const Session = ({ user_agent, ip, language, events }: SessionData) => {
   const [open, setOpen] = useState(false);
   return (
     <div>
-      <button className="block min-w-fit" onClick={() => setOpen((p) => !p)}>
-        <span>{user_agent}</span> | <span>{ip}</span> | <span>{language}</span>
+      <button
+        className="block min-w-fit"
+        onClick={() => setOpen((p) => !p)}
+        title={user_agent}
+      >
+        <span>{ip}</span> | <span>{language}</span>
       </button>
       {open && <EventList events={events} />}
     </div>
@@ -133,7 +137,7 @@ export const Sessions = () => {
     return <div>Loading...</div>;
   }
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {Object.entries(data ?? {})?.map(([key, session]) => (
         <Session key={key} {...session} />
       ))}

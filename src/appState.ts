@@ -24,15 +24,12 @@ export const useFocusTracking = () => {
   useEffect(() => {
     const onBlur = () => {
       trackAction({ action: "lost-focus", reason: "navigation" });
-      console.log("lost focus");
     };
     const onFocus = () => {
       trackAction({ action: "got-focus", reason: "navigation" });
-      console.log("got focus");
     };
     const onExit = () => {
       trackAction({ action: "exit", reason: "navigation" });
-      console.log("exit");
     };
     window.addEventListener("blur", onBlur);
     window.addEventListener("focus", onFocus);
