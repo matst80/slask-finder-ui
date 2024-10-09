@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCategories } from "../categoryHooks";
 import { Category } from "../types";
 import { ResultItem } from "./ResultItem";
@@ -98,10 +98,31 @@ const NoResults = () => {
 };
 
 export const SearchResultList = () => {
+  const ref = useRef<HTMLDivElement>(null);
   const { data: results, isLoading: loadingItems } = useHashResultItems();
   const {
     query: { page, pageSize },
   } = useHashQuery();
+
+  useEffect(() => {
+    if (ref.current) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries
+            .filter((d) => d.isIntersecting)
+            .forEach((entry) => {
+              console.log("intersecting", entry);
+            });
+        },
+        { threshold: 1 }
+      );
+      ref.current.querySelectorAll(".result-item").forEach((item) => {
+        observer.observe(item);
+      });
+      return () => observer.disconnect();
+    }
+  }, [results]);
+
   const start = (page ?? 0) * (pageSize ?? 40);
   if (loadingItems && (!results || !results.length)) {
     return <div>Loading...</div>;
@@ -111,7 +132,10 @@ export const SearchResultList = () => {
     return <NoResults />;
   }
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div
+      ref={ref}
+      className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"
+    >
       {results?.map((item, idx) => (
         <ResultItem key={item.id} {...item} position={start + idx} />
       ))}

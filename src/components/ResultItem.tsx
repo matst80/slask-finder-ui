@@ -123,7 +123,8 @@ export const ResultItem = ({
   return (
     <div
       key={`item-${id}`}
-      className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col`}
+      data-id={id}
+      className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item`}
       onClick={doTrackClick}
     >
       <div className="mt-2">
