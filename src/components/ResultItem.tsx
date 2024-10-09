@@ -1,5 +1,5 @@
 import { Zap } from "lucide-react";
-import { getRawData, trackClick } from "../api";
+import { getRawData } from "../api";
 import { Item } from "../types";
 import { makeImageUrl } from "../utils";
 import { PopularityOverride } from "./PopularityOverride";
@@ -9,6 +9,7 @@ import { TimeAgo } from "./TimeAgo";
 import { useMemo, useState } from "react";
 import { useHashQuery } from "../searchHooks";
 import { useDetails } from "../appState";
+import { trackClick } from "../beacons";
 
 const StockIndicator = ({
   stock,
@@ -61,7 +62,7 @@ const StockIndicator = ({
 const UpdatedBanner = ({ lastUpdate }: Pick<Item, "lastUpdate">) => {
   const recentlyUpdated = useMemo(
     () => (lastUpdate ?? 0) > Date.now() - 1000 * 60 * 60,
-    [lastUpdate]
+    [lastUpdate],
   );
   return recentlyUpdated ? (
     <div className="flex items-center rounded-bl-md p-1 bg-yellow-300 text-xs gap-2 absolute top-0 right-0">

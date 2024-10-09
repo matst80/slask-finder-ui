@@ -85,12 +85,12 @@ const MatchingFacets = ({
       return facets.filter((d) => d.type === "type");
     }
     const hasCategories = facets.some(
-      (d) => d.categoryLevel != null && d.categoryLevel > 0
+      (d) => d.categoryLevel != null && d.categoryLevel > 0,
     );
     if (hasCategories) {
       return facets.filter(
         (d) =>
-          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type"
+          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type",
       );
     }
 
@@ -136,7 +136,6 @@ const MatchingFacets = ({
 export const AutoSuggest = () => {
   const {
     query: { query },
-    setTerm,
   } = useQueryHelpers();
 
   const [_, setDetails] = useDetails();
@@ -149,7 +148,6 @@ export const AutoSuggest = () => {
       return;
     }
     const timeout = setTimeout(() => {
-      //setTerm(value);
       if (value.length < 2) {
         setSuggestTerm(null);
       } else {
