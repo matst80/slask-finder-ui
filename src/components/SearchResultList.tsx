@@ -106,7 +106,7 @@ export const SearchResultList = () => {
   } = useHashQuery();
 
   useEffect(() => {
-    const impressions = new Set<string>();
+    const impressions = new Set<number>();
     let toPush: Impression[] = [];
     if (ref.current) {
       const observer = new IntersectionObserver(
@@ -115,7 +115,7 @@ export const SearchResultList = () => {
             .filter((d) => d.isIntersecting)
             .forEach((entry) => {
               const target = entry.target as HTMLElement;
-              const id = target.dataset.id;
+              const id = Number(target.dataset.id);
               const position = Number(target.dataset.position);
               if (id != null && !isNaN(position)) {
                 if (!impressions.has(id)) {
