@@ -4,7 +4,7 @@ import { Category } from "../types";
 import { ResultItem } from "./ResultItem";
 import { SquareMinus, SquarePlus } from "lucide-react";
 import { useFilters, useHashQuery, useHashResultItems } from "../searchHooks";
-import { trackImpression } from "../beacons";
+import { Impression, trackImpression } from "../beacons";
 
 const textSize = (level: number) => {
   switch (level) {
@@ -106,6 +106,8 @@ export const SearchResultList = () => {
   } = useHashQuery();
 
   useEffect(() => {
+    const impressions = new Set<string>();
+    let toPush: Impression[] = [];
     if (ref.current) {
       const observer = new IntersectionObserver(
         (entries) => {
@@ -116,9 +118,17 @@ export const SearchResultList = () => {
               const id = target.dataset.id;
               const position = Number(target.dataset.position);
               if (id != null && !isNaN(position)) {
-                trackImpression(id, position);
+                if (!impressions.has(id)) {
+                  toPush.push({ id, position });
+                  impressions.add(id);
+                }
               }
             });
+          if (toPush.length) {
+            console.log("Pushing impressions", toPush);
+            trackImpression(toPush);
+            toPush = [];
+          }
         },
         { threshold: 1 }
       );
@@ -127,7 +137,7 @@ export const SearchResultList = () => {
       });
       return () => observer.disconnect();
     }
-  }, [results]);
+  }, [results, ref]);
 
   const start = (page ?? 0) * (pageSize ?? 40);
   if (loadingItems && (!results || !results.length)) {
