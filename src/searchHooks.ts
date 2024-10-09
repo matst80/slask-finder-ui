@@ -172,7 +172,7 @@ export const useHashQuery = () => {
         setQuery((prev) => {
           const value =
             typeof fnOrValue === "function" ? fnOrValue(prev[key]) : fnOrValue;
-          console.log("KeyValue", key, value);
+
           if (key != "page") {
             return { ...prev, [key]: value, page: 0 };
           }

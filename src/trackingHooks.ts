@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import {
+  getRawData,
   getTrackingPopularity,
   getTrackingQueries,
   getTrackingSessions,
@@ -15,4 +16,8 @@ export const useSearchQueries = () => {
 
 export const useTrackingPopularity = () => {
   return useSWR("/api/popularity", getTrackingPopularity);
+};
+
+export const useItemData = (id: number) => {
+  return useSWR(`/api/item/${id}`, () => getRawData(String(id)));
 };
