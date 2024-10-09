@@ -146,7 +146,6 @@ export const AutoSuggest = () => {
 
   useEffect(() => {
     if (value.length < 2) {
-      setTerm(undefined);
       return;
     }
     const timeout = setTimeout(() => {
@@ -161,7 +160,7 @@ export const AutoSuggest = () => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [value, setSuggestTerm, setTerm]);
+  }, [value, setSuggestTerm]);
 
   useEffect(() => {
     if (query != null && query.length > 0) {
