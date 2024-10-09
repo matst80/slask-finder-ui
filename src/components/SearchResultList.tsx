@@ -4,6 +4,7 @@ import { Category } from "../types";
 import { ResultItem } from "./ResultItem";
 import { SquareMinus, SquarePlus } from "lucide-react";
 import { useFilters, useHashQuery, useHashResultItems } from "../searchHooks";
+import { trackImpression } from "../beacons";
 
 const textSize = (level: number) => {
   switch (level) {
@@ -111,7 +112,12 @@ export const SearchResultList = () => {
           entries
             .filter((d) => d.isIntersecting)
             .forEach((entry) => {
-              console.log("intersecting", entry);
+              const target = entry.target as HTMLElement;
+              const id = target.dataset.id;
+              const position = Number(target.dataset.position);
+              if (id != null && !isNaN(position)) {
+                trackImpression(id, position);
+              }
             });
         },
         { threshold: 1 }
