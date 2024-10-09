@@ -168,3 +168,35 @@ export type FacetListItem = {
   count: number;
   description?: string;
 };
+
+export type Promotion = {
+  id: number;
+  name: string;
+  description: string;
+  max_amount?: number;
+  articles: PromotionArticle[];
+};
+
+export type PromotionArticle = {
+  sku: string;
+  actions: PromotionAction[];
+};
+
+export type PromotionAction = {
+  type: string;
+  value: number;
+  market?: string;
+};
+
+export type BaseEvent = {
+  session_id: string;
+  event: number;
+  [key: string]: unknown;
+};
+
+export type SessionData = {
+  user_agent?: string;
+  ip?: string;
+  language?: string;
+  events: BaseEvent[];
+};

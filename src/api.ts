@@ -7,6 +7,8 @@ import {
   FacetResult,
   ItemDetail,
   FacetListItem,
+  Promotion,
+  SessionData,
 } from "./types";
 
 const baseUrl = "";
@@ -26,11 +28,6 @@ export const autoSuggestResponse = (
     cancel: doCancel,
   };
 };
-
-// export const search = (term: string, page: number, pageSize: number) =>
-//   fetch(`${baseUrl}/api/search?q=${term}&p=${page}&pz=${pageSize}`).then((d) =>
-//     d.ok ? (d.json() as Promise<SearchResult>) : Promise.reject(d),
-//   );
 
 export const facets = (query: ItemsQuery) =>
   fetch(`${baseUrl}/api/filter`, {
@@ -89,12 +86,11 @@ const readStreamed = <T>(d: Response): Promise<T[]> => {
 export const streamItems = (
   query: ItemsQuery,
   //onResults: (data: ItemResult) => void,
-): Promise<Item[]> => {
-  return fetch(`${baseUrl}/api/stream`, {
+): Promise<Item[]> =>
+  fetch(`${baseUrl}/api/stream`, {
     method: "POST",
     body: JSON.stringify(query),
   }).then((d) => readStreamed<Item>(d));
-};
 
 async function toJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -106,11 +102,6 @@ async function toJson<T>(response: Response): Promise<T> {
 export const getRawData = (id: string) =>
   fetch(`${baseUrl}/admin/get/${id}`).then((d) =>
     d.ok ? (d.json() as Promise<ItemDetail>) : Promise.reject(d),
-  );
-
-export const trackClick = (id: string, position: number) =>
-  fetch(`${baseUrl}/api/track/click?id=${id}&pos=${position}`).then(
-    (d) => d.ok,
   );
 
 export const getFacetList = () =>
@@ -132,6 +123,11 @@ export const getPopularity = () =>
     toJson<Record<string, number>>(d),
   );
 
+export const getFieldPopularity = () =>
+  fetch(`${baseUrl}/admin/sort/fields`).then((d) =>
+    toJson<Record<string, number>>(d),
+  );
+
 export const updateCategories = (
   ids: number[],
   updates: { id: number; value: string }[],
@@ -143,8 +139,8 @@ export const updateCategories = (
     return d.ok;
   });
 
-export const updatePopularity = (overrides: Record<string, number>) => {
-  return fetch(`${baseUrl}/admin/sort/popular`, {
+export const updatePopularity = (overrides: Record<string, number>) =>
+  fetch(`${baseUrl}/admin/sort/popular`, {
     method: "POST",
     body: JSON.stringify(overrides),
   }).then((d) => {
@@ -153,31 +149,39 @@ export const updatePopularity = (overrides: Record<string, number>) => {
     }
     throw new Error("Failed to update popularity");
   });
-};
+
+export const updateFieldPopularity = (overrides: Record<string, number>) =>
+  fetch(`${baseUrl}/admin/sort/fields`, {
+    method: "POST",
+    body: JSON.stringify(overrides),
+  }).then((d) => {
+    if (d.ok) {
+      return overrides;
+    }
+    throw new Error("Failed to update popularity");
+  });
 
 type AddToCartArgs = {
   id: number;
   quantity: number;
 };
 
-export const addToCart = (payload: AddToCartArgs) => {
-  return fetch(`${baseUrl}/cart/`, {
+export const addToCart = (payload: AddToCartArgs) =>
+  fetch(`${baseUrl}/cart/`, {
     method: "POST",
     body: JSON.stringify(payload),
   }).then((d) => toJson<Cart>(d));
-};
 
 type ChangeQuantityArgs = {
   id: number;
   quantity: number;
 };
 
-export const changeQuantity = (payload: ChangeQuantityArgs) => {
-  return fetch(`${baseUrl}/cart/`, {
+export const changeQuantity = (payload: ChangeQuantityArgs) =>
+  fetch(`${baseUrl}/cart/`, {
     method: "PUT",
     body: JSON.stringify(payload),
   }).then((d) => toJson<Cart>(d));
-};
 
 export const removeFromCart = ({ id }: { id: number }) =>
   fetch(`${baseUrl}/cart/${id}`, {
@@ -186,3 +190,35 @@ export const removeFromCart = ({ id }: { id: number }) =>
 
 export const getCart = () =>
   fetch(`${baseUrl}/cart/`).then((d) => toJson<Cart>(d));
+
+export const getCartById = (id: string | number) =>
+  fetch(`${baseUrl}/cart/${id}`).then((d) => toJson<Cart>(d));
+
+export const getPromotions = () =>
+  fetch(`${baseUrl}/api/promotion`).then((d) => toJson<Promotion[]>(d));
+
+export const addPromotion = (data: Promotion) =>
+  fetch(`${baseUrl}/api/promotion`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  }).then((d) => toJson<Promotion>(d));
+
+export const removePromotion = (id: string) =>
+  fetch(`${baseUrl}/api/promotion/${id}`, {
+    method: "DELETE",
+  }).then((d) => d.ok);
+
+export const getTrackingPopularity = () =>
+  fetch(`${baseUrl}/tracking/popularity`).then((d) =>
+    toJson<Record<string, number>>(d),
+  );
+
+export const getTrackingQueries = () =>
+  fetch(`${baseUrl}/tracking/queries`).then((d) =>
+    toJson<Record<string, number>>(d),
+  );
+
+export const getTrackingSessions = () =>
+  fetch(`${baseUrl}/tracking/sessions`).then((d) =>
+    toJson<Record<number, SessionData>>(d),
+  );
