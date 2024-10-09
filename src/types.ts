@@ -1,3 +1,5 @@
+import { Impression } from "./beacons";
+
 export type Suggestion = {
   match: string;
   other: string[];
@@ -190,13 +192,41 @@ export type PromotionAction = {
 
 export type BaseEvent = {
   session_id: string;
-  event: number;
-  [key: string]: unknown;
+};
+
+export type TrackedEvent =
+  | CartEvent
+  | ImpressionEvent
+  | SearchEvent
+  | ClickEvent;
+
+export type CartEvent = BaseEvent & {
+  event: 3 | 4;
+  item: CartItem;
+};
+
+export type SearchEvent = BaseEvent & {
+  event: 1;
+  query: string;
+  string: KeyField[];
+  number: NumberField[];
+  integer: NumberField[];
+};
+
+export type ImpressionEvent = BaseEvent & {
+  event: 5;
+  items: Impression[];
+};
+
+export type ClickEvent = BaseEvent & {
+  event: 2;
+  id: number;
+  position: number;
 };
 
 export type SessionData = {
   user_agent?: string;
   ip?: string;
   language?: string;
-  events: BaseEvent[];
+  events: TrackedEvent[];
 };

@@ -8,3 +8,6 @@ export const trackImpression = (impressions: Impression[]) =>
     `/api/track/impressions`,
     JSON.stringify([...impressions])
   );
+
+export const trackAction = (payload: { action: string; reason: string }) =>
+  globalThis.navigator.sendBeacon(`/api/track/action`, JSON.stringify(payload));

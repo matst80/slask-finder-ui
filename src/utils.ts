@@ -10,7 +10,7 @@ export function remove<T>(key: string | number) {
 }
 export const makeImageUrl = (
   pathOrUrl: string,
-  size = "--pdp_main-640.jpg",
+  size = "--pdp_main-640.jpg"
 ) => {
   if (pathOrUrl.startsWith("http")) {
     return pathOrUrl;
@@ -21,7 +21,7 @@ export const makeImageUrl = (
 export const useFetchMutation = <T, U>(
   key: string,
   fn: (payload: U) => Promise<T>,
-  config?: SWRMutationConfiguration<T, Error, string, U>,
+  config?: SWRMutationConfiguration<T, Error, string, U>
 ) => {
   return useSWRMutation(key, (_, { arg }) => fn(arg), {
     ...config,
@@ -163,3 +163,11 @@ type PrioProps = {
 
 export const byPriority = (a: PrioProps, b: PrioProps) =>
   (b.prio ?? 0) - (a.prio ?? 0);
+export const cm = (...arg: (string | string[] | false | undefined)[]) =>
+  arg
+    .flat()
+    .filter((d) => d !== undefined && d !== false)
+    .flatMap((d) => d.split(" "))
+    .join(" ");
+
+export const isDefined = <T>(d: T): d is NonNullable<T> => d !== null;
