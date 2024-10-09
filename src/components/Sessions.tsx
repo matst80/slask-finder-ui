@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useSessions } from "../trackingHooks";
 import {
   TrackedEvent,
@@ -42,11 +42,11 @@ const SearchEventElement = ({ string }: SearchEvent) => {
     </div>
   );
 };
-const ClickEventElement = (props: ClickEvent) => <div>Click</div>;
+const ClickEventElement = (props: ClickEvent) => <div>Click ({props.id})</div>;
 const CartEventElement = (props: CartEvent) => (
   <div className="font-bold">
     <ShoppingCart className="size-5 inline-block" />
-    Add to cart
+    Add to cart ({props.id} - {props.quantity})
   </div>
 );
 const ImpressionEventElement = (props: ImpressionEvent) => (

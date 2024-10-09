@@ -202,7 +202,8 @@ export type TrackedEvent =
 
 export type CartEvent = BaseEvent & {
   event: 3 | 4;
-  item: CartItem;
+  id: number;
+  quantity: number;
 };
 
 export type SearchEvent = BaseEvent & {

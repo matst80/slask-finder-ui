@@ -1,5 +1,5 @@
 import { SWRConfig } from "swr";
-import { useKeyboardAdminToggle } from "./appState";
+import { useFocusTracking, useKeyboardAdminToggle } from "./appState";
 import { AutoSuggest } from "./components/AutoSuggest";
 import { CurrentFilters } from "./components/CurrentFilters";
 import { Facets } from "./components/Facets";
@@ -8,10 +8,11 @@ import { MiniCart } from "./components/MiniCart";
 import { Paging } from "./components/Paging";
 import { ResultHeader } from "./components/ResultHeader";
 import { SearchResultList } from "./components/SearchResultList";
-import { SessionButtonAndDialog, Sessions } from "./components/Sessions";
+import { SessionButtonAndDialog } from "./components/Sessions";
 
 function App() {
   useKeyboardAdminToggle();
+  useFocusTracking();
   return (
     <SWRConfig value={{}}>
       <div className="container mx-auto px-4 py-8">
