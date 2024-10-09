@@ -163,7 +163,7 @@ export const useHashQuery = () => {
     (fn: (data: ItemsQuery) => ItemsQuery) => {
       globalThis.location.hash = queryToHash(fn(query));
     },
-    [query]
+    [query],
   );
 
   const partialUpdate = useCallback(
@@ -172,14 +172,14 @@ export const useHashQuery = () => {
         setQuery((prev) => {
           const value =
             typeof fnOrValue === "function" ? fnOrValue(prev[key]) : fnOrValue;
-
+          console.log("KeyValue", key, value);
           if (key != "page") {
             return { ...prev, [key]: value, page: 0 };
           }
           return { ...prev, [key]: value };
         });
       },
-    [setQuery]
+    [setQuery],
   );
 
   return {

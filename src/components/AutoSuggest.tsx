@@ -136,7 +136,6 @@ const MatchingFacets = ({
 export const AutoSuggest = () => {
   const {
     query: { query },
-    setTerm,
   } = useQueryHelpers();
 
   const [_, setDetails] = useDetails();
