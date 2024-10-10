@@ -139,6 +139,17 @@ export const updateCategories = (
     return d.ok;
   });
 
+export const getStaticPositions = () =>
+  fetch(`${baseUrl}/admin/sort/static`).then((d) =>
+    toJson<Record<number, number>>(d),
+  );
+
+export const setStaticPositions = (data: Record<number, number>) =>
+  fetch(`${baseUrl}/admin/sort/static`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  }).then((d) => toJson<Record<string, number>>(d));
+
 export const updatePopularity = (overrides: Record<string, number>) =>
   fetch(`${baseUrl}/admin/sort/popular`, {
     method: "POST",
@@ -220,3 +231,8 @@ export const getTrackingQueries = () =>
 
 export const getTrackingSessions = () =>
   fetch(`${baseUrl}/tracking/sessions`).then((d) => toJson<SessionData[]>(d));
+
+export const getTrackingFieldPopularity = () =>
+  fetch(`${baseUrl}/tracking/field-popularity`).then((d) =>
+    toJson<SessionData[]>(d),
+  );

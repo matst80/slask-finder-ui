@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { trackAction } from "./beacons";
 
 const adminAtom = atom(false);
-const detailsAtom = atom<ItemDetail | null>(null);
 
 export const useKeyboardAdminToggle = () => {
   const [_, setAdmin] = useAtom(adminAtom);
@@ -43,8 +42,4 @@ export const useFocusTracking = () => {
 
 export const useAdmin = () => {
   return useAtom(adminAtom);
-};
-
-export const useDetails = () => {
-  return useAtom(detailsAtom);
 };

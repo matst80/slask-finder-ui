@@ -5,6 +5,7 @@ import { ResultItem } from "./ResultItem";
 import { SquareMinus, SquarePlus } from "lucide-react";
 import { useFilters, useHashQuery, useHashResultItems } from "../searchHooks";
 import { Impression, trackImpression } from "../beacons";
+import { Button, ButtonLink } from "./ui/button";
 
 const textSize = (level: number) => {
   switch (level) {
@@ -25,9 +26,10 @@ const CategoryItem = ({
   value,
   children,
   level,
-}: Category & { level: number }) => {
+  defaultOpen = false,
+}: Category & { level: number; defaultOpen?: boolean }) => {
   const { addKeyFilter } = useFilters();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <li>
       <div className="flex gap-4 items-center">
@@ -80,18 +82,19 @@ const NoResults = () => {
   const { data } = useCategories();
   return (
     <div>
-      <h2 className="text-2xl">Inga resultat 😭</h2>
-      <p>Sök eller välj en kategori för att börja</p>
       <ul className="mt-10">
-        {data?.sort(byName).map((category) => (
-          <CategoryItem key={category.value} {...category} level={1} />
+        {data?.sort(byName).map((category, idx) => (
+          <CategoryItem
+            key={category.value}
+            {...category}
+            level={1}
+            defaultOpen={idx < 3}
+          />
         ))}
       </ul>
       <div className="flex gap-4 mt-6">
         {searchList.map(({ title, href }) => (
-          <a className="bg-gray-200 rounded-lg px-3 py-1" href={href}>
-            {title}
-          </a>
+          <ButtonLink href={href}>{title}</ButtonLink>
         ))}
       </div>
     </div>
@@ -125,7 +128,6 @@ export const SearchResultList = () => {
               }
             });
           if (toPush.length) {
-            console.log("Pushing impressions", toPush);
             trackImpression(toPush);
             toPush = [];
           }

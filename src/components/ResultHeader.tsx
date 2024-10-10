@@ -68,7 +68,8 @@ export const ResultHeader = () => {
   } = useHashQuery();
   const { data } = useHashFacets();
   const [open, setOpen] = useState(false);
-  if (!data || (data.totalHits === 0 && query?.length === 0)) {
+  const hasQuery = Boolean(query?.length);
+  if (!data || (data.totalHits === 0 && !hasQuery)) {
     return null;
   }
 
