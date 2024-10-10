@@ -133,10 +133,23 @@ export const useItemsSearch = (query: ItemsQuery) => {
   });
 };
 
+const delay = <T>(fn: () => Promise<T>, ms: number): (() => Promise<T>) => {
+  return () =>
+    new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(fn());
+      }, ms);
+    });
+};
+
 export const useFacets = (data: FacetQuery) => {
-  return useSWR(facetsKey(data), () => facets(data), {
-    keepPreviousData: true,
-  });
+  return useSWR(
+    facetsKey(data),
+    delay(() => facets(data), 80),
+    {
+      keepPreviousData: true,
+    }
+  );
 };
 
 const getLocationHashData = (): ItemsQuery => {
@@ -163,7 +176,7 @@ export const useHashQuery = () => {
     (fn: (data: ItemsQuery) => ItemsQuery) => {
       globalThis.location.hash = queryToHash(fn(query));
     },
-    [query],
+    [query]
   );
 
   const partialUpdate = useCallback(
@@ -179,7 +192,7 @@ export const useHashQuery = () => {
           return { ...prev, [key]: value };
         });
       },
-    [setQuery],
+    [setQuery]
   );
 
   return {

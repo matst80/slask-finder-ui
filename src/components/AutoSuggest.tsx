@@ -85,12 +85,12 @@ const MatchingFacets = ({
       return facets.filter((d) => d.type === "type");
     }
     const hasCategories = facets.some(
-      (d) => d.categoryLevel != null && d.categoryLevel > 0,
+      (d) => d.categoryLevel != null && d.categoryLevel > 0
     );
     if (hasCategories) {
       return facets.filter(
         (d) =>
-          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type",
+          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type"
       );
     }
 
@@ -134,10 +134,6 @@ const MatchingFacets = ({
 };
 
 export const AutoSuggest = () => {
-  const {
-    query: { query },
-  } = useQueryHelpers();
-
   const [_, setDetails] = useDetails();
   const { facets, items, results, setValue: setSuggestTerm } = useAutoSuggest();
   const [value, setValue] = useState("");
@@ -159,12 +155,6 @@ export const AutoSuggest = () => {
       clearTimeout(timeout);
     };
   }, [value, setSuggestTerm]);
-
-  useEffect(() => {
-    if (query != null && query.length > 0) {
-      setValue(query);
-    }
-  }, [query]);
 
   const applySuggestion = (value: string) => {
     globalThis.location.hash = queryToHash({

@@ -102,7 +102,7 @@ export const SearchResultList = () => {
   const ref = useRef<HTMLDivElement>(null);
   const { data: results, isLoading: loadingItems } = useHashResultItems();
   const {
-    query: { page, pageSize },
+    query: { page, pageSize, query },
   } = useHashQuery();
 
   useEffect(() => {
@@ -144,7 +144,7 @@ export const SearchResultList = () => {
     return <div>Loading...</div>;
   }
 
-  if (!results || !results.length) {
+  if (!results || (!results.length && (query == null || query.length < 1))) {
     return <NoResults />;
   }
   return (

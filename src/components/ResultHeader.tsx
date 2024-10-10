@@ -5,6 +5,7 @@ import { useFacetList, useHashFacets, useHashQuery } from "../searchHooks";
 import { Sorting } from "./Sorting";
 import { SelectedStore } from "./StoreSelector";
 import { X } from "lucide-react";
+import { FilterQuery } from "./FilterQuery";
 
 const EditCategories = ({ onClose }: { onClose: () => void }) => {
   const { data } = useFacetList();
@@ -62,15 +63,18 @@ const EditCategories = ({ onClose }: { onClose: () => void }) => {
 
 export const ResultHeader = () => {
   const [admin] = useAdmin();
+  const {
+    query: { query },
+  } = useHashQuery();
   const { data } = useHashFacets();
   const [open, setOpen] = useState(false);
-  if (!data || data.totalHits === 0) {
+  if (!data || (data.totalHits === 0 && query?.length === 0)) {
     return null;
   }
 
   return (
     <>
-      <header className="flex justify-between gap-2 items-center mb-6">
+      <header className="flex justify-between gap-2 items-center mb-2">
         <h1 className="md:text-2xl font-bold">Produkter ({data.totalHits})</h1>
         {admin && <button onClick={() => setOpen(true)}>Update</button>}
         <SelectedStore />
@@ -78,6 +82,7 @@ export const ResultHeader = () => {
           <Sorting />
         </div>
       </header>
+      <FilterQuery />
       {open && admin && <EditCategories onClose={() => setOpen(false)} />}
     </>
   );

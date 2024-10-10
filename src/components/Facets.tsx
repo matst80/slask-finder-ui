@@ -297,9 +297,9 @@ export const Facets = () => {
     [results]
   );
 
-  if (loadingFacets) {
-    return <aside className="w-full md:w-72"></aside>;
-  }
+  // if (loadingFacets) {
+  //   return <aside className="w-full md:w-72"></aside>;
+  // }
 
   const hasFacets = allFacets.length > 0;
   return (
