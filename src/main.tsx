@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { createBrowserRouter, Link, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Admin } from "./Admin.tsx";
 import { Tracking } from "./Tracking.tsx";
 import { Navbar } from "./components/NavBar.tsx";

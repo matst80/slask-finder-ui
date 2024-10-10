@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Item, KeyFacet, Suggestion } from "../types";
-import { autoSuggestResponse, getRawData } from "../api";
+import { autoSuggestResponse } from "../api";
 import { Search } from "lucide-react";
-import { queryToHash, useQueryHelpers } from "../searchHooks";
+import { queryToHash } from "../searchHooks";
 import { makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
 
@@ -85,12 +85,12 @@ const MatchingFacets = ({
       return facets.filter((d) => d.type === "type");
     }
     const hasCategories = facets.some(
-      (d) => d.categoryLevel != null && d.categoryLevel > 0
+      (d) => d.categoryLevel != null && d.categoryLevel > 0,
     );
     if (hasCategories) {
       return facets.filter(
         (d) =>
-          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type"
+          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type",
       );
     }
 

@@ -5,7 +5,7 @@ import { ResultItem } from "./ResultItem";
 import { SquareMinus, SquarePlus } from "lucide-react";
 import { useFilters, useHashQuery, useHashResultItems } from "../searchHooks";
 import { Impression, trackImpression } from "../beacons";
-import { Button, ButtonLink } from "./ui/button";
+import { ButtonLink } from "./ui/button";
 
 const textSize = (level: number) => {
   switch (level) {
@@ -83,14 +83,16 @@ const NoResults = () => {
   return (
     <div>
       <ul className="mt-10">
-        {data?.sort(byName).map((category, idx) => (
-          <CategoryItem
-            key={category.value}
-            {...category}
-            level={1}
-            defaultOpen={idx < 3}
-          />
-        ))}
+        {data
+          ?.sort(byName)
+          .map((category, idx) => (
+            <CategoryItem
+              key={category.value}
+              {...category}
+              level={1}
+              defaultOpen={idx < 3}
+            />
+          ))}
       </ul>
       <div className="flex gap-4 mt-6">
         {searchList.map(({ title, href }) => (
@@ -132,7 +134,7 @@ export const SearchResultList = () => {
             toPush = [];
           }
         },
-        { threshold: 1 }
+        { threshold: 1 },
       );
       ref.current.querySelectorAll(".result-item").forEach((item) => {
         observer.observe(item);

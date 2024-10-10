@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQueryHelpers } from "../searchHooks";
-import { Filter, Search } from "lucide-react";
+import { Filter } from "lucide-react";
 
 export const FilterQuery = () => {
   const {

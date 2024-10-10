@@ -1,5 +1,4 @@
 import { atom } from "jotai";
-import { ItemDetail } from "./types";
 import { useAtom } from "jotai/react";
 import { useEffect } from "react";
 import { trackAction } from "./beacons";

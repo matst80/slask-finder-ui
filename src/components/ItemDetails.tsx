@@ -1,4 +1,4 @@
-import { ShoppingCart, X } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { queryToHash, useFacetList, useRelatedItems } from "../searchHooks";
 import { useMemo, useState } from "react";
 import { byPriority, makeImageUrl } from "../utils";
@@ -7,7 +7,6 @@ import { stores } from "../stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../cartHooks";
 import { Price } from "./Price";
-import { useNavigate } from "react-router-dom";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -121,7 +120,7 @@ const Properties = ({
 
 export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart } = useAddToCart();
-  const navigate = useNavigate();
+
   if (!details) return null;
   const {
     title,
@@ -150,18 +149,14 @@ export const ItemDetails = (details: ItemDetail) => {
           <Price
             values={
               Object.fromEntries(
-                integerValues.map(({ id, value }) => [String(id), value])
+                integerValues.map(({ id, value }) => [String(id), value]),
               ) as ItemValues
             }
             disclaimer={disclaimer}
           />
         </span>
         <div className="flex justify-between">
-          <ul>
-            {bp?.split("\n").map((txt) => (
-              <li key={txt}>{txt}</li>
-            ))}
-          </ul>
+          <ul>{bp?.split("\n").map((txt) => <li key={txt}>{txt}</li>)}</ul>
           {(buyable || buyableInStore) && (
             <div>
               <button

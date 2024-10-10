@@ -1,4 +1,4 @@
-import { Bell, Menu, Search, Settings, User } from "lucide-react";
+import { Bell, Menu, Settings, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 
