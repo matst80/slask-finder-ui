@@ -39,7 +39,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "admin",
+    path: "edit",
     element: (
       <PageContainer>
         <Admin />
@@ -57,7 +57,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "tracking",
+    path: "stats",
     element: (
       <PageContainer>
         <Tracking />

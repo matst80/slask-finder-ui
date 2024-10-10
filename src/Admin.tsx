@@ -7,8 +7,8 @@ import { TableSearchResultList } from "./components/SearchResultList";
 
 export const Admin = () => {
   return (
-    <div className="px-10 py-2 bg-gray-100">
-      <div className="flex gap-2 items-center mb-2 py-2 rounded-b-md">
+    <div className="px-10 py-2 bg-gray-100 min-h-screen">
+      <div className="flex gap-2 items-center mb-2 py-2 rounded-b-md relative">
         <AutoSuggest />
         {/* <MiniCart /> */}
       </div>

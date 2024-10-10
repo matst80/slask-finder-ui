@@ -150,7 +150,7 @@ const EventList = ({ events }: { events: TrackedEvent[] }) => {
             className={cm(
               "self-start px-5 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer",
               indent === 1 && "ml-5",
-              indent === 2 && "ml-10"
+              indent === 2 && "ml-10",
             )}
           >
             <Event {...event} />
@@ -180,7 +180,7 @@ const Session = (props: SessionData) => {
   return (
     <Button variant="outline">
       <Link
-        to={`/tracking/session/${session_id}`}
+        to={`/stats/session/${session_id}`}
         className="min-w-fit flex justify-between"
         //onClick={() => setOpen((p) => !p)}
       >
