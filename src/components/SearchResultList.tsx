@@ -128,7 +128,6 @@ export const SearchResultList = () => {
               }
             });
           if (toPush.length) {
-            console.log("Pushing impressions", toPush);
             trackImpression(toPush);
             toPush = [];
           }

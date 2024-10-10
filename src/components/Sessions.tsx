@@ -12,7 +12,8 @@ import {
 import { cm, isDefined, makeImageUrl } from "../utils";
 import { useFacetList } from "../searchHooks";
 import { Eye, Flashlight, Search, ShoppingCart } from "lucide-react";
-import { ResultItem } from "./ResultItem";
+import { Link, useLoaderData } from "react-router-dom";
+import { TimeAgo } from "./TimeAgo";
 
 const SearchEventElement = ({ string }: SearchEvent) => {
   const { data } = useFacetList();
@@ -148,7 +149,7 @@ const EventList = ({ events }: { events: TrackedEvent[] }) => {
             className={cm(
               "self-start px-5 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer",
               indent === 1 && "ml-5",
-              indent === 2 && "ml-10",
+              indent === 2 && "ml-10"
             )}
           >
             <Event {...event} />
@@ -169,24 +170,28 @@ const EventList = ({ events }: { events: TrackedEvent[] }) => {
 };
 
 const Session = (props: SessionData) => {
-  const { user_agent, ip, language, events } = props;
-  const [open, setOpen] = useState(false);
+  const { user_agent, ip, language, session_id } = props;
+
   return (
     <div onClick={() => console.log(props)}>
-      <button
-        className="block min-w-fit"
-        onClick={() => setOpen((p) => !p)}
-        title={user_agent}
+      <Link
+        to={`/tracking/session/${session_id}`}
+        className="min-w-fit flex justify-between"
+        //onClick={() => setOpen((p) => !p)}
       >
-        <span>{ip}</span> | <span>{language}</span>
-      </button>
-      {open && <EventList events={events} />}
+        <span title={user_agent}>
+          {ip}, {language}
+        </span>
+        <span className="text-sm bg-yellow-200 rounded-lg px-2 py-1">
+          <TimeAgo ts={props.ts * 1000} />
+        </span>
+      </Link>
     </div>
   );
 };
 
 const byTs = (a: SessionData, b: SessionData) => {
-  return a.ts - b.ts;
+  return b.ts - a.ts;
 };
 
 export const Sessions = () => {
@@ -199,36 +204,28 @@ export const Sessions = () => {
   }
   return (
     <div className="flex flex-col gap-2">
-      {sessions.map((session, idx) => (
+      {sessions.sort(byTs).map((session, idx) => (
         <Session key={`session-${idx}`} {...session} />
       ))}
     </div>
   );
 };
 
-export const SessionButtonAndDialog = () => {
-  const [open, setOpen] = useState(false);
+export const SessionView = () => {
+  const data = useLoaderData() as SessionData | null;
+  if (!data) {
+    return <div>Loading...</div>;
+  }
   return (
-    <>
-      <button
-        className="bg-gray-200 rounded-lg px-3 py-1"
-        onClick={() => setOpen(true)}
-      >
-        Sessions
-      </button>
-      {open && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg max-h-screen overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Sessions />
-          </div>
-        </div>
-      )}
-    </>
+    <div>
+      <h1>Session</h1>
+      <div>
+        <span>{data.ip}</span>, <span>{data.language}</span>
+        <span className="text-sm">
+          <TimeAgo ts={data.ts * 1000} />
+        </span>
+      </div>
+      <EventList events={data.events} />
+    </div>
   );
 };

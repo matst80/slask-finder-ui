@@ -7,8 +7,9 @@ import { Admin } from "./Admin.tsx";
 import { Tracking } from "./Tracking.tsx";
 import { Navbar } from "./components/NavBar.tsx";
 import { SWRConfig } from "swr";
-import { getRawData } from "./api.ts";
+import { getRawData, getTrackingSessions } from "./api.ts";
 import { ProductPage } from "./components/ProductPage.tsx";
+import { SessionView } from "./components/Sessions.tsx";
 
 const PageContainer = ({ children }: PropsWithChildren) => {
   return (
@@ -53,6 +54,18 @@ const router = createBrowserRouter([
         <Tracking />
       </PageContainer>
     ),
+    children: [
+      {
+        path: "session/:id",
+        loader: ({ params: { id } }) =>
+          getTrackingSessions().then((d) => {
+            console.log(d, id);
+            return d.find((s) => String(s.session_id) === id);
+          }),
+        errorElement: <div>Session not found</div>,
+        element: <SessionView />,
+      },
+    ],
   },
 ]);
 
