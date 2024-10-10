@@ -4,7 +4,7 @@ import { autoSuggestResponse, getRawData } from "../api";
 import { Search } from "lucide-react";
 import { queryToHash, useQueryHelpers } from "../searchHooks";
 import { makeImageUrl } from "../utils";
-import { useDetails } from "../appState";
+import { Link } from "react-router-dom";
 
 // type MappedSuggestion = {
 //   match: string;
@@ -134,7 +134,6 @@ const MatchingFacets = ({
 };
 
 export const AutoSuggest = () => {
-  const [_, setDetails] = useDetails();
   const { facets, items, results, setValue: setSuggestTerm } = useAutoSuggest();
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
@@ -172,10 +171,6 @@ export const AutoSuggest = () => {
     globalThis.document.addEventListener("click", close);
     return () => globalThis.document.removeEventListener("click", close);
   }, []);
-
-  const loadItem = (id: string) => () => {
-    getRawData(id).then(setDetails);
-  };
 
   return (
     <>
@@ -249,9 +244,9 @@ export const AutoSuggest = () => {
             <h2 className="font-bold p-2">Produkter:</h2>
             <div className="lg:grid grid-cols-2">
               {items.map((i) => (
-                <button
+                <Link
                   key={i.id}
-                  onClick={loadItem(i.id)}
+                  to={`/product/${i.id}`}
                   className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer"
                 >
                   <img
@@ -260,7 +255,7 @@ export const AutoSuggest = () => {
                     className="w-10 h-10"
                   />
                   {i.title}
-                </button>
+                </Link>
               ))}
             </div>
           </div>
