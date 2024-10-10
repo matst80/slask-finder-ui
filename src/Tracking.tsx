@@ -6,24 +6,25 @@ export const Tracking = () => {
   return (
     <div className="grid grid-cols-[25rem,auto] min-h-screen">
       <div className="border-r border-gray-300 py-10 px-5">
-        <Button>
-          <Link to="/tracking/queries" className="font-bold">
-            Queries
-          </Link>
-        </Button>
+        <div className="flex flex-col gap-4 pb-6">
+          <Button variant="outline">
+            <Link to="/tracking/queries" className="font-bold block">
+              Queries
+            </Link>
+          </Button>
 
-        <Button>
-          <Link to="/tracking/popular" className="font-bold">
-            Popular items
-          </Link>
-        </Button>
+          <Button variant="outline">
+            <Link to="/tracking/popular" className="font-bold block">
+              Popular items
+            </Link>
+          </Button>
 
-        <Button>
-          <Link to="/tracking/facets" className="font-bold">
-            Popular facets
-          </Link>
-        </Button>
-
+          <Button variant="outline">
+            <Link to="/tracking/facets" className="font-bold block">
+              Popular facets
+            </Link>
+          </Button>
+        </div>
         <h3 className="font-bold">Sessions</h3>
         <Sessions />
       </div>

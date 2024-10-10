@@ -14,6 +14,7 @@ import { useFacetList } from "../searchHooks";
 import { Eye, Flashlight, Search, ShoppingCart } from "lucide-react";
 import { Link, useLoaderData } from "react-router-dom";
 import { TimeAgo } from "./TimeAgo";
+import { Button } from "./ui/button";
 
 const SearchEventElement = ({ string }: SearchEvent) => {
   const { data } = useFacetList();
@@ -169,24 +170,28 @@ const EventList = ({ events }: { events: TrackedEvent[] }) => {
   );
 };
 
+const trimLanguage = (language?: string) => {
+  return language?.split(",")[0];
+};
+
 const Session = (props: SessionData) => {
   const { user_agent, ip, language, session_id } = props;
 
   return (
-    <div onClick={() => console.log(props)}>
+    <Button variant="outline">
       <Link
         to={`/tracking/session/${session_id}`}
         className="min-w-fit flex justify-between"
         //onClick={() => setOpen((p) => !p)}
       >
         <span title={user_agent}>
-          {ip}, {language}
+          {ip}, {trimLanguage(language)}
         </span>
         <span className="text-sm bg-yellow-200 rounded-lg px-2 py-1">
           <TimeAgo ts={props.ts * 1000} />
         </span>
       </Link>
-    </div>
+    </Button>
   );
 };
 
@@ -219,7 +224,7 @@ export const SessionView = () => {
   return (
     <div>
       <h1>Session</h1>
-      <div>
+      <div className="mb-6">
         <span>{data.ip}</span>, <span>{data.language}</span>
         <span className="text-sm">
           <TimeAgo ts={data.ts * 1000} />

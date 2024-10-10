@@ -65,6 +65,18 @@ const router = createBrowserRouter([
         errorElement: <div>Session not found</div>,
         element: <SessionView />,
       },
+      {
+        path: "queries",
+        element: <div>Queries</div>,
+      },
+      {
+        path: "popular",
+        element: <div>Popular items</div>,
+      },
+      {
+        path: "facets",
+        element: <div>Popular facets</div>,
+      },
     ],
   },
 ]);
