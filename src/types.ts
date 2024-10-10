@@ -192,6 +192,7 @@ export type PromotionAction = {
 
 export type BaseEvent = {
   session_id: string;
+  ts: number;
 };
 
 export type TrackedEvent =
@@ -209,7 +210,7 @@ export type ActionEvent = BaseEvent & {
 
 export type CartEvent = BaseEvent & {
   event: 3 | 4;
-  id: number;
+  item: number;
   quantity: number;
 };
 
@@ -228,11 +229,11 @@ export type ImpressionEvent = BaseEvent & {
 
 export type ClickEvent = BaseEvent & {
   event: 2;
-  id: number;
+  item: number;
   position: number;
 };
 
-export type SessionData = {
+export type SessionData = BaseEvent & {
   user_agent?: string;
   ip?: string;
   language?: string;

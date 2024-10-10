@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useSessions } from "../trackingHooks";
+import { useItemData, useSessions } from "../trackingHooks";
 import {
   TrackedEvent,
   SessionData,
@@ -9,9 +9,10 @@ import {
   ImpressionEvent,
   ActionEvent,
 } from "../types";
-import { cm, isDefined } from "../utils";
+import { cm, isDefined, makeImageUrl } from "../utils";
 import { useFacetList } from "../searchHooks";
 import { Eye, Flashlight, Search, ShoppingCart } from "lucide-react";
+import { ResultItem } from "./ResultItem";
 
 const SearchEventElement = ({ string }: SearchEvent) => {
   const { data } = useFacetList();
@@ -43,23 +44,75 @@ const SearchEventElement = ({ string }: SearchEvent) => {
     </div>
   );
 };
-const ClickEventElement = (props: ClickEvent) => <div>Click ({props.id})</div>;
-const CartEventElement = (props: CartEvent) => (
-  <div className="font-bold">
-    <ShoppingCart className="size-5 inline-block" />
-    Add to cart ({props.id} - {props.quantity})
-  </div>
-);
-const ImpressionEventElement = (props: ImpressionEvent) => (
-  <div className="font-bold">
-    <Eye className="size-5 inline-block" /> Impression ({props.items.length})
-  </div>
-);
+
+const ItemPreview = ({ id }: { id: number }) => {
+  const { data } = useItemData(id);
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+  return (
+    <img
+      src={makeImageUrl(data.img)}
+      title={data.title}
+      className="object-cover size-28"
+    />
+  );
+};
+
+const ClickEventElement = (props: ClickEvent) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div onClick={() => setOpen((p) => !p)}>
+      Click ({props.item}){open && <ItemPreview id={props.item} />}
+    </div>
+  );
+};
+const CartEventElement = (props: CartEvent) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="font-bold" onClick={() => setOpen((p) => !p)}>
+      <ShoppingCart className="size-5 inline-block" />
+      Add to cart ({props.item} - {props.quantity})
+      {open && <ItemPreview id={props.item} />}
+    </div>
+  );
+};
+const ImpressionEventElement = (props: ImpressionEvent) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="font-bold" onClick={() => setOpen((p) => !p)}>
+      <Eye className="size-5 inline-block" /> Impression ({props.items.length})
+      {open && (
+        <div className="p-4 rounded-lg bg-white">
+          <div className="flex gap-2 flex-wrap">
+            {props.items.map((item) => (
+              <ItemPreview id={item.id} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const getActionName = (action: string) => {
+  if (action === "exit") {
+    return "Leave the page";
+  }
+  if (action === "lost-focus") {
+    return "Tab out of the application";
+  }
+  if (action === "got-focus") {
+    return "Got back to the application";
+  }
+  return action;
+};
 
 const ActionEventElement = ({ action, reason }: ActionEvent) => {
   return (
     <div className="font-bold">
-      <Flashlight className="size-5 inline-block" /> {action} ({reason})
+      <Flashlight className="size-5 inline-block" /> {getActionName(action)} (
+      {reason})
     </div>
   );
 };
@@ -95,7 +148,7 @@ const EventList = ({ events }: { events: TrackedEvent[] }) => {
             className={cm(
               "self-start px-5 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer",
               indent === 1 && "ml-5",
-              indent === 2 && "ml-10"
+              indent === 2 && "ml-10",
             )}
           >
             <Event {...event} />
@@ -115,10 +168,11 @@ const EventList = ({ events }: { events: TrackedEvent[] }) => {
   );
 };
 
-const Session = ({ user_agent, ip, language, events }: SessionData) => {
+const Session = (props: SessionData) => {
+  const { user_agent, ip, language, events } = props;
   const [open, setOpen] = useState(false);
   return (
-    <div>
+    <div onClick={() => console.log(props)}>
       <button
         className="block min-w-fit"
         onClick={() => setOpen((p) => !p)}
@@ -131,15 +185,22 @@ const Session = ({ user_agent, ip, language, events }: SessionData) => {
   );
 };
 
+const byTs = (a: SessionData, b: SessionData) => {
+  return a.ts - b.ts;
+};
+
 export const Sessions = () => {
   const { data, isLoading } = useSessions();
+  const sessions = useMemo(() => {
+    return data?.sort(byTs) ?? [];
+  }, [data]);
   if (isLoading) {
     return <div>Loading...</div>;
   }
   return (
     <div className="flex flex-col gap-2">
-      {Object.entries(data ?? {})?.map(([key, session]) => (
-        <Session key={key} {...session} />
+      {sessions.map((session, idx) => (
+        <Session key={`session-${idx}`} {...session} />
       ))}
     </div>
   );
