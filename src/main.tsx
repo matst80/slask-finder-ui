@@ -10,6 +10,7 @@ import { SWRConfig } from "swr";
 import { getRawData, getTrackingSessions } from "./api.ts";
 import { ProductPage } from "./components/ProductPage.tsx";
 import { SessionView } from "./components/Sessions.tsx";
+import { QueriesView } from "./tracking/queries.tsx";
 
 const PageContainer = ({ children }: PropsWithChildren) => {
   return (
@@ -26,6 +27,14 @@ const router = createBrowserRouter([
     element: (
       <PageContainer>
         <App />
+      </PageContainer>
+    ),
+  },
+  {
+    path: "dashboard",
+    element: (
+      <PageContainer>
+        <div></div>
       </PageContainer>
     ),
   },
@@ -67,7 +76,7 @@ const router = createBrowserRouter([
       },
       {
         path: "queries",
-        element: <div>Queries</div>,
+        element: <QueriesView />,
       },
       {
         path: "popular",
@@ -86,5 +95,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <SWRConfig value={{}}>
       <RouterProvider router={router} />
     </SWRConfig>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
