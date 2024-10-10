@@ -1,5 +1,4 @@
 import { Zap } from "lucide-react";
-import { getRawData } from "../api";
 import { Item } from "../types";
 import { makeImageUrl } from "../utils";
 import { PopularityOverride } from "./PopularityOverride";
@@ -8,8 +7,8 @@ import { Stars } from "./Stars";
 import { TimeAgo } from "./TimeAgo";
 import { useMemo, useState } from "react";
 import { useHashQuery } from "../searchHooks";
-import { useDetails } from "../appState";
 import { trackClick } from "../beacons";
+import { Link } from "react-router-dom";
 
 const StockIndicator = ({
   stock,
@@ -110,24 +109,20 @@ export const ResultItem = ({
 }: Item & {
   position: number;
 }) => {
-  const [_, setDetails] = useDetails();
-  const doTrackClick = () => {
+  const trackItem = () => {
     trackClick(id, position);
-    getRawData(id).then((data) => {
-      console.log(data);
-      setDetails(data);
-    });
   };
 
   const hasRating = values["6"] != null && values["7"] != null;
   const soldBy = values["9"];
   return (
-    <div
+    <Link
+      to={`/product/${id}`}
       key={`item-${id}`}
       data-id={id}
       data-position={position}
       className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item`}
-      onClick={doTrackClick}
+      onClick={trackItem}
     >
       <div className="mt-2">
         <ImageWithPlaceHolder img={img} title={title} />
@@ -192,6 +187,6 @@ export const ResultItem = ({
 
       <PopularityOverride id={id} />
       <UpdatedBanner lastUpdate={updated} />
-    </div>
+    </Link>
   );
 };

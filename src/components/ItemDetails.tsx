@@ -1,5 +1,4 @@
 import { ShoppingCart, X } from "lucide-react";
-import { useDetails } from "../appState";
 import { queryToHash, useFacetList, useRelatedItems } from "../searchHooks";
 import { useMemo, useState } from "react";
 import { byPriority, makeImageUrl } from "../utils";
@@ -8,6 +7,7 @@ import { stores } from "../stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../cartHooks";
 import { Price } from "./Price";
+import { useNavigate } from "react-router-dom";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -119,11 +119,9 @@ const Properties = ({
   );
 };
 
-export const ItemDetails = () => {
-  const [details, setDetails] = useDetails();
-
+export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart } = useAddToCart();
-
+  const navigate = useNavigate();
   if (!details) return null;
   const {
     title,
@@ -138,67 +136,56 @@ export const ItemDetails = () => {
     disclaimer,
   } = details;
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={() => setDetails(null)}
-    >
-      <div
-        className="bg-white rounded-lg shadow-lg p-6 w-full lg:min-w-[800px] max-w-lg max-h-screen overflow-y-auto relative"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={() => setDetails(null)}
-          className="text-gray-500 hover:text-gray-700 absolute top-2 right-2 p-2"
-        >
-          <X size={24} />
-        </button>
-
-        <div className="pb-6 flex flex-col gap-4">
-          <div className="px-6 pb-6">
-            <img
-              className={`w-full h-auto object-contain`}
-              src={makeImageUrl(img)}
-              alt={title}
-            />
-          </div>
-          <h2 className="text-xl font-bold">{title}</h2>
-          <span className="text-xl font-bold">
-            <Price
-              values={
-                Object.fromEntries(
-                  integerValues.map(({ id, value }) => [String(id), value]),
-                ) as ItemValues
-              }
-              disclaimer={disclaimer}
-            />
-          </span>
-          <div className="flex justify-between">
-            <ul>{bp?.split("\n").map((txt) => <li key={txt}>{txt}</li>)}</ul>
-            {(buyable || buyableInStore) && (
-              <div>
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors flex"
-                  onClick={() => addToCart({ id, quantity: 1 })}
-                >
-                  Lägg i kundvagn <ShoppingCart />
-                </button>
-                <StockList stock={stock} />
-              </div>
-            )}
-          </div>
-          {stockLevel != null && <p>I lager online: {stockLevel}</p>}
+    <>
+      <div className="pb-6 flex flex-col gap-4">
+        <div className="px-6 pb-6">
+          <img
+            className={`max-w-full w-screen-sm h-auto object-contain`}
+            src={makeImageUrl(img)}
+            alt={title}
+          />
         </div>
-        <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
-          Relaterade produkter
-        </h3>
-        <RelatedItems id={details.id} />
-
-        <Properties
-          integerValues={details.integerValues}
-          values={details.values}
-          numberValues={details.integerValues}
-        />
+        <h2 className="text-xl font-bold">{title}</h2>
+        <span className="text-xl font-bold">
+          <Price
+            values={
+              Object.fromEntries(
+                integerValues.map(({ id, value }) => [String(id), value])
+              ) as ItemValues
+            }
+            disclaimer={disclaimer}
+          />
+        </span>
+        <div className="flex justify-between">
+          <ul>
+            {bp?.split("\n").map((txt) => (
+              <li key={txt}>{txt}</li>
+            ))}
+          </ul>
+          {(buyable || buyableInStore) && (
+            <div>
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors flex"
+                onClick={() => addToCart({ id, quantity: 1 })}
+              >
+                Lägg i kundvagn <ShoppingCart />
+              </button>
+              <StockList stock={stock} />
+            </div>
+          )}
+        </div>
+        {stockLevel != null && <p>I lager online: {stockLevel}</p>}
       </div>
-    </div>
+      <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
+        Relaterade produkter
+      </h3>
+      <RelatedItems id={details.id} />
+
+      <Properties
+        integerValues={details.integerValues}
+        values={details.values}
+        numberValues={details.integerValues}
+      />
+    </>
   );
 };
