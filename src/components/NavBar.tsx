@@ -29,13 +29,13 @@ export function Navbar() {
                 </Link>
 
                 <Link
-                  to="/tracking"
+                  to="/stats"
                   className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Tracking
                 </Link>
                 <Link
-                  to="/admin"
+                  to="/edit"
                   className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Edit
