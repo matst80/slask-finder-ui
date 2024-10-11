@@ -13,6 +13,7 @@ import { SessionView } from "./components/Sessions.tsx";
 import { QueriesView } from "./pages/tracking/queries.tsx";
 import { PopularItemsView } from "./pages/tracking/popular-items.tsx";
 import { PopularFacetsView } from "./pages/tracking/popular-facets.tsx";
+import { UpdatedItems } from "./pages/tracking/updates.tsx";
 
 const PageContainer = ({ children }: PropsWithChildren) => {
   return (
@@ -104,6 +105,14 @@ const router = createBrowserRouter([
         element: <PopularFacetsView />,
       },
     ],
+  },
+  {
+    path: "updated",
+    element: (
+      <PageContainer>
+        <UpdatedItems />
+      </PageContainer>
+    ),
   },
 ]);
 

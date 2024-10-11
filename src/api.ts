@@ -9,6 +9,7 @@ import {
   FacetListItem,
   Promotion,
   SessionData,
+  UpdatedItem,
 } from "./types";
 
 const baseUrl = "";
@@ -239,3 +240,6 @@ export const getTrackingFieldPopularity = () =>
   fetch(`${baseUrl}/tracking/field-popularity`).then((d) =>
     toJson<Record<number, number>>(d)
   );
+
+export const getTrackingUpdates = () =>
+  fetch(`${baseUrl}/tracking/updated`).then((d) => toJson<UpdatedItem[]>(d));

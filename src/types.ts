@@ -42,6 +42,13 @@ export type Item = ItemProps & {
   stock?: Stock[];
 };
 
+export type UpdatedItem = ItemProps & {
+  id: string;
+  title: string;
+  values: { id: number; value: string | number }[];
+  stock?: Stock[];
+};
+
 export type FieldValue<T> = {
   id: number;
   value: T;

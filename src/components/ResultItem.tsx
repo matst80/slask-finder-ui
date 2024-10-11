@@ -73,6 +73,13 @@ const UpdatedBanner = ({ lastUpdate }: Pick<Item, "lastUpdate">) => {
 
 const ImageWithPlaceHolder = ({ img, title }: Pick<Item, "img" | "title">) => {
   const [loaded, setLoaded] = useState(false);
+  if (img == null) {
+    return (
+      <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+        <span className="text-gray-400">{title}</span>
+      </div>
+    );
+  }
   return (
     <div className="relative w-full h-48">
       {img != null && (
@@ -105,6 +112,7 @@ export const ResultItem = ({
   stockLevel,
   disclaimer,
   advertisingText,
+  saleStatus,
 }: Item & {
   position: number;
 }) => {
@@ -114,6 +122,20 @@ export const ResultItem = ({
 
   const hasRating = values["6"] != null && values["7"] != null;
   const soldBy = values["9"];
+  if (saleStatus === "MDD") {
+    return (
+      <Link
+        to={`/product/${id}`}
+        key={`item-${id}`}
+        data-id={id}
+        data-position={position}
+        className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col items-center justify-center result-item`}
+        onClick={trackItem}
+      >
+        Deleted {id}
+      </Link>
+    );
+  }
   return (
     <Link
       to={`/product/${id}`}
@@ -169,6 +191,7 @@ export const ResultItem = ({
             <Price values={values} disclaimer={disclaimer} />
           </span>
         </div>
+
         {advertisingText != null && (
           <em className="italic text-xs">{advertisingText}</em>
         )}
