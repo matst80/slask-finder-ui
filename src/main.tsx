@@ -1,16 +1,18 @@
 import React, { PropsWithChildren } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
+import App from "./pages/App.tsx";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Admin, EditFacetsView, EditSearchView } from "./Admin.tsx";
-import { Tracking } from "./Tracking.tsx";
+import { Admin, EditFacetsView, EditSearchView } from "./pages/Admin.tsx";
+import { Tracking } from "./pages/Tracking.tsx";
 import { Navbar } from "./components/NavBar.tsx";
 import { SWRConfig } from "swr";
 import { getRawData, getTrackingSessions } from "./api.ts";
 import { ProductPage } from "./components/ProductPage.tsx";
 import { SessionView } from "./components/Sessions.tsx";
-import { QueriesView } from "./tracking/queries.tsx";
+import { QueriesView } from "./pages/tracking/queries.tsx";
+import { PopularItemsView } from "./pages/tracking/popular-items.tsx";
+import { PopularFacetsView } from "./pages/tracking/popular-facets.tsx";
 
 const PageContainer = ({ children }: PropsWithChildren) => {
   return (
@@ -53,6 +55,7 @@ const router = createBrowserRouter([
       { path: "bulk", element: <EditSearchView /> },
       {
         path: "product/:id",
+        element: <ProductPage />,
       },
       {
         path: "facets",
@@ -94,11 +97,11 @@ const router = createBrowserRouter([
       },
       {
         path: "popular",
-        element: <div>Popular items</div>,
+        element: <PopularItemsView />,
       },
       {
         path: "facets",
-        element: <div>Popular facets</div>,
+        element: <PopularFacetsView />,
       },
     ],
   },

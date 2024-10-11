@@ -63,27 +63,26 @@ const EditCategories = ({ onClose }: { onClose: () => void }) => {
 
 export const ResultHeader = () => {
   const [admin] = useAdmin();
-  const {
-    query: { query },
-  } = useHashQuery();
+  // const {
+  //   query: { query },
+  // } = useHashQuery();
   const { data } = useHashFacets();
   const [open, setOpen] = useState(false);
-  const hasQuery = Boolean(query?.length);
-  if (!data || (data.totalHits === 0 && !hasQuery)) {
-    return null;
-  }
+  // const hasQuery = Boolean(query?.length);
 
   return (
     <>
       <header className="flex justify-between gap-2 items-center mb-2">
-        <h1 className="md:text-2xl font-bold">Produkter ({data.totalHits})</h1>
+        <h1 className="md:text-2xl font-bold">
+          Produkter ({data?.totalHits ?? "~"})
+        </h1>
         {admin && <button onClick={() => setOpen(true)}>Update</button>}
         <SelectedStore />
         <div className="relative">
           <Sorting />
         </div>
       </header>
-      <FilterQuery />
+      <FilterQuery show={(data?.totalHits ?? 0) > 40} />
       {open && admin && <EditCategories onClose={() => setOpen(false)} />}
     </>
   );

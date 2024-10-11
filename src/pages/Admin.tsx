@@ -1,14 +1,14 @@
 import { Link, Outlet } from "react-router-dom";
-import { AutoSuggest } from "./components/AutoSuggest";
-import { CurrentFilters } from "./components/CurrentFilters";
-import { Facets } from "./components/Facets";
-import { Paging } from "./components/Paging";
-import { ResultHeader } from "./components/ResultHeader";
+import { AutoSuggest } from "../components/AutoSuggest";
+import { CurrentFilters } from "../components/CurrentFilters";
+import { Facets } from "../components/Facets";
+import { Paging } from "../components/Paging";
+import { ResultHeader } from "../components/ResultHeader";
 import {
   AllFacets,
   TableSearchResultList,
-} from "./components/SearchResultList";
-import { useKeyboardAdminToggle } from "./appState";
+} from "../components/SearchResultList";
+import { useKeyboardAdminToggle } from "../appState";
 
 const AdminNavBar = () => {
   return (

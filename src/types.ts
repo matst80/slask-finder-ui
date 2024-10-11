@@ -164,8 +164,10 @@ export type Price =
 export type FacetListItem = {
   id: number;
   type?: string;
+  fieldType: string;
   name: string;
   prio?: number;
+  sort?: number;
   linkedId?: number;
   count: number;
   description?: string;

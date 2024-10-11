@@ -137,7 +137,7 @@ export const ItemDetails = (details: ItemDetail) => {
   return (
     <>
       <div className="pb-6 flex flex-col gap-4">
-        <div className="px-6 pb-6">
+        <div className="px-6 pb-6 items-center justify-center w-full flex">
           <img
             className={`max-w-full w-screen-sm h-auto object-contain`}
             src={makeImageUrl(img)}
@@ -149,14 +149,18 @@ export const ItemDetails = (details: ItemDetail) => {
           <Price
             values={
               Object.fromEntries(
-                integerValues.map(({ id, value }) => [String(id), value]),
+                integerValues.map(({ id, value }) => [String(id), value])
               ) as ItemValues
             }
             disclaimer={disclaimer}
           />
         </span>
         <div className="flex justify-between">
-          <ul>{bp?.split("\n").map((txt) => <li key={txt}>{txt}</li>)}</ul>
+          <ul>
+            {bp?.split("\n").map((txt) => (
+              <li key={txt}>{txt}</li>
+            ))}
+          </ul>
           {(buyable || buyableInStore) && (
             <div>
               <button

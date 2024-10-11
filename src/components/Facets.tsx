@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { KeyFacet, NumberFacet } from "../types";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, LoaderCircle } from "lucide-react";
 import { stores } from "../stores";
 import { useFilters, useHashFacets, useQueryHelpers } from "../searchHooks";
 import { byPriority, cm, colourNameToHex, converters } from "../utils";
@@ -23,7 +23,7 @@ const KeyFacetSelector = ({
   const filtered = useMemo(() => {
     return filter.length > 2
       ? allSorted.filter(({ value }) =>
-          value.toLowerCase().includes(filter.toLowerCase()),
+          value.toLowerCase().includes(filter.toLowerCase())
         )
       : allSorted;
   }, [allSorted, filter]);
@@ -70,7 +70,7 @@ const KeyFacetSelector = ({
                   id={value}
                   value={value}
                   checked={keyFilters.some(
-                    (d) => d.value === value && d.id === id,
+                    (d) => d.value === value && d.id === id
                   )}
                   onChange={(e) => {
                     const checked = e.target.checked;
@@ -120,7 +120,7 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
         type="number"
         className={cm(
           "text-sm text-gray-600 text-left px-2 bg-gray-200 rounded-lg flex-1",
-          validMin ? "" : "border border-red-500",
+          validMin ? "" : "border border-red-500"
         )}
         min={0}
         max={max}
@@ -136,7 +136,7 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
         type="number"
         className={cm(
           "text-sm text-gray-600 text-right px-2 bg-gray-200 rounded-lg flex-1",
-          validMax ? "" : "border border-red-500",
+          validMax ? "" : "border border-red-500"
         )}
         min={0}
         max={max}
@@ -170,7 +170,7 @@ const NumberFacetSelector = ({
 
   const { toDisplayValue, fromDisplayValue } = useMemo(
     () => converters(type),
-    [type],
+    [type]
   );
 
   return (
@@ -243,7 +243,7 @@ const ColorFacetSelector = ({ id, values }: KeyFacet) => {
             return null;
           }
           const selected = keyFilters.find(
-            (f) => f.id === id && f.value === color,
+            (f) => f.id === id && f.value === color
           );
           return (
             <button
@@ -251,7 +251,7 @@ const ColorFacetSelector = ({ id, values }: KeyFacet) => {
               title={color}
               className={cm(
                 `w-6 h-6 rounded-full border`,
-                selected ? "border-blue-500" : "border-gray-300",
+                selected ? "border-blue-500" : "border-gray-300"
               )}
               style={colorHex}
               aria-label={`Filter by ${color}`}
@@ -269,7 +269,7 @@ const ColorFacetSelector = ({ id, values }: KeyFacet) => {
 };
 
 export const Facets = () => {
-  const { data: results } = useHashFacets();
+  const { data: results, isLoading } = useHashFacets();
   const {
     query: { stock },
     setStock,
@@ -294,14 +294,20 @@ export const Facets = () => {
           };
         }) ?? []),
       ].sort(byPriority),
-    [results],
+    [results]
   );
-
-  // if (loadingFacets) {
-  //   return <aside className="w-full md:w-72"></aside>;
-  // }
-
   const hasFacets = allFacets.length > 0;
+  if (isLoading && !hasFacets) {
+    return (
+      <aside className="w-full md:w-72 animate-pulse">
+        <h2 className="text-lg font-semibold mb-4">Filter</h2>
+        <div className="my-10 flex items-center justify-center">
+          <LoaderCircle className="size-10 animate-spin" />
+        </div>
+      </aside>
+    );
+  }
+
   return (
     hasFacets && (
       <aside className="w-full md:w-72">

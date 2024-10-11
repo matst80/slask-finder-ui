@@ -1,11 +1,11 @@
-import { useFocusTracking } from "./appState";
-import { AutoSuggest } from "./components/AutoSuggest";
-import { CurrentFilters } from "./components/CurrentFilters";
-import { Facets } from "./components/Facets";
-import { MiniCart } from "./components/MiniCart";
-import { Paging } from "./components/Paging";
-import { ResultHeader } from "./components/ResultHeader";
-import { SearchResultList } from "./components/SearchResultList";
+import { useFocusTracking } from "../appState";
+import { AutoSuggest } from "../components/AutoSuggest";
+import { CurrentFilters } from "../components/CurrentFilters";
+import { Facets } from "../components/Facets";
+import { MiniCart } from "../components/MiniCart";
+import { Paging } from "../components/Paging";
+import { ResultHeader } from "../components/ResultHeader";
+import { SearchResultList } from "../components/SearchResultList";
 
 function App() {
   useFocusTracking();

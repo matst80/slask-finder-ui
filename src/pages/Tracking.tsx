@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router-dom";
-import { Sessions } from "./components/Sessions";
-import { Button } from "./components/ui/button";
+import { Button } from "../components/ui/button";
+import { Sessions } from "../components/Sessions";
 
 export const Tracking = () => {
   return (

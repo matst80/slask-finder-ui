@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useCategories } from "../categoryHooks";
-import { Category } from "../types";
+import { Category, FacetListItem } from "../types";
 import { ResultItem } from "./ResultItem";
 import {
   ChevronDown,
@@ -29,6 +29,8 @@ import {
 } from "./ui/table";
 import { Link } from "react-router-dom";
 import { byPriority } from "../utils";
+import { useFieldValues } from "../adminHooks";
+import { Input } from "./ui/input";
 
 const textSize = (level: number) => {
   switch (level) {
@@ -197,27 +199,74 @@ export const CategoryList = () => {
   );
 };
 
+const FacetValues = ({ id }: { id: number }) => {
+  const { data: values } = useFieldValues(id);
+  return (
+    <ul>
+      {values?.map((value) => (
+        <li key={value}>{value}</li>
+      ))}
+    </ul>
+  );
+};
+
+export const AdminFacet = (facet: FacetListItem) => {
+  const [open, setOpen] = useState(false);
+  const isKeyFacet = facet.fieldType === "key";
+  return (
+    <>
+      <div className="grid grid-cols-subgrid col-span-full border-b border-gray-100 p-4">
+        <div>
+          <button
+            className="font-medium bold"
+            onClick={() => setOpen((p) => !p)}
+          >
+            {facet.name} ({isKeyFacet ? "" : "max-min: "}
+            {facet.count})
+            {isKeyFacet && (
+              <>
+                {open ? (
+                  <ChevronUp className="size-4 inline ml-2" />
+                ) : (
+                  <ChevronDown className="size-4 inline ml-2" />
+                )}
+              </>
+            )}
+          </button>
+        </div>
+        <span>
+          <Input defaultValue={facet.type} />
+        </span>
+        <span>
+          <select value={facet.sort}>
+            <option>By number of hits</option>
+            <option>Name</option>
+          </select>
+        </span>
+        <Input defaultValue={facet.prio} type="number" />
+      </div>
+      {isKeyFacet && open && (
+        <div className="grid grid-cols-subgrid col-span-full border-b border-gray-100 p-4">
+          <FacetValues id={facet.id} />
+        </div>
+      )}
+    </>
+  );
+};
+
 export const AllFacets = () => {
   const { data: facets } = useFacetList();
-  const open = false;
   return (
-    <div>
-      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6 grid grid-cols-3 gap-3">
+    <div className="container">
+      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6 grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-subgrid col-span-full border-b border-gray-300 p-4 font-bold">
+          <div>Name</div>
+          <div>Type</div>
+          <div>Sort</div>
+          <div>Priority</div>
+        </div>
         {facets?.sort(byPriority).map((facet) => (
-          <div className="grid grid-cols-subgrid col-span-full border-b border-gray-100 p-4">
-            <div key={facet.id}>
-              <button className="font-medium bold flex items-center justify-between w-full text-left">
-                {facet.name} ({facet.count})
-                {open ? (
-                  <ChevronUp className="size-4" />
-                ) : (
-                  <ChevronDown className="size-4" />
-                )}
-              </button>
-            </div>
-            <span>{facet.type}</span>
-            <span>{facet.prio}</span>
-          </div>
+          <AdminFacet key={facet.id} {...facet} />
         ))}
       </div>
     </div>

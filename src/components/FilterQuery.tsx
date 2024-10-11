@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { useQueryHelpers } from "../searchHooks";
 import { Filter } from "lucide-react";
+import { cm } from "../utils";
 
-export const FilterQuery = () => {
+type Props = {
+  show: boolean;
+};
+
+export const FilterQuery = ({ show }: Props) => {
   const {
     query: { query },
     setTerm,
@@ -23,7 +28,12 @@ export const FilterQuery = () => {
   }, [value, query, setTerm]);
 
   return (
-    <div className="relative flex-1 mb-4">
+    <div
+      className={cm(
+        "relative flex-1 mb-4 transition-all overflow-hidden",
+        show ? "h-11 opacity-100" : "h-0 opacity-0"
+      )}
+    >
       <input
         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         type="search"

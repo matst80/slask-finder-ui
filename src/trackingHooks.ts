@@ -19,5 +19,8 @@ export const useTrackingPopularity = () => {
 };
 
 export const useItemData = (id: number) => {
-  return useSWR(`/api/item/${id}`, () => getRawData(String(id)));
+  return useSWR(`/api/item/${id}`, () => getRawData(String(id)), {
+    refreshInterval: 0,
+    revalidateOnFocus: false,
+  });
 };
