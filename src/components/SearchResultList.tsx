@@ -3,7 +3,12 @@ import { useCategories } from "../categoryHooks";
 import { Category } from "../types";
 import { ResultItem } from "./ResultItem";
 import { Edit, SquareMinus, SquarePlus, Trash } from "lucide-react";
-import { useFilters, useHashQuery, useHashResultItems } from "../searchHooks";
+import {
+  useFacetList,
+  useFilters,
+  useHashQuery,
+  useHashResultItems,
+} from "../searchHooks";
 import { Impression, trackImpression } from "../beacons";
 import { Button, ButtonLink } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
@@ -16,6 +21,7 @@ import {
   TableCell,
 } from "./ui/table";
 import { Link } from "react-router-dom";
+import { byPriority } from "../utils";
 
 const textSize = (level: number) => {
   switch (level) {
@@ -93,16 +99,14 @@ const NoResults = () => {
   return (
     <div>
       <ul className="mt-10">
-        {data
-          ?.sort(byName)
-          .map((category, idx) => (
-            <CategoryItem
-              key={category.value}
-              {...category}
-              level={1}
-              defaultOpen={idx < 3}
-            />
-          ))}
+        {data?.sort(byName).map((category, idx) => (
+          <CategoryItem
+            key={category.value}
+            {...category}
+            level={1}
+            defaultOpen={idx < 3}
+          />
+        ))}
       </ul>
       <div className="flex gap-4 mt-6">
         {searchList.map(({ title, href }) => (
@@ -144,7 +148,7 @@ export const SearchResultList = () => {
             toPush = [];
           }
         },
-        { threshold: 1 },
+        { threshold: 1 }
       );
       ref.current.querySelectorAll(".result-item").forEach((item) => {
         observer.observe(item);
@@ -173,6 +177,31 @@ export const SearchResultList = () => {
   );
 };
 
+export const AllFacets = () => {
+  const { data } = useCategories();
+  const { data: facets } = useFacetList();
+  return (
+    <div>
+      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+        <ul className="p-4">
+          {data?.sort(byName).map((category) => (
+            <CategoryItem key={category.value} {...category} level={1} />
+          ))}
+        </ul>
+      </div>
+      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+        <ul className="p-4">
+          {facets?.sort(byPriority).map((facet) => (
+            <li key={facet.id}>
+              <button>{facet.name}</button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
 export const TableSearchResultList = () => {
   const { data: results, isLoading: loadingItems } = useHashResultItems();
   const {
@@ -185,7 +214,7 @@ export const TableSearchResultList = () => {
   }
 
   if (!results || (!results.length && (query == null || query.length < 1))) {
-    return <div>No results</div>;
+    return <AllFacets />;
   }
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6">

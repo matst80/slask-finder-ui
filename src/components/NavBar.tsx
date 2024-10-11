@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export function Navbar() {
   return (
     <nav className="bg-white shadow-md">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-4">
+      <div className="mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">

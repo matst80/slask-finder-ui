@@ -142,11 +142,7 @@ export const ResultItem = ({
         )}
       </div>
       <div className="p-4 pt-0">
-        <h2 className="text-lg font-semibold mb-2">
-          <a target="_blank" href={`https://elgiganten.se${url}`}>
-            {title}
-          </a>
-        </h2>
+        <h2 className="text-lg font-semibold mb-2">{title}</h2>
         {hasRating && (
           <Stars
             rating={Number(values["6"]) / 10}

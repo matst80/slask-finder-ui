@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Admin } from "./Admin.tsx";
+import { Admin, EditFacetsView, EditSearchView } from "./Admin.tsx";
 import { Tracking } from "./Tracking.tsx";
 import { Navbar } from "./components/NavBar.tsx";
 import { SWRConfig } from "swr";
@@ -45,6 +45,20 @@ const router = createBrowserRouter([
         <Admin />
       </PageContainer>
     ),
+    children: [
+      {
+        index: true,
+        element: <EditSearchView />,
+      },
+      { path: "bulk", element: <EditSearchView /> },
+      {
+        path: "product/:id",
+      },
+      {
+        path: "facets",
+        element: <EditFacetsView />,
+      },
+    ],
   },
   {
     path: "product/:id",
@@ -95,5 +109,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <SWRConfig value={{}}>
       <RouterProvider router={router} />
     </SWRConfig>
-  </React.StrictMode>,
+  </React.StrictMode>
 );
