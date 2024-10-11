@@ -81,6 +81,8 @@ const useMetricsQuery = (
     (): AxisOptions<MetricsData>[] => [
       {
         getValue: ([_, value]) => formatter(value),
+        elementType: "area",
+        stacked: false,
       },
     ],
     []
@@ -103,16 +105,18 @@ const TrackingEventsChart = () => {
   ];
 
   return (
-    <div className="w-full h-96">
+    <div>
       <h1 className="font-bold text-lg">Tracking events</h1>
       <p>Here you can see the total number of tracked events</p>
-      <Chart
-        options={{
-          data,
-          primaryAxis,
-          secondaryAxes,
-        }}
-      />
+      <div className="w-full h-96">
+        <Chart
+          options={{
+            data,
+            primaryAxis,
+            secondaryAxes,
+          }}
+        />
+      </div>
       {error && <div>Error: {error.message}</div>}
     </div>
   );
@@ -138,16 +142,18 @@ export const MemoryUsageChart = () => {
     return <div>Loading...</div>;
   }
   return (
-    <div className="w-full h-96">
+    <div>
       <h1 className="font-bold text-lg">Memory usage</h1>
       <p>Here you can see memory usage per pod</p>
-      <Chart
-        options={{
-          data,
-          primaryAxis,
-          secondaryAxes,
-        }}
-      />
+      <div className="w-full h-96">
+        <Chart
+          options={{
+            data,
+            primaryAxis,
+            secondaryAxes,
+          }}
+        />
+      </div>
       {error && <div>Error: {error.message}</div>}
     </div>
   );
@@ -172,16 +178,18 @@ export const CpuUsageChart = () => {
     return <div>Loading...</div>;
   }
   return (
-    <div className="w-full h-96">
+    <div>
       <h1 className="font-bold text-lg">CPU usage</h1>
       <p>Here you can see CPU usage per pod</p>
-      <Chart
-        options={{
-          data,
-          primaryAxis,
-          secondaryAxes,
-        }}
-      />
+      <div className="w-full h-96">
+        <Chart
+          options={{
+            data,
+            primaryAxis,
+            secondaryAxes,
+          }}
+        />
+      </div>
       {error && <div>Error: {error.message}</div>}
     </div>
   );
@@ -190,11 +198,8 @@ export const CpuUsageChart = () => {
 export const DashboardView = () => {
   return (
     <div className="container p-10">
-      <h1 className="font-bold text-xl">Dashboard</h1>
-      <p>Here you can see the dashboard</p>
       <div className="grid grid-cols-2">
         <TrackingEventsChart />
-
         <MemoryUsageChart />
         <CpuUsageChart />
       </div>
