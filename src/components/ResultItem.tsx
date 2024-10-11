@@ -99,7 +99,6 @@ export const ResultItem = ({
   badgeUrl,
   values,
   stock,
-  url,
   bp,
   lastUpdate: updated,
   position,
