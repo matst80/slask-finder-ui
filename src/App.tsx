@@ -1,4 +1,4 @@
-import { useFocusTracking, useKeyboardAdminToggle } from "./appState";
+import { useFocusTracking } from "./appState";
 import { AutoSuggest } from "./components/AutoSuggest";
 import { CurrentFilters } from "./components/CurrentFilters";
 import { Facets } from "./components/Facets";
