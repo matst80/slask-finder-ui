@@ -148,6 +148,8 @@ export const useFacets = (data: FacetQuery) => {
     delay(() => facets(data), 80),
     {
       keepPreviousData: true,
+      revalidateOnFocus: false,
+      refreshInterval: 0,
     }
   );
 };
