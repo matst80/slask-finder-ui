@@ -17,7 +17,7 @@ type MetricWithValues<TMetric = Record<string, string>> = {
 const useMetricsQuery = (
   query: string,
   formatter = (v: number) => v,
-  refresh = 10
+  refresh = 5
 ) => {
   const [now, setNow] = useState(Date.now() / 1000);
 
