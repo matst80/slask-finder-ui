@@ -90,13 +90,79 @@ const useMetricsQuery = (
   return { data, primaryAxis, secondaryAxes, error };
 };
 
+const SearchChart = () => {
+  const {
+    data: metrics,
+    primaryAxis,
+    secondaryAxes,
+    error,
+  } = useMetricsQuery(`rate(slaskfinder_searches_total[1m])`);
+  const data: Series[] = [
+    {
+      label: "Searches",
+      data: metrics?.[0]?.values ?? [[new Date(), 0]],
+    },
+  ];
+
+  return (
+    <div>
+      <h1 className="font-bold text-lg">Searches</h1>
+      <p>Here you can see the total number of searches</p>
+      <div className="w-full h-96">
+        <Chart
+          options={{
+            data,
+            primaryAxis,
+            secondaryAxes,
+          }}
+        />
+      </div>
+      {error && <div>Error: {error.message}</div>}
+    </div>
+  );
+};
+
+const FacetSearchChart = () => {
+  const {
+    data: metrics,
+    primaryAxis,
+    secondaryAxes,
+    error,
+  } = useMetricsQuery(`rate(slaskfinder_facets_total[1m])`);
+  const data: Series[] = [
+    {
+      label: "Facet generations",
+      data: metrics?.[0]?.values ?? [[new Date(), 0]],
+    },
+  ];
+
+  return (
+    <div>
+      <h1 className="font-bold text-lg">Facet generations</h1>
+      <p>Here you can see the total number of searches</p>
+      <div className="w-full h-96">
+        <Chart
+          options={{
+            data,
+            primaryAxis,
+            secondaryAxes,
+          }}
+        />
+      </div>
+      {error && <div>Error: {error.message}</div>}
+    </div>
+  );
+};
+
 const TrackingEventsChart = () => {
   const {
     data: metrics,
     primaryAxis,
     secondaryAxes,
     error,
-  } = useMetricsQuery(`slasktracking_processed_tracking_events_total`);
+  } = useMetricsQuery(
+    `rate(slasktracking_processed_tracking_events_total[1m])`
+  );
   const data: Series[] = [
     {
       label: "Processed tracking events",
@@ -166,7 +232,7 @@ export const CpuUsageChart = () => {
     primaryAxis,
     secondaryAxes,
   } = useMetricsQuery(
-    `avg (container_cpu_usage_seconds_total {container="slask-finder"}) by (container_name,pod)`
+    `sum (rate (container_cpu_usage_seconds_total {container="slask-finder" } [1m])) by (pod)`
   );
   const data = cpuMetrics?.map((metric) => {
     return {
@@ -199,9 +265,11 @@ export const DashboardView = () => {
   return (
     <div className="container p-10">
       <div className="grid grid-cols-2">
-        <TrackingEventsChart />
-        <MemoryUsageChart />
+        <SearchChart />
+        <FacetSearchChart />
         <CpuUsageChart />
+        <MemoryUsageChart />
+        <TrackingEventsChart />
       </div>
     </div>
   );
