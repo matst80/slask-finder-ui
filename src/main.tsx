@@ -14,6 +14,7 @@ import { QueriesView } from "./pages/tracking/queries.tsx";
 import { PopularItemsView } from "./pages/tracking/popular-items.tsx";
 import { PopularFacetsView } from "./pages/tracking/popular-facets.tsx";
 import { UpdatedItems } from "./pages/tracking/updates.tsx";
+import { DashboardView } from "./pages/Dashboard.tsx";
 
 const PageContainer = ({ children }: PropsWithChildren) => {
   return (
@@ -37,7 +38,7 @@ const router = createBrowserRouter([
     path: "dashboard",
     element: (
       <PageContainer>
-        <div></div>
+        <DashboardView />
       </PageContainer>
     ),
   },
@@ -86,7 +87,6 @@ const router = createBrowserRouter([
         path: "session/:id",
         loader: ({ params: { id } }) =>
           getTrackingSessions().then((d) => {
-            console.log(d, id);
             return d.find((s) => String(s.session_id) === id);
           }),
         errorElement: <div>Session not found</div>,
