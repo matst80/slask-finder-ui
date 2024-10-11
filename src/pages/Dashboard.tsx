@@ -85,7 +85,7 @@ const useMetricsQuery = (
         stacked: false,
       },
     ],
-    []
+    [formatter]
   );
   return { data, primaryAxis, secondaryAxes, error };
 };
