@@ -8,6 +8,7 @@ import {
   AllFacets,
   TableSearchResultList,
 } from "./components/SearchResultList";
+import { useKeyboardAdminToggle } from "./appState";
 
 const AdminNavBar = () => {
   return (
@@ -50,6 +51,7 @@ const AdminNavBar = () => {
 };
 
 export const Admin = () => {
+  useKeyboardAdminToggle();
   return (
     <>
       <AdminNavBar />

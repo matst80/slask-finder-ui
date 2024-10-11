@@ -2,7 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { useCategories } from "../categoryHooks";
 import { Category } from "../types";
 import { ResultItem } from "./ResultItem";
-import { Edit, SquareMinus, SquarePlus, Trash } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Edit,
+  SquareMinus,
+  SquarePlus,
+  Trash,
+} from "lucide-react";
 import {
   useFacetList,
   useFilters,
@@ -98,7 +105,7 @@ const NoResults = () => {
   const { data } = useCategories();
   return (
     <div>
-      <ul className="mt-10">
+      <ul className="mt-2">
         {data?.sort(byName).map((category, idx) => (
           <CategoryItem
             key={category.value}
@@ -168,7 +175,7 @@ export const SearchResultList = () => {
   return (
     <div
       ref={ref}
-      className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
     >
       {results?.map((item, idx) => (
         <ResultItem key={item.id} {...item} position={start + idx} />
@@ -177,26 +184,41 @@ export const SearchResultList = () => {
   );
 };
 
-export const AllFacets = () => {
+export const CategoryList = () => {
   const { data } = useCategories();
-  const { data: facets } = useFacetList();
   return (
     <div>
-      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6">
-        <ul className="p-4">
-          {data?.sort(byName).map((category) => (
-            <CategoryItem key={category.value} {...category} level={1} />
-          ))}
-        </ul>
-      </div>
-      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6">
-        <ul className="p-4">
-          {facets?.sort(byPriority).map((facet) => (
-            <li key={facet.id}>
-              <button>{facet.name}</button>
-            </li>
-          ))}
-        </ul>
+      <ul>
+        {data?.sort(byName).map((category) => (
+          <CategoryItem key={category.value} {...category} level={1} />
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export const AllFacets = () => {
+  const { data: facets } = useFacetList();
+  const open = false;
+  return (
+    <div>
+      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6 grid grid-cols-3 gap-3">
+        {facets?.sort(byPriority).map((facet) => (
+          <div className="grid grid-cols-subgrid col-span-full border-b border-gray-100 p-4">
+            <div key={facet.id}>
+              <button className="font-medium bold flex items-center justify-between w-full text-left">
+                {facet.name} ({facet.count})
+                {open ? (
+                  <ChevronUp className="size-4" />
+                ) : (
+                  <ChevronDown className="size-4" />
+                )}
+              </button>
+            </div>
+            <span>{facet.type}</span>
+            <span>{facet.prio}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -214,7 +236,7 @@ export const TableSearchResultList = () => {
   }
 
   if (!results || (!results.length && (query == null || query.length < 1))) {
-    return <AllFacets />;
+    return <CategoryList />;
   }
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6">
