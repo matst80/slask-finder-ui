@@ -278,9 +278,17 @@ export const useFilters = () => {
 };
 
 export const useFacetList = () => {
-  return useSWR("facet-list", getFacetList);
+  return useSWR("facet-list", getFacetList, {
+    revalidateOnFocus: false,
+    refreshInterval: 0,
+    focusThrottleInterval: 3600,
+  });
 };
 
 export const useRelatedItems = (id: number) => {
-  return useSWR(`related-items-${id}`, () => getRelated(id));
+  return useSWR(`related-items-${id}`, () => getRelated(id), {
+    revalidateOnFocus: false,
+    refreshInterval: 0,
+    focusThrottleInterval: 3600,
+  });
 };
