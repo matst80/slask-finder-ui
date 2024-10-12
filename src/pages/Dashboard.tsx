@@ -1,6 +1,29 @@
 import { LoaderCircle } from "lucide-react";
 import { Chart, ChartOptions } from "react-charts";
 import { useDefaultMetricsQuery } from "../metricsHooks";
+import { atom, useAtom } from "jotai";
+
+const primaryCursorAtom = atom<Date | null>(null);
+const secondaryCursorAtom = atom<number | null>(null);
+
+const useCursors = () => {
+  const [primary, setPrimary] = useAtom(primaryCursorAtom);
+  const [secondary, setSecondary] = useAtom(secondaryCursorAtom);
+  return {
+    primaryCursor: {
+      value: primary,
+      onChange: (value: Date) => {
+        setPrimary(value);
+      },
+    },
+    secondaryCursor: {
+      value: secondary,
+      onChange: (value: number) => {
+        setSecondary(value);
+      },
+    },
+  };
+};
 
 const SearchChart = () => {
   const metricsData = useDefaultMetricsQuery(
@@ -83,9 +106,11 @@ export function ChartBox<T>({
   error,
   ...chartOptions
 }: ChartBoxProps<T>) {
+  const { primaryCursor, secondaryCursor } = useCursors();
   if (isEmpty) {
     return <div>Loading...</div>;
   }
+
   return (
     <div>
       <h1 className="font-bold text-lg">
@@ -96,7 +121,7 @@ export function ChartBox<T>({
       </h1>
       <p>{description}</p>
       <div className="w-full h-96">
-        <Chart options={chartOptions} />
+        <Chart options={{ ...chartOptions, primaryCursor, secondaryCursor }} />
       </div>
       {error && <div>Error: {error.message}</div>}
     </div>
