@@ -7,11 +7,11 @@ import type { AxisOptions } from "react-charts";
 export const useMetricsQuery = (
   query: string,
   formatter = (v: number) => v,
-  refresh = 5,
+  refresh = 5
 ) => {
   const [now, setNow] = useState(new Date());
 
-  const start = new Date(now.getTime() - 3600000);
+  const start = new Date(now.getTime() - 600000);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -32,17 +32,17 @@ export const useMetricsQuery = (
             data:
               values?.map(
                 ([ts, value]) =>
-                  [new Date(ts * 1000), Number(value)] satisfies MetricsData,
+                  [new Date(ts * 1000), Number(value)] satisfies MetricsData
               ) ?? [],
-          })) ?? [],
+          })) ?? []
       ),
-    { keepPreviousData: true },
+    { keepPreviousData: true }
   );
   const primaryAxis = useMemo(
     (): AxisOptions<MetricsData> => ({
       getValue: ([date]) => date,
     }),
-    [],
+    []
   );
 
   const secondaryAxes = useMemo(
@@ -51,7 +51,7 @@ export const useMetricsQuery = (
         getValue: ([_, value]) => formatter(value ?? 0),
       },
     ],
-    [formatter],
+    [formatter]
   );
 
   return { data, primaryAxis, secondaryAxes, error, isLoading };
@@ -59,7 +59,7 @@ export const useMetricsQuery = (
 
 export const useDefaultMetricsQuery = (
   query: string,
-  toSeries: (metric: MetricWithValues<Record<string, string>>) => Series,
+  toSeries: (metric: MetricWithValues<Record<string, string>>) => Series
 ) => {
   const {
     data: metrics,
