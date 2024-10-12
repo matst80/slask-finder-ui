@@ -14,7 +14,7 @@ const UserButton = () => {
       <Button
         variant={loggedIn ? "outline" : "ghost"}
         size="icon"
-        title={data.name ?? "Logga in"}
+        title={data?.name ?? "Logga in"}
       >
         {isLoading ? (
           <LoaderCircle className="size-5 animate-spin inline-block ml-2" />
