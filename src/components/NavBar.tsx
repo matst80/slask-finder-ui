@@ -51,9 +51,11 @@ export function Navbar() {
               <Button variant="ghost" size="icon">
                 <Settings className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
+              <a href="/admin/login">
+                <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+                </Button>
+              </a>
             </div>
           </div>
           <div className="-mr-2 flex md:hidden">
