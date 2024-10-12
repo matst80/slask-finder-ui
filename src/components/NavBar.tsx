@@ -2,6 +2,7 @@ import { Bell, LoaderCircle, Menu, Settings, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import useSWR from "swr";
+import { cm } from "../utils";
 
 const UserButton = () => {
   const { data, isLoading } = useSWR("/admin/user", (url) =>
@@ -10,11 +11,15 @@ const UserButton = () => {
   const loggedIn = data?.role !== null;
   return (
     <a href={loggedIn ? "/admin/logout" : "/admin/login"}>
-      <Button variant="ghost" size="icon">
+      <Button
+        variant={loggedIn ? "outline" : "ghost"}
+        size="icon"
+        title={data.name ?? "Logga in"}
+      >
         {isLoading ? (
           <LoaderCircle className="size-5 animate-spin inline-block ml-2" />
         ) : (
-          <User className="size-5" />
+          <User className={cm("size-5", loggedIn ? "text-blue-600" : "")} />
         )}
       </Button>
     </a>
