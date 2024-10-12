@@ -49,6 +49,7 @@ export const useMetricsQuery = (
     (): AxisOptions<MetricsData>[] => [
       {
         getValue: ([_, value]) => formatter(value ?? 0),
+        stacked: true,
       },
     ],
     [formatter]
