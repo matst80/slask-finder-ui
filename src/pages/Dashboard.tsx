@@ -120,7 +120,7 @@ export function ChartBox<T>({
         )}
       </h1>
       <p>{description}</p>
-      <div className="w-full h-96">
+      <div className="w-full h-60 md:h-96">
         <Chart options={{ ...chartOptions, primaryCursor, secondaryCursor }} />
       </div>
       {error && <div>Error: {error.message}</div>}
@@ -158,8 +158,8 @@ export const UpsertsChart = () => {
 
 export const DashboardView = () => {
   return (
-    <div className="container p-10">
-      <div className="grid grid-cols-2">
+    <div className="container p-4 md:p-10">
+      <div className="md:grid md:grid-cols-2">
         <SearchChart />
         <FacetSearchChart />
         <CpuUsageChart />
