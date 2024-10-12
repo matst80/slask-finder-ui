@@ -22,7 +22,7 @@ export default defineConfig({
         changeOrigin: true,
       },
       "/admin": {
-        target: "https://slask-finder.tornberg.me/",
+        target: "http://localhost:8080/",
         changeOrigin: true,
       },
     },

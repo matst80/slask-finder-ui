@@ -1,7 +1,6 @@
 import { Zap } from "lucide-react";
 import { Item } from "../types";
 import { makeImageUrl } from "../utils";
-import { PopularityOverride } from "./PopularityOverride";
 import { Price } from "./Price";
 import { Stars } from "./Stars";
 import { TimeAgo } from "./TimeAgo";
@@ -203,7 +202,7 @@ export const ResultItem = ({
         )}
       </div>
 
-      <PopularityOverride id={id} />
+      {/* <PopularityOverride id={id} /> */}
       <UpdatedBanner lastUpdate={updated} />
     </Link>
   );
