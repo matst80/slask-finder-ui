@@ -248,3 +248,27 @@ export type SessionData = BaseEvent & {
   language?: string;
   events: TrackedEvent[];
 };
+
+export type MetricsData = [Date, number];
+
+export type Series = {
+  label: string;
+  data: MetricsData[];
+};
+
+export type MetricWithValues<TMetric = Record<string, string>> = {
+  metric: TMetric;
+  data: MetricsData[];
+};
+
+export type PrometheusEntry = {
+  metric: Record<string, string>;
+  values: [number, string][];
+};
+
+export type PrometheusResponse = {
+  status: string;
+  data: {
+    result: PrometheusEntry[];
+  };
+};
