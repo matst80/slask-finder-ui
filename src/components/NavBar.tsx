@@ -1,6 +1,25 @@
-import { Bell, Menu, Settings, User } from "lucide-react";
+import { Bell, LoaderCircle, Menu, Settings, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import useSWR from "swr";
+
+const UserButton = () => {
+  const { data, isLoading } = useSWR("/admin/user", (url) =>
+    fetch(url).then((res) => res.json())
+  );
+  const loggedIn = data?.role !== null;
+  return (
+    <a href={loggedIn ? "/admin/logout" : "/admin/login"}>
+      <Button variant="ghost" size="icon">
+        {isLoading ? (
+          <LoaderCircle className="size-5 animate-spin inline-block ml-2" />
+        ) : (
+          <User className="size-5" />
+        )}
+      </Button>
+    </a>
+  );
+};
 
 export function Navbar() {
   return (
@@ -51,11 +70,7 @@ export function Navbar() {
               <Button variant="ghost" size="icon">
                 <Settings className="h-5 w-5" />
               </Button>
-              <a href="/admin/login">
-                <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5" />
-                </Button>
-              </a>
+              <UserButton />
             </div>
           </div>
           <div className="-mr-2 flex md:hidden">

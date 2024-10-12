@@ -6,9 +6,9 @@ const SearchChart = () => {
   const metricsData = useDefaultMetricsQuery(
     `rate(slaskfinder_searches_total[1m])`,
     ({ metric, data }) => ({
-      label: `Searches (${metric.pod})`,
+      label: `Searches (${metric.instance})`,
       data,
-    }),
+    })
   );
   return (
     <ChartBox
@@ -23,9 +23,9 @@ const FacetSearchChart = () => {
   const metricsData = useDefaultMetricsQuery(
     `rate(slaskfinder_facets_total[1m])`,
     ({ metric, data }) => ({
-      label: `Facet generations (${metric.pod})`,
+      label: `Facet generations (${metric.instance})`,
       data,
-    }),
+    })
   );
   return (
     <ChartBox
@@ -40,9 +40,9 @@ export const TrackingEventsChart = () => {
   const metricsData = useDefaultMetricsQuery(
     `rate(slasktracking_processed_tracking_events_total[1m])`,
     ({ metric, data }) => ({
-      label: `Processed tracking events (${metric.pod})`,
+      label: `Processed tracking events (${metric.instance})`,
       data,
-    }),
+    })
   );
   return (
     <ChartBox
@@ -56,7 +56,7 @@ export const TrackingEventsChart = () => {
 export const MemoryUsageChart = () => {
   const metricsData = useDefaultMetricsQuery(
     `avg (container_memory_working_set_bytes{container="slask-finder"}) by (container_name,pod)`,
-    ({ metric: { pod }, data }) => ({ label: `Memory usage (${pod})`, data }),
+    ({ metric: { pod }, data }) => ({ label: `Memory usage (${pod})`, data })
   );
   return (
     <ChartBox
@@ -106,7 +106,7 @@ export function ChartBox<T>({
 export const CpuUsageChart = () => {
   const metricsData = useDefaultMetricsQuery(
     `sum (rate (container_cpu_usage_seconds_total {container="slask-finder" } [1m])) by (pod)`,
-    ({ metric: { pod }, data }) => ({ label: `Cpu usage (${pod})`, data }),
+    ({ metric: { pod }, data }) => ({ label: `Cpu usage (${pod})`, data })
   );
   return (
     <ChartBox
@@ -120,7 +120,7 @@ export const CpuUsageChart = () => {
 export const UpsertsChart = () => {
   const metricsData = useDefaultMetricsQuery(
     `rate(slasktracking_processed_item_updates_total[1m])`,
-    ({ data }) => ({ label: `Updated items`, data }),
+    ({ data }) => ({ label: `Updated items`, data })
   );
   return (
     <ChartBox
