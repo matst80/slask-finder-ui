@@ -18,7 +18,6 @@ export const FilterQuery = ({ show }: Props) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       if ((query ?? "") != value) {
-        // console.log("setting term", value, query);
         setTerm(value);
       }
     }, 260);

@@ -5,10 +5,21 @@ import useSWR from "swr";
 import { cm } from "../utils";
 
 const UserButton = () => {
-  const { data, isLoading } = useSWR("/admin/user", (url) =>
-    fetch(url).then((res) => res.json())
+  const { data, isLoading } = useSWR(
+    "/admin/user",
+    (url) =>
+      fetch(url).then(async (res) => {
+        if (res.status === 401) {
+          return null;
+        }
+        return res.json();
+      }),
+    {
+      revalidateOnFocus: true,
+      errorRetryInterval: 50000,
+    }
   );
-  const loggedIn = data?.role !== null;
+  const loggedIn = data?.role != null;
   return (
     <a href={loggedIn ? "/admin/logout" : "/admin/login"}>
       <Button

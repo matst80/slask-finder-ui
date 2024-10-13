@@ -226,7 +226,12 @@ export const removeFromCart = ({ id }: { id: number }) =>
   }).then((d) => toJson<Cart>(d));
 
 export const getCart = () =>
-  fetch(`${baseUrl}/cart/`).then((d) => toJson<Cart>(d));
+  fetch(`${baseUrl}/cart/`).then(async (d) => {
+    if (d.status === 404) {
+      return null;
+    }
+    return toJson<Cart>(d);
+  });
 
 export const getCartById = (id: string | number) =>
   fetch(`${baseUrl}/cart/${id}`).then((d) => toJson<Cart>(d));
