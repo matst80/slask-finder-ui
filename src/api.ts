@@ -55,10 +55,10 @@ export const autoSuggestResponse = (
 export const getKeyFieldsValues = (id: string | number) =>
   fetch(`${baseUrl}/api/values/${id}`).then((d) => toJson<string[]>(d));
 
-export const facets = (query: ItemsQuery) =>
-  fetch(`${baseUrl}/api/filter`, {
-    method: "POST",
-    body: JSON.stringify(query),
+export const facets = (query: string) =>
+  fetch(`${baseUrl}/api/filter?${query}`, {
+    //method: "GET",
+    //body: JSON.stringify(query),
   }).then((d) =>
     d.ok
       ? (d.json() as Promise<Omit<FacetResult, "items" | "pageSize" | "page">>)
@@ -110,12 +110,12 @@ const readStreamed = <T>(d: Response): Promise<T[]> => {
 };
 
 export const streamItems = (
-  query: ItemsQuery
+  query: string
   //onResults: (data: ItemResult) => void,
 ): Promise<Item[]> =>
-  fetch(`${baseUrl}/api/stream`, {
-    method: "POST",
-    body: JSON.stringify(query),
+  fetch(`${baseUrl}/api/stream?${query}`, {
+    //method: "GET",
+    //body: JSON.stringify(query),
   }).then((d) => readStreamed<Item>(d));
 
 async function toJson<T>(response: Response): Promise<T> {

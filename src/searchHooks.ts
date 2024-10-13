@@ -3,7 +3,7 @@ import { facets, getFacetList, getRelated, streamItems } from "./api";
 import { FacetQuery, FilteringQuery, ItemsQuery } from "./types";
 import { useEffect, useState, useCallback } from "react";
 
-const FIELD_SEPARATOR = ";";
+const FIELD_SEPARATOR = ":";
 const ID_VALUE_SEPARATOR = "=";
 
 export const queryFromHash = (hash: string): ItemsQuery => {
@@ -33,7 +33,7 @@ export const queryFromHash = (hash: string): ItemsQuery => {
   const stock = hashData.stock?.split(FIELD_SEPARATOR) ?? [];
   const sort = hashData.sort ?? "popular";
   let page = Number(hashData.page) ?? 0;
-  let pageSize = Number(hashData.pageSize) ?? 40;
+  let pageSize = Number(hashData.size) ?? 40;
   if (isNaN(pageSize)) {
     pageSize = 40;
   }
@@ -67,7 +67,7 @@ export const queryToHash = ({
     filterObj.page = page.toString();
   }
   if (pageSize != null && pageSize !== 40) {
-    filterObj.pageSize = pageSize.toString();
+    filterObj.size = pageSize.toString();
   }
   return new URLSearchParams(filterObj).toString();
 };
@@ -127,8 +127,33 @@ const itemsKey = (data: ItemsQuery) => `items-` + queryToHash(data);
 
 const facetsKey = (data: FacetQuery) => "facets-" + facetQueryToHash(data);
 
+const toQuery = (data: ItemsQuery): string => {
+  const { integer, number, sort, page, pageSize, query, stock, string } = data;
+
+  const result = new URLSearchParams({
+    page: (page ?? 0).toString(),
+    size: (pageSize ?? 40)?.toString(),
+    sort: sort ?? "popular",
+    query: query ?? "",
+  });
+  integer?.forEach(({ id, min, max }) => {
+    result.append("int", `${id}:${min}-${max}`);
+  });
+  number?.forEach(({ id, min, max }) => {
+    result.append("num", `${id}:${min}-${max}`);
+  });
+  string?.forEach(({ id, value }) => {
+    result.append("str", `${id}:${value}`);
+  });
+  stock.forEach((s) => {
+    result.append("stock", s);
+  });
+  console.log(result, result.toString());
+  return result.toString();
+};
+
 export const useItemsSearch = (query: ItemsQuery) => {
-  return useSWR(itemsKey(query), () => streamItems(query), {
+  return useSWR(itemsKey(query), () => streamItems(toQuery(query)), {
     keepPreviousData: true,
   });
 };
@@ -145,7 +170,7 @@ const delay = <T>(fn: () => Promise<T>, ms: number): (() => Promise<T>) => {
 export const useFacets = (data: FacetQuery) => {
   return useSWR(
     facetsKey(data),
-    delay(() => facets(data), 80),
+    delay(() => facets(toQuery(data)), 80),
     {
       keepPreviousData: true,
       revalidateOnFocus: false,
