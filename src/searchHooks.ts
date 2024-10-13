@@ -148,7 +148,7 @@ const toQuery = (data: ItemsQuery): string => {
   stock.forEach((s) => {
     result.append("stock", s);
   });
-  console.log(result, result.toString());
+
   return result.toString();
 };
 
