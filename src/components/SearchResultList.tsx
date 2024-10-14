@@ -323,7 +323,18 @@ const usePopularity = () => {
   return {
     popular: data ?? {},
     setItemPopularity: (id: number, pos: number) => {
-      mutate((prev) => ({ ...prev, [id]: pos }), false);
+      if (pos === 0) {
+        mutate((prev) => {
+          if (!prev) {
+            return prev;
+          }
+          delete prev[id];
+          return prev;
+        }, false);
+      } else {
+        mutate((prev) => ({ ...prev, [id]: pos }), false);
+      }
+
       setDirty(true);
     },
     isDirty: dirty,
@@ -448,7 +459,7 @@ export const TableSearchResultList = () => {
           </Table>
         </div>
       </form>
-      <div className="flex gap-2 mt-4">
+      <div className="flex gap-2 mt-4 sticky bottom-4">
         <Button
           disabled={!isDirtyPopular}
           onClick={() => {
