@@ -148,7 +148,7 @@ export const ItemDetails = (details: ItemDetail & { isEdit?: boolean }) => {
   return (
     <>
       <div className="pb-6 flex flex-col gap-4">
-        <div className="px-6 pb-6 items-center justify-center w-full flex">
+        <div className="px-6 py-6 bg-white rounded-xl items-center justify-center w-full flex">
           <img
             className={`max-w-full w-screen-sm h-auto object-contain`}
             src={makeImageUrl(img)}

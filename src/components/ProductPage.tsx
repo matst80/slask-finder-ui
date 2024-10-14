@@ -10,7 +10,7 @@ export const ProductPage = ({ isEdit }: Props) => {
   const details = useLoaderData() as ItemDetail | null;
 
   return (
-    <div className="container bg-white mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Produktsida</h1>
       {details ? (
         <ItemDetails {...details} isEdit={isEdit} />
