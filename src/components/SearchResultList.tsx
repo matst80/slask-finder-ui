@@ -116,14 +116,16 @@ const NoResults = () => {
   return (
     <div>
       <ul className="mt-2">
-        {data?.sort(byName).map((category, idx) => (
-          <CategoryItem
-            key={category.value}
-            {...category}
-            level={1}
-            defaultOpen={idx < 3}
-          />
-        ))}
+        {data
+          ?.sort(byName)
+          .map((category, idx) => (
+            <CategoryItem
+              key={category.value}
+              {...category}
+              level={1}
+              defaultOpen={idx < 3}
+            />
+          ))}
       </ul>
       <div className="flex gap-4 mt-6">
         {searchList.map(({ title, href }) => (
@@ -165,7 +167,7 @@ export const SearchResultList = () => {
             toPush = [];
           }
         },
-        { threshold: 1 }
+        { threshold: 1 },
       );
       ref.current.querySelectorAll(".result-item").forEach((item) => {
         observer.observe(item);
@@ -199,9 +201,11 @@ export const CategoryList = () => {
   return (
     <div>
       <ul>
-        {data?.sort(byName).map((category) => (
-          <CategoryItem key={category.value} {...category} level={1} />
-        ))}
+        {data
+          ?.sort(byName)
+          .map((category) => (
+            <CategoryItem key={category.value} {...category} level={1} />
+          ))}
       </ul>
     </div>
   );
@@ -209,13 +213,7 @@ export const CategoryList = () => {
 
 const FacetValues = ({ id }: { id: number }) => {
   const { data: values } = useFieldValues(id);
-  return (
-    <ul>
-      {values?.map((value) => (
-        <li key={value}>{value}</li>
-      ))}
-    </ul>
-  );
+  return <ul>{values?.map((value) => <li key={value}>{value}</li>)}</ul>;
 };
 
 export const AdminFacet = (facet: FacetListItem) => {
@@ -273,9 +271,9 @@ export const AllFacets = () => {
           <div>Sort</div>
           <div>Priority</div>
         </div>
-        {facets?.sort(byPriority).map((facet) => (
-          <AdminFacet key={facet.id} {...facet} />
-        ))}
+        {facets
+          ?.sort(byPriority)
+          .map((facet) => <AdminFacet key={facet.id} {...facet} />)}
       </div>
     </div>
   );
@@ -283,19 +281,19 @@ export const AllFacets = () => {
 
 const invertEntries = (data: Record<string, number>) => {
   return Object.fromEntries(
-    Object.entries(data).map(([key, value]) => [Number(value), Number(key)])
+    Object.entries(data).map(([key, value]) => [Number(value), Number(key)]),
   );
 };
 
 const useStaticPositions = () => {
   const [dirty, setDirty] = useState(false);
   const { data, mutate } = useSWR("/admin/sort/static", () =>
-    getStaticPositions().then(invertEntries)
+    getStaticPositions().then(invertEntries),
   );
   const { trigger } = useSWRMutation(
     "/admin/sort/static",
     (_: string, { arg }: { arg: Record<number, number> }) =>
-      setStaticPositions(arg)
+      setStaticPositions(arg),
   );
   return {
     positions: data ?? {},
@@ -320,7 +318,7 @@ const usePopularity = () => {
   const { trigger } = useSWRMutation(
     "/admin/popular",
     (_: string, { arg }: { arg: Record<number, number> }) =>
-      updatePopularity(arg)
+      updatePopularity(arg),
   );
   return {
     popular: data ?? {},
@@ -358,7 +356,7 @@ export const TableSearchResultList = () => {
   const { data } = useFacetList();
   const virtualCategories = useMemo(
     () => data?.filter((facet) => facet.type === "virtual"),
-    [data]
+    [data],
   );
 
   //const start = (page ?? 0) * (pageSize ?? 40);
@@ -370,102 +368,104 @@ export const TableSearchResultList = () => {
     return <CategoryList />;
   }
   return (
-    <form>
-      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[50px]">Select</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Popularity</TableHead>
-              <TableHead>Static position</TableHead>
-              {virtualCategories?.map((category) => (
-                <TableHead key={`vcat-${category.id}`}>
-                  {category.name}
-                </TableHead>
-              ))}
-              <TableHead>Price</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {results.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  <Checkbox name={product.id} />
-                </TableCell>
-                <TableCell className="font-bold">{product.title}</TableCell>
-                <TableCell>{product.values["10"]}</TableCell>
-                <TableCell>
-                  <Input
-                    value={popular[Number(product.id)] ?? 0}
-                    onChange={(e) => {
-                      setItemPopularity(
-                        Number(product.id),
-                        Number(e.target.value)
-                      );
-                    }}
-                    className="w-14"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Input
-                    value={positions[Number(product.id)] ?? 0}
-                    onChange={(e) => {
-                      setItemPosition(
-                        Number(product.id),
-                        Number(e.target.value)
-                      );
-                    }}
-                    className="w-14"
-                  />
-                </TableCell>
+    <>
+      <form>
+        <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[50px]">Select</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Popularity</TableHead>
+                <TableHead>Static position</TableHead>
                 {virtualCategories?.map((category) => (
-                  <TableCell key={`vcat-${category.id}-${product.id}`}>
+                  <TableHead key={`vcat-${category.id}`}>
+                    {category.name}
+                  </TableHead>
+                ))}
+                <TableHead>Price</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {results.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>
+                    <Checkbox name={product.id} />
+                  </TableCell>
+                  <TableCell className="font-bold">{product.title}</TableCell>
+                  <TableCell>{product.values["10"]}</TableCell>
+                  <TableCell>
                     <Input
-                      defaultValue={product.values[category.id]}
-                      className="w-24"
-                      name={`${category.id}-${product.id}`}
+                      value={popular[Number(product.id)] ?? 0}
+                      onChange={(e) => {
+                        setItemPopularity(
+                          Number(product.id),
+                          Number(e.target.value),
+                        );
+                      }}
+                      className="w-14"
                     />
                   </TableCell>
-                ))}
-                <TableCell>{product.values["4"].toFixed(2)}</TableCell>
-                <TableCell>{product.stockLevel ?? "0"}</TableCell>
-                <TableCell className="justify-end flex gap-2">
-                  <Button variant="ghost" size="icon">
-                    <Link to={`/edit/product/${product.id}`}>
-                      <Edit className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <div className="flex gap-2">
-          <Button
-            disabled={!isDirtyPopular}
-            onClick={() => {
-              savePopular();
-            }}
-          >
-            Save popular
-          </Button>
-          <Button
-            disabled={!isDirtyPositions}
-            onClick={() => {
-              savePositions();
-            }}
-          >
-            Save static positions
-          </Button>
+                  <TableCell>
+                    <Input
+                      value={positions[Number(product.id)] ?? 0}
+                      onChange={(e) => {
+                        setItemPosition(
+                          Number(product.id),
+                          Number(e.target.value),
+                        );
+                      }}
+                      className="w-14"
+                    />
+                  </TableCell>
+                  {virtualCategories?.map((category) => (
+                    <TableCell key={`vcat-${category.id}-${product.id}`}>
+                      <Input
+                        defaultValue={product.values[category.id]}
+                        className="w-24"
+                        name={`${category.id}-${product.id}`}
+                      />
+                    </TableCell>
+                  ))}
+                  <TableCell>{product.values["4"].toFixed(2)}</TableCell>
+                  <TableCell>{product.stockLevel ?? "0"}</TableCell>
+                  <TableCell className="justify-end flex gap-2">
+                    <Button variant="ghost" size="icon">
+                      <Link to={`/edit/product/${product.id}`}>
+                        <Edit className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button variant="ghost" size="icon">
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
+      </form>
+      <div className="flex gap-2 mt-4">
+        <Button
+          disabled={!isDirtyPopular}
+          onClick={() => {
+            savePopular();
+          }}
+        >
+          Save popular
+        </Button>
+        <Button
+          disabled={!isDirtyPositions}
+          onClick={() => {
+            savePositions();
+          }}
+        >
+          Save static positions
+        </Button>
       </div>
-    </form>
+    </>
   );
 };

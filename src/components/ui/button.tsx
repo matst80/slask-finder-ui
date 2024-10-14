@@ -1,4 +1,5 @@
 import React from "react";
+import { cm } from "../../utils";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: keyof typeof variantStyles;
@@ -20,7 +21,13 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   return (
     <button
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      className={cm(
+        baseStyles,
+        variantStyles[variant],
+        sizeStyles[size],
+        className,
+        props.disabled ? "opacity-50" : "",
+      )}
       {...props}
     >
       {children}
@@ -37,7 +44,12 @@ export const ButtonLink: React.FC<ButtonLinkProps> = ({
 }) => {
   return (
     <a
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      className={cm(
+        baseStyles,
+        variantStyles[variant],
+        sizeStyles[size],
+        className,
+      )}
       {...props}
     >
       {children}
