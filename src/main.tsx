@@ -57,7 +57,9 @@ const router = createBrowserRouter([
       { path: "bulk", element: <EditSearchView /> },
       {
         path: "product/:id",
-        element: <ProductPage />,
+        loader: ({ params: { id } }) =>
+          id != null ? getRawData(id) : Promise.resolve(null),
+        element: <ProductPage isEdit={true} />,
       },
       {
         path: "facets",

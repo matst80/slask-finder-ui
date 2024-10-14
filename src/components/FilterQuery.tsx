@@ -26,12 +26,12 @@ export const FilterQuery = ({ show }: Props) => {
       clearTimeout(timeout);
     };
   }, [value, query, setTerm]);
-
+  const doShow = show || !!query?.length;
   return (
     <div
       className={cm(
         "relative flex-1 mb-4 transition-all overflow-hidden",
-        show ? "h-11 opacity-100" : "h-0 opacity-0"
+        doShow ? "h-11 opacity-100" : "h-0 opacity-0"
       )}
     >
       <input
