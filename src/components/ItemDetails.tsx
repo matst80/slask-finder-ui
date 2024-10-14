@@ -58,7 +58,10 @@ const Properties = ({
   values,
   numberValues,
   integerValues,
-}: Pick<ItemDetail, "values" | "numberValues" | "integerValues">) => {
+  isEdit,
+}: Pick<ItemDetail, "values" | "numberValues" | "integerValues"> & {
+  isEdit?: boolean;
+}) => {
   const { data } = useFacetList();
   const fields = useMemo(() => {
     return [
@@ -91,7 +94,15 @@ const Properties = ({
               {field.name}
             </h3>
             <p className="text-gray-700">
-              {field.value}{" "}
+              {isEdit ? (
+                <input
+                  type={field.fieldType === "key" ? "text" : "number"}
+                  defaultValue={field.value}
+                  name={String(field.id)}
+                />
+              ) : (
+                <span>{field.value}</span>
+              )}{" "}
               {field.linkedId != null &&
                 field.linkedId > 0 &&
                 field.value != null && (
@@ -118,7 +129,7 @@ const Properties = ({
   );
 };
 
-export const ItemDetails = (details: ItemDetail) => {
+export const ItemDetails = (details: ItemDetail & { isEdit?: boolean }) => {
   const { trigger: addToCart } = useAddToCart();
 
   if (!details) return null;
@@ -149,18 +160,14 @@ export const ItemDetails = (details: ItemDetail) => {
           <Price
             values={
               Object.fromEntries(
-                integerValues.map(({ id, value }) => [String(id), value])
+                integerValues.map(({ id, value }) => [String(id), value]),
               ) as ItemValues
             }
             disclaimer={disclaimer}
           />
         </span>
         <div className="flex justify-between">
-          <ul>
-            {bp?.split("\n").map((txt) => (
-              <li key={txt}>{txt}</li>
-            ))}
-          </ul>
+          <ul>{bp?.split("\n").map((txt) => <li key={txt}>{txt}</li>)}</ul>
           {(buyable || buyableInStore) && (
             <div>
               <button
@@ -184,6 +191,7 @@ export const ItemDetails = (details: ItemDetail) => {
         integerValues={details.integerValues}
         values={details.values}
         numberValues={details.integerValues}
+        isEdit={details.isEdit}
       />
     </>
   );

@@ -12,7 +12,11 @@ export const ProductPage = ({ isEdit }: Props) => {
   return (
     <div className="container bg-white mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Produktsida</h1>
-      {details ? <ItemDetails {...details} /> : <p>Laddar...</p>}
+      {details ? (
+        <ItemDetails {...details} isEdit={isEdit} />
+      ) : (
+        <p>Laddar...</p>
+      )}
     </div>
   );
 };
