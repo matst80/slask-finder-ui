@@ -1,4 +1,4 @@
-import { Impression } from "./beacons";
+import { Impression } from "./datalayer/beacons";
 
 export type Suggestion = {
   match: string;

@@ -5,8 +5,8 @@ import { Price } from "./Price";
 import { Stars } from "./Stars";
 import { TimeAgo } from "./TimeAgo";
 import { useMemo, useState } from "react";
-import { useHashQuery } from "../searchHooks";
-import { trackClick } from "../beacons";
+import { useHashQuery } from "../hooks/searchHooks";
+import { trackClick } from "../datalayer/beacons";
 import { Link } from "react-router-dom";
 
 const StockIndicator = ({

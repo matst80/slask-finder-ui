@@ -171,3 +171,16 @@ export const cm = (...arg: (string | string[] | false | undefined)[]) =>
     .join(" ");
 
 export const isDefined = <T>(d: T): d is NonNullable<T> => d !== null;
+
+export const textSize = (level: number) => {
+  switch (level) {
+    case 1:
+      return "text-xl";
+    case 2:
+      return "text-lg";
+    case 3:
+      return "text-base";
+    default:
+      return "text-sm";
+  }
+};

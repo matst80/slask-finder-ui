@@ -1,5 +1,9 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useHashFacets, useHashQuery, useQueryHelpers } from "../searchHooks";
+import {
+  useHashFacets,
+  useHashQuery,
+  useQueryHelpers,
+} from "../hooks/searchHooks";
 
 export const Paging = () => {
   const {

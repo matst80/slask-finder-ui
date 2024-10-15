@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useItemData, useSessions } from "../trackingHooks";
+import { useItemData, useSessions } from "../hooks/trackingHooks";
 import {
   TrackedEvent,
   SessionData,
@@ -10,7 +10,7 @@ import {
   ActionEvent,
 } from "../types";
 import { cm, isDefined, makeImageUrl } from "../utils";
-import { useFacetList } from "../searchHooks";
+import { useFacetList } from "../hooks/searchHooks";
 import { Eye, Flashlight, Search, ShoppingCart } from "lucide-react";
 import { Link, useLoaderData } from "react-router-dom";
 import { TimeAgo } from "./TimeAgo";
@@ -150,7 +150,7 @@ const EventList = ({ events }: { events: TrackedEvent[] }) => {
             className={cm(
               "self-start px-5 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer",
               indent === 1 && "ml-5",
-              indent === 2 && "ml-10",
+              indent === 2 && "ml-10"
             )}
           >
             <Event {...event} />

@@ -1,6 +1,6 @@
 import useSWR from "swr";
-import { getPopularity, updatePopularity } from "./api";
-import { useFetchMutation } from "./utils";
+import { getPopularity, updatePopularity } from "../datalayer/api";
+import { useFetchMutation } from "../utils";
 
 const popularityKey = "/popular-items";
 

@@ -1,6 +1,11 @@
 import useSWR from "swr";
-import { facets, getFacetList, getRelated, streamItems } from "./api";
-import { FacetQuery, FilteringQuery, ItemsQuery } from "./types";
+import {
+  facets,
+  getFacetList,
+  getRelated,
+  streamItems,
+} from "../datalayer/api";
+import { FacetQuery, FilteringQuery, ItemsQuery } from "../types";
 import { useEffect, useState, useCallback } from "react";
 
 const FIELD_SEPARATOR = ":";

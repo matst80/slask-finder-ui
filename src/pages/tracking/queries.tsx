@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getTrackingQueries } from "../../api";
+import { getTrackingQueries } from "../../datalayer/api";
 
 export const QueriesView = () => {
   const { data } = useSWR("/api/queries", getTrackingQueries);

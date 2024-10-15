@@ -2,7 +2,7 @@ import { Minus, Plus, ShoppingCart, X } from "lucide-react";
 import { useState } from "react";
 
 import { makeImageUrl } from "../utils";
-import { useCart, useChangeQuantity } from "../cartHooks";
+import { useCart, useChangeQuantity } from "../hooks/cartHooks";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -114,7 +114,7 @@ export const MiniCart = () => {
 
   const totalItems = isLoading
     ? "~"
-    : (cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0);
+    : cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0;
   return (
     <>
       <button

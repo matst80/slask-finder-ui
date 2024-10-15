@@ -1,6 +1,6 @@
 import { LoaderCircle } from "lucide-react";
 import { Chart, ChartOptions } from "react-charts";
-import { useDefaultMetricsQuery } from "../metricsHooks";
+import { useDefaultMetricsQuery } from "../hooks/metricsHooks";
 import { atom, useAtom } from "jotai";
 
 const primaryCursorAtom = atom<Date | null>(null);

@@ -1,7 +1,11 @@
 import { useState } from "react";
-import { getItemIds, updateCategories } from "../api";
-import { useAdmin } from "../appState";
-import { useFacetList, useHashFacets, useHashQuery } from "../searchHooks";
+import { getItemIds, updateCategories } from "../datalayer/api";
+import { useAdmin } from "../hooks/appState";
+import {
+  useFacetList,
+  useHashFacets,
+  useHashQuery,
+} from "../hooks/searchHooks";
 import { Sorting } from "./Sorting";
 import { SelectedStore } from "./StoreSelector";
 import { X } from "lucide-react";

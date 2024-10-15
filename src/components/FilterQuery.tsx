@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQueryHelpers } from "../searchHooks";
+import { useQueryHelpers } from "../hooks/searchHooks";
 import { Filter } from "lucide-react";
 import { cm } from "../utils";
 

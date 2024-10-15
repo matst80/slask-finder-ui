@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { useAtom } from "jotai/react";
 import { useEffect } from "react";
-import { trackAction } from "./beacons";
+import { trackAction } from "../datalayer/beacons";
 
 const adminAtom = atom(false);
 

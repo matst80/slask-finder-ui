@@ -11,7 +11,7 @@ import {
   SessionData,
   UpdatedItem,
   PrometheusResponse,
-} from "./types";
+} from "../types";
 
 const baseUrl = "";
 

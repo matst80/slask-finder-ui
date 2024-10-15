@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getTrackingUpdates } from "../../api";
+import { getTrackingUpdates } from "../../datalayer/api";
 import { ResultItem } from "../../components/ResultItem";
 import { ItemValues } from "../../types";
 

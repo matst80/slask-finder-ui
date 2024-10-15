@@ -1,8 +1,12 @@
 import { useMemo } from "react";
 import { X } from "lucide-react";
 import { FacetListItem, Field, KeyField, NumberField } from "../types";
-import { stores } from "../stores";
-import { useFacetList, useFilters, useQueryHelpers } from "../searchHooks";
+import { stores } from "../datalayer/stores";
+import {
+  useFacetList,
+  useFilters,
+  useQueryHelpers,
+} from "../hooks/searchHooks";
 
 type KeyFilter = {
   key: number;

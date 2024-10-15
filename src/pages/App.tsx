@@ -1,7 +1,7 @@
-import { useFocusTracking } from "../appState";
+import { useFocusTracking } from "../hooks/appState";
 import { AutoSuggest } from "../components/AutoSuggest";
 import { CurrentFilters } from "../components/CurrentFilters";
-import { Facets } from "../components/Facets";
+import { Facets } from "../components/facets/Facets";
 import { MiniCart } from "../components/MiniCart";
 import { Paging } from "../components/Paging";
 import { ResultHeader } from "../components/ResultHeader";

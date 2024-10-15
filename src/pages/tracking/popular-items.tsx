@@ -1,6 +1,6 @@
 import useSWR from "swr";
-import { getTrackingPopularity } from "../../api";
-import { useItemData } from "../../trackingHooks";
+import { getTrackingPopularity } from "../../datalayer/api";
+import { useItemData } from "../../hooks/trackingHooks";
 import { makeImageUrl } from "../../utils";
 
 const PopularItem = ({ itemId, value }: { itemId: number; value: number }) => {

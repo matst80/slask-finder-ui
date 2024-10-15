@@ -1,6 +1,11 @@
 import useSWR from "swr";
-import { addToCart, changeQuantity, getCart, removeFromCart } from "./api";
-import { useFetchMutation } from "./utils";
+import {
+  addToCart,
+  changeQuantity,
+  getCart,
+  removeFromCart,
+} from "../datalayer/api";
+import { useFetchMutation } from "../utils";
 
 const cartKey = "/cart";
 

@@ -1,11 +1,15 @@
 import { ShoppingCart } from "lucide-react";
-import { queryToHash, useFacetList, useRelatedItems } from "../searchHooks";
+import {
+  queryToHash,
+  useFacetList,
+  useRelatedItems,
+} from "../hooks/searchHooks";
 import { useMemo, useState } from "react";
 import { byPriority, makeImageUrl } from "../utils";
 import { ItemDetail, ItemValues } from "../types";
-import { stores } from "../stores";
+import { stores } from "../datalayer/stores";
 import { ResultItem } from "./ResultItem";
-import { useAddToCart } from "../cartHooks";
+import { useAddToCart } from "../hooks/cartHooks";
 import { Price } from "./Price";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
@@ -160,14 +164,18 @@ export const ItemDetails = (details: ItemDetail & { isEdit?: boolean }) => {
           <Price
             values={
               Object.fromEntries(
-                integerValues.map(({ id, value }) => [String(id), value]),
+                integerValues.map(({ id, value }) => [String(id), value])
               ) as ItemValues
             }
             disclaimer={disclaimer}
           />
         </span>
         <div className="flex justify-between">
-          <ul>{bp?.split("\n").map((txt) => <li key={txt}>{txt}</li>)}</ul>
+          <ul>
+            {bp?.split("\n").map((txt) => (
+              <li key={txt}>{txt}</li>
+            ))}
+          </ul>
           {(buyable || buyableInStore) && (
             <div>
               <button
