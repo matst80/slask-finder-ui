@@ -1,24 +1,11 @@
 import { Bell, LoaderCircle, Menu, Settings, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-import useSWR from "swr";
 import { cm } from "../utils";
+import { useIsAdmin, useUser } from "../adminHooks";
 
 const UserButton = () => {
-  const { data, isLoading } = useSWR(
-    "/admin/user",
-    (url) =>
-      fetch(url).then(async (res) => {
-        if (res.status === 401) {
-          return null;
-        }
-        return res.json();
-      }),
-    {
-      revalidateOnFocus: true,
-      errorRetryInterval: 50000,
-    }
-  );
+  const { data, isLoading } = useUser();
   const loggedIn = data?.role != null;
   return (
     <a href={loggedIn ? "/admin/logout" : "/admin/login"}>
@@ -38,6 +25,7 @@ const UserButton = () => {
 };
 
 export function Navbar() {
+  const isAdmin = useIsAdmin();
   return (
     <nav className="bg-white shadow-md">
       <div className="mx-auto px-6">
@@ -69,12 +57,14 @@ export function Navbar() {
                 >
                   Tracking
                 </Link>
-                <Link
-                  to="/edit"
-                  className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Edit
-                </Link>
+                {isAdmin && (
+                  <Link
+                    to="/edit"
+                    className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
+                  >
+                    Edit
+                  </Link>
+                )}
               </div>
             </div>
           </div>
