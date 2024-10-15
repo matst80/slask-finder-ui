@@ -21,7 +21,7 @@ const EditCategories = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <form
-      className="absolute top-0 right-0 bg-white p-4 shadow-lg z-10"
+      className="absolute top-0 right-0 bg-white dark:bg-black p-4 shadow-lg z-10"
       onSubmit={(e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -30,7 +30,7 @@ const EditCategories = ({ onClose }: { onClose: () => void }) => {
           ([id, value]) => ({
             id: Number(id),
             value: String(value),
-          })
+          }),
         );
         //console.log(categories);
         updateItemCategories(categories);

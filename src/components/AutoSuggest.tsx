@@ -210,7 +210,7 @@ export const AutoSuggest = () => {
       </div>
       {showItems && (
         <div
-          className="absolute block top-12 left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-xl max-h-[50vh] overflow-y-auto"
+          className="absolute block top-12 left-0 right-0 bg-white dark:bg-black border border-gray-300 rounded-b-md shadow-xl max-h-[50vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="border-b border-gray-300">

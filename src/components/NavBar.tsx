@@ -24,10 +24,16 @@ const UserButton = () => {
   );
 };
 
+const links = {
+  "/": "Search",
+  "/dashboard": "Dashboard",
+  "/stats": "Tracking",
+};
+
 export function Navbar() {
   const isAdmin = useIsAdmin();
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-white shadow-md dark:bg-gray-800 dark:text-white">
       <div className="mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
@@ -38,29 +44,19 @@ export function Navbar() {
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
-                <Link
-                  to="/"
-                  className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Search
-                </Link>
-                <Link
-                  to="/dashboard"
-                  className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Dashboard
-                </Link>
-
-                <Link
-                  to="/stats"
-                  className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Tracking
-                </Link>
+                {Object.entries(links).map(([to, text]) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    className="text-gray-600 dark:text-white hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
+                  >
+                    {text}
+                  </Link>
+                ))}
                 {isAdmin && (
                   <Link
                     to="/edit"
-                    className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-gray-600 dark:text-white hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Edit
                   </Link>

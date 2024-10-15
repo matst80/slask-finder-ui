@@ -8,33 +8,32 @@ import {
   AllFacets,
   TableSearchResultList,
 } from "../components/SearchResultList";
-import { useKeyboardAdminToggle } from "../appState";
 import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 
 const AdminNavBar = () => {
   return (
-    <nav className="bg-white shadow-md border-t border-gray-300">
+    <nav className="bg-white dark:bg-gray-700 shadow-md border-t border-gray-300 dark:border-gray-700">
       <div className="mx-auto sm:px-6 lg:px-4">
         <div className="flex items-center justify-between h-12">
           <div className="hidden md:block">
             <div className="flex items-baseline space-x-4">
               <Link
                 to="/edit/facets"
-                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
+                className="text-gray-600 dark:text-gray-100 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
               >
                 Facets
               </Link>
               <Link
                 to="/edit/bulk"
-                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
+                className="text-gray-600 dark:text-gray-100 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
               >
                 Overview
               </Link>
 
               <Link
                 to="/updated"
-                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
+                className="text-gray-600 dark:text-gray-100 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
               >
                 Updates items
               </Link>
@@ -70,11 +69,10 @@ export const SaveButton = () => {
 };
 
 export const Admin = () => {
-  useKeyboardAdminToggle();
   return (
     <>
       <AdminNavBar />
-      <div className="px-10 py-2 bg-gray-100 min-h-screen">
+      <div className="px-10 py-2 bg-gray-100 dark:bg-gray-900 min-h-screen">
         <Outlet />
         <SaveButton />
       </div>

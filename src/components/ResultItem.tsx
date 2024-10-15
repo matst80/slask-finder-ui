@@ -60,7 +60,7 @@ const StockIndicator = ({
 const UpdatedBanner = ({ lastUpdate }: Pick<Item, "lastUpdate">) => {
   const recentlyUpdated = useMemo(
     () => (lastUpdate ?? 0) > Date.now() - 1000 * 60 * 60,
-    [lastUpdate]
+    [lastUpdate],
   );
   return recentlyUpdated ? (
     <div className="flex items-center rounded-bl-md p-1 bg-yellow-300 text-xs gap-2 absolute top-0 right-0">
@@ -128,7 +128,7 @@ export const ResultItem = ({
         key={`item-${id}`}
         data-id={id}
         data-position={position}
-        className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col items-center justify-center result-item`}
+        className={`bg-white dark:text-gray-800 rounded-sm dark:rounded-xl shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col items-center justify-center result-item`}
         onClick={trackItem}
       >
         Deleted {id}
@@ -141,7 +141,7 @@ export const ResultItem = ({
       key={`item-${id}`}
       data-id={id}
       data-position={position}
-      className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item`}
+      className={`bg-white dark:text-gray-800 rounded-sm dark:rounded-xl shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item`}
       onClick={trackItem}
     >
       <div className="mt-2">
