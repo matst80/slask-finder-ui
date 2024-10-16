@@ -4,22 +4,16 @@ import { useDefaultMetricsQuery } from "../hooks/metricsHooks";
 import { atom, useAtom } from "jotai";
 
 const primaryCursorAtom = atom<Date | null>(null);
-const secondaryCursorAtom = atom<number | null>(null);
+// const secondaryCursorAtom = atom<number | null>(null);
 
 const useCursors = () => {
   const [primary, setPrimary] = useAtom(primaryCursorAtom);
-  const [secondary, setSecondary] = useAtom(secondaryCursorAtom);
+
   return {
     primaryCursor: {
       value: primary,
       onChange: (value: Date) => {
         setPrimary(value);
-      },
-    },
-    secondaryCursor: {
-      value: secondary,
-      onChange: (value: number) => {
-        setSecondary(value);
       },
     },
   };
@@ -31,7 +25,7 @@ const SearchChart = () => {
     ({ metric, data }) => ({
       label: `Searches (${metric.instance})`,
       data,
-    })
+    }),
   );
   return (
     <ChartBox
@@ -48,7 +42,7 @@ const FacetSearchChart = () => {
     ({ metric, data }) => ({
       label: `Facet generations (${metric.instance})`,
       data,
-    })
+    }),
   );
   return (
     <ChartBox
@@ -65,7 +59,7 @@ export const TrackingEventsChart = () => {
     ({ metric, data }) => ({
       label: `Processed tracking events (${metric.instance})`,
       data,
-    })
+    }),
   );
   return (
     <ChartBox
@@ -79,7 +73,7 @@ export const TrackingEventsChart = () => {
 export const MemoryUsageChart = () => {
   const metricsData = useDefaultMetricsQuery(
     `avg (container_memory_working_set_bytes{container="slask-finder"}) by (container_name,pod)`,
-    ({ metric: { pod }, data }) => ({ label: `Memory usage (${pod})`, data })
+    ({ metric: { pod }, data }) => ({ label: `Memory usage (${pod})`, data }),
   );
   return (
     <ChartBox
@@ -106,7 +100,7 @@ export function ChartBox<T>({
   error,
   ...chartOptions
 }: ChartBoxProps<T>) {
-  const { primaryCursor, secondaryCursor } = useCursors();
+  const { primaryCursor } = useCursors();
   if (isEmpty) {
     return <div>Loading...</div>;
   }
@@ -121,7 +115,7 @@ export function ChartBox<T>({
       </h1>
       <p>{description}</p>
       <div className="w-full h-60 md:h-96">
-        <Chart options={{ ...chartOptions, primaryCursor, secondaryCursor }} />
+        <Chart options={{ ...chartOptions, primaryCursor }} />
       </div>
       {error && <div>Error: {error.message}</div>}
     </div>
@@ -131,7 +125,7 @@ export function ChartBox<T>({
 export const CpuUsageChart = () => {
   const metricsData = useDefaultMetricsQuery(
     `sum (rate (container_cpu_usage_seconds_total {container="slask-finder" } [1m])) by (pod)`,
-    ({ metric: { pod }, data }) => ({ label: `Cpu usage (${pod})`, data })
+    ({ metric: { pod }, data }) => ({ label: `Cpu usage (${pod})`, data }),
   );
   return (
     <ChartBox
@@ -145,7 +139,7 @@ export const CpuUsageChart = () => {
 export const UpsertsChart = () => {
   const metricsData = useDefaultMetricsQuery(
     `rate(slasktracking_processed_item_updates_total[1m])`,
-    ({ data }) => ({ label: `Updated items`, data })
+    ({ data }) => ({ label: `Updated items`, data }),
   );
   return (
     <ChartBox
