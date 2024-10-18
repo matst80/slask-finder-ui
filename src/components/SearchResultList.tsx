@@ -13,11 +13,11 @@ const searchList = [
   },
   {
     title: "Alla produkter",
-    href: "#i=4%3D1-99999999900",
+    href: "#i=4%3D0-169999999",
   },
   {
     title: "Rabatterade produkter",
-    href: "#i=5%3D1-99999999900",
+    href: "#i=5%3D0-169999999",
   },
 ];
 
@@ -26,14 +26,16 @@ const NoResults = () => {
   return (
     <div>
       <ul className="mt-2">
-        {data?.sort(byName).map((category, idx) => (
-          <CategoryItem
-            key={category.value}
-            {...category}
-            level={1}
-            defaultOpen={idx < 3}
-          />
-        ))}
+        {data
+          ?.sort(byName)
+          .map((category, idx) => (
+            <CategoryItem
+              key={category.value}
+              {...category}
+              level={1}
+              defaultOpen={idx < 3}
+            />
+          ))}
       </ul>
       <div className="flex gap-4 mt-6">
         {searchList.map(({ title, href }) => (
@@ -75,7 +77,7 @@ export const SearchResultList = () => {
             toPush = [];
           }
         },
-        { threshold: 1 }
+        { threshold: 1 },
       );
       ref.current.querySelectorAll(".result-item").forEach((item) => {
         observer.observe(item);
@@ -109,9 +111,11 @@ export const CategoryList = () => {
   return (
     <div>
       <ul>
-        {data?.sort(byName).map((category) => (
-          <CategoryItem key={category.value} {...category} level={1} />
-        ))}
+        {data
+          ?.sort(byName)
+          .map((category) => (
+            <CategoryItem key={category.value} {...category} level={1} />
+          ))}
       </ul>
     </div>
   );
