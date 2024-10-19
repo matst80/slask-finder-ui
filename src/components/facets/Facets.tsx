@@ -1,6 +1,12 @@
 import { useMemo } from "react";
 
-import { KeyFacet, NumberFacet } from "../../types";
+import {
+  isKeyFacet,
+  isNumberFacet,
+  isNumberResult,
+  KeyResult,
+  NumberResult,
+} from "../../types";
 import { LoaderCircle } from "lucide-react";
 import { stores } from "../../datalayer/stores";
 import { useHashFacets, useQueryHelpers } from "../../hooks/searchHooks";
@@ -21,25 +27,8 @@ export const Facets = () => {
   } = useQueryHelpers();
 
   const allFacets = useMemo(
-    () =>
-      [
-        ...(results?.facets?.fields?.map((d) => {
-          return { ...d, fieldType: "string" } satisfies KeyFacet & {
-            fieldType: "string";
-          };
-        }) ?? []),
-        ...(results?.facets?.integerFields?.map((d) => {
-          return { ...d, fieldType: "integer" } satisfies NumberFacet & {
-            fieldType: "integer";
-          };
-        }) ?? []),
-        ...(results?.facets?.numberFields?.map((d) => {
-          return { ...d, fieldType: "number" } satisfies NumberFacet & {
-            fieldType: "number";
-          };
-        }) ?? []),
-      ].sort(byPriority),
-    [results]
+    () => (results?.facets ?? []).sort(byPriority),
+    [results],
   );
   const hasFacets = allFacets.length > 0;
   if (isLoading && !hasFacets) {
@@ -59,7 +48,7 @@ export const Facets = () => {
         <h2 className="text-lg font-semibold mb-4">Filter</h2>
         <div>
           {allFacets.map((facet, i) => {
-            if (facet.type === "color" && facet.fieldType === "string") {
+            if (facet.type === "color") {
               return (
                 <ColorFacetSelector
                   {...facet}
@@ -67,7 +56,7 @@ export const Facets = () => {
                 />
               );
             }
-            if (facet.fieldType === "number") {
+            if (isNumberFacet(facet)) {
               return (
                 <FloatFacetSelector
                   {...facet}
@@ -75,7 +64,7 @@ export const Facets = () => {
                 />
               );
             }
-            if (facet.fieldType === "integer") {
+            if (isNumberFacet(facet)) {
               return (
                 <IntegerFacetSelector
                   {...facet}
@@ -83,14 +72,16 @@ export const Facets = () => {
                 />
               );
             }
-
-            return (
-              <KeyFacetSelector
-                {...facet}
-                key={`fld-${facet.id}-${facet.name}`}
-                defaultOpen={i < 5}
-              />
-            );
+            if (isKeyFacet(facet)) {
+              return (
+                <KeyFacetSelector
+                  {...facet}
+                  key={`fld-${facet.id}-${facet.name}`}
+                  defaultOpen={i < 5}
+                />
+              );
+            }
+            return null;
           })}
         </div>
 

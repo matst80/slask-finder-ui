@@ -93,24 +93,48 @@ export type BaseFacet = {
   name: string;
   prio?: number;
   description: string;
+  categoryLevel?: number;
 };
 
-export type KeyFacet = BaseFacet & {
-  categoryLevel?: number;
+export type KeyResult = {
   values: Record<string, number>;
 };
 
-export type NumberFacet = BaseFacet & {
+export type NumberResult = {
   min: number;
   max: number;
   count: number;
 };
 
-export type Facets = {
-  fields: KeyFacet[];
-  integerFields: NumberFacet[];
-  numberFields: NumberFacet[];
+export type NumberFacet = BaseFacet & {
+  result: NumberResult;
 };
+
+export type KeyFacet = BaseFacet & {
+  result: KeyResult;
+};
+
+export type Facet = NumberFacet | KeyFacet;
+
+export const isKeyResult = (
+  result: KeyResult | NumberResult,
+): result is KeyResult =>
+  result != null && (result as KeyResult).values != null;
+
+export const isNumberResult = (
+  result: KeyResult | NumberResult,
+): result is NumberResult =>
+  result != null && (result as NumberResult).max != null;
+
+export const isNumberFacet = (facet: Facet): facet is NumberFacet => {
+  return isNumberResult(facet.result);
+};
+
+export const isKeyFacet = (facet: Facet): facet is NumberFacet => {
+  return isKeyResult(facet.result);
+};
+
+export type Facets = Facet[];
 
 export type FacetResult = {
   totalHits: number;

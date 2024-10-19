@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Item, KeyFacet, Suggestion } from "../types";
+import { Item, KeyResult, Suggestion } from "../types";
 import { autoSuggestResponse } from "../datalayer/api";
 import { Search } from "lucide-react";
 import { queryToHash } from "../hooks/searchHooks";
@@ -17,7 +17,7 @@ const useAutoSuggest = () => {
   const [value, setValue] = useState<string | null>(null);
   const [results, setResults] = useState<Suggestion[]>([]);
   const [items, setItems] = useState<Item[]>([]);
-  const [facets, setFacets] = useState<KeyFacet[]>([]);
+  const [facets, setFacets] = useState<KeyResult[]>([]);
   useEffect(() => {
     if (value == null || value.length < 2) {
       return;
@@ -76,7 +76,7 @@ const MatchingFacets = ({
   close,
 }: {
   close: () => void;
-  facets: KeyFacet[];
+  facets: KeyResult[];
   query: string;
 }) => {
   const toShow = useMemo(() => {
@@ -85,12 +85,12 @@ const MatchingFacets = ({
       return facets.filter((d) => d.type === "type");
     }
     const hasCategories = facets.some(
-      (d) => d.categoryLevel != null && d.categoryLevel > 0
+      (d) => d.categoryLevel != null && d.categoryLevel > 0,
     );
     if (hasCategories) {
       return facets.filter(
         (d) =>
-          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type"
+          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type",
       );
     }
 

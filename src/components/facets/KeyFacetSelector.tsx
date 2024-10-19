@@ -1,7 +1,7 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useFilters } from "../../hooks/searchHooks";
-import { KeyFacet } from "../../types";
+import { KeyFacet, KeyResult } from "../../types";
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
@@ -10,7 +10,7 @@ const toSorted = (values: Record<string, number>) =>
 
 export const KeyFacetSelector = ({
   name,
-  values,
+  result: { values },
   id,
   defaultOpen,
 }: KeyFacet & { defaultOpen: boolean }) => {
@@ -20,7 +20,7 @@ export const KeyFacetSelector = ({
   const filtered = useMemo(() => {
     return filter.length > 2
       ? allSorted.filter(({ value }) =>
-          value.toLowerCase().includes(filter.toLowerCase())
+          value.toLowerCase().includes(filter.toLowerCase()),
         )
       : allSorted;
   }, [allSorted, filter]);
@@ -67,7 +67,7 @@ export const KeyFacetSelector = ({
                   id={value}
                   value={value}
                   checked={keyFilters.some(
-                    (d) => d.value === value && d.id === id
+                    (d) => d.value === value && d.id === id,
                   )}
                   onChange={(e) => {
                     const checked = e.target.checked;

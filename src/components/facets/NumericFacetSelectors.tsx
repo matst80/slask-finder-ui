@@ -1,14 +1,13 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useFilters } from "../../hooks/searchHooks";
-import { NumberFacet } from "../../types";
+import { NumberFacet, NumberResult } from "../../types";
 import { converters } from "../../utils";
 import { Slider } from "./Slider";
 
 const NumberFacetSelector = ({
   name,
-  min,
-  max,
+  result: { min, max },
   type,
   updateFilerValue,
   defaultOpen,
@@ -20,7 +19,7 @@ const NumberFacetSelector = ({
 
   const { toDisplayValue, fromDisplayValue } = useMemo(
     () => converters(type),
-    [type]
+    [type],
   );
 
   return (
