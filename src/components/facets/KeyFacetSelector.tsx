@@ -59,7 +59,7 @@ export const KeyFacetSelector = ({
           {toShow.map(({ value, count }) => (
             <label
               key={value}
-              className="flex items-center line-clamp-1 overflow-ellipsis justify-between p-1 text-sm rounded-md hover:bg-gray-100"
+              className="flex items-center line-clamp-1 overflow-ellipsis justify-between p-1 text-sm"
             >
               <div>
                 <input

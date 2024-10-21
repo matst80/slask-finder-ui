@@ -60,32 +60,26 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
 
 const Properties = ({
   values,
-  numberValues,
-  integerValues,
   isEdit,
-}: Pick<ItemDetail, "values" | "numberValues" | "integerValues"> & {
+}: Pick<ItemDetail, "values"> & {
   isEdit?: boolean;
 }) => {
   const { data } = useFacetList();
   const fields = useMemo(() => {
-    return [
-      ...(values ?? []),
-      ...(numberValues ?? []),
-      ...(integerValues ?? []),
-    ]
-      .map((value) => {
-        const facet = data?.find((f) => f.id === value.id);
+    return Object.entries(values)
+      .map(([id, value]) => {
+        const facet = data?.find((f) => f.id === Number(id));
         if (!facet || ignoreFaceIds.includes(facet.id)) {
           return null;
         }
         return {
           ...facet,
-          ...value,
+          value,
         };
       })
       .filter((value) => value != null)
       .sort(byPriority);
-  }, [values, numberValues, integerValues, data]);
+  }, [values, data]);
   return (
     <>
       <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
@@ -146,7 +140,7 @@ export const ItemDetails = (details: ItemDetail & { isEdit?: boolean }) => {
     buyable,
     buyableInStore,
     id,
-    integerValues,
+    values,
     disclaimer,
   } = details;
   return (
@@ -161,21 +155,10 @@ export const ItemDetails = (details: ItemDetail & { isEdit?: boolean }) => {
         </div>
         <h2 className="text-xl font-bold">{title}</h2>
         <span className="text-xl font-bold">
-          <Price
-            values={
-              Object.fromEntries(
-                integerValues.map(({ id, value }) => [String(id), value])
-              ) as ItemValues
-            }
-            disclaimer={disclaimer}
-          />
+          <Price values={values} disclaimer={disclaimer} />
         </span>
         <div className="flex justify-between">
-          <ul>
-            {bp?.split("\n").map((txt) => (
-              <li key={txt}>{txt}</li>
-            ))}
-          </ul>
+          <ul>{bp?.split("\n").map((txt) => <li key={txt}>{txt}</li>)}</ul>
           {(buyable || buyableInStore) && (
             <div>
               <button

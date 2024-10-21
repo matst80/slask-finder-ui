@@ -1,12 +1,6 @@
 import { useMemo } from "react";
 
-import {
-  isKeyFacet,
-  isNumberFacet,
-  isNumberResult,
-  KeyResult,
-  NumberResult,
-} from "../../types";
+import { isKeyFacet, isNumberFacet } from "../../types";
 import { LoaderCircle } from "lucide-react";
 import { stores } from "../../datalayer/stores";
 import { useHashFacets, useQueryHelpers } from "../../hooks/searchHooks";

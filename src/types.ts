@@ -42,10 +42,12 @@ export type Item = ItemProps & {
   stock?: Stock[];
 };
 
+export type ItemProperties = ItemValues;
+
 export type UpdatedItem = ItemProps & {
   id: string;
   title: string;
-  values: { id: number; value: string | number }[];
+  values: ItemProperties;
   stock?: Stock[];
 };
 
@@ -57,9 +59,7 @@ export type FieldValue<T> = {
 export type ItemDetail = ItemProps & {
   id: number;
   title: string;
-  values: FieldValue<string>[];
-  numberValues: FieldValue<number>[];
-  integerValues: FieldValue<number>[];
+  values: ItemProperties;
   stock?: Stock[];
 };
 
