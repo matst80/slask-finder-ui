@@ -6,7 +6,7 @@ import {
 } from "../hooks/searchHooks";
 import { useMemo, useState } from "react";
 import { byPriority, makeImageUrl } from "../utils";
-import { ItemDetail, ItemValues } from "../types";
+import { ItemDetail } from "../types";
 import { stores } from "../datalayer/stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
@@ -178,12 +178,7 @@ export const ItemDetails = (details: ItemDetail & { isEdit?: boolean }) => {
       </h3>
       <RelatedItems id={details.id} />
 
-      <Properties
-        integerValues={details.integerValues}
-        values={details.values}
-        numberValues={details.integerValues}
-        isEdit={details.isEdit}
-      />
+      <Properties values={details.values} isEdit={details.isEdit} />
     </>
   );
 };

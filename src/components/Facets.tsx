@@ -1,10 +1,13 @@
 import { useMemo, useState } from "react";
-
-import { KeyResult, NumberResult } from "../types";
+import { isKeyFacet, isNumberFacet, KeyFacet, NumberFacet } from "../types";
 import { ChevronDown, ChevronUp, LoaderCircle } from "lucide-react";
-import { stores } from "../stores";
-import { useFilters, useHashFacets, useQueryHelpers } from "../searchHooks";
 import { byPriority, cm, colourNameToHex, converters } from "../utils";
+import {
+  useFilters,
+  useHashFacets,
+  useQueryHelpers,
+} from "../hooks/searchHooks";
+import { stores } from "../datalayer/stores";
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
@@ -13,10 +16,11 @@ const toSorted = (values: Record<string, number>) =>
 
 const KeyFacetSelector = ({
   name,
-  values,
   id,
+  result,
   defaultOpen,
-}: KeyResult & { defaultOpen: boolean }) => {
+}: KeyFacet & { defaultOpen: boolean }) => {
+  const { values } = result;
   const { keyFilters, addKeyFilter, removeKeyFilter } = useFilters();
   const [filter, setFilter] = useState("");
   const allSorted = useMemo(() => toSorted(values), [values]);
@@ -157,12 +161,11 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
 
 const NumberFacetSelector = ({
   name,
-  min,
-  max,
+  result: { min, max },
   type,
   updateFilerValue,
   defaultOpen,
-}: NumberResult & {
+}: NumberFacet & {
   updateFilerValue: (min: number, max: number) => void;
   defaultOpen: boolean;
 }) => {
@@ -202,7 +205,7 @@ const NumberFacetSelector = ({
   );
 };
 
-const FloatFacetSelector = (facet: NumberResult) => {
+const FloatFacetSelector = (facet: NumberFacet) => {
   const { addNumberFilter } = useFilters();
 
   return (
@@ -216,7 +219,7 @@ const FloatFacetSelector = (facet: NumberResult) => {
   );
 };
 
-const IntegerFacetSelector = (facet: NumberResult) => {
+const IntegerFacetSelector = (facet: NumberFacet) => {
   const { addIntegerFilter } = useFilters();
 
   return (
@@ -230,7 +233,7 @@ const IntegerFacetSelector = (facet: NumberResult) => {
   );
 };
 
-const ColorFacetSelector = ({ id, values }: KeyResult) => {
+const ColorFacetSelector = ({ id, result: { values } }: KeyFacet) => {
   const { addKeyFilter, keyFilters, removeKeyFilter } = useFilters();
 
   return (
@@ -276,24 +279,7 @@ export const Facets = () => {
   } = useQueryHelpers();
 
   const allFacets = useMemo(
-    () =>
-      [
-        ...(results?.facets?.fields?.map((d) => {
-          return { ...d, fieldType: "string" } satisfies KeyResult & {
-            fieldType: "string";
-          };
-        }) ?? []),
-        ...(results?.facets?.integerFields?.map((d) => {
-          return { ...d, fieldType: "integer" } satisfies NumberResult & {
-            fieldType: "integer";
-          };
-        }) ?? []),
-        ...(results?.facets?.numberFields?.map((d) => {
-          return { ...d, fieldType: "number" } satisfies NumberResult & {
-            fieldType: "number";
-          };
-        }) ?? []),
-      ].sort(byPriority),
+    () => results?.facets ?? [].sort(byPriority),
     [results],
   );
   const hasFacets = allFacets.length > 0;
@@ -314,7 +300,7 @@ export const Facets = () => {
         <h2 className="text-lg font-semibold mb-4">Filter</h2>
         <div>
           {allFacets.map((facet, i) => {
-            if (facet.type === "color" && facet.fieldType === "string") {
+            if (isKeyFacet(facet) && facet.type === "color") {
               return (
                 <ColorFacetSelector
                   {...facet}
@@ -322,7 +308,7 @@ export const Facets = () => {
                 />
               );
             }
-            if (facet.fieldType === "number") {
+            if (isNumberFacet(facet)) {
               return (
                 <FloatFacetSelector
                   {...facet}
@@ -330,7 +316,7 @@ export const Facets = () => {
                 />
               );
             }
-            if (facet.fieldType === "integer") {
+            if (isNumberFacet(facet)) {
               return (
                 <IntegerFacetSelector
                   {...facet}

@@ -1,7 +1,7 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useFilters } from "../../hooks/searchHooks";
-import { NumberFacet, NumberResult } from "../../types";
+import { NumberFacet } from "../../types";
 import { converters } from "../../utils";
 import { Slider } from "./Slider";
 

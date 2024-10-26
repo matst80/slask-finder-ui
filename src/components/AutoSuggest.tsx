@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Item, KeyResult, Suggestion } from "../types";
+import {
+  Facet,
+  isKeyFacet,
+  Item,
+  KeyFacet,
+  NumberFacet,
+  Suggestion,
+} from "../types";
 import { autoSuggestResponse } from "../datalayer/api";
 import { Search } from "lucide-react";
 import { queryToHash } from "../hooks/searchHooks";
@@ -17,7 +24,7 @@ const useAutoSuggest = () => {
   const [value, setValue] = useState<string | null>(null);
   const [results, setResults] = useState<Suggestion[]>([]);
   const [items, setItems] = useState<Item[]>([]);
-  const [facets, setFacets] = useState<KeyResult[]>([]);
+  const [facets, setFacets] = useState<Facet[]>([]);
   useEffect(() => {
     if (value == null || value.length < 2) {
       return;
@@ -76,19 +83,20 @@ const MatchingFacets = ({
   close,
 }: {
   close: () => void;
-  facets: KeyResult[];
+  facets: (KeyFacet | NumberFacet)[];
   query: string;
 }) => {
   const toShow = useMemo(() => {
-    const hasType = facets.some((d) => d.type === "type");
+    const keyFacets = facets.filter(isKeyFacet);
+    const hasType = keyFacets.some((d) => d.type === "type");
     if (hasType) {
-      return facets.filter((d) => d.type === "type");
+      return keyFacets.filter((d) => d.type === "type");
     }
-    const hasCategories = facets.some(
+    const hasCategories = keyFacets.some(
       (d) => d.categoryLevel != null && d.categoryLevel > 0,
     );
     if (hasCategories) {
-      return facets.filter(
+      return keyFacets.filter(
         (d) =>
           (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type",
       );
@@ -102,7 +110,7 @@ const MatchingFacets = ({
         <div className="p-2">
           <h2 className="font-bold">{f.name}:</h2>
           <div className="flex gap-2 flex-wrap">
-            {Object.entries(f.values)
+            {Object.entries(f.result)
               .sort((a, b) => b[1] - a[1])
               .slice(undefined, 10)
               .map(([value, hits]) => (

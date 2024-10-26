@@ -130,7 +130,7 @@ export const isNumberFacet = (facet: Facet): facet is NumberFacet => {
   return isNumberResult(facet.result);
 };
 
-export const isKeyFacet = (facet: Facet): facet is NumberFacet => {
+export const isKeyFacet = (facet: Facet): facet is KeyFacet => {
   return isKeyResult(facet.result);
 };
 
