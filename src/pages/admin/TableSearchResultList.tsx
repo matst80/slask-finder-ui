@@ -1,4 +1,4 @@
-import { Table, Link, Edit, Trash } from "lucide-react";
+import { Link, Edit, Trash } from "lucide-react";
 import { useMemo } from "react";
 import { usePopularity, useStaticPositions } from "../../adminHooks";
 import {
@@ -11,6 +11,7 @@ import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
 import { Input } from "../../components/ui/input";
 import {
+  Table,
   TableHeader,
   TableRow,
   TableHead,
