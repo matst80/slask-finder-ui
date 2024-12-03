@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQueryHelpers } from "../hooks/searchHooks";
 import { Filter } from "lucide-react";
 import { cm, useDebounce } from "../utils";

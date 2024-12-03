@@ -9,9 +9,9 @@ import {
 } from "../types";
 import { autoSuggestResponse } from "../datalayer/api";
 import { Search } from "lucide-react";
-import { queryToHash, useFilters, useQueryHelpers } from "../hooks/searchHooks";
+import { queryToHash, useQueryHelpers } from "../hooks/searchHooks";
 import { makeImageUrl } from "../utils";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // type MappedSuggestion = {
 //   match: string;
