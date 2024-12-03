@@ -9,9 +9,9 @@ import {
 } from "../types";
 import { autoSuggestResponse } from "../datalayer/api";
 import { Search } from "lucide-react";
-import { queryToHash } from "../hooks/searchHooks";
+import { queryToHash, useFilters, useQueryHelpers } from "../hooks/searchHooks";
 import { makeImageUrl } from "../utils";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 // type MappedSuggestion = {
 //   match: string;
@@ -142,8 +142,9 @@ const MatchingFacets = ({
 };
 
 export const AutoSuggest = () => {
+  const {setGlobalTerm, query:{query=""}} = useQueryHelpers();
   const { facets, items, results, setValue: setSuggestTerm } = useAutoSuggest();
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(query);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -163,13 +164,13 @@ export const AutoSuggest = () => {
     };
   }, [value, setSuggestTerm]);
 
-  const applySuggestion = (value: string) => {
-    globalThis.location.hash = queryToHash({
-      query: value,
-      stock: [],
-      page: 0,
-    });
-  };
+  // const applySuggestion = (value: string) => {
+  //   globalThis.location.hash = queryToHash({
+  //     query: value,
+  //     stock: [],
+  //     page: 0,
+  //   });
+  // };
 
   const showItems =
     open && (items.length > 0 || facets.length > 0 || results.length > 0);
@@ -198,14 +199,15 @@ export const AutoSuggest = () => {
           //onBlur={() => applySuggestion(value)}
           onKeyUp={(e) => {
             if (e.key === "Enter") {
-              applySuggestion(value);
+              setGlobalTerm(value);
               setOpen(false);
+              return;
             } else if (e.key === "ArrowRight" && results.length > 0) {
               const query = [...results[0].other, results[0].match]
                 .filter((d) => d != null && d.length > 0)
                 .join(" ");
               setValue(query);
-              applySuggestion(query);
+              setGlobalTerm(query);
             }
             setOpen(true);
           }}

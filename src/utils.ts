@@ -184,3 +184,16 @@ export const textSize = (level: number) => {
       return "text-sm";
   }
 };
+
+export const useDebounce = <TArg extends unknown[], TRet>(
+  fn: (...args: TArg) => TRet,
+  delay: number
+) => {
+  let timeout: number;
+  return (...args: TArg) => {
+    clearTimeout(timeout);
+    timeout = globalThis.setTimeout(() => {
+      fn(...args);
+    }, delay);
+  };
+};
