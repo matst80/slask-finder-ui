@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQueryHelpers } from "../hooks/searchHooks";
 import { Filter } from "lucide-react";
-import { cm } from "../utils";
+import { cm, useDebounce } from "../utils";
 
 type Props = {
   show: boolean;
@@ -14,18 +14,8 @@ export const FilterQuery = ({ show }: Props) => {
   } = useQueryHelpers();
 
   const [value, setValue] = useState(query ?? "");
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if ((query ?? "") != value) {
-        setTerm(value);
-      }
-    }, 260);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [value, query, setTerm]);
+  const debouncedSet = useDebounce(setTerm, 500);
+ 
   const doShow = show || !!query?.length;
   return (
     <div
@@ -39,7 +29,10 @@ export const FilterQuery = ({ show }: Props) => {
         type="search"
         value={value}
         placeholder="Filter items..."
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          debouncedSet(e.target.value);
+          setValue(e.target.value);
+        }}
       />
       <Filter
         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -48,3 +41,5 @@ export const FilterQuery = ({ show }: Props) => {
     </div>
   );
 };
+
+

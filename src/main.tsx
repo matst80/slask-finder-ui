@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./pages/App.tsx";
 import "./index.css";
@@ -7,7 +7,6 @@ import { Admin } from "./pages/Admin.tsx";
 import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
 import { EditSearchView } from "./pages/admin/EditSearchView.tsx";
 import { Tracking } from "./pages/Tracking.tsx";
-import { Navbar } from "./components/NavBar.tsx";
 import { SWRConfig } from "swr";
 import { getRawData, getTrackingSessions } from "./datalayer/api.ts";
 import { ProductPage } from "./components/ProductPage.tsx";
@@ -17,15 +16,7 @@ import { PopularItemsView } from "./pages/tracking/popular-items.tsx";
 import { PopularFacetsView } from "./pages/tracking/popular-facets.tsx";
 import { UpdatedItems } from "./pages/tracking/updates.tsx";
 import { DashboardView } from "./pages/Dashboard.tsx";
-
-const PageContainer = ({ children }: PropsWithChildren) => {
-  return (
-    <>
-      <Navbar />
-      {children}
-    </>
-  );
-};
+import { PageContainer } from "./PageContainer.tsx"
 
 const router = createBrowserRouter([
   {

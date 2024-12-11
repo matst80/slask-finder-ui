@@ -246,7 +246,7 @@ export const useHashFacets = () => {
 type FunctionOrValue<T> = T | ((prev: T) => T);
 
 export const useQueryHelpers = () => {
-  const { query, partialUpdate } = useHashQuery();
+  const { query, partialUpdate, setQuery } = useHashQuery();
 
   const setPage = partialUpdate("page");
   const setPageSize = partialUpdate("pageSize");
@@ -254,24 +254,27 @@ export const useQueryHelpers = () => {
   const setStock = partialUpdate("stock");
   const setTerm = partialUpdate("query");
   const setKeyFilters = partialUpdate("string");
-  const setNumberFilters = partialUpdate("range");
+  const setRangeFilters = partialUpdate("range");
   
+  const setGlobalTerm = (term: string) => {
+    setQuery((prev) => ({ ...prev,string:[],number:[],integer:[], query: term }));
+  }
   return {
     query,
     setPage,
+    setGlobalTerm,
     setPageSize,
     setSort,
     setStock,
     setTerm,
     setKeyFilters,
-    setNumberFilters,
+    setRangeFilters,
   
   };
 };
 
 export const useFilters = () => {
-  const { query, setKeyFilters, setNumberFilters } =
-    useQueryHelpers();
+  const { query, setKeyFilters, setRangeFilters } = useQueryHelpers();
   return {
     keyFilters: query.string ?? [],
     addKeyFilter: (id: number, value: string) => {
@@ -284,11 +287,11 @@ export const useFilters = () => {
     },
     numberFilters: query.range ?? [],
     addNumberFilter: (id: number, min: number, max: number) => {
-      setNumberFilters((prev) => [...(prev ?? []), { id, min, max }]);
+      setRangeFilters((prev) => [...(prev ?? []), { id, min, max }]);
       //setPage(0);
     },
     removeNumberFilter: (id: number) => {
-      setNumberFilters((prev) => [...(prev ?? [])].filter((f) => f.id !== id));
+      setRangeFilters((prev) => [...(prev ?? [])].filter((f) => f.id !== id));
       //setPage(0);
     },
   };
