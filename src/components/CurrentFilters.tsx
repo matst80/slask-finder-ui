@@ -13,7 +13,7 @@ type KeyFilter = {
   name?: string;
   type?: string;
   fieldType: "key";
-  value: string|string[];
+  value: string;
 };
 
 type NumberFilter = {
@@ -43,7 +43,10 @@ const hasValue = (filter: unknown): filter is Filter => {
 };
 
 const isKeyField = (filter: Field): filter is KeyField => {
-  return typeof (filter as KeyField).value === "string" || Array.isArray((filter as KeyField).value);
+  return (
+    typeof (filter as KeyField).value === "string" ||
+    Array.isArray((filter as KeyField).value)
+  );
 };
 
 const isNumberField = (filter: Field): filter is NumberField => {
@@ -54,9 +57,18 @@ function toFilter(
   fieldType: "integer" | "float" | "key",
   facets?: FacetListItem[]
 ) {
-  return (data: Field): KeyFilter | NumberFilter => {
+  return (data: Field): KeyFilter | NumberFilter | KeyFilter[] => {
     const field = facets?.find((field) => field.id === data.id);
     if (fieldType === "key" && isKeyField(data)) {
+      if (Array.isArray(data.value)) {
+        return data.value.map((value) => ({
+          key: data.id,
+          name: field?.name,
+          type: field?.type,
+          fieldType: "key",
+          value,
+        }));
+      }
       return {
         key: data.id,
         name: field?.name,
@@ -106,16 +118,12 @@ export const CurrentFilters = () => {
     setStock,
   } = useQueryHelpers();
   const locationId = stock?.[0];
-  const {
-    keyFilters,
-    numberFilters,
-    removeKeyFilter,
-    removeNumberFilter,
-  } = useFilters();
+  const { keyFilters, numberFilters, removeKeyFilter, removeNumberFilter } =
+    useFilters();
 
   const selectedFilters = useMemo(() => {
     return [
-      ...keyFilters.map(toFilter("key", data)),
+      ...keyFilters.flatMap(toFilter("key", data)),
       ...numberFilters.map(toFilter("float", data)),
     ].filter(hasValue);
   }, [keyFilters, numberFilters, data]);
@@ -145,14 +153,16 @@ export const CurrentFilters = () => {
                         filter.value.max / 100
                       } kr`
                     : `${filter.value.min} - ${filter.value.max}`
-                  : Array.isArray( filter.value)? filter.value.join(", "): filter.value
+                  : Array.isArray(filter.value)
+                  ? filter.value.join(", ")
+                  : filter.value
               }
               onClick={() => {
                 if (filter.fieldType === "key") {
-                  removeKeyFilter(filter.key);
+                  removeKeyFilter(filter.key, Array.isArray(filter.value)?undefined:filter.value);
                 } else {
                   removeNumberFilter(filter.key);
-                } 
+                }
               }}
             />
           ))}

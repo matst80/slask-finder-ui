@@ -312,8 +312,25 @@ export const useFilters = () => {
       });
       //setPage(0);
     },
-    removeKeyFilter: (id: number) => {
-      setKeyFilters((prev) => [...(prev ?? [])].filter((f) => f.id !== id));
+    removeKeyFilter: (id: number, value?:string) => {
+      setKeyFilters((prev) => {
+        if (!prev) {
+          return [];
+        }
+        const foundIdx = prev?.findIndex((f) => f.id === id);
+        if (foundIdx !== -1) {
+          const p = prev[foundIdx];
+          if (p.value === value) {
+            return [...prev].filter((f) => f.id !== id);
+          } else {
+            prev[foundIdx].value = [
+              ...(Array.isArray(p.value) ? p.value : [p.value]),
+            ].filter((v) => v !== value);
+          }
+          return prev;
+        }
+        return [...prev].filter((f) => f.id !== id)
+      });
       //setPage(0);
     },
     numberFilters: query.range ?? [],

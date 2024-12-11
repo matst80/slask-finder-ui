@@ -20,7 +20,7 @@ export const KeyFacetSelector = ({
   const filtered = useMemo(() => {
     return filter.length > 2
       ? allSorted.filter(({ value }) =>
-          value.toLowerCase().includes(filter.toLowerCase()),
+          value.toLowerCase().includes(filter.toLowerCase())
         )
       : allSorted;
   }, [allSorted, filter]);
@@ -66,15 +66,17 @@ export const KeyFacetSelector = ({
                   type="checkbox"
                   id={value}
                   value={value}
-                  checked={keyFilters.some(
-                    (d) => d.value === value && d.id === id,
+                  checked={keyFilters.some((d) =>
+                    d.id === id && Array.isArray(d.value)
+                      ? d.value.includes(value)
+                      : d.value === value
                   )}
                   onChange={(e) => {
                     const checked = e.target.checked;
                     if (checked) {
                       addKeyFilter(id, value);
                     } else {
-                      removeKeyFilter(id);
+                      removeKeyFilter(id,value);
                     }
                   }}
                 />
