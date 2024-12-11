@@ -109,8 +109,6 @@ export const CurrentFilters = () => {
   const {
     keyFilters,
     numberFilters,
-    integerFilters,
-    removeIntegerFilter,
     removeKeyFilter,
     removeNumberFilter,
   } = useFilters();
@@ -119,9 +117,8 @@ export const CurrentFilters = () => {
     return [
       ...keyFilters.map(toFilter("key", data)),
       ...numberFilters.map(toFilter("float", data)),
-      ...integerFilters.map(toFilter("integer", data)),
     ].filter(hasValue);
-  }, [keyFilters, numberFilters, integerFilters, data]);
+  }, [keyFilters, numberFilters, data]);
   return (
     (selectedFilters.length > 0 || locationId != null) && (
       <div className="mb-6 flex flex-col md:flex-row items-center gap-2">
@@ -153,11 +150,9 @@ export const CurrentFilters = () => {
               onClick={() => {
                 if (filter.fieldType === "key") {
                   removeKeyFilter(filter.key);
-                } else if (filter.fieldType === "float") {
+                } else {
                   removeNumberFilter(filter.key);
-                } else if (filter.fieldType === "integer") {
-                  removeIntegerFilter(filter.key);
-                }
+                } 
               }}
             />
           ))}

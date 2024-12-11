@@ -28,6 +28,8 @@ export const queryFromHash = (hash: string): ItemsQuery => {
       return { id: Number(id), min, max };
     });
 
+  const range = [...integer??[], ...number??[]];
+
   const string = (hashData.s as string | undefined)
     ?.split(FIELD_SEPARATOR)
     .map((s) => {
@@ -45,12 +47,11 @@ export const queryFromHash = (hash: string): ItemsQuery => {
   if (isNaN(page)) {
     page = 0;
   }
-  return { integer, number, sort, page, pageSize, query, stock, string };
+  return { range, sort, page, pageSize, query, stock, string };
 };
 
 export const queryToHash = ({
-  integer,
-  number,
+  range,
   sort,
   page,
   pageSize,
@@ -59,8 +60,7 @@ export const queryToHash = ({
   string,
 }: ItemsQuery): string => {
   const filterObj = filteringQueryToHash({
-    integer,
-    number,
+    range,
     stock,
     query,
     string,
@@ -78,8 +78,7 @@ export const queryToHash = ({
 };
 
 export const filteringQueryToHash = ({
-  integer,
-  number,
+  range,
   string,
   query,
   stock,
@@ -92,20 +91,20 @@ export const filteringQueryToHash = ({
     result.q = query;
   }
   const ints =
-    integer?.map(({ id, min, max }) => {
+    range?.map(({ id, min, max }) => {
       return `${id}${ID_VALUE_SEPARATOR}${min}-${max}`;
     }) ?? [];
   if (ints.length > 0) {
     result.i = ints.join(FIELD_SEPARATOR);
   }
 
-  const nums =
-    number?.map(({ id, min, max }) => {
-      return `${id}${ID_VALUE_SEPARATOR}${min}-${max}`;
-    }) ?? [];
-  if (nums.length > 0) {
-    result.n = nums.join(FIELD_SEPARATOR);
-  }
+  // const nums =
+  //   number?.map(({ id, min, max }) => {
+  //     return `${id}${ID_VALUE_SEPARATOR}${min}-${max}`;
+  //   }) ?? [];
+  // if (nums.length > 0) {
+  //   result.n = nums.join(FIELD_SEPARATOR);
+  // }
 
   const strs =
     string?.map(({ id, value }) => {
@@ -118,13 +117,12 @@ export const filteringQueryToHash = ({
 };
 
 export const facetQueryToHash = ({
-  integer,
-  number,
+  range,
   query,
   stock,
   string,
 }: FacetQuery): string => {
-  const obj = filteringQueryToHash({ integer, number, stock, string, query });
+  const obj = filteringQueryToHash({ range, stock, string, query });
   return new URLSearchParams(obj).toString();
 };
 
@@ -133,7 +131,7 @@ const itemsKey = (data: ItemsQuery) => `items-` + queryToHash(data);
 const facetsKey = (data: FacetQuery) => "facets-" + facetQueryToHash(data);
 
 const toQuery = (data: ItemsQuery): string => {
-  const { integer, number, sort, page, pageSize, query, stock, string } = data;
+  const { range, sort, page, pageSize, query, stock, string } = data;
 
   const result = new URLSearchParams({
     page: (page ?? 0).toString(),
@@ -141,12 +139,10 @@ const toQuery = (data: ItemsQuery): string => {
     sort: sort ?? "popular",
     query: query ?? "",
   });
-  integer?.forEach(({ id, min, max }) => {
-    result.append("int", `${id}:${min}-${max}`);
+  range?.forEach(({ id, min, max }) => {
+    result.append("rng", `${id}:${min}-${max}`);
   });
-  number?.forEach(({ id, min, max }) => {
-    result.append("num", `${id}:${min}-${max}`);
-  });
+  
   string?.forEach(({ id, value }) => {
     result.append("str", `${id}:${value}`);
   });
@@ -258,8 +254,8 @@ export const useQueryHelpers = () => {
   const setStock = partialUpdate("stock");
   const setTerm = partialUpdate("query");
   const setKeyFilters = partialUpdate("string");
-  const setNumberFilters = partialUpdate("number");
-  const setIntegerFilters = partialUpdate("integer");
+  const setNumberFilters = partialUpdate("range");
+  
   return {
     query,
     setPage,
@@ -269,12 +265,12 @@ export const useQueryHelpers = () => {
     setTerm,
     setKeyFilters,
     setNumberFilters,
-    setIntegerFilters,
+  
   };
 };
 
 export const useFilters = () => {
-  const { query, setKeyFilters, setNumberFilters, setIntegerFilters } =
+  const { query, setKeyFilters, setNumberFilters } =
     useQueryHelpers();
   return {
     keyFilters: query.string ?? [],
@@ -286,22 +282,13 @@ export const useFilters = () => {
       setKeyFilters((prev) => [...(prev ?? [])].filter((f) => f.id !== id));
       //setPage(0);
     },
-    numberFilters: query.number ?? [],
+    numberFilters: query.range ?? [],
     addNumberFilter: (id: number, min: number, max: number) => {
       setNumberFilters((prev) => [...(prev ?? []), { id, min, max }]);
       //setPage(0);
     },
     removeNumberFilter: (id: number) => {
       setNumberFilters((prev) => [...(prev ?? [])].filter((f) => f.id !== id));
-      //setPage(0);
-    },
-    integerFilters: query.integer ?? [],
-    addIntegerFilter: (id: number, min: number, max: number) => {
-      setIntegerFilters((prev) => [...(prev ?? []), { id, min, max }]);
-      //setPage(0);
-    },
-    removeIntegerFilter: (id: number) => {
-      setIntegerFilters((prev) => [...(prev ?? [])].filter((f) => f.id !== id));
       //setPage(0);
     },
   };

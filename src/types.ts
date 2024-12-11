@@ -153,8 +153,7 @@ export type FilteringQuery = {
   query?: string;
   stock: string[];
   string?: KeyField[];
-  number?: NumberField[];
-  integer?: NumberField[];
+  range?: NumberField[];
 };
 
 export type ItemsQuery = FilteringQuery & {
