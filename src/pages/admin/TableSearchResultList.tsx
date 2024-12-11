@@ -41,13 +41,13 @@ export const TableSearchResultList = () => {
     () => data?.filter((facet) => facet.type === "virtual"),
     [data]
   );
-
+  const items = results?.items ?? [];
   //const start = (page ?? 0) * (pageSize ?? 40);
-  if (loadingItems && (!results || !results.length)) {
+  if (loadingItems) {
     return <div>Loading...</div>;
   }
 
-  if (!results || (!results.length && (query == null || query.length < 1))) {
+  if ((!items.length && (query == null || query.length < 1))) {
     return <CategoryList />;
   }
   return (
@@ -73,7 +73,7 @@ export const TableSearchResultList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {results.map((product) => (
+              {items.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>
                     <Checkbox name={product.id} />

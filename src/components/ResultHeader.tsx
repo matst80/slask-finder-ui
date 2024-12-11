@@ -3,8 +3,8 @@ import { getItemIds, updateCategories } from "../datalayer/api";
 import { useAdmin } from "../hooks/appState";
 import {
   useFacetList,
-  useHashFacets,
   useHashQuery,
+  useHashResultItems,
 } from "../hooks/searchHooks";
 import { Sorting } from "./Sorting";
 import { SelectedStore } from "./StoreSelector";
@@ -70,7 +70,7 @@ export const ResultHeader = () => {
   // const {
   //   query: { query },
   // } = useHashQuery();
-  const { data } = useHashFacets();
+  const { data } = useHashResultItems();
   const [open, setOpen] = useState(false);
   // const hasQuery = Boolean(query?.length);
 

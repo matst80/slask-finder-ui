@@ -13,7 +13,7 @@ type KeyFilter = {
   name?: string;
   type?: string;
   fieldType: "key";
-  value: string;
+  value: string|string[];
 };
 
 type NumberFilter = {
@@ -43,7 +43,7 @@ const hasValue = (filter: unknown): filter is Filter => {
 };
 
 const isKeyField = (filter: Field): filter is KeyField => {
-  return typeof (filter as KeyField).value === "string";
+  return typeof (filter as KeyField).value === "string" || Array.isArray((filter as KeyField).value);
 };
 
 const isNumberField = (filter: Field): filter is NumberField => {
@@ -145,7 +145,7 @@ export const CurrentFilters = () => {
                         filter.value.max / 100
                       } kr`
                     : `${filter.value.min} - ${filter.value.max}`
-                  : filter.value
+                  : Array.isArray( filter.value)? filter.value.join(", "): filter.value
               }
               onClick={() => {
                 if (filter.fieldType === "key") {

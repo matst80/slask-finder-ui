@@ -86,12 +86,14 @@ export const SearchResultList = () => {
     }
   }, [results, ref]);
 
+  const items = results?.items ?? [];
+
   const start = (page ?? 0) * (pageSize ?? 40);
-  if (loadingItems && (!results || !results.length)) {
+  if (loadingItems) {
     return <div>Loading...</div>;
   }
 
-  if (!results || (!results.length && (query == null || query.length < 1))) {
+  if ((!items.length && (query == null || query.length < 1))) {
     return <NoResults />;
   }
   return (
@@ -99,7 +101,7 @@ export const SearchResultList = () => {
       ref={ref}
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
     >
-      {results?.map((item, idx) => (
+      {items?.map((item, idx) => (
         <ResultItem key={item.id} {...item} position={start + idx} />
       ))}
     </div>

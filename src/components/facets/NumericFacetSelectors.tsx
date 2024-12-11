@@ -66,14 +66,14 @@ export const FloatFacetSelector = (facet: NumberFacet) => {
 };
 
 export const IntegerFacetSelector = (facet: NumberFacet) => {
-  const { addIntegerFilter } = useFilters();
+  const { addNumberFilter } = useFilters();
 
   return (
     <NumberFacetSelector
       {...facet}
       defaultOpen={false}
       updateFilerValue={(min, max) => {
-        addIntegerFilter(facet.id, min, max);
+        addNumberFilter(facet.id, min, max);
       }}
     />
   );

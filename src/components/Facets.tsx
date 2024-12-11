@@ -220,14 +220,14 @@ const FloatFacetSelector = (facet: NumberFacet) => {
 };
 
 const IntegerFacetSelector = (facet: NumberFacet) => {
-  const { addIntegerFilter } = useFilters();
+  const { addNumberFilter } = useFilters();
 
   return (
     <NumberFacetSelector
       {...facet}
       defaultOpen={false}
       updateFilerValue={(min, max) => {
-        addIntegerFilter(facet.id, min, max);
+        addNumberFilter(facet.id, min, max);
       }}
     />
   );
@@ -279,7 +279,7 @@ export const Facets = () => {
   } = useQueryHelpers();
 
   const allFacets = useMemo(
-    () => results?.facets ?? [].sort(byPriority),
+    () => results ?? [].sort(byPriority),
     [results],
   );
   const hasFacets = allFacets.length > 0;

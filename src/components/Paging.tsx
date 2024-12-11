@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
-  useHashFacets,
   useHashQuery,
+  useHashResultItems,
   useQueryHelpers,
 } from "../hooks/searchHooks";
 
@@ -10,7 +10,7 @@ export const Paging = () => {
     query: { page: currentPage = 0, pageSize = 40 },
   } = useHashQuery();
   const { setPage: changePage } = useQueryHelpers();
-  const { data: results } = useHashFacets();
+  const { data: results } = useHashResultItems();
   if (results == null) return null;
 
   const totalPages = Math.ceil(results.totalHits / pageSize) - 1;

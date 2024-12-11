@@ -21,7 +21,7 @@ export const Facets = () => {
   } = useQueryHelpers();
 
   const allFacets = useMemo(
-    () => (results?.facets ?? []).sort(byPriority),
+    () => (results ?? []).sort(byPriority),
     [results],
   );
   const hasFacets = allFacets.length > 0;

@@ -28,13 +28,16 @@ export const queryFromHash = (hash: string): ItemsQuery => {
       return { id: Number(id), min, max };
     });
 
-  const range = [...integer??[], ...number??[]];
+  const range = [...(integer ?? []), ...(number ?? [])];
 
   const string = (hashData.s as string | undefined)
     ?.split(FIELD_SEPARATOR)
     .map((s) => {
       const [id, value] = s.split(ID_VALUE_SEPARATOR);
-      return { id: Number(id), value };
+      return {
+        id: Number(id),
+        value: value.includes("||") ? value.split("||") : value,
+      };
     });
   const query = hashData.q;
   const stock = hashData.stock?.split(FIELD_SEPARATOR) ?? [];
@@ -108,7 +111,9 @@ export const filteringQueryToHash = ({
 
   const strs =
     string?.map(({ id, value }) => {
-      return `${id}${ID_VALUE_SEPARATOR}${value}`;
+      return `${id}${ID_VALUE_SEPARATOR}${
+        Array.isArray(value) ? value.join("||") : value
+      }`;
     }) ?? [];
   if (strs.length) {
     result.s = strs.join(FIELD_SEPARATOR);
@@ -142,9 +147,12 @@ const toQuery = (data: ItemsQuery): string => {
   range?.forEach(({ id, min, max }) => {
     result.append("rng", `${id}:${min}-${max}`);
   });
-  
+
   string?.forEach(({ id, value }) => {
-    result.append("str", `${id}:${value}`);
+    result.append(
+      "str",
+      `${id}:${Array.isArray(value) ? value.join("||") : value}`
+    );
   });
   stock.forEach((s) => {
     result.append("stock", s);
@@ -255,10 +263,16 @@ export const useQueryHelpers = () => {
   const setTerm = partialUpdate("query");
   const setKeyFilters = partialUpdate("string");
   const setRangeFilters = partialUpdate("range");
-  
+
   const setGlobalTerm = (term: string) => {
-    setQuery((prev) => ({ ...prev,string:[],number:[],integer:[], query: term }));
-  }
+    setQuery((prev) => ({
+      ...prev,
+      string: [],
+      number: [],
+      integer: [],
+      query: term,
+    }));
+  };
   return {
     query,
     setPage,
@@ -269,7 +283,6 @@ export const useQueryHelpers = () => {
     setTerm,
     setKeyFilters,
     setRangeFilters,
-  
   };
 };
 
@@ -278,7 +291,25 @@ export const useFilters = () => {
   return {
     keyFilters: query.string ?? [],
     addKeyFilter: (id: number, value: string) => {
-      setKeyFilters((prev) => [...(prev ?? []), { id, value }]);
+      setKeyFilters((prev) => {
+        if (!prev) {
+          return [{ id, value }];
+        }
+        const foundIdx = prev?.findIndex((f) => f.id === id);
+        if (foundIdx !== -1) {
+          const p = prev[foundIdx];
+          if (p.value === value) {
+            return prev;
+          } else {
+            prev[foundIdx].value = [
+              ...(Array.isArray(p.value) ? p.value : [p.value]),
+              value,
+            ];
+          }
+          return prev;
+        }
+        return [...prev, { id, value }];
+      });
       //setPage(0);
     },
     removeKeyFilter: (id: number) => {

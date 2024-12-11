@@ -1,16 +1,16 @@
 import {
   Cart,
   Category,
-  FacetQuery,
   Item,
   ItemsQuery,
-  FacetResult,
   ItemDetail,
   FacetListItem,
   Promotion,
   SessionData,
   UpdatedItem,
   PrometheusResponse,
+  Facet,
+  PageResult,
 } from "../types";
 
 const baseUrl = "";
@@ -56,27 +56,25 @@ export const getKeyFieldsValues = (id: string | number) =>
   fetch(`${baseUrl}/api/values/${id}`).then((d) => toJson<string[]>(d));
 
 export const facets = (query: string) =>
-  fetch(`${baseUrl}/api/filter?${query}`, {
+  fetch(`${baseUrl}/api/facets?${query}`, {
     //method: "GET",
     //body: JSON.stringify(query),
-  }).then((d) =>
-    d.ok
-      ? (d.json() as Promise<Omit<FacetResult, "items" | "pageSize" | "page">>)
-      : Promise.reject(d)
-  );
+  }).then((d) => readStreamed<Facet>(d));
+    
+  
 
-export const streamFacets = (query: FacetQuery) =>
-  fetch(`${baseUrl}/api/stream/facets`, {
-    method: "POST",
-    body: JSON.stringify(query),
-  }).then((d) =>
-    d.ok ? (d.json() as Promise<FacetResult>) : Promise.reject(d)
-  );
+// export const streamFacets = (query: FacetQuery) =>
+//   fetch(`${baseUrl}/api/stream/facets`, {
+//     method: "POST",
+//     body: JSON.stringify(query),
+//   }).then((d) =>
+//     d.ok ? (d.json() as Promise<FacetResult>) : Promise.reject(d)
+//   );
 
 export const getRelated = (id: number) =>
   fetch(`${baseUrl}/api/related/${id}`).then((d) => readStreamed<Item>(d));
 
-const readStreamed = <T>(d: Response): Promise<T[]> => {
+const readStreamed = <T>(d: Response, afterSeparator?:(line:string)=>void): Promise<T[]> => {
   if (!d.ok) {
     return Promise.reject(d);
   }
@@ -88,17 +86,27 @@ const readStreamed = <T>(d: Response): Promise<T[]> => {
   let items: T[] = [];
   let buffer = "";
   const pump = async (): Promise<T[]> => {
+    let isAfterSeparator = false;
     return reader?.read().then(async ({ done, value }): Promise<T[]> => {
       if (done) {
         return items;
       }
-
+      
       buffer += decoder.decode(value);
       const lines = buffer.split("\n");
       buffer = lines.pop() ?? "";
       const parsedItems = lines
         .map((line) => {
-          return JSON.parse(line) as T;
+          if (line.length < 2) {
+            isAfterSeparator = true;
+            return null;
+          }
+          if (isAfterSeparator && afterSeparator != null) {
+            afterSeparator(line);
+            return null;
+          } else {
+            return JSON.parse(line) as T;
+          }
         })
         .filter((d) => d != null);
       items = items.concat(...parsedItems);
@@ -112,11 +120,18 @@ const readStreamed = <T>(d: Response): Promise<T[]> => {
 export const streamItems = (
   query: string
   //onResults: (data: ItemResult) => void,
-): Promise<Item[]> =>
+) =>
   fetch(`${baseUrl}/api/stream?${query}`, {
     //method: "GET",
     //body: JSON.stringify(query),
-  }).then((d) => readStreamed<Item>(d));
+  }).then((d) => {
+    let pageResult:PageResult = { totalHits: 0, page: 0, start: 0, pageSize: 0, end: 0 };
+    return readStreamed<Item>(d,(line)=>{
+      pageResult = JSON.parse(line) as PageResult;
+    }).then((items)=>{
+      return { ...pageResult, items };
+    })
+  });
 
 async function toJson<T>(response: Response): Promise<T> {
   if (!response.ok) {

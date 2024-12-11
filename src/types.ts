@@ -136,16 +136,20 @@ export const isKeyFacet = (facet: Facet): facet is KeyFacet => {
 
 export type Facets = Facet[];
 
-export type FacetResult = {
+export type PageResult = {
   totalHits: number;
-  facets?: Facets;
+  page: number;
+  start: number;
+  pageSize: number;
+  end: number;
+  sort?: string;
 };
 
 export type ItemResult = Item[];
 
 export type NumberField = { id: number; min: number; max: number };
 
-export type KeyField = { id: number; value: string };
+export type KeyField = { id: number; value: string|string[] };
 
 export type Field = NumberField | KeyField;
 
