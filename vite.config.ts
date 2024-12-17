@@ -6,23 +6,19 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://slask-finder.tornberg.me/",
-        changeOrigin: true,
-      },
-      "/cart": {
-        target: "https://slask-finder.tornberg.me/",
+        target: "https://slask-finder.knatofs.se/",
         changeOrigin: true,
       },
       "/tracking": {
-        target: "https://slask-finder.tornberg.me/",
+        target: "https://slask-finder.knatofs.se",
         changeOrigin: true,
       },
-      "/promotion": {
-        target: "https://slask-finder.tornberg.me/",
+      "/track": {
+        target: "https://slask-finder.knatofs.se",
         changeOrigin: true,
       },
       "/admin": {
-        target: "https://slask-finder.tornberg.me/",
+        target: "https://slask-finder.knatofs.se",
         changeOrigin: true,
       },
     },

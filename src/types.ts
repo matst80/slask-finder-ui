@@ -107,10 +107,12 @@ export type NumberResult = {
 };
 
 export type NumberFacet = BaseFacet & {
+  selected: unknown;
   result: NumberResult;
 };
 
 export type KeyFacet = BaseFacet & {
+  selected: unknown;
   result: KeyResult;
 };
 
