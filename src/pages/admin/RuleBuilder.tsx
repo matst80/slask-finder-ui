@@ -1,11 +1,18 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { useFacetList } from "../../hooks/searchHooks";
+import Downshift from "downshift";
 
-type ValueMatch = {
-  source: "fieldId" | "property";
-  fieldId?: number;
-  property?: string;
-};
+type ValueMatch = FieldMatch|PropertyMatch;
+
+type FieldMatch = {
+  source: "fieldId";
+  fieldId: number;
+}
+
+type PropertyMatch = {
+  source: "property";
+  property: string;
+}
 
 type MatchRule = ValueMatch & {
   match: string | boolean | number;
@@ -186,55 +193,116 @@ const itemProperties = [
   "Title",
 ];
 
-const FieldSelector = ({ fieldId, property }: FieldSelectorProps) => {
-  const [value, setValue] = useState(fieldId || property || "");
-  const { data, isLoading } = useFacetList();
-  const id = useId();
-
+const FieldSelector = ({ onChange, ...selection }: ValueMatch & {onChange:(data:ValueMatch)=>void}) => {
+  
+  const { data } = useFacetList();
+  const items = useMemo(() => {
+    return [
+      ...itemProperties.map((d) => ({
+        key: d,
+        source: "property",
+        property: d,
+        text: d,
+      })),
+      ...(data?.map((field) => ({
+        key: String(field.id),
+        source: "fieldId",
+        fieldId: field.id,
+        text: field.name,
+      })) ?? []),
+    ];
+  }, [data]);
+  const [selectedValue, setSelectedValue] = useState<string|undefined>();
+  useEffect(() => {
+    const { source } = selection;
+    setSelectedValue(
+      source == "fieldId" ? String(selection.fieldId) : selection.property
+    );
+  }, [selection]);
+  const selectedItem = useMemo(()=>items.find((item) => item.key === selectedValue), [items, selectedValue]);
   return (
     <>
-      <fieldset>
-        <p>
-          <label>Match</label>
-          <input
-            list={id}
-            value={String(value)}
-            onChange={(e) => setValue(e.target.value)}
-          />
-          <datalist id={id}>
-            {itemProperties.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-            {data?.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </datalist>
-        </p>
-        <p>
-          <label>Field</label>
+      <Downshift
+        onChange={(selection) => console.log("onChange", selection)}
+        selectedItem={selectedItem}
+        itemToString={(item) => (item ? item.text : "")}
+      >
+        {({
+          getInputProps,
+          getItemProps,
+          getLabelProps,
+          getMenuProps,
+          isOpen,
+          inputValue,
+          highlightedIndex,
+          selectedItem,
+          getRootProps,
+        }) => (
           <div>
-            {fieldId !== undefined ? (
-              <span>{data?.find((d) => d.id == fieldId)?.name}</span>
-            ) : (
-              <span>{property}</span>
-            )}
+            <label {...getLabelProps()} />
+            <div
+              style={{ display: "inline-block" }}
+              {...getRootProps({}, { suppressRefError: true })}
+            >
+              <input {...getInputProps()} />
+            </div>
+            <ul {...getMenuProps()}>
+              {isOpen
+                ? items
+                    .filter(
+                      (item) =>
+                        !inputValue ||
+                        item.text
+                          .toLocaleLowerCase()
+                          .includes(inputValue.toLocaleLowerCase())
+                    )
+                    .map((item, index) => (
+                      <li
+                        {...getItemProps({
+                          key: item.key,
+                          index,
+                          item,
+                          style: {
+                            backgroundColor:
+                              highlightedIndex === index
+                                ? "lightgray"
+                                : "white",
+                            fontWeight:
+                              selectedItem === item ? "bold" : "normal",
+                          },
+                        })}
+                      >
+                        {item.text}
+                      </li>
+                    ))
+                : null}
+            </ul>
           </div>
-        </p>
-      </fieldset>
+        )}
+      </Downshift>
     </>
   );
 };
+
+const InputWithLabel = ({ label, ...inputProps }: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & { label:string }) => {
+  return (
+    <div>
+      <label>
+        <span className="block mb-4">{label}</span>
+        <input
+          {...inputProps}
+        />
+      </label>
+    </div>
+  );
+}
 
 const MatchRuleEditor = ({ onChange, ...rule }: EditorProps<MatchRule>) => {
   return (
     <div>
       <h1>MatchRule</h1>
-      <input type="text" defaultValue={String(rule.match)} />
-      <input type="checkbox" defaultChecked={rule.invert ?? false} />
+      <InputWithLabel type="text" defaultValue={String(rule.match)} label="Match" />
+      <InputWithLabel type="checkbox" defaultChecked={rule.invert ?? false} label="Invert" />
       <FieldSelector
         {...rule}
         onChange={(data) => onChange({ ...rule, ...data })}
@@ -267,7 +335,6 @@ const RuleComponent = (props: EditorProps<Rule>) => {
 const RuleEditor = (rule: Rule & { onChange: (data: Rule) => void }) => {
   return (
     <div className="border p-4 rounded-md bg-white">
-      <h1>{rule.$type}</h1>
       <RuleComponent {...rule} />
       <select
         value={rule.$type}

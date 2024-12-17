@@ -1,8 +1,9 @@
 import { Bell, LoaderCircle, Menu, Settings, User } from "lucide-react";
 import { Button } from "./ui/button";
-import { Link } from "react-router-dom";
+import { Link, To } from "react-router-dom";
 import { cm } from "../utils";
 import { useIsAdmin, useUser } from "../adminHooks";
+import { PropsWithChildren } from "react"
 
 const UserButton = () => {
   const { data, isLoading } = useUser();
@@ -24,6 +25,15 @@ const UserButton = () => {
   );
 };
 
+const MenuLink = ({ to, children }:PropsWithChildren<{to:To}>) => (
+  <Link
+    to={to}
+    className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
+  >
+    {children}
+  </Link>
+);
+
 export function Navbar() {
   const isAdmin = useIsAdmin();
   return (
@@ -38,33 +48,11 @@ export function Navbar() {
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
-                <Link
-                  to="/"
-                  className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Search
-                </Link>
-                <Link
-                  to="/dashboard"
-                  className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Dashboard
-                </Link>
-
-                <Link
-                  to="/stats"
-                  className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Tracking
-                </Link>
-                {isAdmin && (
-                  <Link
-                    to="/edit"
-                    className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
-                  >
-                    Edit
-                  </Link>
-                )}
+                <MenuLink to="/">Search</MenuLink>
+                <MenuLink to="/dashboard">Dashboard</MenuLink>
+                <MenuLink to="/stats">Tracking</MenuLink>
+                <MenuLink to="/rules">Rules</MenuLink>
+                {isAdmin && <MenuLink to="/edit">Edit</MenuLink>}
               </div>
             </div>
           </div>

@@ -17,6 +17,7 @@ import { PopularFacetsView } from "./pages/tracking/popular-facets.tsx";
 import { UpdatedItems } from "./pages/tracking/updates.tsx";
 import { DashboardView } from "./pages/Dashboard.tsx";
 import { PageContainer } from "./PageContainer.tsx"
+import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx"
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,14 @@ const router = createBrowserRouter([
     element: (
       <PageContainer>
         <DashboardView />
+      </PageContainer>
+    ),
+  },
+  {
+    path: "rules",
+    element: (
+      <PageContainer>
+        <RuleBuilder />
       </PageContainer>
     ),
   },

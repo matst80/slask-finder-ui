@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "downshift": "^9.0.8",
     "jotai": "^2.10.0",
     "lucide-react": "^0.446.0",
     "react": "^18.3.1",
