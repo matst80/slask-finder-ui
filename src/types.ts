@@ -301,3 +301,103 @@ export type PrometheusResponse = {
     result: PrometheusEntry[];
   };
 };
+
+export type ValueMatch = {
+  source: "fieldId" | "property";
+  fieldId?: number;
+  property?: string;
+};
+
+export type MatchRule = ValueMatch & {
+  match: string | boolean | number;
+  value?: number;
+  invert?: boolean;
+  valueIfNotMatch?: number;
+  $type: "MatchRule";
+};
+
+export type NumberLimitRule = ValueMatch & {
+  multiplier?: number;
+  limit?: number;
+  comparator?: ">" | "<" | "<=";
+  value?: number;
+  valueIfNotMatch?: number;
+  $type: "NumberLimitRule";
+};
+
+export type DiscountRule = {
+  multiplier?: number;
+  valueIfMatch?: number;
+  $type: "DiscountRule";
+};
+export type OutOfStockRule = {
+  noStoreMultiplier?: number;
+  noStockValue?: number;
+  $type: "OutOfStockRule";
+};
+export type PercentMultiplierRule = ValueMatch & {
+  multiplier?: number;
+  min?: number;
+  max?: number;
+  $type: "PercentMultiplierRule";
+};
+export type RatingRule = {
+  multiplier?: number;
+  subtractValue?: number;
+  valueIfNoMatch?: number;
+  $type: "RatingRule";
+};
+export type AgedRule = ValueMatch & {
+  hourMultiplier?: number;
+  $type: "AgedRule";
+};
+export type Rule =
+  | MatchRule
+  | DiscountRule
+  | OutOfStockRule
+  | NumberLimitRule
+  | PercentMultiplierRule
+  | AgedRule
+  | RatingRule;
+export  type Rules = Rule[];
+
+export const ruleTypes = [
+  "MatchRule",
+  "DiscountRule",
+  "OutOfStockRule",
+  "NumberLimitRule",
+  "PercentMultiplierRule",
+  "RatingRule",
+  "AgedRule",
+] satisfies RuleType[];
+
+export type RuleType = Rule["$type"];
+
+export const itemProperties = [
+  "Url",
+  "Disclaimer",
+  "ReleaseDate",
+  "SaleStatus",
+  "MarginPercent",
+  "PresaleDate",
+  "Restock",
+  "AdvertisingText",
+  "Img",
+  "BadgeUrl",
+  "EnergyRating",
+  "BulletPoints",
+  "LastUpdate",
+  "Created",
+  "Buyable",
+  "Description",
+  "BuyableInStore",
+  "BoxSize",
+  "CheapestBItem",
+  "AItem",
+  "ArticleType",
+  "StockLevel",
+  "Stock",
+  "Id",
+  "Sku",
+  "Title",
+];

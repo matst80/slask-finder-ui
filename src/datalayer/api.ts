@@ -11,6 +11,7 @@ import {
   PrometheusResponse,
   Facet,
   PageResult,
+  Rules,
 } from "../types";
 
 const baseUrl = "";
@@ -35,6 +36,9 @@ export const getPrometheusData = async (url: string) => {
     toJson<PrometheusResponse>(res)
   );
 };
+
+export const getPopularityRules = () =>
+  fetch(`${baseUrl}/admin/rules/popular`).then((d) => toJson<Rules>(d));
 
 export const autoSuggestResponse = (
   term: string

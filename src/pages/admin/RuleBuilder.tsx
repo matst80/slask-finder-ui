@@ -1,64 +1,18 @@
 import { useId, useState } from "react";
 import { useFacetList } from "../../hooks/searchHooks";
+import { Rule, ValueMatch, itemProperties, MatchRule, DiscountRule, ruleTypes, Rules } from "../../types"
+import useSWR from "swr"
+import { getPopularityRules } from "../../datalayer/api"
 
-type ValueMatch = {
-  source: "fieldId" | "property";
-  fieldId?: number;
-  property?: string;
-};
 
-type MatchRule = ValueMatch & {
-  match: string | boolean | number;
-  value?: number;
-  invert?: boolean;
-  valueIfNotMatch?: number;
-  $type: "MatchRule";
+
+type EditorProps<T extends Rule> = T & {
+  onChange: (data: T) => void;
 };
 
-type NumberLimitRule = ValueMatch & {
-  multiplier?: number;
-  limit?: number;
-  comparator?: ">" | "<" | "<=";
-  value?: number;
-  valueIfNotMatch?: number;
-  $type: "NumberLimitRule";
+type FieldSelectorProps = ValueMatch & {
+  onChange: (data: ValueMatch) => void;
 };
-
-type DiscountRule = {
-  multiplier?: number;
-  valueIfMatch?: number;
-  $type: "DiscountRule";
-};
-type OutOfStockRule = {
-  noStoreMultiplier?: number;
-  noStockValue?: number;
-  $type: "OutOfStockRule";
-};
-type PercentMultiplierRule = ValueMatch & {
-  multiplier?: number;
-  min?: number;
-  max?: number;
-  $type: "PercentMultiplierRule";
-};
-type RatingRule = {
-  multiplier?: number;
-  subtractValue?: number;
-  valueIfNoMatch?: number;
-  $type: "RatingRule";
-};
-type AgedRule = ValueMatch & {
-  hourMultiplier?: number;
-  $type: "AgedRule";
-};
-type Rule =
-  | MatchRule
-  | DiscountRule
-  | OutOfStockRule
-  | NumberLimitRule
-  | PercentMultiplierRule
-  | AgedRule
-  | RatingRule;
-type Rules = Rule[];
 
 const popularityRules: Rules = [
   {
@@ -135,55 +89,6 @@ const popularityRules: Rules = [
     hourMultiplier: -0.0002,
     $type: "AgedRule",
   },
-];
-
-const ruleTypes = [
-  "MatchRule",
-  "DiscountRule",
-  "OutOfStockRule",
-  "NumberLimitRule",
-  "PercentMultiplierRule",
-  "RatingRule",
-  "AgedRule",
-] satisfies RuleType[];
-
-type RuleType = Rule["$type"];
-
-type EditorProps<T extends Rule> = T & {
-  onChange: (data: T) => void;
-};
-
-type FieldSelectorProps = ValueMatch & {
-  onChange: (data: ValueMatch) => void;
-};
-
-const itemProperties = [
-  "Url",
-  "Disclaimer",
-  "ReleaseDate",
-  "SaleStatus",
-  "MarginPercent",
-  "PresaleDate",
-  "Restock",
-  "AdvertisingText",
-  "Img",
-  "BadgeUrl",
-  "EnergyRating",
-  "BulletPoints",
-  "LastUpdate",
-  "Created",
-  "Buyable",
-  "Description",
-  "BuyableInStore",
-  "BoxSize",
-  "CheapestBItem",
-  "AItem",
-  "ArticleType",
-  "StockLevel",
-  "Stock",
-  "Id",
-  "Sku",
-  "Title",
 ];
 
 const FieldSelector = ({ fieldId, property }: FieldSelectorProps) => {
@@ -284,19 +189,24 @@ const RuleEditor = (rule: Rule & { onChange: (data: Rule) => void }) => {
 };
 
 export const RuleBuilder = () => {
-  const [rules, setRules] = useState<Rules>(popularityRules);
+  const { data, isLoading } = useSWR("popularityRules", () =>
+    getPopularityRules()
+  );
   const updateRule = (index: number) => (rule: Rule) => {
-    setRules((prev) => {
-      const updated = [...prev];
-      updated[index] = rule;
-      return updated;
-    });
+    // setRules((prev) => {
+    //   const updated = [...prev];
+    //   updated[index] = rule;
+    //   return updated;
+    // });
   };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="container mx-auto px-4 py-8">
       <h1>RuleBuilder</h1>
       <div className="flex flex-col gap-8">
-        {rules.map((rule, index) => (
+        {data.map((rule, index) => (
           <RuleEditor key={index} {...rule} onChange={updateRule(index)} />
         ))}
       </div>
