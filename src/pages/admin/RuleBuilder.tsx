@@ -1,7 +1,7 @@
-import { PropsWithChildren, useEffect, useId, useMemo, useState } from "react";
+import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { useFacetList } from "../../hooks/searchHooks";
 import Downshift from "downshift";
-import { getPopularityRules } from "../../datalayer/api";
+import { getPopularityRules, setPopularityRules } from "../../datalayer/api";
 import useSWR from "swr";
 import {
   Rule,
@@ -13,8 +13,10 @@ import {
   NumberLimitRule,
   PercentMultiplierRule,
   RatingRule,
+  Rules,
 } from "../../types";
 import { cm } from "../../utils";
+import useSWRMutation from "swr/mutation"
 
 type EditorProps<T extends Rule> = T & {
   onChange: (data: T) => void;
@@ -372,15 +374,15 @@ const RuleEditor = (rule: Rule & { onChange: (data: Rule) => void }) => {
 };
 
 export const RuleBuilder = () => {
-  const { data, isLoading } = useSWR("popularityRules", () =>
+  const { data, isLoading, mutate } = useSWR("popularityRules", () =>
     getPopularityRules()
   );
+  const update = useSWRMutation("popularityRules", (_,{arg}:{arg:Rules})=>setPopularityRules(arg));
   const updateRule = (index: number) => (rule: Rule) => {
-    // setRules((prev) => {
-    //   const updated = [...prev];
-    //   updated[index] = rule;
-    //   return updated;
-    // });
+    const payload = data?.map((r, i) => (i === index ? rule : r)) ?? [];
+    mutate(payload);
+    update.trigger(data?.map((r, i) => (i === index ? rule : r)) ?? []);
+
   };
   if (isLoading) {
     return <div>Loading...</div>;

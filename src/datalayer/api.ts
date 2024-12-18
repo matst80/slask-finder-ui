@@ -40,6 +40,12 @@ export const getPrometheusData = async (url: string) => {
 export const getPopularityRules = () =>
   fetch(`${baseUrl}/admin/rules/popular`).then((d) => toJson<Rules>(d));
 
+export const setPopularityRules = (data: Rules) =>
+  fetch(`${baseUrl}/admin/rules/popular`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  }).then((d) => toJson<Rules>(d));
+
 export const autoSuggestResponse = (
   term: string
 ): { promise: Promise<Response>; cancel: () => void } => {
@@ -64,8 +70,6 @@ export const facets = (query: string) =>
     //method: "GET",
     //body: JSON.stringify(query),
   }).then((d) => readStreamed<Facet>(d));
-    
-  
 
 // export const streamFacets = (query: FacetQuery) =>
 //   fetch(`${baseUrl}/api/stream/facets`, {
@@ -78,7 +82,10 @@ export const facets = (query: string) =>
 export const getRelated = (id: number) =>
   fetch(`${baseUrl}/api/related/${id}`).then((d) => readStreamed<Item>(d));
 
-const readStreamed = <T>(d: Response, afterSeparator?:(line:string)=>void): Promise<T[]> => {
+const readStreamed = <T>(
+  d: Response,
+  afterSeparator?: (line: string) => void
+): Promise<T[]> => {
   if (!d.ok) {
     return Promise.reject(d);
   }
@@ -95,7 +102,7 @@ const readStreamed = <T>(d: Response, afterSeparator?:(line:string)=>void): Prom
       if (done) {
         return items;
       }
-      
+
       buffer += decoder.decode(value);
       const lines = buffer.split("\n");
       buffer = lines.pop() ?? "";
@@ -129,12 +136,18 @@ export const streamItems = (
     //method: "GET",
     //body: JSON.stringify(query),
   }).then((d) => {
-    let pageResult:PageResult = { totalHits: 0, page: 0, start: 0, pageSize: 0, end: 0 };
-    return readStreamed<Item>(d,(line)=>{
+    let pageResult: PageResult = {
+      totalHits: 0,
+      page: 0,
+      start: 0,
+      pageSize: 0,
+      end: 0,
+    };
+    return readStreamed<Item>(d, (line) => {
       pageResult = JSON.parse(line) as PageResult;
-    }).then((items)=>{
+    }).then((items) => {
       return { ...pageResult, items };
-    })
+    });
   });
 
 async function toJson<T>(response: Response): Promise<T> {
