@@ -1,161 +1,335 @@
-import { useId, useState } from "react";
+import { PropsWithChildren, useEffect, useId, useMemo, useState } from "react";
 import { useFacetList } from "../../hooks/searchHooks";
-import { Rule, ValueMatch, itemProperties, MatchRule, DiscountRule, ruleTypes, Rules } from "../../types"
-import useSWR from "swr"
-import { getPopularityRules } from "../../datalayer/api"
-
-
+import Downshift from "downshift";
+import { getPopularityRules } from "../../datalayer/api";
+import useSWR from "swr";
+import {
+  Rule,
+  MatchRule,
+  DiscountRule,
+  ruleTypes,
+  ValueMatch,
+  OutOfStockRule,
+  NumberLimitRule,
+  PercentMultiplierRule,
+  RatingRule,
+} from "../../types";
+import { cm } from "../../utils";
 
 type EditorProps<T extends Rule> = T & {
   onChange: (data: T) => void;
 };
 
-type FieldSelectorProps = ValueMatch & {
-  onChange: (data: ValueMatch) => void;
-};
+// type FieldSelectorProps = ValueMatch & {
+//   onChange: (data: ValueMatch) => void;
+// };
 
-const popularityRules: Rules = [
-  {
-    source: "fieldId",
-    fieldId: 9,
-    match: "Elgiganten",
-    value: 0,
-    valueIfNotMatch: -12000,
-    $type: "MatchRule",
-  },
-  {
-    source: "fieldId",
-    fieldId: 10,
-    match: "Outlet",
-    value: 0,
-    valueIfNotMatch: -6000,
-    $type: "MatchRule",
-  },
-  { multiplier: 30, valueIfMatch: 4500, $type: "DiscountRule" },
-  {
-    source: "property",
-    property: "Buyable",
-    match: true,
-    value: 5000,
-    valueIfNotMatch: -2000,
-    $type: "MatchRule",
-  },
-  { noStoreMultiplier: 20, noStockValue: -6000, $type: "OutOfStockRule" },
-  {
-    source: "property",
-    property: "BadgeUrl",
-    match: "",
-    invert: true,
-    value: 0,
-    valueIfNotMatch: 4500,
-    $type: "MatchRule",
-  },
-  {
-    source: "fieldId",
-    fieldId: 4,
-    limit: 99999900,
-    comparator: "\u003e",
-    value: -2500,
-    valueIfNotMatch: 0,
-    $type: "NumberLimitRule",
-  },
-  {
-    source: "fieldId",
-    fieldId: 4,
-    limit: 10000,
-    comparator: "\u003c",
-    value: -800,
-    valueIfNotMatch: 0,
-    $type: "NumberLimitRule",
-  },
-  {
-    source: "property",
-    property: "MarginPercent",
-    multiplier: 50,
-    min: 0,
-    max: 100,
-    $type: "PercentMultiplierRule",
-  },
-  { multiplier: 0.06, subtractValue: -20, $type: "RatingRule" },
-  {
-    source: "property",
-    property: "Created",
-    hourMultiplier: -0.019,
-    $type: "AgedRule",
-  },
-  {
-    source: "property",
-    property: "LastUpdate",
-    hourMultiplier: -0.0002,
-    $type: "AgedRule",
-  },
+const itemProperties = [
+  "Url",
+  "Disclaimer",
+  "ReleaseDate",
+  "SaleStatus",
+  "MarginPercent",
+  "PresaleDate",
+  "Restock",
+  "AdvertisingText",
+  "Img",
+  "BadgeUrl",
+  "EnergyRating",
+  "BulletPoints",
+  "LastUpdate",
+  "Created",
+  "Buyable",
+  "Description",
+  "BuyableInStore",
+  "BoxSize",
+  "CheapestBItem",
+  "AItem",
+  "ArticleType",
+  "StockLevel",
+  "Stock",
+  "Id",
+  "Sku",
+  "Title",
 ];
 
-const FieldSelector = ({ fieldId, property }: FieldSelectorProps) => {
-  const [value, setValue] = useState(fieldId || property || "");
-  const { data, isLoading } = useFacetList();
-  const id = useId();
-
+const FieldSelector = ({
+  onChange,
+  ...selection
+}: ValueMatch & { onChange: (data: ValueMatch) => void }) => {
+  const { data } = useFacetList();
+  const items = useMemo(() => {
+    return [
+      ...itemProperties.map((d) => ({
+        key: d,
+        source: "property",
+        property: d,
+        text: d,
+      })),
+      ...(data?.map((field) => ({
+        key: String(field.id),
+        source: "fieldId",
+        fieldId: field.id,
+        text: field.name,
+      })) ?? []),
+    ];
+  }, [data]);
+  const [selectedValue, setSelectedValue] = useState<string | undefined>();
+  useEffect(() => {
+    const { source } = selection;
+    setSelectedValue(
+      source == "fieldId" ? String(selection.fieldId) : selection.property
+    );
+  }, [selection]);
+  const selectedItem = useMemo(
+    () => items.find((item) => item.key === selectedValue),
+    [items, selectedValue]
+  );
   return (
-    <>
-      <fieldset>
-        <p>
-          <label>Match</label>
-          <input
-            list={id}
-            value={String(value)}
-            onChange={(e) => setValue(e.target.value)}
-          />
-          <datalist id={id}>
-            {itemProperties.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-            {data?.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </datalist>
-        </p>
-        <p>
-          <label>Field</label>
-          <div>
-            {fieldId !== undefined ? (
-              <span>{data?.find((d) => d.id == fieldId)?.name}</span>
-            ) : (
-              <span>{property}</span>
-            )}
+    <Downshift
+      onChange={(selection) => console.log("onChange", selection)}
+      selectedItem={selectedItem}
+      itemToString={(item) => (item ? item.text : "")}
+    >
+      {({
+        getInputProps,
+        getItemProps,
+        getLabelProps,
+        getMenuProps,
+        isOpen,
+        inputValue,
+        highlightedIndex,
+        selectedItem,
+        getRootProps,
+      }) => (
+        <div>
+          <label {...getLabelProps()}>Source</label>
+          <div
+            style={{ display: "inline-block" }}
+            {...getRootProps({}, { suppressRefError: true })}
+          >
+            <input {...getInputProps()} className="border p-2 rounded-md" />
           </div>
-        </p>
-      </fieldset>
-    </>
+          <ul {...getMenuProps()}>
+            {isOpen
+              ? items
+                  .filter(
+                    (item) =>
+                      !inputValue ||
+                      item.text
+                        .toLocaleLowerCase()
+                        .includes(inputValue.toLocaleLowerCase())
+                  )
+                  .map((item, index) => (
+                    <li
+                      {...getItemProps({
+                        key: item.key,
+                        index,
+                        item,
+                        style: {
+                          backgroundColor:
+                            highlightedIndex === index ? "lightgray" : "white",
+                          fontWeight: selectedItem === item ? "bold" : "normal",
+                        },
+                      })}
+                    >
+                      {item.source === "property"
+                        ? "Property:"
+                        : "Facet value:"}{" "}
+                      {item.text}
+                    </li>
+                  ))
+              : null}
+          </ul>
+        </div>
+      )}
+    </Downshift>
+  );
+};
+
+const LabelFor = ({
+  children,
+  label,
+}: PropsWithChildren<{ label: string }>) => {
+  return (
+    <div>
+      <label className="flex gap-4 items-center">
+        <span>{label}</span>
+        {children}
+      </label>
+    </div>
+  );
+};
+
+const InputWithLabel = ({
+  label,
+  className,
+  ...inputProps
+}: React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+> & { label: string }) => {
+  return (
+    <LabelFor label={label}>
+      <input
+        className={cm("border p-2 rounded-md", className)}
+        {...inputProps}
+      />
+    </LabelFor>
+  );
+};
+
+const DiscountRuleEditor = ({
+  onChange,
+  ...rule
+}: EditorProps<DiscountRule>) => {
+  return (
+    <div>
+      <h1>Discount based rule</h1>
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.multiplier}
+        label="Multiplier for discount percentage"
+      />
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.valueIfMatch}
+        label="Static value if product is on sale"
+      />
+    </div>
+  );
+};
+
+const NumberLimitRuleEditor = ({
+  onChange,
+  ...rule
+}: EditorProps<NumberLimitRule>) => {
+  return (
+    <div>
+      <h1>Number limit rule</h1>
+      <FieldSelector
+        {...rule}
+        onChange={(data) => onChange({ ...rule, ...data })}
+      />
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.multiplier}
+        label="Multiplier for value"
+      />
+      <InputWithLabel type="number" defaultValue={rule.limit} label="Limit" />
+      <InputWithLabel
+        type="text"
+        defaultValue={rule.comparator}
+        label="Comparator"
+      />
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.value}
+        label="Value if matching"
+      />
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.valueIfNotMatch}
+        label="Value if NOT matching"
+      />
+    </div>
+  );
+};
+
+const PercentMultiplierRuleEditor = ({
+  onChange,
+  ...rule
+}: EditorProps<PercentMultiplierRule>) => {
+  return (
+    <div>
+      <h1>Percent multiplier rule</h1>
+      <FieldSelector
+        {...rule}
+        onChange={(data) => onChange({ ...rule, ...data })}
+      />
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.multiplier}
+        label="Multiplier for value"
+      />
+      <InputWithLabel type="number" defaultValue={rule.min} label="Min value" />
+      <InputWithLabel type="number" defaultValue={rule.max} label="Max value" />
+    </div>
   );
 };
 
 const MatchRuleEditor = ({ onChange, ...rule }: EditorProps<MatchRule>) => {
   return (
     <div>
-      <h1>MatchRule</h1>
-      <input type="text" defaultValue={String(rule.match)} />
-      <input type="checkbox" defaultChecked={rule.invert ?? false} />
+      <h1>Match value rule</h1>
+      <InputWithLabel
+        type="text"
+        defaultValue={String(rule.match)}
+        label="Match"
+      />
+      <InputWithLabel
+        type="checkbox"
+        defaultChecked={rule.invert ?? false}
+        label="Invert"
+      />
       <FieldSelector
         {...rule}
         onChange={(data) => onChange({ ...rule, ...data })}
+      />
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.value}
+        label="Value if matching"
+      />
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.valueIfNotMatch}
+        label="Value if NOT matching"
       />
     </div>
   );
 };
 
-export const DiscountRuleEditor = ({
+const OutOfStockRuleEditor = ({
   onChange,
   ...rule
-}: EditorProps<DiscountRule>) => {
+}: EditorProps<OutOfStockRule>) => {
   return (
     <div>
-      <h1>DiscountRule</h1>
-      <pre>{JSON.stringify(rule, null, 2)}</pre>
+      <h1>Inventory rule</h1>
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.noStoreMultiplier}
+        label="Multiplier for number of stock locations"
+      />
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.noStockValue}
+        label="Static value if product out of stock"
+      />
+    </div>
+  );
+};
+
+const RatingRuleEditor = ({ onChange, ...rule }: EditorProps<RatingRule>) => {
+  return (
+    <div>
+      <h1>Rating rule</h1>
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.multiplier}
+        label="Multiplier"
+      />
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.subtractValue}
+        label="Value to subtract from rating before multiplying"
+      />
+      <InputWithLabel
+        type="number"
+        defaultValue={rule.valueIfNoMatch}
+        label="Value if no match"
+      />
     </div>
   );
 };
@@ -164,6 +338,16 @@ const RuleComponent = (props: EditorProps<Rule>) => {
   switch (props.$type) {
     case "MatchRule":
       return <MatchRuleEditor {...props} />;
+    case "DiscountRule":
+      return <DiscountRuleEditor {...props} />;
+    case "OutOfStockRule":
+      return <OutOfStockRuleEditor {...props} />;
+    case "NumberLimitRule":
+      return <NumberLimitRuleEditor {...props} />;
+    case "PercentMultiplierRule":
+      return <PercentMultiplierRuleEditor {...props} />;
+    case "RatingRule":
+      return <RatingRuleEditor {...props} />;
     default:
       return <div>Not implemented</div>;
   }
@@ -172,7 +356,6 @@ const RuleComponent = (props: EditorProps<Rule>) => {
 const RuleEditor = (rule: Rule & { onChange: (data: Rule) => void }) => {
   return (
     <div className="border p-4 rounded-md bg-white">
-      <h1>{rule.$type}</h1>
       <RuleComponent {...rule} />
       <select
         value={rule.$type}
@@ -206,7 +389,7 @@ export const RuleBuilder = () => {
     <div className="container mx-auto px-4 py-8">
       <h1>RuleBuilder</h1>
       <div className="flex flex-col gap-8">
-        {data.map((rule, index) => (
+        {data?.map((rule, index) => (
           <RuleEditor key={index} {...rule} onChange={updateRule(index)} />
         ))}
       </div>

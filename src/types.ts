@@ -302,11 +302,17 @@ export type PrometheusResponse = {
   };
 };
 
-export type ValueMatch = {
-  source: "fieldId" | "property";
-  fieldId?: number;
-  property?: string;
-};
+export type ValueMatch = FieldMatch|PropertyMatch;
+
+export type FieldMatch = {
+  source: "fieldId";
+  fieldId: number;
+}
+
+export type PropertyMatch = {
+  source: "property";
+  property: string;
+}
 
 export type MatchRule = ValueMatch & {
   match: string | boolean | number;
