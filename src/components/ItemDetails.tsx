@@ -99,7 +99,7 @@ const Properties = ({
                   name={String(field.id)}
                 />
               ) : (
-                <span>{field.value}</span>
+                <span>{field.value} ({field.id})</span>
               )}{" "}
               {field.linkedId != null &&
                 field.linkedId > 0 &&

@@ -157,7 +157,7 @@ export type Field = NumberField | KeyField;
 
 export type FilteringQuery = {
   query?: string;
-  stock: string[];
+  stock?: string[];
   string?: KeyField[];
   range?: NumberField[];
 };

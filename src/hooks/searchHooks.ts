@@ -154,7 +154,7 @@ const toQuery = (data: ItemsQuery): string => {
       `${id}:${Array.isArray(value) ? value.join("||") : value}`
     );
   });
-  stock.forEach((s) => {
+  stock?.forEach((s) => {
     result.append("stock", s);
   });
 
@@ -162,9 +162,16 @@ const toQuery = (data: ItemsQuery): string => {
 };
 
 export const useItemsSearch = (query: ItemsQuery) => {
-  return useSWR(itemsKey(query), () => streamItems(toQuery(query)), {
-    keepPreviousData: true,
-  });
+  return useSWR(
+    itemsKey(query),
+    () => {
+      console.log("fetching", query);
+      return streamItems(toQuery(query));
+    },
+    {
+      keepPreviousData: true,
+    }
+  );
 };
 
 const delay = <T>(fn: () => Promise<T>, ms: number): (() => Promise<T>) => {
@@ -312,7 +319,7 @@ export const useFilters = () => {
       });
       //setPage(0);
     },
-    removeKeyFilter: (id: number, value?:string) => {
+    removeKeyFilter: (id: number, value?: string) => {
       setKeyFilters((prev) => {
         if (!prev) {
           return [];
@@ -329,7 +336,7 @@ export const useFilters = () => {
           }
           return prev;
         }
-        return [...prev].filter((f) => f.id !== id)
+        return [...prev].filter((f) => f.id !== id);
       });
       //setPage(0);
     },

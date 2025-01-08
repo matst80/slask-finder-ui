@@ -50,6 +50,7 @@ export function Navbar() {
               <div className="ml-10 flex items-baseline space-x-4">
                 <MenuLink to="/">Search</MenuLink>
                 <MenuLink to="/dashboard">Dashboard</MenuLink>
+                <MenuLink to="/builder">PC Builder</MenuLink>
                 <MenuLink to="/stats">Tracking</MenuLink>
                 <MenuLink to="/rules">Rules</MenuLink>
                 {isAdmin && <MenuLink to="/edit">Edit</MenuLink>}

@@ -18,6 +18,7 @@ import { UpdatedItems } from "./pages/tracking/updates.tsx";
 import { DashboardView } from "./pages/Dashboard.tsx";
 import { PageContainer } from "./PageContainer.tsx"
 import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx"
+import { Builder } from "./components/Builder.tsx"
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,14 @@ const router = createBrowserRouter([
     element: (
       <PageContainer>
         <DashboardView />
+      </PageContainer>
+    ),
+  },
+  {
+    path: "builder",
+    element: (
+      <PageContainer>
+        <Builder />
       </PageContainer>
     ),
   },

@@ -4,7 +4,7 @@ import { makeImageUrl } from "../utils";
 import { Price } from "./Price";
 import { Stars } from "./Stars";
 import { TimeAgo } from "./TimeAgo";
-import { useMemo, useState } from "react";
+import { MouseEventHandler, useMemo, useState } from "react";
 import { useHashQuery } from "../hooks/searchHooks";
 import { trackClick } from "../datalayer/beacons";
 import { Link } from "react-router-dom";
@@ -112,8 +112,10 @@ export const ResultItem = ({
   disclaimer,
   advertisingText,
   saleStatus,
+  onClick,
 }: Item & {
   position: number;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
 }) => {
   const trackItem = () => {
     trackClick(id, position);
@@ -142,7 +144,7 @@ export const ResultItem = ({
       data-id={id}
       data-position={position}
       className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item`}
-      onClick={trackItem}
+      onClick={onClick ?? trackItem}
     >
       <div className="mt-2">
         <ImageWithPlaceHolder img={img} title={title} />
