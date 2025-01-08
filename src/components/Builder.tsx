@@ -181,16 +181,17 @@ const ToggleResultItem = (
 ) => {
   const [selected, setSelected] = useState(false);
   return (
-    <ResultItem
-      key={item.id}
-      {...item}
-      onClick={(e) => {
-        e.preventDefault();
-        item.onSelectedChange(selected ? null : item.values);
-        setSelected((p) => !p);
-        console.log(item.values);
-      }}
-    />
+    <div key={item.id} className={selected ? "border-red-500 border" : ""}>
+      <ResultItem
+        {...item}
+        onClick={(e) => {
+          e.preventDefault();
+          item.onSelectedChange(selected ? null : item.values);
+          setSelected((p) => !p);
+          console.log(item.values);
+        }}
+      />
+    </div>
   );
 };
 
@@ -258,7 +259,7 @@ export const Builder = () => {
       });
     };
   return (
-    <div>
+    <div className="p-10">
       {components.map((component) => (
         <ComponentSelector
           key={component.title}
