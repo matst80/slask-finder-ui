@@ -1,12 +1,19 @@
 import { useMemo, useState } from "react";
 import { useFacetList, useFacets, useItemsSearch } from "../hooks/searchHooks";
-import { FilteringQuery, Item, ItemsQuery } from "../types";
+import { FilteringQuery, Item, ItemsQuery, ItemValues } from "../types";
 import { ResultItem } from "./ResultItem";
 import { isDefined } from "../utils";
 import { PriceValue } from "./Price";
 import { FacetList } from "./facets/Facets";
 
-type AdditionalFilter = { id: number; to: number; from?: number };
+type AdditionalFilter = {
+  id: number;
+  to: number;
+  converter?: (value: ItemValues) => {
+    id: number;
+    value: string | string[];
+  }[];
+};
 
 type Component = {
   title: string;
@@ -15,7 +22,7 @@ type Component = {
   filter: ItemsQuery;
 };
 
-type SelectedAdditionalFilter = AdditionalFilter & { value: string };
+type SelectedAdditionalFilter = AdditionalFilter & { value: string | string[] };
 
 const importantFilterIds = [
   31187, 36209, 35989, 35990, 35922, 35978, 32073, 31009, 30634, 31991, 32186,
@@ -55,6 +62,18 @@ const components: Component[] = [
       { id: 32103, to: 1 },
       { id: 35921, to: 3 },
       { id: 30857, to: 3 },
+      {
+        id: 36249,
+        to: 4,
+        converter: (values) => {
+          const m2Slots = Number(values[36245]);
+          if (m2Slots > 0) {
+            console.log(values);
+            return [{ id: 36249, value: "!nil" }];
+          }
+          return [];
+        },
+      },
     ],
     filter: {
       range: [],
@@ -307,8 +326,16 @@ export const Builder = () => {
       .flatMap((item) =>
         components
           .find((c) => c.id === item.componentId)
-          ?.filtersToApply.map((f) => {
+          ?.filtersToApply.flatMap((f) => {
             const value = item.values?.[f.id];
+            if (f.converter) {
+              const converted = f.converter(item.values);
+
+              return converted !== undefined
+                ? converted.map((d) => ({ ...d, to: f.to }))
+                : null;
+            }
+
             return typeof value === "string"
               ? { id: f.id, to: f.to, value }
               : null;
@@ -321,7 +348,11 @@ export const Builder = () => {
     return selectedItems
       .flatMap((item) => {
         return Object.entries(item.values).map(([key, value]) => {
-          return { key, title: data?.find((d) => d.id == Number(key))?.name, value };
+          return {
+            key,
+            title: data?.find((d) => d.id == Number(key))?.name,
+            value,
+          };
         });
       })
       .filter((d) => importantFilterIds.includes(Number(d.key)));
