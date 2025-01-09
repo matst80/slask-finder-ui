@@ -6,7 +6,7 @@ import { isDefined } from "../utils";
 import { PriceValue } from "./Price";
 import { FacetList } from "./facets/Facets";
 
-type AdditionalFilter = { id: number; to: number };
+type AdditionalFilter = { id: number; to: number, from?: number };
 
 type Component = {
   title: string;
@@ -45,7 +45,7 @@ const components: Component[] = [
     id: 2,
     filtersToApply: [
       { id: 32103, to: 1 },
-      //{ id: 30552, to: 6 },
+      { id: 35921, to: 3 },
       { id: 30857, to: 3 },
     ],
     filter: {
@@ -69,7 +69,10 @@ const components: Component[] = [
   {
     title: "Minne",
     id: 3,
-    filtersToApply: [{ id: 30857, to: 2 }],
+    filtersToApply: [
+      { id: 30857, to: 2 },
+      { id: 35921, to: 2 },
+    ],
     filter: {
       range: [],
       sort: "popular",
@@ -289,6 +292,7 @@ export const Builder = () => {
       .flat()
       .filter(isDefined);
   }, [selectedItems]);
+  console.log(appliedFilters);
   return (
     <div className="p-10 grid grid-cols-[2fr,1fr] gap-6">
       <div>
