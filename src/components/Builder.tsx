@@ -3,6 +3,7 @@ import { useItemsSearch } from "../hooks/searchHooks";
 import { Item, ItemsQuery, ItemValues } from "../types";
 import { ResultItem } from "./ResultItem";
 import { isDefined } from "../utils";
+import { Price, PriceValue } from "./Price"
 
 type AdditionalFilter = { id: number; to: number };
 
@@ -155,7 +156,7 @@ const components: Component[] = [
   {
     title: "Chassi",
     filtersToApply: [
-    //  { id: 30552, to: 2 }
+      //  { id: 30552, to: 2 }
     ],
     id: 6,
     filter: {
@@ -188,14 +189,14 @@ const ToggleResultItem = ({
         {...item}
         onClick={(e) => {
           e.preventDefault();
-          item.onSelectedChange(selected ? null : item.values);
+          item.onSelectedChange(selected ? null : item);
         }}
       />
     </div>
   );
 };
 
-type OnSelectedItem = { onSelectedChange: (data: ItemValues | null) => void };
+type OnSelectedItem = { onSelectedChange: (data: Item | null) => void };
 type ComponentSelectorProps = Component &
   OnSelectedItem & {
     otherFilters: SelectedAdditionalFilter[];
@@ -215,7 +216,9 @@ const ComponentSelector = ({
   const [open, setOpen] = useState(true);
   return (
     <div>
-      <h2 className="text-xl" onClick={() => setOpen((p) => !p)}>{title} ({data?.totalHits??'Loading...'})</h2>
+      <h2 className="text-xl" onClick={() => setOpen((p) => !p)}>
+        {title} ({data?.totalHits ?? "Loading..."})
+      </h2>
       {open && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6 m-6">
           {data?.items.map((item, idx) => (
@@ -239,43 +242,68 @@ const ComponentSelector = ({
   );
 };
 
+type ItemWithComponentId = Item & { componentId: number };
+
 export const Builder = () => {
+  const [selectedItems, setSelectedItems] = useState<ItemWithComponentId[]>([]);
   const [appliedFilters, setAppliedFilters] = useState<
     SelectedAdditionalFilter[]
   >([]);
-  const onSelectedChange =
-    (componentId: number) => (filter: ItemValues | null) => {
-      const foundValues = components
-        .find((c) => c.id === componentId)
-        ?.filtersToApply.map((f) => {
-          const value = filter?.[f.id];
-          console.log(f, value);
-          return typeof value === "string"
-            ? { id: f.id, to: f.to, value }
-            : null;
-        })
-        .filter(isDefined);
-
-      setAppliedFilters((p) => {
-        const newFilters = p.filter(
-          (f) => !foundValues?.some((fv) => fv.id === f.id)
-        );
-        if (foundValues) {
-          return [...newFilters, ...foundValues];
-        }
-        return newFilters;
-      });
-    };
+  const onSelectedChange = (componentId: number) => (item: Item | null) => {
+    const foundValues = components
+      .find((c) => c.id === componentId)
+      ?.filtersToApply.map((f) => {
+        const value = item?.values?.[f.id];
+        return typeof value === "string" ? { id: f.id, to: f.to, value } : null;
+      })
+      .filter(isDefined);
+    setSelectedItems((p) => {
+      const newItems = p.filter((i) => i.componentId !== componentId);
+      if (item) {
+        return [...newItems, { ...item, componentId }];
+      }
+      return newItems;
+    });
+    setAppliedFilters((p) => {
+      const newFilters = p.filter(
+        (f) => !foundValues?.some((fv) => fv.id === f.id)
+      );
+      if (foundValues) {
+        return [...newFilters, ...foundValues];
+      }
+      return newFilters;
+    });
+  };
   return (
-    <div className="p-10">
-      {components.map((component) => (
-        <ComponentSelector
-          key={component.title}
-          {...component}
-          otherFilters={appliedFilters.filter((d) => d.to === component.id)}
-          onSelectedChange={onSelectedChange(component.id)}
-        />
-      ))}
+    <div className="p-10 grid grid-cols-[2fr,1fr] gap-6">
+      <div>
+        {components.map((component) => (
+          <ComponentSelector
+            key={component.title}
+            {...component}
+            otherFilters={appliedFilters.filter((d) => d.to === component.id)}
+            onSelectedChange={onSelectedChange(component.id)}
+          />
+        ))}
+      </div>
+      <div>
+        <h2>Selected items</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {selectedItems.map((item, i) => (
+            <ResultItem key={item.id} {...item} position={i} />
+          ))}
+        </div>
+        <h2>
+          Summa:{" "}
+          <PriceValue
+            value={selectedItems.reduce(
+              (sum, d) => (sum + (d.values[4] ? Number(d.values[4]) : 0)),
+              0
+            )}
+            className="bold"
+          />
+        </h2>
+      </div>
     </div>
   );
 };

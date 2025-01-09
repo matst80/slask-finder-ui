@@ -15,7 +15,7 @@ type ValueProps = {
   disclaimer?: string;
 };
 
-const PriceValue = ({
+export const PriceValue = ({
   value,
   className,
 }: {
