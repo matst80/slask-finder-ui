@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { useItemsSearch } from "../hooks/searchHooks";
+import { useFacets, useItemsSearch } from "../hooks/searchHooks";
 import { Item, ItemsQuery, ItemValues } from "../types";
 import { ResultItem } from "./ResultItem";
 import { isDefined } from "../utils";
 import { Price, PriceValue } from "./Price";
+import { FacetList } from "./facets/Facets";
 
 type AdditionalFilter = { id: number; to: number };
 
@@ -212,30 +213,45 @@ const ComponentSelector = ({
     ...filter,
     string: [...otherFilters, ...(filter.string ?? [])],
   });
+  const facetResult = useFacets({
+    ...filter,
+    string: [...otherFilters, ...(filter.string ?? [])],
+  });
   const [selected, setSelected] = useState<number | string>();
   const [open, setOpen] = useState(true);
   return (
     <div className="border border-gray-500 rounded-md p-4 mb-4">
       <button className="text-xl" onClick={() => setOpen((p) => !p)}>
-        {title} ({data?.totalHits ?? "Loading..."}) <span>{open ? "▲" : "▼"}</span>
+        {title} ({data?.totalHits ?? "Loading..."}){" "}
+        <span>{open ? "▲" : "▼"}</span>
       </button>
       {open && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6 m-6">
-          {data?.items.map((item, idx) => (
-            <ToggleResultItem
-              key={item.id}
-              {...item}
-              selected={selected === item.id}
-              position={idx}
-              onSelectedChange={(data) => {
-                setSelected(data ? data.id : undefined);
-                if (data) {
-                  setOpen(false);
-                }
-                onSelectedChange(data);
-              }}
+        <div className="grid grid-cols-[280px,1fr] gap-4">
+          {facetResult.data == null ? (
+            <div>Loading...</div>
+          ) : (
+            <FacetList
+              facets={facetResult.data}
+              facetsToHide={[9,10, 11, 12, 13, 14, 31158, ...otherFilters.map((d) => d.id)]}
             />
-          ))}
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 m-6">
+            {data?.items.map((item, idx) => (
+              <ToggleResultItem
+                key={item.id}
+                {...item}
+                selected={selected === item.id}
+                position={idx}
+                onSelectedChange={(data) => {
+                  setSelected(data ? data.id : undefined);
+                  if (data) {
+                    setOpen(false);
+                  }
+                  onSelectedChange(data);
+                }}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>
