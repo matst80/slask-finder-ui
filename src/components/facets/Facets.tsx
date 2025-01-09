@@ -148,12 +148,15 @@ type NumberValue = { min: number; max: number };
 type FacetValue = string | string[] | NumberValue;
 
 export const useFacetSelectors = (id: number) => {
-  const context = useFacetSelection();
-
+  const {facets,selected, setSelected} = useFacetSelection();
+  const currentFacet = useMemo(
+    () => facets.find((f) => f.id === id),
+    [id, facets]
+  ); ;
   return useMemo(() => {
-    const currentFacet = context.facets.find((f) => f.id === id);
+    
     const addFilter = (value: FacetValue) => {
-      context.setSelected((prev) => {
+      setSelected((prev) => {
         const foundIdx = prev.findIndex((f) => f.id === id);
         if (foundIdx !== -1) {
           if (isNumberValue(value)) {
@@ -178,7 +181,7 @@ export const useFacetSelectors = (id: number) => {
       });
     };
     const removeFilter = (value?: FacetValue) => {
-      context.setSelected((prev) => {
+      setSelected((prev) => {
         if (value == null) {
           return prev.filter((f) => f.id !== id);
         }
@@ -206,14 +209,14 @@ export const useFacetSelectors = (id: number) => {
       });
     };
     const selectedValue =
-      context.selected?.find((f) => f.id === id)?.value ??
+      selected?.find((f) => f.id === id)?.value ??
       currentFacet?.selected;
     return {
       addFilter,
       removeFilter,
       selected: selectedValue,
     };
-  }, [context, id]);
+  }, [currentFacet, id, selected, setSelected]);
 };
 
 export const isNumberValue = (value: unknown): value is NumberValue => {
@@ -250,6 +253,10 @@ export const isSelectedValue = (
   return currentSelection == value;
 };
 
+const unique = <T extends {id:number},>(value: T, index: number, self: T[]) => {
+  return self.findIndex(d=>d.id==value.id) === index;
+}
+
 export const Facets = () => {
   const { data: results, isLoading } = useHashFacets();
   const { setQuery } = useHashQuery();
@@ -264,8 +271,8 @@ export const Facets = () => {
     (data: Pick<FilteringQuery, "range" | "string">) => {
       setQuery((prev) => ({
         ...prev,
-        string: [...(prev.string ?? []), ...(data.string ?? [])],
-        range: [...(prev.range ?? []), ...(data.range ?? [])],
+        string: [...(prev.string ?? []), ...(data.string ?? [])].filter(unique),
+        range: [...(prev.range ?? []), ...(data.range ?? [])].filter(unique),
       }));
     },
     [setQuery]
