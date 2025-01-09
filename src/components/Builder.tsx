@@ -176,10 +176,10 @@ const components: Component[] = [
   },
 ];
 
-const ToggleResultItem = (
-  item: Item & { position: number } & OnSelectedItem
-) => {
-  const [selected, setSelected] = useState(false);
+const ToggleResultItem = ({
+  selected,
+  ...item
+}: Item & { position: number; selected: boolean } & OnSelectedItem) => {
   return (
     <div key={item.id} className={selected ? "border-red-500 border" : ""}>
       <ResultItem
@@ -187,8 +187,6 @@ const ToggleResultItem = (
         onClick={(e) => {
           e.preventDefault();
           item.onSelectedChange(selected ? null : item.values);
-          setSelected((p) => !p);
-          console.log(item.values);
         }}
       />
     </div>
@@ -211,18 +209,26 @@ const ComponentSelector = ({
     ...filter,
     string: [...otherFilters, ...(filter.string ?? [])],
   });
-  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<number | string>();
+  const [open, setOpen] = useState(true);
   return (
     <div>
-      <h2 onClick={() => setOpen((p) => !p)}>{title}</h2>
+      <h2 className="text-xl" onClick={() => setOpen((p) => !p)}>{title} ({data?.totalHits??'Loading...'})</h2>
       {open && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6 m-6">
           {data?.items.map((item, idx) => (
             <ToggleResultItem
               key={item.id}
               {...item}
+              selected={selected === item.id}
               position={idx}
-              onSelectedChange={onSelectedChange}
+              onSelectedChange={(data) => {
+                setSelected(data ? data.id : undefined);
+                if (data) {
+                  setOpen(false);
+                }
+                onSelectedChange(data);
+              }}
             />
           ))}
         </div>
@@ -264,7 +270,7 @@ export const Builder = () => {
         <ComponentSelector
           key={component.title}
           {...component}
-					otherFilters={appliedFilters.filter(d=>d.to === component.id)}
+          otherFilters={appliedFilters.filter((d) => d.to === component.id)}
           onSelectedChange={onSelectedChange(component.id)}
         />
       ))}
