@@ -28,7 +28,7 @@ const importantFilterIds = [
   31187, 36209, 35989, 35990, 35922, 35978, 32073, 31009, 30634, 31991, 32186,
   36261, 36245, 32161, 33514, 36224, 36225, 36226, 36227, 36228, 36229, 36230,
   36231, 36232, 36233, 36234, 36235, 36236, 36237, 36238, 36239, 31396, 36268,
-  36252, 36284, 31986, 32057,
+  36252, 36284, 31986, 32057, 31190, 30857, 36211,
 ];
 const wattIds = [35990];
 
@@ -67,9 +67,13 @@ const components: Component[] = [
         to: 4,
         converter: (values) => {
           const m2Slots = Number(values[36245]);
+          const ret = [];
           if (m2Slots > 0) {
             console.log(values);
-            return [{ id: 36249, value: "!nil" }];
+            ret.push({ id: 36249, value: "!nil" });
+          }
+          if (values[36211] !=null) {
+            console.log('m2 gen', values[36211]);
           }
           return [];
         },
@@ -256,13 +260,13 @@ const ComponentSelector = ({
   const [selected, setSelected] = useState<number | string>();
   const [open, setOpen] = useState(true);
   return (
-    <div className="border border-gray-500 rounded-md p-4 mb-4">
+    <div className="border border-gray-400 rounded-md p-4 mb-4">
       <button className="text-xl" onClick={() => setOpen((p) => !p)}>
         {title} ({data?.totalHits ?? "Loading..."}){" "}
         <span>{open ? "▲" : "▼"}</span>
       </button>
       {open && (
-        <div className="grid grid-cols-[280px,1fr] gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-4">
           {facetResult.data == null ? (
             <div>Loading...</div>
           ) : (
@@ -359,7 +363,7 @@ export const Builder = () => {
   }, [selectedItems, data]);
   console.log(appliedFilters);
   return (
-    <div className="p-10 grid grid-cols-[2fr,1fr] gap-6">
+    <div className="p-10 grid grid-cols-1 xl:grid-cols-[2fr,1fr] gap-6">
       <div>
         {components.map((component) => (
           <ComponentSelector
