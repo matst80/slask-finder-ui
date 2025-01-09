@@ -43,7 +43,7 @@ const components: Component[] = [
     id: 2,
     filtersToApply: [
       { id: 32103, to: 1 },
-      { id: 30552, to: 6 },
+      //{ id: 30552, to: 6 },
       { id: 30857, to: 3 },
     ],
     filter: {
@@ -154,7 +154,9 @@ const components: Component[] = [
   },
   {
     title: "Chassi",
-    filtersToApply: [{ id: 30552, to: 2 }],
+    filtersToApply: [
+    //  { id: 30552, to: 2 }
+    ],
     id: 6,
     filter: {
       range: [],
