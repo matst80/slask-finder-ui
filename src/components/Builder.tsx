@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useItemsSearch } from "../hooks/searchHooks";
 import { Item, ItemsQuery, ItemValues } from "../types";
 import { ResultItem } from "./ResultItem";
 import { isDefined } from "../utils";
-import { Price, PriceValue } from "./Price"
+import { Price, PriceValue } from "./Price";
 
 type AdditionalFilter = { id: number; to: number };
 
@@ -215,10 +215,10 @@ const ComponentSelector = ({
   const [selected, setSelected] = useState<number | string>();
   const [open, setOpen] = useState(true);
   return (
-    <div>
-      <h2 className="text-xl" onClick={() => setOpen((p) => !p)}>
-        {title} ({data?.totalHits ?? "Loading..."})
-      </h2>
+    <div className="border border-gray-500 rounded-md p-4 mb-4">
+      <button className="text-xl" onClick={() => setOpen((p) => !p)}>
+        {title} ({data?.totalHits ?? "Loading..."}) <span>{open ? "▲" : "▼"}</span>
+      </button>
       {open && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6 m-6">
           {data?.items.map((item, idx) => (
@@ -246,17 +246,10 @@ type ItemWithComponentId = Item & { componentId: number };
 
 export const Builder = () => {
   const [selectedItems, setSelectedItems] = useState<ItemWithComponentId[]>([]);
-  const [appliedFilters, setAppliedFilters] = useState<
-    SelectedAdditionalFilter[]
-  >([]);
+  // const [appliedFilters, setAppliedFilters] = useState<
+  //   SelectedAdditionalFilter[]
+  // >([]);
   const onSelectedChange = (componentId: number) => (item: Item | null) => {
-    const foundValues = components
-      .find((c) => c.id === componentId)
-      ?.filtersToApply.map((f) => {
-        const value = item?.values?.[f.id];
-        return typeof value === "string" ? { id: f.id, to: f.to, value } : null;
-      })
-      .filter(isDefined);
     setSelectedItems((p) => {
       const newItems = p.filter((i) => i.componentId !== componentId);
       if (item) {
@@ -264,16 +257,22 @@ export const Builder = () => {
       }
       return newItems;
     });
-    setAppliedFilters((p) => {
-      const newFilters = p.filter(
-        (f) => !foundValues?.some((fv) => fv.id === f.id)
-      );
-      if (foundValues) {
-        return [...newFilters, ...foundValues];
-      }
-      return newFilters;
-    });
   };
+  const appliedFilters = useMemo(() => {
+    return selectedItems
+      .flatMap((item) =>
+        components
+          .find((c) => c.id === item.componentId)
+          ?.filtersToApply.map((f) => {
+            const value = item.values?.[f.id];
+            return typeof value === "string"
+              ? { id: f.id, to: f.to, value }
+              : null;
+          })
+      )
+      .flat()
+      .filter(isDefined);
+  }, [selectedItems]);
   return (
     <div className="p-10 grid grid-cols-[2fr,1fr] gap-6">
       <div>
@@ -290,14 +289,22 @@ export const Builder = () => {
         <h2>Selected items</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {selectedItems.map((item, i) => (
-            <ResultItem key={item.id} {...item} position={i} />
+            <ResultItem
+              key={item.id}
+              {...item}
+              position={i}
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedItems(selectedItems.filter((d) => d.id !== item.id));
+              }}
+            />
           ))}
         </div>
         <h2>
           Summa:{" "}
           <PriceValue
             value={selectedItems.reduce(
-              (sum, d) => (sum + (d.values[4] ? Number(d.values[4]) : 0)),
+              (sum, d) => sum + (d.values[4] ? Number(d.values[4]) : 0),
               0
             )}
             className="bold"
