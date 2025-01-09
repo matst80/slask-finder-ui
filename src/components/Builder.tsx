@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { useFacets, useItemsSearch } from "../hooks/searchHooks";
-import { Item, ItemsQuery, ItemValues } from "../types";
+import { Item, ItemsQuery } from "../types";
 import { ResultItem } from "./ResultItem";
 import { isDefined } from "../utils";
-import { Price, PriceValue } from "./Price";
+import { PriceValue } from "./Price";
 import { FacetList } from "./facets/Facets";
 
 type AdditionalFilter = { id: number; to: number };
