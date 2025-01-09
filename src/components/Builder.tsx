@@ -365,7 +365,7 @@ export const Builder = () => {
   }, [selectedItems, data]);
   console.log(appliedFilters);
   return (
-    <div className="p-2 lg:p-10 grid grid-cols-1 xl:grid-cols-[3fr,1fr] gap-6">
+    <div className="p-2 lg:p-10 grid grid-cols-1 xl:grid-cols-[7fr,3fr] gap-6">
       <div>
         {components.map((component) => (
           <ComponentSelector
@@ -378,7 +378,7 @@ export const Builder = () => {
       </div>
       <div>
         <h2>Selected items</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {selectedItems.map((item, i) => (
             <ResultItem
               key={item.id}
