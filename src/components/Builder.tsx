@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
-import { useFacets, useItemsSearch } from "../hooks/searchHooks";
+import { useFacetList, useFacets, useItemsSearch } from "../hooks/searchHooks";
 import { FilteringQuery, Item, ItemsQuery } from "../types";
 import { ResultItem } from "./ResultItem";
 import { isDefined } from "../utils";
 import { PriceValue } from "./Price";
 import { FacetList } from "./facets/Facets";
 
-type AdditionalFilter = { id: number; to: number, from?: number };
+type AdditionalFilter = { id: number; to: number; from?: number };
 
 type Component = {
   title: string;
@@ -16,6 +16,14 @@ type Component = {
 };
 
 type SelectedAdditionalFilter = AdditionalFilter & { value: string };
+
+const importantFilterIds = [
+  31187, 36209, 35989, 35990, 35922, 35978, 32073, 31009, 30634, 31991, 32186,
+  36261, 36245, 32161, 33514, 36224, 36225, 36226, 36227, 36228, 36229, 36230,
+  36231, 36232, 36233, 36234, 36235, 36236, 36237, 36238, 36239, 31396, 36268,
+  36252, 36284, 31986, 32057,
+];
+const wattIds = [35990];
 
 const components: Component[] = [
   {
@@ -212,11 +220,17 @@ const ComponentSelector = ({
   otherFilters,
   onSelectedChange,
 }: ComponentSelectorProps) => {
-  const [userFiler, setUserFilter] = useState<Pick<FilteringQuery,"range"|"string">>({range: [], string: []});
+  const [userFiler, setUserFilter] = useState<
+    Pick<FilteringQuery, "range" | "string">
+  >({ range: [], string: [] });
   const baseQuery = {
     ...filter,
     range: [...(filter.range ?? []), ...(userFiler.range ?? [])],
-    string: [...otherFilters, ...(filter.string ?? []), ...(userFiler.string ?? [])],
+    string: [
+      ...otherFilters,
+      ...(filter.string ?? []),
+      ...(userFiler.string ?? []),
+    ],
   } satisfies FilteringQuery;
   const { data } = useItemsSearch(baseQuery);
   const facetResult = useFacets(baseQuery);
@@ -236,7 +250,16 @@ const ComponentSelector = ({
             <FacetList
               facets={facetResult.data}
               onFilterChanged={setUserFilter}
-              facetsToHide={[9,10, 11, 12, 13, 14, 31158, ...otherFilters.map((d) => d.id)]}
+              facetsToHide={[
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                31158,
+                ...otherFilters.map((d) => d.id),
+              ]}
             />
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 m-6">
@@ -265,6 +288,7 @@ const ComponentSelector = ({
 type ItemWithComponentId = Item & { componentId: number };
 
 export const Builder = () => {
+  const { data } = useFacetList();
   const [selectedItems, setSelectedItems] = useState<ItemWithComponentId[]>([]);
   // const [appliedFilters, setAppliedFilters] = useState<
   //   SelectedAdditionalFilter[]
@@ -293,6 +317,15 @@ export const Builder = () => {
       .flat()
       .filter(isDefined);
   }, [selectedItems]);
+  const properties = useMemo(() => {
+    return selectedItems
+      .flatMap((item) => {
+        return Object.entries(item.values).map(([key, value]) => {
+          return { key, title: data?.find((d) => d.id == Number(key))?.name, value };
+        });
+      })
+      .filter((d) => importantFilterIds.includes(Number(d.key)));
+  }, [selectedItems, data]);
   console.log(appliedFilters);
   return (
     <div className="p-10 grid grid-cols-[2fr,1fr] gap-6">
@@ -331,6 +364,13 @@ export const Builder = () => {
             className="bold"
           />
         </h2>
+        <ul>
+          {properties.map((d) => (
+            <li key={d.key}>
+              {d.title}: {d.value}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
