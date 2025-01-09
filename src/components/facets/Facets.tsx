@@ -152,7 +152,7 @@ export const useFacetSelectors = (id: number) => {
   const currentFacet = useMemo(
     () => facets.find((f) => f.id === id),
     [id, facets]
-  ); ;
+  ); 
   return useMemo(() => {
     
     const addFilter = (value: FacetValue) => {
@@ -253,9 +253,6 @@ export const isSelectedValue = (
   return currentSelection == value;
 };
 
-const unique = <T extends {id:number},>(value: T, index: number, self: T[]) => {
-  return self.findIndex(d=>d.id==value.id) === index;
-}
 
 export const Facets = () => {
   const { data: results, isLoading } = useHashFacets();
@@ -271,8 +268,7 @@ export const Facets = () => {
     (data: Pick<FilteringQuery, "range" | "string">) => {
       setQuery((prev) => ({
         ...prev,
-        string: [...(prev.string ?? []), ...(data.string ?? [])].filter(unique),
-        range: [...(prev.range ?? []), ...(data.range ?? [])].filter(unique),
+        ...data
       }));
     },
     [setQuery]
