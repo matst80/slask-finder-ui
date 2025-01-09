@@ -28,7 +28,8 @@ const importantFilterIds = [
   31187, 36209, 35989, 35990, 35922, 35978, 32073, 31009, 30634, 31991, 32186,
   36261, 36245, 32161, 33514, 36224, 36225, 36226, 36227, 36228, 36229, 36230,
   36231, 36232, 36233, 36234, 36235, 36236, 36237, 36238, 36239, 31396, 36268,
-  36252, 36284, 31986, 32057, 31190, 30857, 36211,
+  36252, 36284, 31986, 32057, 31190, 30857, 36211, 32183, 33531, 33574, 33575,
+  33533, 33576, 33577, 34582, 34583, 36301, 30007, 36302,
 ];
 const wattIds = [35990];
 
@@ -66,16 +67,22 @@ const components: Component[] = [
         id: 36249,
         to: 4,
         converter: (values) => {
+          console.log("m2", values);
           const m2Slots = Number(values[36245]);
           const ret = [];
           if (m2Slots > 0) {
-            console.log(values);
-            ret.push({ id: 36249, value: "!nil" });
+            const gen = values[36211];
+            if (gen != null && typeof gen === "string") {
+              console.log("m2 gen", gen);
+              const genNr = Number(gen.split(".")[0]);
+              const values = [];
+              for (let i = 0; i <= genNr; i++) {
+                values.push(`${i}.0`);
+              }
+              ret.push({ id: 36249, value: values });
+            }
           }
-          if (values[36211] !=null) {
-            console.log('m2 gen', values[36211]);
-          }
-          return [];
+          return ret;
         },
       },
     ],
@@ -268,24 +275,24 @@ const ComponentSelector = ({
       {open && (
         <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-4">
           <div className="hidden md:block">
-          {facetResult.data == null ? (
-            <div>Loading...</div>
-          ) : (
-            <FacetList
-              facets={facetResult.data}
-              onFilterChanged={setUserFilter}
-              facetsToHide={[
-                9,
-                10,
-                11,
-                12,
-                13,
-                14,
-                31158,
-                ...otherFilters.map((d) => d.id),
-              ]}
-            />
-          )}
+            {facetResult.data == null ? (
+              <div>Loading...</div>
+            ) : (
+              <FacetList
+                facets={facetResult.data}
+                onFilterChanged={setUserFilter}
+                facetsToHide={[
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14,
+                  31158,
+                  ...otherFilters.map((d) => d.id),
+                ]}
+              />
+            )}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 m-6">
             {data?.items.map((item, idx) => (
