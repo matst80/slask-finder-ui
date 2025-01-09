@@ -190,12 +190,12 @@ export const useFacetSelectors = (id: number) => {
         if (foundIdx !== -1) {
           const { value: oldValue } = prev[foundIdx] ?? {};
           if (Array.isArray(oldValue)) {
-            console.log(
-              "removeFilter",
-              foundIdx,
-              value,
-              oldValue.filter((v) => v != value)
-            );
+            // console.log(
+            //   "removeFilter",
+            //   foundIdx,
+            //   value,
+            //   oldValue.filter((v) => v != value)
+            // );
             prev[foundIdx].value = oldValue.filter((v) => v != value);
             if (prev[foundIdx].value.length == 0) {
               return prev.filter((f) => f.id !== id);
@@ -245,7 +245,7 @@ export const isSelectedValue = (
     console.log("WHAT?");
     return false;
   }
-  console.log("isSelected?", { currentSelection, value });
+  // console.log("isSelected?", { currentSelection, value });
   if (Array.isArray(currentSelection)) {
     return currentSelection.includes(value);
   }
