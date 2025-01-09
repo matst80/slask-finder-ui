@@ -1,9 +1,9 @@
-import { useFilters } from "../../hooks/searchHooks";
 import { Facet, isKeyResult } from "../../types";
 import { colourNameToHex, cm } from "../../utils";
+import { isSelectedValue, useFacetSelectors } from "./Facets"
 
 export const ColorFacetSelector = ({ id, result }: Facet) => {
-  const { addKeyFilter, keyFilters, removeKeyFilter } = useFilters();
+  const { addFilter,removeFilter, selected } = useFacetSelectors(id);
   if (!isKeyResult(result)) return null;
   return (
     <div className="mb-4 border-b border-gray-100 pb-2">
@@ -14,9 +14,8 @@ export const ColorFacetSelector = ({ id, result }: Facet) => {
           if (!colorHex) {
             return null;
           }
-          const selected = keyFilters.find(
-            (f) => f.id === id && f.value === color,
-          );
+          const isSelected = isSelectedValue(selected, color)
+            
           return (
             <button
               key={color}
@@ -28,9 +27,9 @@ export const ColorFacetSelector = ({ id, result }: Facet) => {
               style={colorHex}
               aria-label={`Filter by ${color}`}
               onClick={() => {
-                selected != null
-                  ? removeKeyFilter(id)
-                  : addKeyFilter(id, color);
+                isSelected
+                  ? removeFilter()
+                  : addFilter(color);
               }}
             />
           );

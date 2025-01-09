@@ -107,12 +107,12 @@ export type NumberResult = {
 };
 
 export type NumberFacet = BaseFacet & {
-  selected: unknown;
+  selected: { min: number; max: number } | undefined;
   result: NumberResult;
 };
 
 export type KeyFacet = BaseFacet & {
-  selected: unknown;
+  selected: string[]|string|undefined;
   result: KeyResult;
 };
 

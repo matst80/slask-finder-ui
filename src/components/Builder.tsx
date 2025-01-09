@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useFacets, useItemsSearch } from "../hooks/searchHooks";
-import { Item, ItemsQuery } from "../types";
+import { FilteringQuery, Item, ItemsQuery } from "../types";
 import { ResultItem } from "./ResultItem";
 import { isDefined } from "../utils";
 import { PriceValue } from "./Price";
@@ -212,14 +212,14 @@ const ComponentSelector = ({
   otherFilters,
   onSelectedChange,
 }: ComponentSelectorProps) => {
-  const { data } = useItemsSearch({
+  const [userFiler, setUserFilter] = useState<Pick<FilteringQuery,"range"|"string">>({range: [], string: []});
+  const baseQuery = {
     ...filter,
-    string: [...otherFilters, ...(filter.string ?? [])],
-  });
-  const facetResult = useFacets({
-    ...filter,
-    string: [...otherFilters, ...(filter.string ?? [])],
-  });
+    range: [...(filter.range ?? []), ...(userFiler.range ?? [])],
+    string: [...otherFilters, ...(filter.string ?? []), ...(userFiler.string ?? [])],
+  } satisfies FilteringQuery;
+  const { data } = useItemsSearch(baseQuery);
+  const facetResult = useFacets(baseQuery);
   const [selected, setSelected] = useState<number | string>();
   const [open, setOpen] = useState(true);
   return (
@@ -235,6 +235,7 @@ const ComponentSelector = ({
           ) : (
             <FacetList
               facets={facetResult.data}
+              onFilterChanged={setUserFilter}
               facetsToHide={[9,10, 11, 12, 13, 14, 31158, ...otherFilters.map((d) => d.id)]}
             />
           )}

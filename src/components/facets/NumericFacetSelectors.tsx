@@ -1,9 +1,9 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
-import { useFilters } from "../../hooks/searchHooks";
 import { NumberFacet } from "../../types";
 import { converters } from "../../utils";
 import { Slider } from "./Slider";
+import { useFacetSelectors } from "./Facets"
 
 const NumberFacetSelector = ({
   name,
@@ -52,28 +52,28 @@ const NumberFacetSelector = ({
 };
 
 export const FloatFacetSelector = (facet: NumberFacet) => {
-  const { addNumberFilter } = useFilters();
+  const {addFilter} = useFacetSelectors(facet.id);
 
   return (
     <NumberFacetSelector
       {...facet}
       defaultOpen={false}
       updateFilerValue={(min, max) => {
-        addNumberFilter(facet.id, min, max);
+        addFilter({min, max});
       }}
     />
   );
 };
 
 export const IntegerFacetSelector = (facet: NumberFacet) => {
-  const { addNumberFilter } = useFilters();
+  const { addFilter } = useFacetSelectors(facet.id);
 
   return (
     <NumberFacetSelector
       {...facet}
       defaultOpen={false}
       updateFilerValue={(min, max) => {
-        addNumberFilter(facet.id, min, max);
+        addFilter({ min, max });
       }}
     />
   );

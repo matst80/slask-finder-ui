@@ -1,7 +1,7 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
-import { useFilters } from "../../hooks/searchHooks";
 import { KeyFacet } from "../../types";
+import { isSelectedValue, useFacetSelectors } from "./Facets";
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
@@ -14,7 +14,8 @@ export const KeyFacetSelector = ({
   id,
   defaultOpen,
 }: KeyFacet & { defaultOpen: boolean }) => {
-  const { keyFilters, addKeyFilter, removeKeyFilter } = useFilters();
+  const { addFilter, removeFilter, selected } = useFacetSelectors(id);
+  //const { keyFilters, addKeyFilter, removeKeyFilter } = useFilters();
   const [filter, setFilter] = useState("");
   const allSorted = useMemo(() => toSorted(values), [values]);
   const filtered = useMemo(() => {
@@ -66,17 +67,13 @@ export const KeyFacetSelector = ({
                   type="checkbox"
                   id={value}
                   value={value}
-                  checked={keyFilters.some((d) =>
-                    d.id === id && Array.isArray(d.value)
-                      ? d.value.includes(value)
-                      : d.value === value
-                  )}
+                  checked={isSelectedValue(selected, value)}
                   onChange={(e) => {
                     const checked = e.target.checked;
                     if (checked) {
-                      addKeyFilter(id, value);
+                      addFilter(value);
                     } else {
-                      removeKeyFilter(id,value);
+                      removeFilter(value);
                     }
                   }}
                 />
