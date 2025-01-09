@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 const utcNow = () => {
   const d = new Date();
-  return d.getTime();
+  return d.getTime()*1000;
 };
 
 export const TimeAgo = ({ ts }: { ts?: number }) => {

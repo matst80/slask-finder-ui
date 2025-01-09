@@ -267,6 +267,7 @@ const ComponentSelector = ({
       </button>
       {open && (
         <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-4">
+          <div className="hidden md:block">
           {facetResult.data == null ? (
             <div>Loading...</div>
           ) : (
@@ -285,7 +286,8 @@ const ComponentSelector = ({
               ]}
             />
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 m-6">
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 m-6">
             {data?.items.map((item, idx) => (
               <ToggleResultItem
                 key={item.id}
@@ -363,7 +365,7 @@ export const Builder = () => {
   }, [selectedItems, data]);
   console.log(appliedFilters);
   return (
-    <div className="p-10 grid grid-cols-1 xl:grid-cols-[2fr,1fr] gap-6">
+    <div className="p-2 lg:p-10 grid grid-cols-1 xl:grid-cols-[3fr,1fr] gap-6">
       <div>
         {components.map((component) => (
           <ComponentSelector
