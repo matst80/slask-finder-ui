@@ -11,7 +11,7 @@ type AdditionalFilter = {
   to: number;
   converter?: (value: ItemValues) => {
     id: number;
-    value: string | string[];
+    value: string | string[] | { min: number; max: number };
   }[];
 };
 
@@ -22,14 +22,16 @@ type Component = {
   filter: ItemsQuery;
 };
 
-type SelectedAdditionalFilter = AdditionalFilter & { value: string | string[] };
+type SelectedAdditionalFilter = AdditionalFilter & {
+  value: string | string[] | { min: number; max: number };
+};
 
 const importantFilterIds = [
   31187, 36209, 35989, 35990, 35922, 35978, 32073, 31009, 30634, 31991, 32186,
   36261, 36245, 32161, 33514, 36224, 36225, 36226, 36227, 36228, 36229, 36230,
   36231, 36232, 36233, 36234, 36235, 36236, 36237, 36238, 36239, 31396, 36268,
   36252, 36284, 31986, 32057, 31190, 30857, 36211, 32183, 33531, 33574, 33575,
-  33533, 33576, 33577, 34582, 34583, 36301, 30007, 36302,
+  33533, 33576, 33577, 34582, 34583, 36301, 30007, 36302, 32062,
 ];
 const wattIds = [35990, 32186];
 
@@ -174,7 +176,23 @@ const components: Component[] = [
   {
     title: "Grafikkort",
     id: 5,
-    filtersToApply: [],
+    filtersToApply: [
+      {
+        id: 30376,
+        to: 7,
+        converter: (values) => {
+          const gpuSize = Number(values[30376]);
+          if (isNaN(gpuSize)) {
+            console.log("Invalid gpu size", values[30376]);
+            return [];
+          }
+          console.log("GPU size", gpuSize);
+          return [
+            { id: 32062, value: { min: Number(values[30376])*10, max: 999999 } },
+          ];
+        },
+      },
+    ],
     filter: {
       range: [],
       sort: "popular",
@@ -264,6 +282,26 @@ type ComponentSelectorProps = Component &
     otherFilters: SelectedAdditionalFilter[];
   };
 
+const isRangeFilter = (
+  d: SelectedAdditionalFilter
+): d is { id: number; to: number; value: { min: number; max: number } } => {
+  return (
+    "value" in d &&
+    d.value != null &&
+    typeof d.value === "object" &&
+    "min" in (d.value as { min: number; max: number }) &&
+    "max" in (d.value as { min: number; max: number })
+  );
+};
+
+const isStringFilter = (
+  d: SelectedAdditionalFilter
+): d is { id: number; to: number; value: string | string[] } => {
+  return (
+    "value" in d && (Array.isArray(d.value) || typeof d.value === "string")
+  );
+};
+
 const ComponentSelector = ({
   title,
   filter,
@@ -275,11 +313,17 @@ const ComponentSelector = ({
   >({ range: [], string: [] });
   const baseQuery = {
     ...filter,
-    range: [...(filter.range ?? []), ...(userFiler.range ?? [])],
-    
+    range: [
+      ...otherFilters
+        .filter(isRangeFilter)
+        .map(({ id, value }) => ({ id, min: value.min, max: value.max })),
+      ...(filter.range ?? []),
+      ...(userFiler.range ?? []),
+    ],
+
     string: [
       //{id:3,value:"!0"},
-      ...otherFilters,
+      ...otherFilters.filter(isStringFilter),
       ...(filter.string ?? []),
       ...(userFiler.string ?? []),
     ],
@@ -339,7 +383,9 @@ const ComponentSelector = ({
   );
 };
 
-const wattSteps = [100, 200, 300, 400, 500, 600, 700, 750, 800, 850, 900, 1000, 1200];
+const wattSteps = [
+  100, 200, 300, 400, 500, 600, 700, 750, 800, 850, 900, 1000, 1200,
+];
 
 type ItemWithComponentId = Item & { componentId: number };
 
@@ -372,32 +418,37 @@ export const Builder = () => {
       })
       .reduce((sum, d) => sum + d, 0);
   }, [selectedItems]);
-  console.log(neededPsuWatt);
+
   const appliedFilters = useMemo(() => {
-    const wattValues = wattSteps.filter((d) => d >= neededPsuWatt).map((d) => `${d}W`);
+    const wattValues = wattSteps
+      .filter((d) => d >= neededPsuWatt)
+      .map((d) => `${d}W`);
     const wattQuery = { to: 6, id: 31986, value: wattValues };
-    return [wattQuery,...selectedItems
-      .flatMap((item) =>
-        components
-          .find((c) => c.id === item.componentId)
-          ?.filtersToApply.flatMap((f) => {
-            const value = item.values?.[f.id];
-            if (f.converter) {
-              const converted = f.converter(item.values);
+    return [
+      wattQuery,
+      ...selectedItems
+        .flatMap((item) =>
+          components
+            .find((c) => c.id === item.componentId)
+            ?.filtersToApply.flatMap((f) => {
+              const value = item.values?.[f.id];
+              if (f.converter) {
+                const converted = f.converter(item.values);
 
-              return converted !== undefined
-                ? converted.map((d) => ({ ...d, to: f.to }))
+                return converted !== undefined
+                  ? converted.map((d) => ({ ...d, to: f.to }))
+                  : null;
+              }
+
+              return typeof value === "string"
+                ? { id: f.id, to: f.to, value }
                 : null;
-            }
-
-            return typeof value === "string"
-              ? { id: f.id, to: f.to, value }
-              : null;
-          })
-      )
-      .flat()
-      .filter(isDefined)];
-  }, [selectedItems,neededPsuWatt]);
+            })
+        )
+        .flat()
+        .filter(isDefined),
+    ];
+  }, [selectedItems, neededPsuWatt]);
   const properties = useMemo(() => {
     return selectedItems
       .flatMap((item) => {
@@ -450,12 +501,15 @@ export const Builder = () => {
           />
         </h2>
         <ul>
-          {properties.map((d) => (
-            <li key={d.key}>
+          {properties.map((d,i) => (
+            <li key={`${d.key}-${i}`}>
               {d.title}: {d.value}
             </li>
           ))}
         </ul>
+        <div>
+          <h2>Minimum power supply rating: {neededPsuWatt}</h2>
+        </div>
       </div>
     </div>
   );
