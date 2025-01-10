@@ -165,7 +165,6 @@ export const useItemsSearch = (query: ItemsQuery) => {
   return useSWR(
     itemsKey(query),
     () => {
-      console.log("fetching", query);
       return streamItems(toQuery(query));
     },
     {

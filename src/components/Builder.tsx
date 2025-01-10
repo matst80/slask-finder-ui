@@ -31,7 +31,7 @@ const importantFilterIds = [
   36252, 36284, 31986, 32057, 31190, 30857, 36211, 32183, 33531, 33574, 33575,
   33533, 33576, 33577, 34582, 34583, 36301, 30007, 36302,
 ];
-const wattIds = [35990];
+const wattIds = [35990, 32186];
 
 const components: Component[] = [
   {
@@ -60,29 +60,49 @@ const components: Component[] = [
     title: "Moderkort",
     id: 2,
     filtersToApply: [
-      { id: 32103, to: 1 },
-      { id: 35921, to: 3 },
-      { id: 30857, to: 3 },
+      { id: 32103, to: 1 }, // cpu socket
+      { id: 35921, to: 3 }, // ram type
+      { id: 30857, to: 3 }, // ram pins
       {
         id: 36249,
         to: 4,
         converter: (values) => {
-          console.log("m2", values);
+          // m2 slots and gen
           const m2Slots = Number(values[36245]);
           const ret = [];
           if (m2Slots > 0) {
             const gen = values[36211];
             if (gen != null && typeof gen === "string") {
-              console.log("m2 gen", gen);
               const genNr = Number(gen.split(".")[0]);
               const values = [];
-              for (let i = 0; i <= genNr; i++) {
+              for (let i = 1; i <= genNr; i++) {
                 values.push(`${i}.0`);
               }
               ret.push({ id: 36249, value: values });
             }
           }
           return ret;
+        },
+      },
+      {
+        id: 30552,
+        to: 7,
+        converter: (values) => {
+          console.log(values);
+          const formFactor = values[30552];
+          const allowed = [];
+          if (typeof formFactor === "string") {
+            if (formFactor.includes("Mini")) {
+              allowed.push("Mini-ITX");
+            } else {
+              allowed.push("ATX");
+              if (formFactor.includes("eATX")) {
+                allowed.push("eATX");
+              }
+            }
+            return [{ id: 32056, value: formFactor }];
+          }
+          return [];
         },
       },
     ],
@@ -200,7 +220,7 @@ const components: Component[] = [
     filtersToApply: [
       //  { id: 30552, to: 2 }
     ],
-    id: 6,
+    id: 7,
     filter: {
       range: [],
       sort: "popular",
@@ -256,7 +276,9 @@ const ComponentSelector = ({
   const baseQuery = {
     ...filter,
     range: [...(filter.range ?? []), ...(userFiler.range ?? [])],
+    
     string: [
+      //{id:3,value:"!0"},
       ...otherFilters,
       ...(filter.string ?? []),
       ...(userFiler.string ?? []),
@@ -317,6 +339,8 @@ const ComponentSelector = ({
   );
 };
 
+const wattSteps = [100, 200, 300, 400, 500, 600, 700, 750, 800, 850, 900, 1000, 1200];
+
 type ItemWithComponentId = Item & { componentId: number };
 
 export const Builder = () => {
@@ -334,8 +358,25 @@ export const Builder = () => {
       return newItems;
     });
   };
-  const appliedFilters = useMemo(() => {
+  const neededPsuWatt = useMemo(() => {
     return selectedItems
+      .map((item) => {
+        return wattIds.reduce((sum, id) => {
+          const value = item.values[id];
+          if (value != null) {
+            if (typeof value === "string") return sum + parseInt(value, 10);
+            else return sum + value;
+          }
+          return sum;
+        }, 0);
+      })
+      .reduce((sum, d) => sum + d, 0);
+  }, [selectedItems]);
+  console.log(neededPsuWatt);
+  const appliedFilters = useMemo(() => {
+    const wattValues = wattSteps.filter((d) => d >= neededPsuWatt).map((d) => `${d}W`);
+    const wattQuery = { to: 6, id: 31986, value: wattValues };
+    return [wattQuery,...selectedItems
       .flatMap((item) =>
         components
           .find((c) => c.id === item.componentId)
@@ -355,8 +396,8 @@ export const Builder = () => {
           })
       )
       .flat()
-      .filter(isDefined);
-  }, [selectedItems]);
+      .filter(isDefined)];
+  }, [selectedItems,neededPsuWatt]);
   const properties = useMemo(() => {
     return selectedItems
       .flatMap((item) => {
