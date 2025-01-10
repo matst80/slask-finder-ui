@@ -47,10 +47,10 @@ const components: Component[] = [
       pageSize: 40,
       stock: [],
       string: [
-        {
-          id: 11,
-          value: "Datorkomponenter",
-        },
+        // {
+        //   id: 11,
+        //   value: "Datorkomponenter",
+        // },
         {
           id: 31158,
           value: "Processor (CPU)",
@@ -94,7 +94,7 @@ const components: Component[] = [
           const formFactor = values[30552];
           const allowed = [];
           if (typeof formFactor === "string") {
-            if (formFactor.includes("Mini")) {
+            if (formFactor.includes("Mini") || formFactor.includes("mATX")) {
               allowed.push("Mini-ITX");
             } else {
               allowed.push("ATX");
@@ -115,10 +115,10 @@ const components: Component[] = [
       pageSize: 40,
       stock: [],
       string: [
-        {
-          id: 11,
-          value: "Datorkomponenter",
-        },
+        // {
+        //   id: 11,
+        //   value: "Datorkomponenter",
+        // },
         {
           id: 31158,
           value: "Moderkort",
@@ -140,10 +140,10 @@ const components: Component[] = [
       pageSize: 40,
       stock: [],
       string: [
-        {
-          id: 11,
-          value: "Datorkomponenter",
-        },
+        // {
+        //   id: 11,
+        //   value: "Datorkomponenter",
+        // },
         {
           id: 31158,
           value: "RAM minne",
@@ -162,10 +162,10 @@ const components: Component[] = [
       pageSize: 40,
       stock: [],
       string: [
-        {
-          id: 11,
-          value: "Datorkomponenter",
-        },
+        // {
+        //   id: 11,
+        //   value: "Datorkomponenter",
+        // },
         {
           id: 31158,
           value: "Intern SSD",
@@ -188,7 +188,10 @@ const components: Component[] = [
           }
           console.log("GPU size", gpuSize);
           return [
-            { id: 32062, value: { min: Number(values[30376])*10, max: 999999 } },
+            {
+              id: 32062,
+              value: { min: Number(values[30376]) * 10, max: 999999 },
+            },
           ];
         },
       },
@@ -200,10 +203,10 @@ const components: Component[] = [
       pageSize: 40,
       stock: [],
       string: [
-        {
-          id: 11,
-          value: "Datorkomponenter",
-        },
+        // {
+        //   id: 11,
+        //   value: "Datorkomponenter",
+        // },
         {
           id: 31158,
           value: "Grafikkort",
@@ -212,31 +215,55 @@ const components: Component[] = [
     },
   },
   {
-    title: "Nätaggregat",
-    id: 6,
-    filtersToApply: [],
-    filter: {
-      range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 40,
-      stock: [],
-      string: [
-        {
-          id: 11,
-          value: "Datorkomponenter",
-        },
-        {
-          id: 31158,
-          value: "Nätaggregat (PSU)",
-        },
-      ],
-    },
-  },
-  {
     title: "Chassi",
     filtersToApply: [
-      //  { id: 30552, to: 2 }
+      {
+        id: 32062,
+        to: 5,
+        converter: (values) => {
+          const maxGpuSize = Number(values[32062]);
+          if (isNaN(maxGpuSize)) {
+            console.log("Invalid gpu size", values[32062]);
+            return [];
+          }
+          console.log("MAX GPU size", maxGpuSize);
+          return [
+            {
+              id: 30376,
+              value: { max: maxGpuSize / 10, min: 1 },
+            },
+          ];
+        },
+      },
+      {
+        id: 36284,
+        to: 6,
+        converter: (values) => {
+          if (typeof values[36284] != "string") return [];
+          return [{ id: 36252, value: values[36284] }];
+        },
+      },
+      {
+        id: 32056,
+        to: 2,
+        converter: (values) => {
+          console.log(values);
+          const formFactor = values[32056];
+          const allowed = [];
+          if (typeof formFactor === "string") {
+            if (formFactor.includes("Mini") || formFactor.includes("mATX")) {
+              allowed.push("Mini-ITX");
+            } else {
+              allowed.push("ATX");
+              if (formFactor.includes("eATX")) {
+                allowed.push("eATX");
+              }
+            }
+            return [{ id: 30552, value: formFactor }];
+          }
+          return [];
+        },
+      },
     ],
     id: 7,
     filter: {
@@ -246,13 +273,44 @@ const components: Component[] = [
       pageSize: 40,
       stock: [],
       string: [
-        {
-          id: 11,
-          value: "Datorkomponenter",
-        },
+        // {
+        //   id: 11,
+        //   value: "Datorkomponenter",
+        // },
         {
           id: 31158,
           value: "Chassi",
+        },
+      ],
+    },
+  },
+  {
+    title: "Nätaggregat",
+    id: 6,
+    filtersToApply: [
+      {
+        id: 36252,
+        to: 7,
+        converter: (values) => {
+          if (typeof values[36252] != "string") return [];
+          return [{ id: 36284, value: values[36252] }];
+        },
+      },
+    ],
+    filter: {
+      range: [],
+      sort: "popular",
+      page: 0,
+      pageSize: 40,
+      stock: [],
+      string: [
+        // {
+        //   id: 11,
+        //   value: "Datorkomponenter",
+        // },
+        {
+          id: 31158,
+          value: "Nätaggregat (PSU)",
         },
       ],
     },
@@ -279,6 +337,7 @@ const ToggleResultItem = ({
 type OnSelectedItem = { onSelectedChange: (data: Item | null) => void };
 type ComponentSelectorProps = Component &
   OnSelectedItem & {
+    selectedIds: number[];
     otherFilters: SelectedAdditionalFilter[];
   };
 
@@ -306,6 +365,7 @@ const ComponentSelector = ({
   title,
   filter,
   otherFilters,
+  selectedIds,
   onSelectedChange,
 }: ComponentSelectorProps) => {
   const [userFiler, setUserFilter] = useState<
@@ -330,7 +390,7 @@ const ComponentSelector = ({
   } satisfies FilteringQuery;
   const { data } = useItemsSearch(baseQuery);
   const facetResult = useFacets(baseQuery);
-  const [selected, setSelected] = useState<number | string>();
+  
   const [open, setOpen] = useState(true);
   return (
     <div className="border border-gray-400 rounded-md p-4 mb-4">
@@ -365,10 +425,10 @@ const ComponentSelector = ({
               <ToggleResultItem
                 key={item.id}
                 {...item}
-                selected={selected === item.id}
+                selected={selectedIds.includes(Number(item.id))}
                 position={idx}
                 onSelectedChange={(data) => {
-                  setSelected(data ? data.id : undefined);
+                  
                   if (data) {
                     setOpen(false);
                   }
@@ -470,6 +530,7 @@ export const Builder = () => {
           <ComponentSelector
             key={component.title}
             {...component}
+            selectedIds={selectedItems.map((d) => Number(d.id))}
             otherFilters={appliedFilters.filter((d) => d.to === component.id)}
             onSelectedChange={onSelectedChange(component.id)}
           />
