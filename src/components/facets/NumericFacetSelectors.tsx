@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { NumberFacet } from "../../types";
 import { converters } from "../../utils";
 import { Slider } from "./Slider";
-import { useFacetSelectors } from "./Facets"
+import { useFacetSelectors } from "./facet-context"
 
 const NumberFacetSelector = ({
   name,

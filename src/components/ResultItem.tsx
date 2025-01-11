@@ -1,10 +1,10 @@
-import { Zap } from "lucide-react";
+
 import { Item } from "../types";
 import { makeImageUrl } from "../utils";
 import { Price } from "./Price";
 import { Stars } from "./Stars";
-import { TimeAgo } from "./TimeAgo";
-import { MouseEventHandler, useMemo, useState } from "react";
+
+import {  useState } from "react";
 import { useHashQuery } from "../hooks/searchHooks";
 import { trackClick } from "../datalayer/beacons";
 import { Link } from "react-router-dom";
@@ -57,18 +57,18 @@ const StockIndicator = ({
   );
 };
 
-const UpdatedBanner = ({ lastUpdate }: Pick<Item, "lastUpdate">) => {
-  const recentlyUpdated = useMemo(
-    () => (lastUpdate ?? 0) > Date.now() - 1000 * 60 * 60,
-    [lastUpdate]
-  );
-  return recentlyUpdated ? (
-    <div className="flex items-center rounded-bl-md p-1 bg-yellow-300 text-xs gap-2 absolute top-0 right-0">
-      <Zap size={18} />
-      <TimeAgo ts={lastUpdate} />
-    </div>
-  ) : null;
-};
+// const UpdatedBanner = ({ lastUpdate }: Pick<Item, "lastUpdate">) => {
+//   const recentlyUpdated = useMemo(
+//     () => (lastUpdate ?? 0) > Date.now() - 1000 * 60 * 60,
+//     [lastUpdate]
+//   );
+//   return recentlyUpdated ? (
+//     <div className="flex items-center rounded-bl-md p-1 bg-yellow-300 text-xs gap-2 absolute top-0 right-0">
+//       <Zap size={18} />
+//       <TimeAgo ts={lastUpdate} />
+//     </div>
+//   ) : null;
+// };
 
 const ImageWithPlaceHolder = ({ img, title }: Pick<Item, "img" | "title">) => {
   const [loaded, setLoaded] = useState(false);
@@ -98,54 +98,25 @@ const ImageWithPlaceHolder = ({ img, title }: Pick<Item, "img" | "title">) => {
   );
 };
 
-export const ResultItem = ({
-  id,
+export const ResultItemInner = ({
+  
   title,
   img,
   badgeUrl,
   values,
   stock,
   bp,
-  lastUpdate: updated,
-  position,
+  
+
   stockLevel,
   disclaimer,
   advertisingText,
-  saleStatus,
-  onClick,
-}: Item & {
-  position: number;
-  onClick?: MouseEventHandler<HTMLAnchorElement>;
-}) => {
-  const trackItem = () => {
-    trackClick(id, position);
-  };
-
+  
+}: Item) => {
   const hasRating = values["6"] != null && values["7"] != null;
   const soldBy = values["9"];
-  if (saleStatus === "MDD") {
-    return (
-      <Link
-        to={`/product/${id}`}
-        key={`item-${id}`}
-        data-id={id}
-        data-position={position}
-        className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col items-center justify-center result-item`}
-        onClick={trackItem}
-      >
-        Deleted {id}
-      </Link>
-    );
-  }
   return (
-    <Link
-      to={`/product/${id}`}
-      key={`item-${id}`}
-      data-id={id}
-      data-position={position}
-      className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item`}
-      onClick={onClick ?? trackItem}
-    >
+    <>
       <div className="mt-2">
         <ImageWithPlaceHolder img={img} title={title} />
 
@@ -203,9 +174,30 @@ export const ResultItem = ({
           <em className="italic text-xs">Säljs av: {soldBy}</em>
         )}
       </div>
+    </>
+  );
+};
 
-      {/* <PopularityOverride id={id} /> */}
-      <UpdatedBanner lastUpdate={updated} />
+export const ResultItem = ({
+  position,
+  ...item
+}: Item & {
+  position: number;
+}) => {
+  const trackItem = () => {
+    trackClick(item.id, position);
+  };
+
+  return (
+    <Link
+      to={`/product/${item.id}`}
+      key={`item-${item.id}`}
+      data-id={item.id}
+      data-position={position}
+      className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item`}
+      onClick={trackItem}
+    >
+      <ResultItemInner {...item} />
     </Link>
   );
 };

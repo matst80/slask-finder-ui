@@ -1,6 +1,6 @@
 import { Facet, isKeyResult } from "../../types";
 import { colourNameToHex, cm } from "../../utils";
-import { isSelectedValue, useFacetSelectors } from "./Facets"
+import { isSelectedValue, useFacetSelectors } from "./facet-context"
 
 export const ColorFacetSelector = ({ id, result }: Facet) => {
   const { addFilter,removeFilter, selected } = useFacetSelectors(id);

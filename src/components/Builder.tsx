@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
+import { PropsWithChildren, useMemo, useState } from "react";
 import { useFacetList, useFacets, useItemsSearch } from "../hooks/searchHooks";
 import { FilteringQuery, Item, ItemsQuery, ItemValues } from "../types";
-import { ResultItem } from "./ResultItem";
-import { isDefined } from "../utils";
+import { ResultItemInner } from "./ResultItem";
+import { cm, isDefined } from "../utils";
 import { PriceValue } from "./Price";
-import { FacetList } from "./facets/Facets";
+import { FacetList } from "./facets/facet-context";
 
 type AdditionalFilter = {
   id: number;
@@ -320,17 +320,19 @@ const components: Component[] = [
 const ToggleResultItem = ({
   selected,
   ...item
-}: Item & { position: number; selected: boolean } & OnSelectedItem) => {
+}: Item & { selected: boolean } & OnSelectedItem) => {
   return (
-    <div key={item.id} className={selected ? "border-red-500 border" : ""}>
-      <ResultItem
-        {...item}
-        onClick={(e) => {
-          e.preventDefault();
-          item.onSelectedChange(selected ? null : item);
-        }}
-      />
-    </div>
+    <ItemWithHoverDetails
+      item={item}
+      key={item.id}
+      className={selected ? "border-red-500 border" : ""}
+      onClick={(e) => {
+        e.preventDefault();
+        item.onSelectedChange(selected ? null : item);
+      }}
+    >
+      <ResultItemInner {...item} />
+    </ItemWithHoverDetails>
   );
 };
 
@@ -390,7 +392,7 @@ const ComponentSelector = ({
   } satisfies FilteringQuery;
   const { data } = useItemsSearch(baseQuery);
   const facetResult = useFacets(baseQuery);
-  
+
   const [open, setOpen] = useState(true);
   return (
     <div className="border border-gray-400 rounded-md p-4 mb-4">
@@ -421,14 +423,12 @@ const ComponentSelector = ({
             )}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 m-6">
-            {data?.items.map((item, idx) => (
+            {data?.items.map((item) => (
               <ToggleResultItem
                 key={item.id}
                 {...item}
                 selected={selectedIds.includes(Number(item.id))}
-                position={idx}
                 onSelectedChange={(data) => {
-                  
                   if (data) {
                     setOpen(false);
                   }
@@ -443,11 +443,43 @@ const ComponentSelector = ({
   );
 };
 
-const wattSteps = [
-  100, 200, 300, 400, 500, 600, 700, 750, 800, 850, 900, 1000, 1200,
+const wattSteps = [400, 500, 600, 700, 750, 800, 850, 900, 1000, 1200];
+const uselessIds = [
+  31158, 11, 9, 10, 12, 13, 14, 15, 31158, 1, 2, 3, 4, 5, 6, 7, 30, 31, 32, 33,
+  24, 35, 23, 36, 32188,
 ];
 
 type ItemWithComponentId = Item & { componentId: number };
+
+export const ItemWithHoverDetails = (
+  {onClick,children,item, className}: PropsWithChildren<{ item: Item, onClick?: React.MouseEventHandler<HTMLDivElement>, className?: string }>
+) => {
+  const {data} = useFacetList();
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={cm(className, "relative")}
+    >
+      {children}
+      {hovered && data != null ? (
+        <div className="absolute top-full left-0 bg-white shadow-xl border border-gray-300 p-6 z-10 max-h-80 overflow-auto">
+          <ul>
+            {Object.entries(item.values)
+              .filter(([key]) => !uselessIds.includes(Number(key)))
+              .map(([key, value], i) => (
+                <li key={`prp-${i}`}>
+                  {data.find((f) => f.id === Number(key))?.name}: <b className="font-bold" title={key}>{value}</b>{" "}
+                </li>
+              ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+};
 
 export const Builder = () => {
   const { data } = useFacetList();
@@ -483,7 +515,11 @@ export const Builder = () => {
     const wattValues = wattSteps
       .filter((d) => d >= neededPsuWatt)
       .map((d) => `${d}W`);
-    const wattQuery = { to: 6, id: 31986, value: wattValues };
+    const wattQuery = {
+      to: 6,
+      id: 31986,
+      value: neededPsuWatt < 500 ? "!nil" : wattValues,
+    };
     return [
       wattQuery,
       ...selectedItems
@@ -539,16 +575,17 @@ export const Builder = () => {
       <div>
         <h2>Selected items</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {selectedItems.map((item, i) => (
-            <ResultItem
+          {selectedItems.map((item) => (
+            <ItemWithHoverDetails
               key={item.id}
-              {...item}
-              position={i}
+              item={item}
               onClick={(e) => {
                 e.preventDefault();
                 setSelectedItems(selectedItems.filter((d) => d.id !== item.id));
               }}
-            />
+            >
+              <ResultItemInner {...item} />
+            </ItemWithHoverDetails>
           ))}
         </div>
         <h2>
@@ -562,7 +599,7 @@ export const Builder = () => {
           />
         </h2>
         <ul>
-          {properties.map((d,i) => (
+          {properties.map((d, i) => (
             <li key={`${d.key}-${i}`}>
               {d.title}: {d.value}
             </li>

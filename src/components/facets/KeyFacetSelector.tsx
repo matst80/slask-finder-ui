@@ -1,7 +1,7 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { KeyFacet } from "../../types";
-import { isSelectedValue, useFacetSelectors } from "./Facets";
+import { isSelectedValue, useFacetSelectors } from "./facet-context"
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
@@ -57,31 +57,33 @@ export const KeyFacetSelector = ({
               onChange={(e) => setFilter(e.target.value)}
             />
           )}
-          {toShow.map(({ value, count }) => (
-            <label
-              key={value}
-              className="flex items-center line-clamp-1 overflow-ellipsis justify-between p-1 text-sm"
-            >
-              <div>
-                <input
-                  type="checkbox"
-                  id={value}
-                  value={value}
-                  checked={isSelectedValue(selected, value)}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    if (checked) {
-                      addFilter(value);
-                    } else {
-                      removeFilter(value);
-                    }
-                  }}
-                />
-                <span className="ml-2 text-gray-700">{value}</span>
-              </div>
-              <em className="text-xs text-gray-600">({count})</em>
-            </label>
-          ))}
+          {toShow.map(({ value, count }) => {
+            const checked = isSelectedValue(selected, value);
+            return (
+              <label
+                key={value}
+                className="flex items-center line-clamp-1 overflow-ellipsis justify-between p-1 text-sm"
+              >
+                <div>
+                  <input
+                    type="checkbox"
+                    id={value}
+                    value={value}
+                    checked={checked}
+                    onChange={() => {                      
+                      if (!checked) {
+                        addFilter(value);
+                      } else {
+                        removeFilter(value);
+                      }
+                    }}
+                  />
+                  <span className="ml-2 text-gray-700">{value}</span>
+                </div>
+                <em className="text-xs text-gray-600">({count})</em>
+              </label>
+            );
+          })}
 
           {allSorted.length > 14 && (
             <button
