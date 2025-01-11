@@ -1,6 +1,6 @@
 import { PropsWithChildren, useMemo, useState } from "react";
 import { useFacetList, useFacets, useItemsSearch } from "../hooks/searchHooks";
-import { FilteringQuery, Item, ItemsQuery, ItemValues } from "../types";
+import { FilteringQuery, Item, ItemsQuery, ItemValues, Sort } from "../types";
 import { ResultItemInner } from "./ResultItem";
 import { cm, isDefined } from "../utils";
 import { PriceValue } from "./Price";
@@ -373,7 +373,7 @@ const ComponentSelector = ({
   const [userFiler, setUserFilter] = useState<
     Pick<FilteringQuery, "range" | "string"|"query">
   >({ range: [], string: [] });
-  const [sort, setSort] = useState<"popular" | "price" | "price-desc">("popular");
+  const [sort, setSort] = useState<Sort>("popular");
   const baseQuery = {
     ...filter,
     range: [
