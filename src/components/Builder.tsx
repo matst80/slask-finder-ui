@@ -325,7 +325,7 @@ const ToggleResultItem = ({
     <ItemWithHoverDetails
       item={item}
       key={item.id}
-      className={selected ? "border-red-500 border" : ""}
+      className={cm(selected ? "border-gray-300 border" : "","rounded-md")}
       onClick={(e) => {
         e.preventDefault();
         item.onSelectedChange(selected ? null : item);
@@ -371,8 +371,9 @@ const ComponentSelector = ({
   onSelectedChange,
 }: ComponentSelectorProps) => {
   const [userFiler, setUserFilter] = useState<
-    Pick<FilteringQuery, "range" | "string">
+    Pick<FilteringQuery, "range" | "string"|"query">
   >({ range: [], string: [] });
+  const [sort, setSort] = useState<"popular" | "price" | "price-desc">("popular");
   const baseQuery = {
     ...filter,
     range: [
@@ -382,7 +383,7 @@ const ComponentSelector = ({
       ...(filter.range ?? []),
       ...(userFiler.range ?? []),
     ],
-
+    query: userFiler.query,
     string: [
       //{id:3,value:"!0"},
       ...otherFilters.filter(isStringFilter),
@@ -390,18 +391,18 @@ const ComponentSelector = ({
       ...(userFiler.string ?? []),
     ],
   } satisfies FilteringQuery;
-  const { data } = useItemsSearch(baseQuery);
+  const { data } = useItemsSearch({...baseQuery, sort});
   const facetResult = useFacets(baseQuery);
 
   const [open, setOpen] = useState(true);
   return (
-    <div className="border border-gray-400 rounded-md p-4 mb-4">
+    <div className="border-b border-gray-200 p-4 mb-4">
       <button className="text-xl" onClick={() => setOpen((p) => !p)}>
         {title} ({data?.totalHits ?? "Loading..."}){" "}
         <span>{open ? "▲" : "▼"}</span>
       </button>
       {open && (
-        <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-6">
           <div className="hidden md:block">
             {facetResult.data == null ? (
               <div>Loading...</div>
@@ -422,20 +423,44 @@ const ComponentSelector = ({
               />
             )}
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 m-6">
-            {data?.items.map((item) => (
-              <ToggleResultItem
-                key={item.id}
-                {...item}
-                selected={selectedIds.includes(Number(item.id))}
-                onSelectedChange={(data) => {
-                  if (data) {
-                    setOpen(false);
-                  }
-                  onSelectedChange(data);
-                }}
+          <div>
+            <div className="flex gap-4">
+              <input
+                type="text"
+                placeholder="Sök..."
+                value={userFiler.query}
+                onChange={(e) => setUserFilter({ ...userFiler, query: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded-md flex-1"
               />
-            ))}
+              <select
+                      value={sort}
+                      onChange={(e) => setSort(e.target.value as Sort)}
+                      className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="popular">Popularitet</option>
+                      <option value="price">Pris</option>
+                      <option value="price_desc">Pris fallande</option>
+                      <option value="updated">Senast uppdaterat</option>
+                      <option value="updated_desc">Senast uppdaterat (fallande)</option>
+                      <option value="created">Nyheter</option>
+                      <option value="created_desc">Älsta</option>
+                    </select>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 m-6">
+              {data?.items.map((item) => (
+                <ToggleResultItem
+                  key={item.id}
+                  {...item}
+                  selected={selectedIds.includes(Number(item.id))}
+                  onSelectedChange={(data) => {
+                    if (data) {
+                      setOpen(false);
+                    }
+                    onSelectedChange(data);
+                  }}
+                />
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -465,7 +490,7 @@ export const ItemWithHoverDetails = (
     >
       {children}
       {hovered && data != null ? (
-        <div className="absolute top-full left-0 bg-white shadow-xl border border-gray-300 p-6 z-10 max-h-80 overflow-auto">
+        <div className="absolute top-full left-0 bg-white shadow-xl border border-gray-100 p-6 z-10 max-h-80 overflow-auto">
           <ul>
             {Object.entries(item.values)
               .filter(([key]) => !uselessIds.includes(Number(key)))
