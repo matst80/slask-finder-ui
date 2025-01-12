@@ -315,7 +315,85 @@ const components: Component[] = [
       ],
     },
   },
+  {
+    title: "CPU kylare",
+    id: 8,
+    filter: {
+      range: [],
+      sort: "popular",
+      page: 0,
+      pageSize: 40,
+      stock: [],
+      string: [
+        {
+          id: 31158,
+          value: ["CPU luftkylning", "Vattenkylning"],
+        },
+      ],
+    },
+    filtersToApply: [],
+  },
+  {
+    title: "Extra SSD Lagring",
+    id: 9,
+    filter: {
+      range: [],
+      sort: "popular",
+      page: 0,
+      pageSize: 40,
+      stock: [],
+      string: [
+        {
+          id: 31158,
+          value: "Intern SSD",
+        },
+        {
+          id: 30714,
+          value: "SATA 3.0",
+        },
+      ],
+    },
+    filtersToApply: [],
+  },
+  {
+    title: "Tangentbord",
+    id: 10,
+    filter: {
+      range: [],
+      sort: "popular",
+      page: 0,
+      pageSize: 40,
+      stock: [],
+      string: [
+        {
+          id: 31158,
+          value: "Tangentbord",
+        },
+      ],
+    },
+    filtersToApply: [],
+  },
+  {
+    title: "Mus",
+    id: 11,
+    filter: {
+      range: [],
+      sort: "popular",
+      page: 0,
+      pageSize: 40,
+      stock: [],
+      string: [
+        {
+          id: 31158,
+          value: "Mus",
+        },
+      ],
+    },
+    filtersToApply: [],
+  },
 ];
+
+
 
 const ToggleResultItem = ({
   selected,
@@ -325,7 +403,7 @@ const ToggleResultItem = ({
     <ItemWithHoverDetails
       item={item}
       key={item.id}
-      className={cm(selected ? "border-gray-300 border" : "","rounded-md")}
+      className={cm(selected ? "border-gray-300 border" : "", "rounded-md")}
       onClick={(e) => {
         e.preventDefault();
         item.onSelectedChange(selected ? null : item);
@@ -371,7 +449,7 @@ const ComponentSelector = ({
   onSelectedChange,
 }: ComponentSelectorProps) => {
   const [userFiler, setUserFilter] = useState<
-    Pick<FilteringQuery, "range" | "string"|"query">
+    Pick<FilteringQuery, "range" | "string" | "query">
   >({ range: [], string: [] });
   const [sort, setSort] = useState<Sort>("popular");
   const baseQuery = {
@@ -391,7 +469,7 @@ const ComponentSelector = ({
       ...(userFiler.string ?? []),
     ],
   } satisfies FilteringQuery;
-  const { data } = useItemsSearch({...baseQuery, sort});
+  const { data } = useItemsSearch({ ...baseQuery, sort });
   const facetResult = useFacets(baseQuery);
 
   const [open, setOpen] = useState(true);
@@ -429,22 +507,26 @@ const ComponentSelector = ({
                 type="text"
                 placeholder="Sök..."
                 value={userFiler.query}
-                onChange={(e) => setUserFilter({ ...userFiler, query: e.target.value })}
+                onChange={(e) =>
+                  setUserFilter({ ...userFiler, query: e.target.value })
+                }
                 className="w-full p-2 border border-gray-300 rounded-md flex-1"
               />
               <select
-                      value={sort}
-                      onChange={(e) => setSort(e.target.value as Sort)}
-                      className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="popular">Popularitet</option>
-                      <option value="price">Pris</option>
-                      <option value="price_desc">Pris fallande</option>
-                      <option value="updated">Senast uppdaterat</option>
-                      <option value="updated_desc">Senast uppdaterat (fallande)</option>
-                      <option value="created">Nyheter</option>
-                      <option value="created_desc">Älsta</option>
-                    </select>
+                value={sort}
+                onChange={(e) => setSort(e.target.value as Sort)}
+                className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="popular">Popularitet</option>
+                <option value="price">Pris</option>
+                <option value="price_desc">Pris fallande</option>
+                <option value="updated">Senast uppdaterat</option>
+                <option value="updated_desc">
+                  Senast uppdaterat (fallande)
+                </option>
+                <option value="created">Nyheter</option>
+                <option value="created_desc">Älsta</option>
+              </select>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 m-6">
               {data?.items.map((item) => (
@@ -476,10 +558,17 @@ const uselessIds = [
 
 type ItemWithComponentId = Item & { componentId: number };
 
-export const ItemWithHoverDetails = (
-  {onClick,children,item, className}: PropsWithChildren<{ item: Item, onClick?: React.MouseEventHandler<HTMLDivElement>, className?: string }>
-) => {
-  const {data} = useFacetList();
+export const ItemWithHoverDetails = ({
+  onClick,
+  children,
+  item,
+  className,
+}: PropsWithChildren<{
+  item: Item;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  className?: string;
+}>) => {
+  const { data } = useFacetList();
   const [hovered, setHovered] = useState(false);
   return (
     <div
@@ -496,7 +585,10 @@ export const ItemWithHoverDetails = (
               .filter(([key]) => !uselessIds.includes(Number(key)))
               .map(([key, value], i) => (
                 <li key={`prp-${i}`}>
-                  {data.find((f) => f.id === Number(key))?.name}: <b className="font-bold" title={key}>{value}</b>{" "}
+                  {data.find((f) => f.id === Number(key))?.name}:{" "}
+                  <b className="font-bold" title={key}>
+                    {value}
+                  </b>{" "}
                 </li>
               ))}
           </ul>
