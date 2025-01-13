@@ -355,45 +355,43 @@ const components: Component[] = [
     },
     filtersToApply: [],
   },
-  {
-    title: "Tangentbord",
-    id: 10,
-    filter: {
-      range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 40,
-      stock: [],
-      string: [
-        {
-          id: 31158,
-          value: "Tangentbord",
-        },
-      ],
-    },
-    filtersToApply: [],
-  },
-  {
-    title: "Mus",
-    id: 11,
-    filter: {
-      range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 40,
-      stock: [],
-      string: [
-        {
-          id: 31158,
-          value: "Mus",
-        },
-      ],
-    },
-    filtersToApply: [],
-  },
+  // {
+  //   title: "Tangentbord",
+  //   id: 10,
+  //   filter: {
+  //     range: [],
+  //     sort: "popular",
+  //     page: 0,
+  //     pageSize: 40,
+  //     stock: [],
+  //     string: [
+  //       {
+  //         id: 31158,
+  //         value: "Tangentbord",
+  //       },
+  //     ],
+  //   },
+  //   filtersToApply: [],
+  // },
+  // {
+  //   title: "Mus",
+  //   id: 11,
+  //   filter: {
+  //     range: [],
+  //     sort: "popular",
+  //     page: 0,
+  //     pageSize: 40,
+  //     stock: [],
+  //     string: [
+  //       {
+  //         id: 31158,
+  //         value: "Mus",
+  //       },
+  //     ],
+  //   },
+  //   filtersToApply: [],
+  // },
 ];
-
-
 
 const ToggleResultItem = ({
   selected,
