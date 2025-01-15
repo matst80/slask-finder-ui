@@ -18,6 +18,7 @@ type AdditionalFilter = {
 type Component = {
   title: string;
   id: number;
+  validator?: (values: ItemValues) => boolean;
   filtersToApply: AdditionalFilter[];
   filter: ItemsQuery;
 };
@@ -40,6 +41,9 @@ const components: Component[] = [
     title: "CPU",
     id: 1,
     filtersToApply: [{ id: 32103, to: 2 }],
+    validator: (values) => {
+      return values[32103] != null;
+    },
     filter: {
       range: [],
       sort: "popular",
@@ -61,6 +65,15 @@ const components: Component[] = [
   {
     title: "Moderkort",
     id: 2,
+    validator: (values) => {
+      return (
+        values[32103] != null &&
+        values[35921] != null &&
+        values[30857] != null &&
+        values[30857] != "X" &&
+        values[35921] != "X"
+      );
+    },
     filtersToApply: [
       { id: 32103, to: 1 }, // cpu socket
       { id: 35921, to: 3 }, // ram type
@@ -90,7 +103,6 @@ const components: Component[] = [
         id: 30552,
         to: 7,
         converter: (values) => {
-          console.log(values);
           const formFactor = values[30552];
           const allowed = [];
           if (typeof formFactor === "string") {
@@ -133,6 +145,14 @@ const components: Component[] = [
       { id: 30857, to: 2 },
       { id: 35921, to: 2 },
     ],
+    validator: (values) => {
+      return (
+        values[35921] != null &&
+        values[35921] != "X" &&
+        values[30857] != null &&
+        values[30857] != "X"
+      );
+    },
     filter: {
       range: [],
       sort: "popular",
@@ -395,14 +415,23 @@ const components: Component[] = [
 
 const ToggleResultItem = ({
   selected,
+  isValid,
   ...item
-}: Item & { selected: boolean } & OnSelectedItem) => {
+}: Item & { selected: boolean; isValid: boolean } & OnSelectedItem) => {
   return (
     <ItemWithHoverDetails
       item={item}
       key={item.id}
-      className={cm(selected ? "border-gray-300 border" : "", "rounded-md")}
+      className={cm(
+        isValid
+          ? selected
+            ? "border-gray-300 border"
+            : ""
+          : "border-red-500 border",
+        "rounded-md"
+      )}
       onClick={(e) => {
+        if (!isValid) return;
         e.preventDefault();
         item.onSelectedChange(selected ? null : item);
       }}
@@ -444,6 +473,7 @@ const ComponentSelector = ({
   filter,
   otherFilters,
   selectedIds,
+  validator,
   onSelectedChange,
 }: ComponentSelectorProps) => {
   const [userFiler, setUserFilter] = useState<
@@ -531,6 +561,7 @@ const ComponentSelector = ({
                 <ToggleResultItem
                   key={item.id}
                   {...item}
+                  isValid={validator != null ? validator(item.values) : true}
                   selected={selectedIds.includes(Number(item.id))}
                   onSelectedChange={(data) => {
                     if (data) {
