@@ -40,8 +40,25 @@ const components: Component[] = [
   {
     title: "CPU",
     id: 1,
-    filtersToApply: [{ id: 32103, to: 2 }],
+    filtersToApply: [
+      { id: 32103, to: 2 },
+      // add chipset, when we get all chipsets!
+      {
+        // min memory speed
+        id: 35980,
+        to: 3,
+        converter: (value) => {
+          const min = Number(value[35980]);
+          if (isNaN(min)) return [];
+          return [
+            { id: 31191, value: { min: Number(value[35980]), max: 999999 } },
+          ];
+        },
+      },
+    ],
+    
     validator: (values) => {
+      if (isNaN(Number(values[35980]))) return false;
       return values[32103] != null;
     },
     filter: {
@@ -76,8 +93,10 @@ const components: Component[] = [
     },
     filtersToApply: [
       { id: 32103, to: 1 }, // cpu socket
+      // add chipset, when we get all chipsets!
       { id: 35921, to: 3 }, // ram type
       { id: 30857, to: 3 }, // ram pins
+      // maybe add max ram speed or in ui!
       {
         id: 36249,
         to: 4,
@@ -86,14 +105,17 @@ const components: Component[] = [
           const m2Slots = Number(values[36245]);
           const ret = [];
           if (m2Slots > 0) {
+            // const size = values[36210]; // max size
             const gen = values[36211];
             if (gen != null && typeof gen === "string") {
               const genNr = Number(gen.split(".")[0]);
+              // add max size!!!!
               const values = [];
               for (let i = 1; i <= genNr; i++) {
                 values.push(`${i}.0`);
               }
               ret.push({ id: 36249, value: values });
+              //ret.push({ id: /* to be added */, value: {min:0, max:Number(size)} });
             }
           }
           return ret;
@@ -119,6 +141,7 @@ const components: Component[] = [
           return [];
         },
       },
+      // number of ram slots / max ram per slot?
     ],
     filter: {
       range: [],
