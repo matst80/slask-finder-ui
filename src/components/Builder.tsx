@@ -18,6 +18,7 @@ type AdditionalFilter = {
 type Component = {
   title: string;
   id: number;
+  validator?: (values: ItemValues) => boolean;
   filtersToApply: AdditionalFilter[];
   filter: ItemsQuery;
 };
@@ -39,7 +40,27 @@ const components: Component[] = [
   {
     title: "CPU",
     id: 1,
-    filtersToApply: [{ id: 32103, to: 2 }],
+    filtersToApply: [
+      { id: 32103, to: 2 },
+      // add chipset, when we get all chipsets!
+      {
+        // min memory speed
+        id: 35980,
+        to: 3,
+        converter: (value) => {
+          const min = Number(value[35980]);
+          if (isNaN(min)) return [];
+          return [
+            { id: 31191, value: { min: Number(value[35980]), max: 999999 } },
+          ];
+        },
+      },
+    ],
+    
+    validator: (values) => {
+      if (isNaN(Number(values[35980]))) return false;
+      return values[32103] != null;
+    },
     filter: {
       range: [],
       sort: "popular",
@@ -61,10 +82,21 @@ const components: Component[] = [
   {
     title: "Moderkort",
     id: 2,
+    validator: (values) => {
+      return (
+        values[32103] != null &&
+        values[35921] != null &&
+        values[30857] != null &&
+        values[30857] != "X" &&
+        values[35921] != "X"
+      );
+    },
     filtersToApply: [
       { id: 32103, to: 1 }, // cpu socket
+      // add chipset, when we get all chipsets!
       { id: 35921, to: 3 }, // ram type
       { id: 30857, to: 3 }, // ram pins
+      // maybe add max ram speed or in ui!
       {
         id: 36249,
         to: 4,
@@ -73,14 +105,17 @@ const components: Component[] = [
           const m2Slots = Number(values[36245]);
           const ret = [];
           if (m2Slots > 0) {
+            // const size = values[36210]; // max size
             const gen = values[36211];
             if (gen != null && typeof gen === "string") {
               const genNr = Number(gen.split(".")[0]);
+              // add max size!!!!
               const values = [];
               for (let i = 1; i <= genNr; i++) {
                 values.push(`${i}.0`);
               }
               ret.push({ id: 36249, value: values });
+              //ret.push({ id: /* to be added */, value: {min:0, max:Number(size)} });
             }
           }
           return ret;
@@ -90,7 +125,6 @@ const components: Component[] = [
         id: 30552,
         to: 7,
         converter: (values) => {
-          console.log(values);
           const formFactor = values[30552];
           const allowed = [];
           if (typeof formFactor === "string") {
@@ -107,6 +141,7 @@ const components: Component[] = [
           return [];
         },
       },
+      // number of ram slots / max ram per slot?
     ],
     filter: {
       range: [],
@@ -133,6 +168,14 @@ const components: Component[] = [
       { id: 30857, to: 2 },
       { id: 35921, to: 2 },
     ],
+    validator: (values) => {
+      return (
+        values[35921] != null &&
+        values[35921] != "X" &&
+        values[30857] != null &&
+        values[30857] != "X"
+      );
+    },
     filter: {
       range: [],
       sort: "popular",
@@ -355,54 +398,63 @@ const components: Component[] = [
     },
     filtersToApply: [],
   },
-  {
-    title: "Tangentbord",
-    id: 10,
-    filter: {
-      range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 40,
-      stock: [],
-      string: [
-        {
-          id: 31158,
-          value: "Tangentbord",
-        },
-      ],
-    },
-    filtersToApply: [],
-  },
-  {
-    title: "Mus",
-    id: 11,
-    filter: {
-      range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 40,
-      stock: [],
-      string: [
-        {
-          id: 31158,
-          value: "Mus",
-        },
-      ],
-    },
-    filtersToApply: [],
-  },
+  // {
+  //   title: "Tangentbord",
+  //   id: 10,
+  //   filter: {
+  //     range: [],
+  //     sort: "popular",
+  //     page: 0,
+  //     pageSize: 40,
+  //     stock: [],
+  //     string: [
+  //       {
+  //         id: 31158,
+  //         value: "Tangentbord",
+  //       },
+  //     ],
+  //   },
+  //   filtersToApply: [],
+  // },
+  // {
+  //   title: "Mus",
+  //   id: 11,
+  //   filter: {
+  //     range: [],
+  //     sort: "popular",
+  //     page: 0,
+  //     pageSize: 40,
+  //     stock: [],
+  //     string: [
+  //       {
+  //         id: 31158,
+  //         value: "Mus",
+  //       },
+  //     ],
+  //   },
+  //   filtersToApply: [],
+  // },
 ];
 
 const ToggleResultItem = ({
   selected,
+  isValid,
   ...item
-}: Item & { selected: boolean } & OnSelectedItem) => {
+}: Item & { selected: boolean; isValid: boolean } & OnSelectedItem) => {
   return (
     <ItemWithHoverDetails
       item={item}
       key={item.id}
-      className={cm(selected ? "border-gray-300 border" : "", "rounded-md")}
+      className={cm(
+        isValid
+          ? selected
+            ? "border-gray-300 border"
+            : ""
+          : "border-red-500 border",
+        "rounded-md"
+      )}
       onClick={(e) => {
+        if (!isValid) return;
         e.preventDefault();
         item.onSelectedChange(selected ? null : item);
       }}
@@ -444,6 +496,7 @@ const ComponentSelector = ({
   filter,
   otherFilters,
   selectedIds,
+  validator,
   onSelectedChange,
 }: ComponentSelectorProps) => {
   const [userFiler, setUserFilter] = useState<
@@ -531,6 +584,7 @@ const ComponentSelector = ({
                 <ToggleResultItem
                   key={item.id}
                   {...item}
+                  isValid={validator != null ? validator(item.values) : true}
                   selected={selectedIds.includes(Number(item.id))}
                   onSelectedChange={(data) => {
                     if (data) {
