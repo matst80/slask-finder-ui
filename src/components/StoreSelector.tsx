@@ -1,12 +1,12 @@
 import { MapPin } from "lucide-react";
 import { stores } from "../datalayer/stores";
 import { useMemo } from "react";
-import { useQueryHelpers } from "../hooks/searchHooks";
+import { useQuery } from "../hooks/QueryProvider";
 
 export const SelectedStore = () => {
   const {
     query: { stock },
-  } = useQueryHelpers();
+  } = useQuery();
 
   const locationId = stock?.[0];
 

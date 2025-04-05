@@ -1,13 +1,13 @@
 import { ArrowUpDown } from "lucide-react";
 
 import { Sort } from "../types";
-import { useQueryHelpers } from "../hooks/searchHooks";
+import { useQuery } from "../hooks/QueryProvider";
 
 export const Sorting = () => {
   const {
     query: { sort },
     setSort,
-  } = useQueryHelpers();
+  } = useQuery();
   return (
     <>
       <select

@@ -1,20 +1,15 @@
 import { useState } from "react";
 import { getItemIds, updateCategories } from "../datalayer/api";
 import { useAdmin } from "../hooks/appState";
-import {
-  useFacetList,
-  useHashQuery,
-  useHashResultItems,
-} from "../hooks/searchHooks";
+
 import { Sorting } from "./Sorting";
 import { SelectedStore } from "./StoreSelector";
 import { X } from "lucide-react";
 import { FilterQuery } from "./FilterQuery";
+import { useQuery } from "../hooks/QueryProvider";
 
 const EditCategories = ({ onClose }: { onClose: () => void }) => {
-  const { data } = useFacetList();
-
-  const { query } = useHashQuery();
+  const { facets, query } = useQuery();
 
   const updateItemCategories = (updates: { id: number; value: string }[]) => {
     return getItemIds(query).then((ids) => {
@@ -44,7 +39,7 @@ const EditCategories = ({ onClose }: { onClose: () => void }) => {
         <X size={30} />
       </button>
       <ul className="flex flex-col gap-2">
-        {data
+        {facets
           ?.filter((d) => d.type === "virtual")
           .map((category) => (
             <li key={category.id} className="flex">
@@ -70,7 +65,7 @@ export const ResultHeader = () => {
   // const {
   //   query: { query },
   // } = useHashQuery();
-  const { data } = useHashResultItems();
+  const { totalHits } = useQuery();
   const [open, setOpen] = useState(false);
   // const hasQuery = Boolean(query?.length);
 
@@ -78,7 +73,7 @@ export const ResultHeader = () => {
     <>
       <header className="flex justify-between gap-2 items-center mb-2">
         <h1 className="md:text-2xl font-bold">
-          Produkter ({data?.totalHits ?? "~"})
+          Produkter ({totalHits ?? "~"})
         </h1>
         {admin && <button onClick={() => setOpen(true)}>Update</button>}
         <SelectedStore />
@@ -86,7 +81,7 @@ export const ResultHeader = () => {
           <Sorting />
         </div>
       </header>
-      <FilterQuery show={(data?.totalHits ?? 0) > 40} />
+      <FilterQuery show={(totalHits ?? 0) > 40} />
       {open && admin && <EditCategories onClose={() => setOpen(false)} />}
     </>
   );

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useQueryHelpers } from "../hooks/searchHooks";
+
 import { Filter } from "lucide-react";
 import { cm, useDebounce } from "../utils";
+import { useQuery } from "../hooks/QueryProvider";
 
 type Props = {
   show: boolean;
@@ -11,11 +12,11 @@ export const FilterQuery = ({ show }: Props) => {
   const {
     query: { query },
     setTerm,
-  } = useQueryHelpers();
+  } = useQuery();
 
   const [value, setValue] = useState(query ?? "");
   const debouncedSet = useDebounce(setTerm, 500);
- 
+
   const doShow = show || !!query?.length;
   return (
     <div
@@ -41,5 +42,3 @@ export const FilterQuery = ({ show }: Props) => {
     </div>
   );
 };
-
-

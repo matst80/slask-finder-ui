@@ -1,40 +1,33 @@
-import {
-  useCallback,
-  useMemo,
-} from "react";
+import { useCallback } from "react";
 
 import { FilteringQuery } from "../../types";
 import { LoaderCircle } from "lucide-react";
 import { stores } from "../../datalayer/stores";
-import {
-  useHashFacets,
-  useHashQuery,
-  useQueryHelpers,
-} from "../../hooks/searchHooks";
-import { byPriority } from "../../utils";
 
-import { FacetList } from "./facet-context"
+import { FacetList } from "./facet-context";
+import { useQuery } from "../../hooks/QueryProvider";
 
 export const Facets = () => {
-  const { data: results, isLoading } = useHashFacets();
-  const { setQuery } = useHashQuery();
   const {
-    query: { stock },
+    facets,
+    isLoadingFacets,
+    setQuery,
     setStock,
-  } = useQueryHelpers();
+    query: { stock },
+  } = useQuery();
 
-  const allFacets = useMemo(() => (results ?? []).sort(byPriority), [results]);
-  const hasFacets = allFacets.length > 0;
+  //const allFacets = useMemo(() => (results ?? []).sort(byPriority), [results]);
+  const hasFacets = facets.length > 0;
   const updateFilters = useCallback(
     (data: Pick<FilteringQuery, "range" | "string">) => {
       setQuery((prev) => ({
         ...prev,
-        ...data
+        ...data,
       }));
     },
     [setQuery]
   );
-  if (isLoading && !hasFacets) {
+  if (isLoadingFacets && !hasFacets) {
     return (
       <aside className="w-full md:w-72 animate-pulse">
         <h2 className="text-lg font-semibold mb-4">Filter</h2>
@@ -45,11 +38,9 @@ export const Facets = () => {
     );
   }
 
-  
-
   return (
     hasFacets && (
-      <FacetList facets={allFacets} onFilterChanged={updateFilters}>
+      <FacetList onFilterChanged={updateFilters}>
         <div className="mb-4">
           <h3 className="font-medium mb-2">Select Store</h3>
           <select
@@ -70,5 +61,4 @@ export const Facets = () => {
       </FacetList>
     )
   );
-  
 };

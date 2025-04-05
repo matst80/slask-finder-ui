@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useCategories } from "../hooks/categoryHooks";
 import { ResultItem } from "./ResultItem";
-import { useHashQuery, useHashResultItems } from "../hooks/searchHooks";
 import { Impression, trackImpression } from "../datalayer/beacons";
 import { ButtonLink } from "./ui/button";
 import { byName, CategoryItem } from "./CategoryItem";
+import { useQuery } from "../hooks/QueryProvider";
 
 const searchList = [
   {
@@ -26,16 +26,14 @@ const NoResults = () => {
   return (
     <div>
       <ul className="mt-2">
-        {data
-          ?.sort(byName)
-          .map((category, idx) => (
-            <CategoryItem
-              key={category.value}
-              {...category}
-              level={1}
-              defaultOpen={idx < 3}
-            />
-          ))}
+        {data?.sort(byName).map((category, idx) => (
+          <CategoryItem
+            key={category.value}
+            {...category}
+            level={1}
+            defaultOpen={idx < 3}
+          />
+        ))}
       </ul>
       <div className="flex gap-4 mt-6">
         {searchList.map(({ title, href }) => (
@@ -48,10 +46,11 @@ const NoResults = () => {
 
 export const SearchResultList = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const { data: results, isLoading: loadingItems } = useHashResultItems();
   const {
-    query: { page, pageSize, query },
-  } = useHashQuery();
+    isLoading,
+    hits,
+    query: { page, pageSize },
+  } = useQuery();
 
   useEffect(() => {
     const impressions = new Set<number>();
@@ -77,23 +76,24 @@ export const SearchResultList = () => {
             toPush = [];
           }
         },
-        { threshold: 1 },
+        { threshold: 1 }
       );
-      ref.current.querySelectorAll(".result-item").forEach((item) => {
-        observer.observe(item);
+      requestAnimationFrame(() => {
+        ref.current?.querySelectorAll(".result-item").forEach((item) => {
+          observer.observe(item);
+        });
       });
+
       return () => observer.disconnect();
     }
-  }, [results, ref]);
-
-  const items = results?.items ?? [];
+  }, [hits, ref]);
 
   const start = (page ?? 0) * (pageSize ?? 40);
-  if (loadingItems) {
+  if (isLoading && hits.length < 1) {
     return <div>Loading...</div>;
   }
 
-  if ((!items.length && (query == null || query.length < 1))) {
+  if (!hits.length && (hits == null || hits.length < 1)) {
     return <NoResults />;
   }
   return (
@@ -101,7 +101,7 @@ export const SearchResultList = () => {
       ref={ref}
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
     >
-      {items?.map((item, idx) => (
+      {hits?.map((item, idx) => (
         <ResultItem key={item.id} {...item} position={start + idx} />
       ))}
     </div>
@@ -113,11 +113,9 @@ export const CategoryList = () => {
   return (
     <div>
       <ul>
-        {data
-          ?.sort(byName)
-          .map((category) => (
-            <CategoryItem key={category.value} {...category} level={1} />
-          ))}
+        {data?.sort(byName).map((category) => (
+          <CategoryItem key={category.value} {...category} level={1} />
+        ))}
       </ul>
     </div>
   );

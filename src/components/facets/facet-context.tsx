@@ -19,11 +19,12 @@ import {
   FloatFacetSelector,
   IntegerFacetSelector,
 } from "./NumericFacetSelectors";
+import { useQuery } from "../../hooks/QueryProvider";
 
 type FacetContext = {
   facets: Facet[];
-  query: FacetSelection;
-  setQuery: React.Dispatch<React.SetStateAction<FacetSelection>>;
+  // query: FacetSelection;
+  // setQuery: React.Dispatch<React.SetStateAction<FacetSelection>>;
   addFilter: (id: number, value: SingleFacetValue) => void;
   removeFilter: (id: number, value?: SingleFacetValue) => void;
 };
@@ -111,8 +112,8 @@ const facetsToQuery = (facets: Facets): FacetSelection => {
     },
     { range: [], string: [] }
   );
-	console.log("Facets to query",result)
-	return result;
+  console.log("Facets to query", result);
+  return result;
 };
 
 type FacetType = "string" | "range";
@@ -126,21 +127,19 @@ const isArrayValue = (value: string | string[]): value is string[] => {
 };
 
 export const FacetList = ({
-  facets,
   facetsToHide,
   children,
   onFilterChanged,
 }: PropsWithChildren<{
-  facets: Facet[];
   facetsToHide?: number[];
   onFilterChanged: (data: FacetSelection) => void;
 }>) => {
-  const [query, setQuery] = useState<FacetSelection>(facetsToQuery(facets));
+  const { facets, setQuery } = useQuery();
 
   const addFilter = useCallback(
     (id: number, value: SingleFacetValue) => {
       const facet = facets.find((f) => f.id === id);
-			
+
       if (facet == null) {
         return;
       }
@@ -152,7 +151,7 @@ export const FacetList = ({
             { id, ...value },
           ];
           onFilterChanged(prev);
-          return {...prev};
+          return { ...prev };
         }
         if (type === "string" && isStringValue(value)) {
           const existing = prev.string?.find((r) => r.id === id);
@@ -162,7 +161,7 @@ export const FacetList = ({
               { id, value },
             ];
             onFilterChanged(prev);
-            return {...prev};
+            return { ...prev };
           }
           if (typeof existing.value === "string" && typeof value === "string") {
             existing.value = [existing.value, value];
@@ -177,10 +176,10 @@ export const FacetList = ({
           }
           onFilterChanged(prev);
         }
-        return {...prev};
+        return { ...prev };
       });
     },
-    [facets, onFilterChanged]
+    [facets, onFilterChanged, setQuery]
   );
   const removeFilter = useCallback(
     (id: number, value?: SingleFacetValue) => {
@@ -197,7 +196,7 @@ export const FacetList = ({
             prev.string = prev.string?.filter((r) => r.id !== id);
           }
           onFilterChanged(prev);
-					return {...prev};
+          return { ...prev };
         }
         if (type === "string") {
           const existing = prev.string?.find((r) => r.id === id);
@@ -220,15 +219,15 @@ export const FacetList = ({
           prev.range = prev.range?.filter((r) => r.id !== id);
           onFilterChanged(prev);
         }
-        return {...prev};
+        return { ...prev };
       });
     },
-    [facets, onFilterChanged]
+    [facets, onFilterChanged, setQuery]
   );
 
   const ctx = useMemo(
-    () => ({ facets, query, setQuery, addFilter, removeFilter }),
-    [facets, query, setQuery, addFilter, removeFilter]
+    () => ({ facets, addFilter, removeFilter }),
+    [facets, addFilter, removeFilter]
   );
   return (
     <FacetSelectionContext.Provider value={ctx}>
@@ -283,21 +282,22 @@ export const FacetList = ({
 };
 
 export const useFacetSelectors = (id: number) => {
-  const { facets, addFilter, removeFilter,query } = useFacetSelection();
+  const { query } = useQuery();
+  const { facets, addFilter, removeFilter } = useFacetSelection();
   const currentFacet = useMemo(
     () => facets.find((f) => f.id === id),
     [id, facets]
   );
-	const selected = useMemo(() => {
-		if (currentFacet == null) {
-			return undefined;
-		}
-		if (isNumberFacet(currentFacet)) {
-			return query.range?.find((r) => r.id === id);
-		}
-		return query.string?.find((r) => r.id === id)?.value;
-	}, [currentFacet, query,id]);
-		
+  const selected = useMemo(() => {
+    if (currentFacet == null) {
+      return undefined;
+    }
+    if (isNumberFacet(currentFacet)) {
+      return query.range?.find((r) => r.id === id);
+    }
+    return query.string?.find((r) => r.id === id)?.value;
+  }, [currentFacet, query, id]);
+
   return {
     addFilter: (value: SingleFacetValue) => addFilter(id, value),
     removeFilter: (value?: SingleFacetValue) => removeFilter(id, value),

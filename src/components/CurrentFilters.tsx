@@ -2,11 +2,8 @@ import { useMemo } from "react";
 import { X } from "lucide-react";
 import { FacetListItem, Field, KeyField, NumberField } from "../types";
 import { stores } from "../datalayer/stores";
-import {
-  useFacetList,
-  useFilters,
-  useQueryHelpers,
-} from "../hooks/searchHooks";
+import { useFacetList } from "../hooks/searchHooks";
+import { useQuery } from "../hooks/QueryProvider";
 
 type KeyFilter = {
   key: number;
@@ -116,15 +113,17 @@ export const CurrentFilters = () => {
   const {
     query: { stock },
     setStock,
-  } = useQueryHelpers();
+  } = useQuery();
   const locationId = stock?.[0];
-  const { keyFilters, numberFilters, removeKeyFilter, removeNumberFilter } =
-    useFilters();
+  const {
+    query: { string: keyFilters, range: numberFilters },
+    setQuery,
+  } = useQuery();
 
   const selectedFilters = useMemo(() => {
     return [
-      ...keyFilters.flatMap(toFilter("key", data)),
-      ...numberFilters.map(toFilter("float", data)),
+      ...(keyFilters?.flatMap(toFilter("key", data)) ?? []),
+      ...(numberFilters?.map(toFilter("float", data)) ?? []),
     ].filter(hasValue);
   }, [keyFilters, numberFilters, data]);
   return (
@@ -158,11 +157,15 @@ export const CurrentFilters = () => {
                   : filter.value
               }
               onClick={() => {
-                if (filter.fieldType === "key") {
-                  removeKeyFilter(filter.key, Array.isArray(filter.value)?undefined:filter.value);
-                } else {
-                  removeNumberFilter(filter.key);
-                }
+                console.log("remove filter", filter);
+                // if (filter.fieldType === "key") {
+                //   removeKeyFilter(
+                //     filter.key,
+                //     Array.isArray(filter.value) ? undefined : filter.value
+                //   );
+                // } else {
+                //   removeNumberFilter(filter.key);
+                // }
               }}
             />
           ))}

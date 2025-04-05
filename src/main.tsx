@@ -16,9 +16,10 @@ import { PopularItemsView } from "./pages/tracking/popular-items.tsx";
 import { PopularFacetsView } from "./pages/tracking/popular-facets.tsx";
 import { UpdatedItems } from "./pages/tracking/updates.tsx";
 import { DashboardView } from "./pages/Dashboard.tsx";
-import { PageContainer } from "./PageContainer.tsx"
-import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx"
-import { Builder } from "./components/Builder.tsx"
+import { PageContainer } from "./PageContainer.tsx";
+import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx";
+import { Builder } from "./components/Builder.tsx";
+import { QueryProvider } from "./hooks/QueryProvider.tsx";
 
 const router = createBrowserRouter([
   {
@@ -131,8 +132,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <SWRConfig value={{}}>
-      <RouterProvider router={router} />
-    </SWRConfig>
+    <QueryProvider>
+      <SWRConfig value={{}}>
+        <RouterProvider router={router} />
+      </SWRConfig>
+    </QueryProvider>
   </React.StrictMode>
 );

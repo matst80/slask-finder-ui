@@ -4,9 +4,10 @@ import { Price } from "./Price";
 import { Stars } from "./Stars";
 
 import { useState } from "react";
-import { useHashQuery } from "../hooks/searchHooks";
+//import { useHashQuery } from "../hooks/searchHooks";
 import { trackClick } from "../datalayer/beacons";
 import { Link } from "react-router-dom";
+import { useQuery } from "../hooks/QueryProvider";
 
 const StockIndicator = ({
   stock,
@@ -14,7 +15,7 @@ const StockIndicator = ({
 }: Pick<Item, "stock" | "stockLevel">) => {
   const {
     query: { stock: stockQuery },
-  } = useHashQuery();
+  } = useQuery();
   const locationId = stockQuery?.[0];
   const stockOnLocation = locationId != null ? stock?.[locationId] : null;
   const storesWithStock = Object.entries(stock ?? {}).length;
