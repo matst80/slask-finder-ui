@@ -1,10 +1,9 @@
-
 import { Item } from "../types";
 import { makeImageUrl } from "../utils";
 import { Price } from "./Price";
 import { Stars } from "./Stars";
 
-import {  useState } from "react";
+import { useState } from "react";
 import { useHashQuery } from "../hooks/searchHooks";
 import { trackClick } from "../datalayer/beacons";
 import { Link } from "react-router-dom";
@@ -17,8 +16,8 @@ const StockIndicator = ({
     query: { stock: stockQuery },
   } = useHashQuery();
   const locationId = stockQuery?.[0];
-  const stockOnLocation = stock?.find((d) => d.id === locationId);
-  const storesWithStock = stock?.length ?? 0;
+  const stockOnLocation = locationId != null ? stock?.[locationId] : null;
+  const storesWithStock = Object.entries(stock ?? {}).length;
 
   return (
     <>
@@ -29,7 +28,7 @@ const StockIndicator = ({
           }`}
         >
           {stockOnLocation != null
-            ? `I din butik: ${stockOnLocation.level}`
+            ? `I din butik: ${stockOnLocation}`
             : "Slut i din butik"}
         </span>
       ) : (
@@ -99,19 +98,16 @@ const ImageWithPlaceHolder = ({ img, title }: Pick<Item, "img" | "title">) => {
 };
 
 export const ResultItemInner = ({
-  
   title,
   img,
   badgeUrl,
   values,
   stock,
   bp,
-  
 
   stockLevel,
   disclaimer,
   advertisingText,
-  
 }: Item) => {
   const hasRating = values["6"] != null && values["7"] != null;
   const soldBy = values["9"];

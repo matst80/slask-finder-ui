@@ -23,14 +23,14 @@ const StockList = ({ stock }: Pick<ItemDetail, "stock">) => {
       className="py-2 px-4 border border-gray-500 rounded-md mt-4"
     >
       <h3 className="text-lg font-bold">Lager</h3>
-      <p>Finns i lager i {stock.length} butiker</p>
+      <p>Finns i lager i {Object.keys(stock ?? {}).length} butiker</p>
       {open && (
         <ul className="max-h-screen overflow-y-auto">
-          {stock.map((s) => {
-            const store = stores.find((store) => store.id === s.id);
+          {Object.keys(stock).map((s) => {
+            const store = stores.find((store) => store.id === s);
             if (!store) return null;
             return (
-              <li key={s.id} className="line-clamp-1 overflow-ellipsis">
+              <li key={s} className="line-clamp-1 overflow-ellipsis">
                 {store?.name}
               </li>
             );
@@ -99,7 +99,9 @@ const Properties = ({
                   name={String(field.id)}
                 />
               ) : (
-                <span>{field.value} ({field.id})</span>
+                <span>
+                  {field.value} ({field.id})
+                </span>
               )}{" "}
               {field.linkedId != null &&
                 field.linkedId > 0 &&
@@ -158,7 +160,11 @@ export const ItemDetails = (details: ItemDetail & { isEdit?: boolean }) => {
           <Price values={values} disclaimer={disclaimer} />
         </span>
         <div className="flex justify-between">
-          <ul>{bp?.split("\n").map((txt) => <li key={txt}>{txt}</li>)}</ul>
+          <ul>
+            {bp?.split("\n").map((txt) => (
+              <li key={txt}>{txt}</li>
+            ))}
+          </ul>
           {(buyable || buyableInStore) && (
             <div>
               <button

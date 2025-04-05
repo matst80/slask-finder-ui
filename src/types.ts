@@ -39,7 +39,7 @@ export type Item = ItemProps & {
   id: string;
   title: string;
   values: ItemValues;
-  stock?: Stock[];
+  stock?: Stock;
 };
 
 export type ItemProperties = ItemValues;
@@ -48,7 +48,7 @@ export type UpdatedItem = ItemProps & {
   id: string;
   title: string;
   values: ItemProperties;
-  stock?: Stock[];
+  stock?: Stock;
 };
 
 export type FieldValue<T> = {
@@ -60,13 +60,10 @@ export type ItemDetail = ItemProps & {
   id: number;
   title: string;
   values: ItemProperties;
-  stock?: Stock[];
+  stock?: Stock;
 };
 
-export type Stock = {
-  id: string;
-  level: string;
-};
+export type Stock = Record<string, string>;
 
 export type ItemProps = {
   created?: number;
@@ -112,19 +109,19 @@ export type NumberFacet = BaseFacet & {
 };
 
 export type KeyFacet = BaseFacet & {
-  selected: string[]|string|undefined;
+  selected: string[] | string | undefined;
   result: KeyResult;
 };
 
 export type Facet = NumberFacet | KeyFacet;
 
 export const isKeyResult = (
-  result: KeyResult | NumberResult,
+  result: KeyResult | NumberResult
 ): result is KeyResult =>
   result != null && (result as KeyResult).values != null;
 
 export const isNumberResult = (
-  result: KeyResult | NumberResult,
+  result: KeyResult | NumberResult
 ): result is NumberResult =>
   result != null && (result as NumberResult).max != null;
 
@@ -151,7 +148,7 @@ export type ItemResult = Item[];
 
 export type NumberField = { id: number; min: number; max: number };
 
-export type KeyField = { id: number; value: string|string[] };
+export type KeyField = { id: number; value: string | string[] };
 
 export type Field = NumberField | KeyField;
 
@@ -302,17 +299,17 @@ export type PrometheusResponse = {
   };
 };
 
-export type ValueMatch = FieldMatch|PropertyMatch;
+export type ValueMatch = FieldMatch | PropertyMatch;
 
 export type FieldMatch = {
   source: "fieldId";
   fieldId: number;
-}
+};
 
 export type PropertyMatch = {
   source: "property";
   property: string;
-}
+};
 
 export type MatchRule = ValueMatch & {
   match: string | boolean | number;
@@ -365,7 +362,7 @@ export type Rule =
   | PercentMultiplierRule
   | AgedRule
   | RatingRule;
-export  type Rules = Rule[];
+export type Rules = Rule[];
 
 export const ruleTypes = [
   "MatchRule",
