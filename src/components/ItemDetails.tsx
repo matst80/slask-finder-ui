@@ -109,13 +109,11 @@ const Properties = ({
                   <button
                     className="text-blue-500 hover:underline"
                     onClick={() => {
-                      globalThis.location.hash = queryToHash({
-                        string: [
-                          { id: field.linkedId!, value: String(field.value!) },
-                        ],
-                        page: 0,
-                        stock: [],
-                      });
+                      console.log(
+                        "change filter!",
+                        field.linkedId,
+                        field.value
+                      );
                     }}
                   >
                     Visa kompatibla

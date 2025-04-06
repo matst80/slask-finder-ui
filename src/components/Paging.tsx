@@ -4,12 +4,14 @@ import { useQuery } from "../hooks/QueryProvider";
 export const Paging = () => {
   const {
     query: { page: currentPage = 0, pageSize = 40 },
+    isLoading,
     setPage: changePage,
     totalHits,
   } = useQuery();
 
   const totalPages = Math.ceil(totalHits / pageSize) - 1;
-  if (totalPages <= 1) return null;
+  if (isNaN(totalHits) || totalPages <= 1 || isLoading) return null;
+
   return (
     <div className="mt-8 flex items-center justify-center">
       <button

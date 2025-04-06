@@ -13,11 +13,10 @@ import {
   isNumberFacet,
   Item,
   ItemsQuery,
-  NumberFacet,
+  isNumberValue,
   NumberField,
 } from "../types";
 import { facetQueryToHash, queryToHash, toQuery } from "./searchHooks";
-import { isNumberValue } from "../components/facets/facet-context";
 
 type QueryContextType = {
   query: ItemsQuery;
@@ -71,15 +70,19 @@ export const QueryProvider = ({
     setQuery((prev) => ({ ...prev, pageSize }));
   }, []);
   const setSort = useCallback((sort: string) => {
+    setPage(0);
     setQuery((prev) => ({ ...prev, sort }));
   }, []);
   const setStock = useCallback((stock: string[]) => {
+    setPage(0);
     setQuery((prev) => ({ ...prev, stock }));
   }, []);
   const setTerm = useCallback((term: string) => {
+    setPage(0);
     setQuery((prev) => ({ ...prev, query: term }));
   }, []);
   const removeFilter = useCallback((id: number) => {
+    setPage(0);
     setQuery((prev) => ({
       ...prev,
       string: prev.string?.filter((f) => f.id !== id),
@@ -89,6 +92,7 @@ export const QueryProvider = ({
 
   const setFilter = useCallback(
     (id: number, value: string[] | Omit<NumberField, "id">) => {
+      setPage(0);
       if (isNumberValue(value)) {
         setQuery((prev) => ({
           ...prev,

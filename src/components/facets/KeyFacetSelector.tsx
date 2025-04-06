@@ -1,27 +1,33 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { KeyFacet } from "../../types";
-import { isSelectedValue, useFacetSelectors } from "./facet-context"
+import { useQueryKeyFacet } from "../../hooks/QueryProvider";
 
-const toSorted = (values: Record<string, number>) =>
+const toSorted = (values: Record<string, number>, selected: Set<string>) =>
   Object.entries(values)
-    .sort((a, b) => b[1] - a[1])
+    .sort(
+      (a, b) =>
+        (selected.has(b[0]) ? 1 : 0) - (selected.has(a[0]) ? 1 : 0) ||
+        b[1] - a[1]
+    )
     .map(([value, count]) => ({ value, count }));
 
 export const KeyFacetSelector = ({
   name,
-  result: { values },
   id,
+  result,
   defaultOpen,
 }: KeyFacet & { defaultOpen: boolean }) => {
-  const { addFilter, removeFilter, selected } = useFacetSelectors(id);
-  //const { keyFilters, addKeyFilter, removeKeyFilter } = useFilters();
+  const { values } = result;
+  const { filter: filterValue, addValue, removeValue } = useQueryKeyFacet(id);
   const [filter, setFilter] = useState("");
-  const allSorted = useMemo(() => toSorted(values), [values]);
+  const allSorted = useMemo(() => toSorted(values, filterValue), [values]);
   const filtered = useMemo(() => {
     return filter.length > 2
-      ? allSorted.filter(({ value }) =>
-          value.toLowerCase().includes(filter.toLowerCase())
+      ? allSorted.filter(
+          ({ value }) =>
+            value.toLowerCase().includes(filter.toLowerCase()) ||
+            filterValue.has(value)
         )
       : allSorted;
   }, [allSorted, filter]);
@@ -57,33 +63,31 @@ export const KeyFacetSelector = ({
               onChange={(e) => setFilter(e.target.value)}
             />
           )}
-          {toShow.map(({ value, count }) => {
-            const checked = isSelectedValue(selected, value);
-            return (
-              <label
-                key={value}
-                className="flex items-center line-clamp-1 overflow-ellipsis justify-between p-1 text-sm"
-              >
-                <div>
-                  <input
-                    type="checkbox"
-                    id={value}
-                    value={value}
-                    checked={checked}
-                    onChange={() => {                      
-                      if (!checked) {
-                        addFilter(value);
-                      } else {
-                        removeFilter(value);
-                      }
-                    }}
-                  />
-                  <span className="ml-2 text-gray-700">{value}</span>
-                </div>
-                <em className="text-xs text-gray-600">({count})</em>
-              </label>
-            );
-          })}
+          {toShow.map(({ value, count }) => (
+            <label
+              key={value}
+              className="flex items-center line-clamp-1 overflow-ellipsis justify-between p-1 text-sm rounded-md hover:bg-gray-100"
+            >
+              <div>
+                <input
+                  type="checkbox"
+                  id={value}
+                  value={value}
+                  checked={filterValue.has(value)}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    if (checked) {
+                      addValue(value);
+                    } else {
+                      removeValue(value);
+                    }
+                  }}
+                />
+                <span className="ml-2 text-gray-700">{value}</span>
+              </div>
+              <em className="text-xs text-gray-600">({count})</em>
+            </label>
+          ))}
 
           {allSorted.length > 14 && (
             <button

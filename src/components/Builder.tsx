@@ -4,7 +4,6 @@ import { FilteringQuery, Item, ItemsQuery, ItemValues, Sort } from "../types";
 import { ResultItemInner } from "./ResultItem";
 import { cm, isDefined } from "../utils";
 import { PriceValue } from "./Price";
-import { FacetList } from "./facets/facet-context";
 
 type AdditionalFilter = {
   id: number;
@@ -56,7 +55,7 @@ const components: Component[] = [
         },
       },
     ],
-    
+
     validator: (values) => {
       if (isNaN(Number(values[35980]))) return false;
       return values[32103] != null;
@@ -156,7 +155,7 @@ const components: Component[] = [
         // },
         {
           id: 31158,
-          value: "Moderkort",
+          value: ["Moderkort"],
         },
       ],
     },
@@ -189,7 +188,7 @@ const components: Component[] = [
         // },
         {
           id: 31158,
-          value: "RAM minne",
+          value: ["RAM minne"],
         },
       ],
     },
@@ -211,7 +210,7 @@ const components: Component[] = [
         // },
         {
           id: 31158,
-          value: "Intern SSD",
+          value: ["Intern SSD"],
         },
       ],
     },
@@ -252,7 +251,7 @@ const components: Component[] = [
         // },
         {
           id: 31158,
-          value: "Grafikkort",
+          value: ["Grafikkort"],
         },
       ],
     },
@@ -322,7 +321,7 @@ const components: Component[] = [
         // },
         {
           id: 31158,
-          value: "Chassi",
+          value: ["Chassi"],
         },
       ],
     },
@@ -353,7 +352,7 @@ const components: Component[] = [
         // },
         {
           id: 31158,
-          value: "Nätaggregat (PSU)",
+          value: ["Nätaggregat (PSU)"],
         },
       ],
     },
@@ -388,11 +387,11 @@ const components: Component[] = [
       string: [
         {
           id: 31158,
-          value: "Intern SSD",
+          value: ["Intern SSD"],
         },
         {
           id: 30714,
-          value: "SATA 3.0",
+          value: ["SATA 3.0"],
         },
       ],
     },
