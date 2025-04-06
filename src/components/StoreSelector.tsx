@@ -1,7 +1,7 @@
 import { MapPin } from "lucide-react";
-import { stores } from "../datalayer/stores";
+import { stores } from "../lib/datalayer/stores";
 import { useMemo } from "react";
-import { useQuery } from "../hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/QueryProvider";
 
 export const SelectedStore = () => {
   const {

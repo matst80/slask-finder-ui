@@ -1,7 +1,7 @@
 import { ArrowUpDown } from "lucide-react";
 
-import { Sort } from "../types";
-import { useQuery } from "../hooks/QueryProvider";
+import { Sort } from "../lib/types";
+import { useQuery } from "../lib/hooks/QueryProvider";
 
 export const Sorting = () => {
   const {

@@ -1,5 +1,5 @@
 import useSWRMutation, { SWRMutationConfiguration } from "swr/mutation";
-import { ItemValues, Price } from "./types";
+import { ItemValues, Price } from "./lib/types";
 
 export function remove<T>(key: string | number) {
   return (prev: { [key: string]: T }) => {

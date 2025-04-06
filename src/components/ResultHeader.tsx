@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { getItemIds, updateCategories } from "../datalayer/api";
+import { getItemIds, updateCategories } from "../lib/datalayer/api";
 import { useAdmin } from "../hooks/appState";
 
 import { Sorting } from "./Sorting";
 import { SelectedStore } from "./StoreSelector";
 import { X } from "lucide-react";
 import { FilterQuery } from "./FilterQuery";
-import { useQuery } from "../hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/QueryProvider";
 
 const EditCategories = ({ onClose }: { onClose: () => void }) => {
   const { facets, query } = useQuery();

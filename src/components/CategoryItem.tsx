@@ -1,8 +1,8 @@
 import { SquareMinus, SquarePlus } from "lucide-react";
 import { useState } from "react";
-import { Category } from "../types";
+import { Category } from "../lib/types";
 import { textSize } from "../utils";
-import { useQuery } from "../hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/QueryProvider";
 
 export const byName = (a: Category, b: Category) =>
   a.value.localeCompare(b.value);
@@ -15,7 +15,7 @@ export const CategoryItem = ({
 }: Category & { level: number; defaultOpen?: boolean }) => {
   const { setQuery } = useQuery();
   const [open, setOpen] = useState(defaultOpen);
-  const addKeyFilter = (id: number, value: string | string[]) =>
+  const addKeyFilter = (id: number, value: string[]) =>
     setQuery((state) => {
       return { ...state, string: [{ id, value }] };
     });
@@ -33,7 +33,7 @@ export const CategoryItem = ({
         </button>
         <button
           className={textSize(level)}
-          onClick={() => addKeyFilter(9 + level, value)}
+          onClick={() => addKeyFilter(9 + level, [value])}
         >
           {value}
         </button>

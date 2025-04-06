@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import useSWR from "swr";
-import { getPrometheusQueryUrl, getPrometheusData } from "../datalayer/api";
-import type { MetricsData, MetricWithValues, Series } from "../types";
+import { getPrometheusQueryUrl, getPrometheusData } from "../lib/datalayer/api";
+import type { MetricsData, MetricWithValues, Series } from "../lib/types";
 import type { AxisOptions } from "react-charts";
 
 export const useMetricsQuery = (

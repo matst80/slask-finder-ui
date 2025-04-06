@@ -1,5 +1,5 @@
-import { useQueryKeyFacet } from "../../hooks/QueryProvider";
-import { KeyFacet } from "../../types";
+import { useQueryKeyFacet } from "../../lib/hooks/QueryProvider";
+import { KeyFacet } from "../../lib/types";
 import { colourNameToHex, cm } from "../../utils";
 
 export const ColorFacetSelector = ({ id, result: { values } }: KeyFacet) => {

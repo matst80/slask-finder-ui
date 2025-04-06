@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getCategories } from "../datalayer/api";
+import { getCategories } from "../lib/datalayer/api";
 
 const categoryKey = "/categories";
 

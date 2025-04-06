@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { X } from "lucide-react";
-import { FacetListItem, Field, isNumberValue } from "../types";
-import { stores } from "../datalayer/stores";
+import { FacetListItem, Field, isNumberValue } from "../lib/types";
+import { stores } from "../lib/datalayer/stores";
 import { useFacetList } from "../hooks/searchHooks";
-import { useQuery } from "../hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/QueryProvider";
 import { isDefined } from "../utils";
 
 function toFilter(facets?: FacetListItem[]) {

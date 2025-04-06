@@ -1,11 +1,10 @@
-import { useEffect, useRef } from "react";
 import { useCategories } from "../hooks/categoryHooks";
 import { ResultItem } from "./ResultItem";
-import { Impression, trackImpression } from "../datalayer/beacons";
+
 import { ButtonLink } from "./ui/button";
 import { byName, CategoryItem } from "./CategoryItem";
-import { useQuery } from "../hooks/QueryProvider";
-import { ImpressionProvider } from "../hooks/ImpressionProvider";
+import { useQuery } from "../lib/hooks/QueryProvider";
+import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 
 const searchList = [
   {

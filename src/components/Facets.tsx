@@ -1,14 +1,14 @@
 import { useMemo } from "react";
-import { isNumberFacet } from "../types";
+import { isNumberFacet } from "../lib/types";
 import { LoaderCircle } from "lucide-react";
 import { byPriority } from "../utils";
-import { stores } from "../datalayer/stores";
-import { useQuery } from "../hooks/QueryProvider";
+import { stores } from "../lib/datalayer/stores";
+import { useQuery } from "../lib/hooks/QueryProvider";
 import { KeyFacetSelector } from "./facets/KeyFacetSelector";
 import { ColorFacetSelector } from "./facets/ColorFacet";
 import { NumberFacetSelector } from "./facets/NumericFacetSelectors";
 
-export const Facets = () => {
+export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
   const {
     query: { stock },
     setStock,
@@ -34,31 +34,33 @@ export const Facets = () => {
       <aside className="w-full md:w-72">
         <h2 className="text-lg font-semibold mb-4">Filter</h2>
         <div>
-          {allFacets.map((facet, i) => {
-            if (isNumberFacet(facet)) {
+          {allFacets
+            .filter((d) => facetsToHide == null || !facetsToHide.includes(d.id))
+            .map((facet, i) => {
+              if (isNumberFacet(facet)) {
+                return (
+                  <NumberFacetSelector
+                    {...facet}
+                    key={`fld-${facet.id}-${facet.name}`}
+                  />
+                );
+              }
+              if (facet.type === "color") {
+                return (
+                  <ColorFacetSelector
+                    {...facet}
+                    key={`fld-${facet.id}-${facet.name}`}
+                  />
+                );
+              }
               return (
-                <NumberFacetSelector
+                <KeyFacetSelector
                   {...facet}
                   key={`fld-${facet.id}-${facet.name}`}
+                  defaultOpen={i < 5}
                 />
               );
-            }
-            if (facet.type === "color") {
-              return (
-                <ColorFacetSelector
-                  {...facet}
-                  key={`fld-${facet.id}-${facet.name}`}
-                />
-              );
-            }
-            return (
-              <KeyFacetSelector
-                {...facet}
-                key={`fld-${facet.id}-${facet.name}`}
-                defaultOpen={i < 5}
-              />
-            );
-          })}
+            })}
         </div>
 
         <div className="mb-4">

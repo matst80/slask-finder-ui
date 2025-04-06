@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getTrackingFieldPopularity } from "../../datalayer/api";
+import { getTrackingFieldPopularity } from "../../lib/datalayer/api";
 import { useFacetList } from "../../hooks/searchHooks";
 import { useMemo } from "react";
 import { isDefined } from "../../utils";

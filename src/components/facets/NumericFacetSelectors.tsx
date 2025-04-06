@@ -1,9 +1,9 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
-import { NumberFacet } from "../../types";
+import { NumberFacet } from "../../lib/types";
 import { converters } from "../../utils";
 import { Slider } from "./Slider";
-import { useQueryRangeFacet } from "../../hooks/QueryProvider";
+import { useQueryRangeFacet } from "../../lib/hooks/QueryProvider";
 
 export const NumberFacetSelector = ({
   id,

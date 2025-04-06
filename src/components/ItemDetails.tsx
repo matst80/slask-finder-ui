@@ -6,8 +6,8 @@ import {
 } from "../hooks/searchHooks";
 import { useMemo, useState } from "react";
 import { byPriority, makeImageUrl } from "../utils";
-import { ItemDetail } from "../types";
-import { stores } from "../datalayer/stores";
+import { ItemDetail } from "../lib/types";
+import { stores } from "../lib/datalayer/stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Price } from "./Price";

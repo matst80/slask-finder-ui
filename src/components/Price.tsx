@@ -1,5 +1,5 @@
 import { InfoIcon } from "lucide-react";
-import { ItemValues } from "../types";
+import { ItemValues } from "../lib/types";
 import { getPrice } from "../utils";
 
 const SEK = new Intl.NumberFormat("se-SV", {

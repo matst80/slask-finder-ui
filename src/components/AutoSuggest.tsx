@@ -6,13 +6,13 @@ import {
   KeyFacet,
   NumberFacet,
   Suggestion,
-} from "../types";
-import { autoSuggestResponse } from "../datalayer/api";
+} from "../lib/types";
+import { autoSuggestResponse } from "../lib/datalayer/api";
 import { Search } from "lucide-react";
 
 import { makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
-import { useQuery } from "../hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/QueryProvider";
 
 // type MappedSuggestion = {
 //   match: string;

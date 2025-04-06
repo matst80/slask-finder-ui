@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Filter } from "lucide-react";
 import { cm, useDebounce } from "../utils";
-import { useQuery } from "../hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/QueryProvider";
 
 type Props = {
   show: boolean;

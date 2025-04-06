@@ -5,7 +5,7 @@ import {
   getStaticPositions,
   setStaticPositions,
   updatePopularity,
-} from "./datalayer/api";
+} from "./lib/datalayer/api";
 import { useState } from "react";
 import useSWRMutation from "swr/mutation";
 

@@ -4,9 +4,9 @@ import {
   getFacetList,
   getRelated,
   streamItems,
-} from "../datalayer/api";
-import { FacetQuery, FilteringQuery, ItemsQuery } from "../types";
-import { useEffect, useState, useCallback } from "react";
+} from "../lib/datalayer/api";
+import { FacetQuery, FilteringQuery, ItemsQuery } from "../lib/types";
+import { isDefined } from "../utils";
 
 const FIELD_SEPARATOR = ":";
 const ID_VALUE_SEPARATOR = "=";
@@ -36,7 +36,7 @@ export const queryFromHash = (hash: string): ItemsQuery => {
       const [id, value] = s.split(ID_VALUE_SEPARATOR);
       return {
         id: Number(id),
-        value: value.includes("||") ? value.split("||") : value,
+        value: value.includes("||") ? value.split("||") : [value],
       };
     });
   const query = hashData.q;
@@ -111,12 +111,16 @@ export const filteringQueryToHash = ({
 
   const strs =
     string?.map(({ id, value }) => {
+      if (Array.isArray(value) && value.length === 0) {
+        console.log("Empty value for id:", id);
+        return undefined;
+      }
       return `${id}${ID_VALUE_SEPARATOR}${
         Array.isArray(value) ? value.join("||") : value
       }`;
     }) ?? [];
   if (strs.length) {
-    result.s = strs.join(FIELD_SEPARATOR);
+    result.s = strs.filter(isDefined).join(FIELD_SEPARATOR);
   }
   return result;
 };
@@ -148,12 +152,14 @@ export const toQuery = (data: ItemsQuery): string => {
     result.append("rng", `${id}:${min}-${max}`);
   });
 
-  string?.forEach(({ id, value }) => {
-    result.append(
-      "str",
-      `${id}:${Array.isArray(value) ? value.join("||") : value}`
-    );
-  });
+  string
+    ?.filter(({ value }) => Array.isArray(value) && value.length > 0)
+    .forEach(({ id, value }) => {
+      result.append(
+        "str",
+        `${id}:${Array.isArray(value) ? value.join("||") : value}`
+      );
+    });
   stock?.forEach((s) => {
     result.append("stock", s);
   });

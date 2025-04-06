@@ -14,7 +14,7 @@ import {
   TableBody,
   TableCell,
 } from "../../components/ui/table";
-import { useQuery } from "../../hooks/QueryProvider";
+import { useQuery } from "../../lib/hooks/QueryProvider";
 
 export const TableSearchResultList = () => {
   const {

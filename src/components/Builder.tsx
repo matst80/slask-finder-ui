@@ -1,9 +1,30 @@
-import { PropsWithChildren, useMemo, useState } from "react";
+import {
+  Fragment,
+  PropsWithChildren,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useFacetList, useFacets, useItemsSearch } from "../hooks/searchHooks";
-import { FilteringQuery, Item, ItemsQuery, ItemValues, Sort } from "../types";
+import {
+  FilteringQuery,
+  Item,
+  ItemsQuery,
+  ItemValues,
+  Sort,
+} from "../lib/types";
 import { ResultItemInner } from "./ResultItem";
 import { cm, isDefined } from "../utils";
 import { PriceValue } from "./Price";
+import { Facets } from "./Facets";
+import {
+  mergeFilters,
+  QueryProvider,
+  QueryProviderRef,
+  useQuery,
+} from "../lib/hooks/QueryProvider";
 
 type AdditionalFilter = {
   id: number;
@@ -73,7 +94,7 @@ const components: Component[] = [
         // },
         {
           id: 31158,
-          value: "Processor (CPU)",
+          value: ["Processor (CPU)"],
         },
       ],
     },
@@ -484,9 +505,26 @@ const isRangeFilter = (
 
 const isStringFilter = (
   d: SelectedAdditionalFilter
-): d is { id: number; to: number; value: string | string[] } => {
+): d is { id: number; to: number; value: string[] } => {
   return (
     "value" in d && (Array.isArray(d.value) || typeof d.value === "string")
+  );
+};
+
+const HitList = ({
+  children,
+  className,
+}: {
+  children: (props: { item: Item }) => ReactNode;
+  className?: string;
+}) => {
+  const { hits } = useQuery();
+  return (
+    <div className={className}>
+      {hits.map((item) => {
+        return <Fragment key={item.id}>{children({ item })}</Fragment>;
+      })}
+    </div>
   );
 };
 
@@ -498,46 +536,63 @@ const ComponentSelector = ({
   validator,
   onSelectedChange,
 }: ComponentSelectorProps) => {
-  const [userFiler, setUserFilter] = useState<
-    Pick<FilteringQuery, "range" | "string" | "query">
-  >({ range: [], string: [] });
-  const [sort, setSort] = useState<Sort>("popular");
-  const baseQuery = {
-    ...filter,
-    range: [
-      ...otherFilters
-        .filter(isRangeFilter)
-        .map(({ id, value }) => ({ id, min: value.min, max: value.max })),
-      ...(filter.range ?? []),
-      ...(userFiler.range ?? []),
-    ],
-    query: userFiler.query,
-    string: [
-      //{id:3,value:"!0"},
-      ...otherFilters.filter(isStringFilter),
-      ...(filter.string ?? []),
-      ...(userFiler.string ?? []),
-    ],
-  } satisfies FilteringQuery;
-  const { data } = useItemsSearch({ ...baseQuery, sort });
-  const facetResult = useFacets(baseQuery);
+  const ref = useRef<QueryProviderRef>(null);
+  // const [userFiler, setUserFilter] = useState<
+  //   Pick<FilteringQuery, "range" | "string" | "query">
+  // >({ range: [], string: [] });
+  //const [sort, setSort] = useState<Sort>("popular");
+  // const baseQuery = {
+  //   ...filter,
+  //   range: [
+  //     ...otherFilters
+  //       .filter(isRangeFilter)
+  //       .map(({ id, value }) => ({ id, min: value.min, max: value.max })),
+  //     ...(filter.range ?? []),
+  //     //...(userFiler.range ?? []),
+  //   ],
+  //   query: userFiler.query,
+  //   string: [
+  //     //{id:3,value:"!0"},
+  //     ...otherFilters.filter(isStringFilter),
+  //     ...(filter.string ?? []),
+  //     //...(userFiler.string ?? []),
+  //   ],
+  // } satisfies FilteringQuery;
+  // const { data } = useItemsSearch({ ...baseQuery, sort });
+  // const facetResult = useFacets(baseQuery);
+  useEffect(() => {
+    if (!ref.current) return;
+    const baseQuery = {
+      ...filter,
+      ...mergeFilters(filter, {
+        range: otherFilters.filter(isRangeFilter).map(({ id, value }) => ({
+          id,
+          min: value.min,
+          max: value.max,
+        })),
+
+        string: otherFilters.filter(isStringFilter).map(({ id, value }) => ({
+          id,
+          value: Array.isArray(value) ? value : [value],
+        })),
+      } satisfies FilteringQuery),
+    };
+    //console.log("Base query", title, baseQuery);
+    ref.current?.setQuery(baseQuery);
+  }, [otherFilters, ref, filter]);
 
   const [open, setOpen] = useState(true);
   return (
-    <div className="border-b border-gray-200 p-4 mb-4">
-      <button className="text-xl" onClick={() => setOpen((p) => !p)}>
-        {title} ({data?.totalHits ?? "Loading..."}){" "}
-        <span>{open ? "▲" : "▼"}</span>
-      </button>
-      {open && (
-        <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-6">
-          <div className="hidden md:block">
-            {facetResult.data == null ? (
-              <div>Loading...</div>
-            ) : (
-              <FacetList
-                facets={facetResult.data}
-                onFilterChanged={setUserFilter}
+    <QueryProvider ref={ref} initialQuery={filter}>
+      <div className="border-b border-gray-200 p-4 mb-4">
+        <button className="text-xl" onClick={() => setOpen((p) => !p)}>
+          {title}
+          <span>{open ? "▲" : "▼"}</span>
+        </button>
+        {open && (
+          <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-6">
+            <div className="hidden md:block">
+              <Facets
                 facetsToHide={[
                   9,
                   10,
@@ -549,55 +604,54 @@ const ComponentSelector = ({
                   ...otherFilters.map((d) => d.id),
                 ]}
               />
-            )}
-          </div>
-          <div>
-            <div className="flex gap-4">
-              <input
-                type="text"
-                placeholder="Sök..."
-                value={userFiler.query}
-                onChange={(e) =>
-                  setUserFilter({ ...userFiler, query: e.target.value })
-                }
-                className="w-full p-2 border border-gray-300 rounded-md flex-1"
-              />
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value as Sort)}
-                className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="popular">Popularitet</option>
-                <option value="price">Pris</option>
-                <option value="price_desc">Pris fallande</option>
-                <option value="updated">Senast uppdaterat</option>
-                <option value="updated_desc">
-                  Senast uppdaterat (fallande)
-                </option>
-                <option value="created">Nyheter</option>
-                <option value="created_desc">Älsta</option>
-              </select>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 m-6">
-              {data?.items.map((item) => (
-                <ToggleResultItem
-                  key={item.id}
-                  {...item}
-                  isValid={validator != null ? validator(item.values) : true}
-                  selected={selectedIds.includes(Number(item.id))}
-                  onSelectedChange={(data) => {
-                    if (data) {
-                      setOpen(false);
-                    }
-                    onSelectedChange(data);
-                  }}
+            <div>
+              {/* <div className="flex gap-4">
+                <input
+                  type="text"
+                  placeholder="Sök..."
+                  value={userFiler.query}
+                  onChange={(e) =>
+                    setUserFilter({ ...userFiler, query: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-300 rounded-md flex-1"
                 />
-              ))}
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as Sort)}
+                  className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="popular">Popularitet</option>
+                  <option value="price">Pris</option>
+                  <option value="price_desc">Pris fallande</option>
+                  <option value="updated">Senast uppdaterat</option>
+                  <option value="updated_desc">
+                    Senast uppdaterat (fallande)
+                  </option>
+                  <option value="created">Nyheter</option>
+                  <option value="created_desc">Älsta</option>
+                </select>
+              </div> */}
+              <HitList className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 m-6">
+                {({ item }) => (
+                  <ToggleResultItem
+                    {...item}
+                    isValid={validator != null ? validator(item.values) : true}
+                    selected={selectedIds.includes(Number(item.id))}
+                    onSelectedChange={(data) => {
+                      if (data) {
+                        setOpen(false);
+                      }
+                      onSelectedChange(data);
+                    }}
+                  />
+                )}
+              </HitList>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </QueryProvider>
   );
 };
 

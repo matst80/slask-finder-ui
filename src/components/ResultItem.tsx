@@ -1,14 +1,14 @@
-import { Item } from "../types";
+import { Item } from "../lib/types";
 import { makeImageUrl } from "../utils";
 import { Price } from "./Price";
 import { Stars } from "./Stars";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 //import { useHashQuery } from "../hooks/searchHooks";
-import { trackClick } from "../datalayer/beacons";
+import { trackClick } from "../lib/datalayer/beacons";
 import { Link } from "react-router-dom";
-import { useQuery } from "../hooks/QueryProvider";
-import { useImpression } from "../hooks/ImpressionProvider";
+import { useQuery } from "../lib/hooks/QueryProvider";
+import { useImpression } from "../lib/hooks/ImpressionProvider";
 
 const StockIndicator = ({
   stock,

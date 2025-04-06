@@ -8,7 +8,7 @@ import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
 import { EditSearchView } from "./pages/admin/EditSearchView.tsx";
 import { Tracking } from "./pages/Tracking.tsx";
 import { SWRConfig } from "swr";
-import { getRawData, getTrackingSessions } from "./datalayer/api.ts";
+import { getRawData, getTrackingSessions } from "./lib/datalayer/api.ts";
 import { ProductPage } from "./components/ProductPage.tsx";
 import { SessionView } from "./components/Sessions.tsx";
 import { QueriesView } from "./pages/tracking/queries.tsx";
@@ -19,8 +19,8 @@ import { DashboardView } from "./pages/Dashboard.tsx";
 import { PageContainer } from "./PageContainer.tsx";
 import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx";
 import { Builder } from "./components/Builder.tsx";
-import { QueryProvider } from "./hooks/QueryProvider.tsx";
-import { ImpressionProvider } from "./hooks/ImpressionProvider.tsx";
+import { QueryProvider } from "./lib/hooks/QueryProvider.tsx";
+import { ImpressionProvider } from "./lib/hooks/ImpressionProvider.tsx";
 
 const router = createBrowserRouter([
   {

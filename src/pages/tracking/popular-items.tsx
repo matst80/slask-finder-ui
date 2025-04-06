@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getTrackingPopularity } from "../../datalayer/api";
+import { getTrackingPopularity } from "../../lib/datalayer/api";
 import { useItemData } from "../../hooks/trackingHooks";
 import { makeImageUrl } from "../../utils";
 

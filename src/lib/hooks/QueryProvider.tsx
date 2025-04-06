@@ -1,9 +1,11 @@
 import {
   createContext,
+  ForwardedRef,
   PropsWithChildren,
   useCallback,
   useContext,
   useEffect,
+  useImperativeHandle,
   useMemo,
   useState,
 } from "react";
@@ -16,7 +18,11 @@ import {
   isNumberValue,
   NumberField,
 } from "../types";
-import { facetQueryToHash, queryToHash, toQuery } from "./searchHooks";
+import {
+  facetQueryToHash,
+  queryToHash,
+  toQuery,
+} from "../../hooks/searchHooks";
 
 type QueryContextType = {
   query: ItemsQuery;
@@ -38,12 +44,34 @@ type QueryContextType = {
 const facetCache = new Map<string, Facet[]>();
 const itemsCache = new Map<string, Item[]>();
 
+export type QueryProviderRef = {
+  mergeQuery: (query: ItemsQuery) => void;
+  setQuery: (query: ItemsQuery) => void;
+};
+
+export const mergeFilters = (
+  a: Pick<ItemsQuery, "string" | "range">,
+  b: Pick<ItemsQuery, "string" | "range">
+): Pick<ItemsQuery, "string" | "range"> => {
+  const string = [
+    ...(a.string ?? []).filter((f) => !b.string?.some((s) => s.id === f.id)),
+    ...(b.string ?? []),
+  ];
+  const range = [
+    ...(a.range ?? []).filter((r) => !b.range?.some((s) => s.id === r.id)),
+    ...(b.range ?? []),
+  ];
+  return { string, range };
+};
+
 const QueryContext = createContext({} as QueryContextType);
 export const QueryProvider = ({
   initialQuery,
   children,
+  ref,
 }: PropsWithChildren<{
   initialQuery?: ItemsQuery;
+  ref?: ForwardedRef<QueryProviderRef>;
 }>) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingFacets, setIsLoadingFacets] = useState(false);
@@ -70,25 +98,31 @@ export const QueryProvider = ({
     setQuery((prev) => ({ ...prev, pageSize }));
   }, []);
   const setSort = useCallback((sort: string) => {
-    setPage(0);
-    setQuery((prev) => ({ ...prev, sort }));
+    setQuery((prev) => ({ ...prev, sort, page: 0 }));
   }, []);
   const setStock = useCallback((stock: string[]) => {
-    setPage(0);
-    setQuery((prev) => ({ ...prev, stock }));
+    setQuery((prev) => ({ ...prev, stock, page: 0 }));
   }, []);
   const setTerm = useCallback((term: string) => {
-    setPage(0);
-    setQuery((prev) => ({ ...prev, query: term }));
+    setQuery((prev) => ({ ...prev, query: term, page: 0 }));
   }, []);
   const removeFilter = useCallback((id: number) => {
-    setPage(0);
     setQuery((prev) => ({
       ...prev,
       string: prev.string?.filter((f) => f.id !== id),
       range: prev.range?.filter((f) => f.id !== id),
+      page: 0,
     }));
   }, []);
+
+  useImperativeHandle(ref, () => ({
+    mergeQuery: (query: ItemsQuery) => {
+      setQuery((prev) => ({ ...prev, ...mergeFilters(prev, query), page: 0 }));
+    },
+    setQuery: (query: ItemsQuery) => {
+      setQuery(query);
+    },
+  }));
 
   const setFilter = useCallback(
     (id: number, value: string[] | Omit<NumberField, "id">) => {

@@ -4,7 +4,7 @@ import {
   changeQuantity,
   getCart,
   removeFromCart,
-} from "../datalayer/api";
+} from "../lib/datalayer/api";
 import { useFetchMutation } from "../utils";
 
 const cartKey = "/cart";
