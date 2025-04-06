@@ -103,6 +103,9 @@ const components: Component[] = [
     title: "Moderkort",
     id: 2,
     validator: (values) => {
+      if (values == null) {
+        return false;
+      }
       return (
         values[32103] != null &&
         values[35921] != null &&
@@ -189,6 +192,9 @@ const components: Component[] = [
       { id: 35921, to: 2 },
     ],
     validator: (values) => {
+      if (values == null) {
+        return false;
+      }
       return (
         values[35921] != null &&
         values[35921] != "X" &&
@@ -511,21 +517,34 @@ const isStringFilter = (
   );
 };
 
-const HitList = ({
+const HitList = <T extends { item: Item }>({
   children,
   className,
+  ...props
 }: {
-  children: (props: { item: Item }) => ReactNode;
+  children: (props: T) => ReactNode;
   className?: string;
-}) => {
+} & Omit<T, "item">) => {
   const { hits } = useQuery();
   return (
     <div className={className}>
       {hits.map((item) => {
-        return <Fragment key={item.id}>{children({ item })}</Fragment>;
+        return (
+          <Fragment key={item.id}>
+            {children({ ...props, item } as unknown as T)}
+          </Fragment>
+        );
       })}
     </div>
   );
+};
+
+const QueryMerger = ({ query }: { query: FilteringQuery }) => {
+  const { setQuery } = useQuery();
+  useEffect(() => {
+    setQuery((old) => ({ ...old, ...mergeFilters(old, query) }));
+  }, [query, setQuery]);
+  return null;
 };
 
 const ComponentSelector = ({
@@ -537,32 +556,8 @@ const ComponentSelector = ({
   onSelectedChange,
 }: ComponentSelectorProps) => {
   const ref = useRef<QueryProviderRef>(null);
-  // const [userFiler, setUserFilter] = useState<
-  //   Pick<FilteringQuery, "range" | "string" | "query">
-  // >({ range: [], string: [] });
-  //const [sort, setSort] = useState<Sort>("popular");
-  // const baseQuery = {
-  //   ...filter,
-  //   range: [
-  //     ...otherFilters
-  //       .filter(isRangeFilter)
-  //       .map(({ id, value }) => ({ id, min: value.min, max: value.max })),
-  //     ...(filter.range ?? []),
-  //     //...(userFiler.range ?? []),
-  //   ],
-  //   query: userFiler.query,
-  //   string: [
-  //     //{id:3,value:"!0"},
-  //     ...otherFilters.filter(isStringFilter),
-  //     ...(filter.string ?? []),
-  //     //...(userFiler.string ?? []),
-  //   ],
-  // } satisfies FilteringQuery;
-  // const { data } = useItemsSearch({ ...baseQuery, sort });
-  // const facetResult = useFacets(baseQuery);
-  useEffect(() => {
-    if (!ref.current) return;
-    const baseQuery = {
+  const query = useMemo<FilteringQuery>(() => {
+    return {
       ...filter,
       ...mergeFilters(filter, {
         range: otherFilters.filter(isRangeFilter).map(({ id, value }) => ({
@@ -575,15 +570,14 @@ const ComponentSelector = ({
           id,
           value: Array.isArray(value) ? value : [value],
         })),
-      } satisfies FilteringQuery),
+      }),
     };
-    //console.log("Base query", title, baseQuery);
-    ref.current?.setQuery(baseQuery);
-  }, [otherFilters, ref, filter]);
+  }, [filter, otherFilters]);
 
   const [open, setOpen] = useState(true);
   return (
-    <QueryProvider ref={ref} initialQuery={filter}>
+    <QueryProvider ref={ref} initialQuery={query}>
+      <QueryMerger query={query} />
       <div className="border-b border-gray-200 p-4 mb-4">
         <button className="text-xl" onClick={() => setOpen((p) => !p)}>
           {title}
@@ -594,14 +588,8 @@ const ComponentSelector = ({
             <div className="hidden md:block">
               <Facets
                 facetsToHide={[
-                  9,
-                  10,
-                  11,
-                  12,
-                  13,
-                  14,
-                  31158,
-                  ...otherFilters.map((d) => d.id),
+                  9, 10, 11, 12, 13, 14, 31158,
+                  //...otherFilters.map((d) => d.id),
                 ]}
               />
             </div>

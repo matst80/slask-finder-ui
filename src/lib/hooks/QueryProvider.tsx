@@ -71,7 +71,7 @@ export const QueryProvider = ({
   ref,
 }: PropsWithChildren<{
   initialQuery?: ItemsQuery;
-  ref?: ForwardedRef<QueryProviderRef>;
+  ref?: React.Ref<QueryProviderRef>;
 }>) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingFacets, setIsLoadingFacets] = useState(false);
@@ -115,21 +115,29 @@ export const QueryProvider = ({
     }));
   }, []);
 
-  useImperativeHandle(ref, () => ({
-    mergeQuery: (query: ItemsQuery) => {
-      setQuery((prev) => ({ ...prev, ...mergeFilters(prev, query), page: 0 }));
-    },
-    setQuery: (query: ItemsQuery) => {
-      setQuery(query);
-    },
-  }));
+  useImperativeHandle(
+    ref,
+    () => ({
+      mergeQuery: (query: ItemsQuery) => {
+        setQuery((prev) => ({
+          ...prev,
+          ...mergeFilters(prev, query),
+          page: 0,
+        }));
+      },
+      setQuery: (query: ItemsQuery) => {
+        setQuery(query);
+      },
+    }),
+    []
+  );
 
   const setFilter = useCallback(
     (id: number, value: string[] | Omit<NumberField, "id">) => {
-      setPage(0);
       if (isNumberValue(value)) {
         setQuery((prev) => ({
           ...prev,
+          page: 0,
           range: [
             ...(prev.range?.filter((r) => r.id !== id) ?? []),
             { id, ...value },
@@ -138,6 +146,7 @@ export const QueryProvider = ({
       } else {
         setQuery((prev) => ({
           ...prev,
+          page: 0,
           string: [
             ...(prev.string?.filter((r) => r.id !== id) ?? []),
             { id, value },
