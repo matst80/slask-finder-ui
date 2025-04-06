@@ -4,11 +4,20 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import * as api from "../datalayer/api";
-import { Facet, Item, ItemsQuery } from "../types";
+import {
+  Facet,
+  isNumberFacet,
+  Item,
+  ItemsQuery,
+  NumberFacet,
+  NumberField,
+} from "../types";
 import { facetQueryToHash, queryToHash, toQuery } from "./searchHooks";
+import { isNumberValue } from "../components/facets/facet-context";
 
 type QueryContextType = {
   query: ItemsQuery;
@@ -23,6 +32,8 @@ type QueryContextType = {
   setSort: (sort: string) => void;
   setStock: (stock: string[]) => void;
   setTerm: (term: string) => void;
+  removeFilter: (id: number) => void;
+  setFilter: (id: number, value: string[] | Omit<NumberField, "id">) => void;
 };
 
 const facetCache = new Map<string, Facet[]>();
@@ -47,7 +58,7 @@ export const QueryProvider = ({
       page: 0,
       pageSize: 20,
       range: [],
-      query: "*",
+      //query: "*",
       sort: "popular",
       string: [],
       stock: [],
@@ -68,6 +79,36 @@ export const QueryProvider = ({
   const setTerm = useCallback((term: string) => {
     setQuery((prev) => ({ ...prev, query: term }));
   }, []);
+  const removeFilter = useCallback((id: number) => {
+    setQuery((prev) => ({
+      ...prev,
+      string: prev.string?.filter((f) => f.id !== id),
+      range: prev.range?.filter((f) => f.id !== id),
+    }));
+  }, []);
+
+  const setFilter = useCallback(
+    (id: number, value: string[] | Omit<NumberField, "id">) => {
+      if (isNumberValue(value)) {
+        setQuery((prev) => ({
+          ...prev,
+          range: [
+            ...(prev.range?.filter((r) => r.id !== id) ?? []),
+            { id, ...value },
+          ],
+        }));
+      } else {
+        setQuery((prev) => ({
+          ...prev,
+          string: [
+            ...(prev.string?.filter((r) => r.id !== id) ?? []),
+            { id, value },
+          ],
+        }));
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     const facetKey = facetQueryToHash(query);
@@ -129,6 +170,8 @@ export const QueryProvider = ({
         setSort,
         setStock,
         setTerm,
+        removeFilter,
+        setFilter,
         isLoading,
         isLoadingFacets,
         facets,
@@ -147,4 +190,63 @@ export const useQuery = () => {
     throw new Error("useQuery must be used within a QueryProvider");
   }
   return context;
+};
+
+export const useQueryKeyFacet = (id: number) => {
+  const {
+    facets,
+    query: { string: keys },
+    setFilter,
+  } = useQuery();
+  const facet = useMemo(() => facets.find((f) => f.id === id), [facets, id]);
+  const filter = useMemo(
+    () => new Set(keys?.find((f) => f.id === id)?.value ?? []),
+    [keys, id]
+  );
+  const updateValue = useCallback(
+    (value: string[]) => {
+      setFilter(id, value as string[]);
+    },
+    [id, setFilter]
+  );
+  const addValue = useCallback(
+    (value: string) => {
+      filter?.add(value);
+      setFilter(id, Array.from(filter));
+    },
+    [id, filter, setFilter]
+  );
+  const removeValue = useCallback(
+    (value: string) => {
+      filter?.delete(value);
+      setFilter(id, Array.from(filter));
+    },
+    [id, filter, setFilter]
+  );
+
+  return { facet, filter, updateValue, addValue, removeValue };
+};
+
+export const useQueryRangeFacet = (id: number) => {
+  const {
+    facets,
+    query: { range },
+    setFilter,
+  } = useQuery();
+  const facet = useMemo(
+    () => facets.find((f) => isNumberFacet(f) && f.id === id),
+    [facets, id]
+  );
+  const filter = useMemo(() => {
+    const f = range?.find((f) => f.id === id);
+    return f ? { min: f.min, max: f.max } : facet?.result;
+  }, [range, id, facet]);
+  const updateValue = useCallback(
+    (value: Omit<NumberField, "id">) => {
+      setFilter(id, value);
+    },
+    [id, setFilter]
+  );
+
+  return { facet, filter, updateValue };
 };

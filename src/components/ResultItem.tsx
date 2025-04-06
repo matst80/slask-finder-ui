@@ -3,11 +3,12 @@ import { makeImageUrl } from "../utils";
 import { Price } from "./Price";
 import { Stars } from "./Stars";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 //import { useHashQuery } from "../hooks/searchHooks";
 import { trackClick } from "../datalayer/beacons";
 import { Link } from "react-router-dom";
 import { useQuery } from "../hooks/QueryProvider";
+import { useImpression } from "../hooks/ImpressionProvider";
 
 const StockIndicator = ({
   stock,
@@ -181,16 +182,16 @@ export const ResultItem = ({
 }: Item & {
   position: number;
 }) => {
+  const { watch } = useImpression();
   const trackItem = () => {
     trackClick(item.id, position);
   };
 
   return (
     <Link
+      ref={(r) => r != null && watch(r, { id: Number(item.id), position })}
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
-      data-id={item.id}
-      data-position={position}
       className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item`}
       onClick={trackItem}
     >

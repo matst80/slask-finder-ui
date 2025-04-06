@@ -6,7 +6,6 @@ import { MiniCart } from "../components/MiniCart";
 import { Paging } from "../components/Paging";
 import { ResultHeader } from "../components/ResultHeader";
 import { SearchResultList } from "../components/SearchResultList";
-import { QueryProvider } from "../hooks/QueryProvider";
 
 function App() {
   useFocusTracking();

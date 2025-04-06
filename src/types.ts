@@ -148,7 +148,7 @@ export type ItemResult = Item[];
 
 export type NumberField = { id: number; min: number; max: number };
 
-export type KeyField = { id: number; value: string | string[] };
+export type KeyField = { id: number; value: string[] };
 
 export type Field = NumberField | KeyField;
 

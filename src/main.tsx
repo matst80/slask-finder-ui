@@ -20,6 +20,7 @@ import { PageContainer } from "./PageContainer.tsx";
 import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx";
 import { Builder } from "./components/Builder.tsx";
 import { QueryProvider } from "./hooks/QueryProvider.tsx";
+import { ImpressionProvider } from "./hooks/ImpressionProvider.tsx";
 
 const router = createBrowserRouter([
   {
@@ -133,9 +134,11 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryProvider>
-      <SWRConfig value={{}}>
-        <RouterProvider router={router} />
-      </SWRConfig>
+      <ImpressionProvider>
+        <SWRConfig value={{}}>
+          <RouterProvider router={router} />
+        </SWRConfig>
+      </ImpressionProvider>
     </QueryProvider>
   </React.StrictMode>
 );

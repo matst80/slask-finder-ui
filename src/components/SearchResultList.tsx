@@ -5,6 +5,7 @@ import { Impression, trackImpression } from "../datalayer/beacons";
 import { ButtonLink } from "./ui/button";
 import { byName, CategoryItem } from "./CategoryItem";
 import { useQuery } from "../hooks/QueryProvider";
+import { ImpressionProvider } from "../hooks/ImpressionProvider";
 
 const searchList = [
   {
@@ -45,48 +46,11 @@ const NoResults = () => {
 };
 
 export const SearchResultList = () => {
-  const ref = useRef<HTMLDivElement>(null);
   const {
     isLoading,
     hits,
     query: { page, pageSize },
   } = useQuery();
-
-  useEffect(() => {
-    const impressions = new Set<number>();
-    let toPush: Impression[] = [];
-    if (ref.current) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries
-            .filter((d) => d.isIntersecting)
-            .forEach((entry) => {
-              const target = entry.target as HTMLElement;
-              const id = Number(target.dataset.id);
-              const position = Number(target.dataset.position);
-              if (id != null && !isNaN(position)) {
-                if (!impressions.has(id)) {
-                  toPush.push({ id, position });
-                  impressions.add(id);
-                }
-              }
-            });
-          if (toPush.length) {
-            trackImpression(toPush);
-            toPush = [];
-          }
-        },
-        { threshold: 1 }
-      );
-      requestAnimationFrame(() => {
-        ref.current?.querySelectorAll(".result-item").forEach((item) => {
-          observer.observe(item);
-        });
-      });
-
-      return () => observer.disconnect();
-    }
-  }, [hits, ref]);
 
   const start = (page ?? 0) * (pageSize ?? 40);
   if (isLoading && hits.length < 1) {
@@ -97,14 +61,13 @@ export const SearchResultList = () => {
     return <NoResults />;
   }
   return (
-    <div
-      ref={ref}
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
-    >
-      {hits?.map((item, idx) => (
-        <ResultItem key={item.id} {...item} position={start + idx} />
-      ))}
-    </div>
+    <ImpressionProvider>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+        {hits?.map((item, idx) => (
+          <ResultItem key={item.id} {...item} position={start + idx} />
+        ))}
+      </div>
+    </ImpressionProvider>
   );
 };
 

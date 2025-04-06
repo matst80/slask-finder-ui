@@ -2,12 +2,12 @@ import { useMemo, useState } from "react";
 import { isKeyFacet, isNumberFacet, KeyFacet, NumberFacet } from "../types";
 import { ChevronDown, ChevronUp, LoaderCircle } from "lucide-react";
 import { byPriority, cm, colourNameToHex, converters } from "../utils";
-import {
-  useFilters,
-  useHashFacets,
-  useQueryHelpers,
-} from "../hooks/searchHooks";
 import { stores } from "../datalayer/stores";
+import {
+  useQuery,
+  useQueryKeyFacet,
+  useQueryRangeFacet,
+} from "../hooks/QueryProvider";
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
@@ -21,13 +21,13 @@ const KeyFacetSelector = ({
   defaultOpen,
 }: KeyFacet & { defaultOpen: boolean }) => {
   const { values } = result;
-  const { keyFilters, addKeyFilter, removeKeyFilter } = useFilters();
+  const { filter: filterValue, addValue, removeValue } = useQueryKeyFacet(id);
   const [filter, setFilter] = useState("");
   const allSorted = useMemo(() => toSorted(values), [values]);
   const filtered = useMemo(() => {
     return filter.length > 2
       ? allSorted.filter(({ value }) =>
-          value.toLowerCase().includes(filter.toLowerCase()),
+          value.toLowerCase().includes(filter.toLowerCase())
         )
       : allSorted;
   }, [allSorted, filter]);
@@ -73,15 +73,13 @@ const KeyFacetSelector = ({
                   type="checkbox"
                   id={value}
                   value={value}
-                  checked={keyFilters.some(
-                    (d) => d.value === value && d.id === id,
-                  )}
+                  checked={filterValue.has(value)}
                   onChange={(e) => {
                     const checked = e.target.checked;
                     if (checked) {
-                      addKeyFilter(id, value);
+                      addValue(value);
                     } else {
-                      removeKeyFilter(id);
+                      removeValue(value);
                     }
                   }}
                 />
@@ -124,7 +122,7 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
         type="number"
         className={cm(
           "text-sm text-gray-600 text-left px-2 bg-gray-200 rounded-lg flex-1",
-          validMin ? "" : "border border-red-500",
+          validMin ? "" : "border border-red-500"
         )}
         min={0}
         max={max}
@@ -140,7 +138,7 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
         type="number"
         className={cm(
           "text-sm text-gray-600 text-right px-2 bg-gray-200 rounded-lg flex-1",
-          validMax ? "" : "border border-red-500",
+          validMax ? "" : "border border-red-500"
         )}
         min={0}
         max={max}
@@ -160,20 +158,19 @@ const Slider = ({ min, max, onChange }: SliderProps) => {
 };
 
 const NumberFacetSelector = ({
+  id,
   name,
   result: { min, max },
   type,
-  updateFilerValue,
   defaultOpen,
 }: NumberFacet & {
-  updateFilerValue: (min: number, max: number) => void;
-  defaultOpen: boolean;
+  defaultOpen?: boolean;
 }) => {
   const [open, setOpen] = useState(defaultOpen);
-
+  const { updateValue } = useQueryRangeFacet(id);
   const { toDisplayValue, fromDisplayValue } = useMemo(
     () => converters(type),
-    [type],
+    [type]
   );
 
   return (
@@ -196,7 +193,10 @@ const NumberFacetSelector = ({
             min={toDisplayValue(min)}
             max={toDisplayValue(max)}
             onChange={(min, max) => {
-              updateFilerValue(fromDisplayValue(min), fromDisplayValue(max));
+              updateValue({
+                min: fromDisplayValue(min),
+                max: fromDisplayValue(max),
+              });
             }}
           />
         </div>
@@ -205,36 +205,8 @@ const NumberFacetSelector = ({
   );
 };
 
-const FloatFacetSelector = (facet: NumberFacet) => {
-  const { addNumberFilter } = useFilters();
-
-  return (
-    <NumberFacetSelector
-      {...facet}
-      defaultOpen={false}
-      updateFilerValue={(min, max) => {
-        addNumberFilter(facet.id, min, max);
-      }}
-    />
-  );
-};
-
-const IntegerFacetSelector = (facet: NumberFacet) => {
-  const { addNumberFilter } = useFilters();
-
-  return (
-    <NumberFacetSelector
-      {...facet}
-      defaultOpen={false}
-      updateFilerValue={(min, max) => {
-        addNumberFilter(facet.id, min, max);
-      }}
-    />
-  );
-};
-
 const ColorFacetSelector = ({ id, result: { values } }: KeyFacet) => {
-  const { addKeyFilter, keyFilters, removeKeyFilter } = useFilters();
+  const { filter: keyFilters, addValue, removeValue } = useQueryKeyFacet(id);
 
   return (
     <div className="mb-4 border-b border-gray-100 pb-2">
@@ -245,23 +217,19 @@ const ColorFacetSelector = ({ id, result: { values } }: KeyFacet) => {
           if (!colorHex) {
             return null;
           }
-          const selected = keyFilters.find(
-            (f) => f.id === id && f.value === color,
-          );
+          const selected = keyFilters.has(color);
           return (
             <button
               key={color}
               title={color}
               className={cm(
                 `w-6 h-6 rounded-full border`,
-                selected ? "border-blue-500" : "border-gray-300",
+                selected ? "border-blue-500" : "border-gray-300"
               )}
               style={colorHex}
               aria-label={`Filter by ${color}`}
               onClick={() => {
-                selected != null
-                  ? removeKeyFilter(id)
-                  : addKeyFilter(id, color);
+                selected != null ? addValue(color) : removeValue(color);
               }}
             />
           );
@@ -272,16 +240,14 @@ const ColorFacetSelector = ({ id, result: { values } }: KeyFacet) => {
 };
 
 export const Facets = () => {
-  const { data: results, isLoading } = useHashFacets();
   const {
     query: { stock },
     setStock,
-  } = useQueryHelpers();
+    facets: results,
+    isLoadingFacets: isLoading,
+  } = useQuery();
 
-  const allFacets = useMemo(
-    () => results ?? [].sort(byPriority),
-    [results],
-  );
+  const allFacets = useMemo(() => results ?? [].sort(byPriority), [results]);
   const hasFacets = allFacets.length > 0;
   if (isLoading && !hasFacets) {
     return (
@@ -310,21 +276,12 @@ export const Facets = () => {
             }
             if (isNumberFacet(facet)) {
               return (
-                <FloatFacetSelector
+                <NumberFacetSelector
                   {...facet}
                   key={`fld-${facet.id}-${facet.name}`}
                 />
               );
             }
-            if (isNumberFacet(facet)) {
-              return (
-                <IntegerFacetSelector
-                  {...facet}
-                  key={`fld-${facet.id}-${facet.name}`}
-                />
-              );
-            }
-
             return (
               <KeyFacetSelector
                 {...facet}
