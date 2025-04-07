@@ -176,12 +176,52 @@ export const ResultItemInner = ({
   );
 };
 
+const Value = ({ value }: { value: unknown }) => {
+  if (Array.isArray(value)) {
+    return (
+      <div className="flex flex-col gap-2">
+        {value.map((v, i) => (
+          <Value key={i} value={v} />
+        ))}
+      </div>
+    );
+  }
+  if (typeof value === "object") {
+    return (
+      <div className="flex flex-col gap-2 pl-2">
+        {Object.entries(value ?? {}).map(([key, val]) => (
+          <DataProperty key={key} title={key} value={val} />
+        ))}
+      </div>
+    );
+  }
+  return <>{String(value)}</>;
+};
+
+const DataProperty = ({ title, value }: { title: string; value: unknown }) => {
+  if (value == null) {
+    return null;
+  }
+
+  return (
+    <details className="text-sm font-semibold" open={typeof value !== "object"}>
+      <summary>{title}</summary>
+      <Value value={value} />
+    </details>
+  );
+};
+
+const DataView = ({ item }: { item: Item }) => {
+  return <Value value={item} />;
+};
+
 export const ResultItem = ({
   position,
   ...item
 }: Item & {
   position: number;
 }) => {
+  //return <DataView item={item} />;
   const { watch } = useImpression();
   const trackItem = () => {
     trackClick(item.id, position);
@@ -196,6 +236,7 @@ export const ResultItem = ({
       onClick={trackItem}
     >
       <ResultItemInner {...item} />
+      {/* <DataView item={item} /> */}
     </Link>
   );
 };
