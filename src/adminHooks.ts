@@ -2,6 +2,7 @@ import useSWR from "swr";
 import {
   getFieldList,
   getKeyFieldsValues,
+  getMissingFieldList,
   getPopularity,
   getStaticPositions,
   setStaticPositions,
@@ -35,7 +36,22 @@ export const useUser = () => {
 };
 
 export const useFields = () => {
-  return useSWR("/admin/fields", getFieldList);
+  return useSWR("/admin/fields", () =>
+    getFieldList().then((d) =>
+      Object.entries(d).map(([key, value]) => ({ ...value, key }))
+    )
+  );
+};
+
+export const useMissingFacets = () => {
+  return useSWR("/admin/missing", () =>
+    getMissingFieldList().then((d) =>
+      d.map((value) => ({
+        ...value,
+        key: String(value.id),
+      }))
+    )
+  );
 };
 
 export const useIsAdmin = () => {

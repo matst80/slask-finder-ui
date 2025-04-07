@@ -1,16 +1,20 @@
 import { useMemo, useState } from "react";
-import { useFields } from "../../adminHooks";
+import { useFields, useMissingFacets } from "../../adminHooks";
 import { Button } from "../../components/ui/button";
 import { createFacetFromField } from "../../lib/datalayer/api";
 import { cm } from "../../utils";
+import { FieldListItem } from "../../lib/types";
 
-export const EditFieldsView = () => {
+const FilteredFieldView = ({
+  data,
+}: {
+  data: (FieldListItem & { key: string })[];
+}) => {
   const [filter, setFilter] = useState<string>("");
   const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
-  const { data, isLoading } = useFields();
   const uniquePurpose = useMemo(() => {
     const purposeSet = new Set<string>();
-    Object.values(data ?? {}).forEach((field) => {
+    data.forEach((field) => {
       field.purpose?.forEach((purpose) => {
         purposeSet.add(purpose);
       });
@@ -18,21 +22,13 @@ export const EditFieldsView = () => {
     return Array.from(purposeSet);
   }, [data]);
   const filteredData = useMemo(() => {
-    return Object.entries(data ?? {})
-      ?.filter(([key, field]) => {
-        if (
-          selectedPurpose != null &&
-          !field.purpose?.includes(selectedPurpose)
-        )
-          return false;
-        if (!filter.length) return selectedPurpose != null;
-        if (key?.includes(filter) || key == filter) return true;
-        return field.name.toLowerCase()?.includes(filter.toLowerCase());
-      })
-      .map(([key, field]) => ({
-        ...field,
-        key: key,
-      }));
+    return data.filter((field) => {
+      if (selectedPurpose != null && !field.purpose?.includes(selectedPurpose))
+        return false;
+      if (!filter.length) return selectedPurpose != null;
+      if (field.key?.includes(filter) || field.key == filter) return true;
+      return field.name.toLowerCase()?.includes(filter.toLowerCase());
+    });
   }, [filter, data, selectedPurpose]);
   const addField = (fieldKey: string) => {
     createFacetFromField(fieldKey);
@@ -73,7 +69,6 @@ export const EditFieldsView = () => {
         placeholder="Search fields..."
       />
       <ul>
-        {isLoading && <li>Loading...</li>}
         {filteredData?.map((field) => (
           <li key={field.id} className="flex gap-2 items-center">
             <span className="text-sm font-bold">{field.name}</span>
@@ -102,4 +97,20 @@ export const EditFieldsView = () => {
       </div>
     </div>
   );
+};
+
+export const EditFieldsView = () => {
+  const { data, isLoading } = useFields();
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  return <FilteredFieldView data={data ?? []} />;
+};
+
+export const MissingFieldsView = () => {
+  const { data, isLoading } = useMissingFacets();
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  return <FilteredFieldView data={data ?? []} />;
 };

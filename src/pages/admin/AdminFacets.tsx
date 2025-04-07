@@ -1,23 +1,35 @@
-import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
 import { FacetListItem } from "../../lib/types";
 import { useFieldValues } from "../../adminHooks";
 
 const FacetValues = ({ id }: { id: number }) => {
-  const { data: values } = useFieldValues(id);
+  const { data } = useFieldValues(id);
+
+  if (Array.isArray(data)) {
+    return (
+      <ul>
+        {data?.map((value, idx) =>
+          typeof value === "string" ? (
+            <li key={value}>{value}</li>
+          ) : (
+            <li key={idx}>
+              <pre>{JSON.stringify(value, null, 2)}</pre>
+            </li>
+          )
+        )}
+      </ul>
+    );
+  }
   return (
-    <ul>
-      {values?.map((value) => (
-        <li key={value}>{value}</li>
-      ))}
-    </ul>
+    <div>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </div>
   );
 };
 
 export const AdminFacet = (facet: FacetListItem) => {
   const [open, setOpen] = useState(false);
-  const isKeyFacet = facet.fieldType === "key";
   return (
     <>
       <div className="grid grid-cols-subgrid col-span-full border-b border-gray-100 p-4">
@@ -26,9 +38,9 @@ export const AdminFacet = (facet: FacetListItem) => {
             className="font-medium bold"
             onClick={() => setOpen((p) => !p)}
           >
-            {facet.name} ({isKeyFacet ? "" : "max-min: "}
-            {facet.count})
-            {isKeyFacet && (
+            {facet.name}
+            {facet.count}
+            {/* {isKeyFacet && (
               <>
                 {open ? (
                   <ChevronUp className="size-4 inline ml-2" />
@@ -36,7 +48,7 @@ export const AdminFacet = (facet: FacetListItem) => {
                   <ChevronDown className="size-4 inline ml-2" />
                 )}
               </>
-            )}
+            )} */}
           </button>
         </div>
         <span>
@@ -44,13 +56,13 @@ export const AdminFacet = (facet: FacetListItem) => {
         </span>
         <span>
           <select value={facet.sort}>
-            <option>By number of hits</option>
-            <option>Name</option>
+            <option value="">By number of hits</option>
+            <option value="name">Name</option>
           </select>
         </span>
         <Input defaultValue={facet.prio} type="number" />
       </div>
-      {isKeyFacet && open && (
+      {open && (
         <div className="grid grid-cols-subgrid col-span-full border-b border-gray-100 p-4">
           <FacetValues id={facet.id} />
         </div>

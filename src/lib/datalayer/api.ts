@@ -171,6 +171,11 @@ export const getFieldList = () =>
     toJson<Record<string, FieldListItem>>(d)
   );
 
+export const getMissingFieldList = () =>
+  fetch(`${baseUrl}/admin/missing-fields`).then((d) =>
+    toJson<FieldListItem[]>(d)
+  );
+
 export const getCategories = () =>
   fetch(`${baseUrl}/api/categories`).then((d) => toJson<Category[]>(d));
 

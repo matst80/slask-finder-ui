@@ -21,7 +21,10 @@ import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx";
 import { Builder } from "./components/Builder.tsx";
 import { QueryProvider } from "./lib/hooks/QueryProvider.tsx";
 import { ImpressionProvider } from "./lib/hooks/ImpressionProvider.tsx";
-import { EditFieldsView } from "./pages/admin/EditFieldsView.tsx";
+import {
+  EditFieldsView,
+  MissingFieldsView,
+} from "./pages/admin/EditFieldsView.tsx";
 
 const router = createBrowserRouter([
   {
@@ -82,6 +85,10 @@ const router = createBrowserRouter([
       {
         path: "fields",
         element: <EditFieldsView />,
+      },
+      {
+        path: "missing-fields",
+        element: <MissingFieldsView />,
       },
     ],
   },
