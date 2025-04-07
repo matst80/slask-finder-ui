@@ -1,5 +1,5 @@
-import { stores } from "../datalayer/stores";
-import { Item } from "../types";
+import { stores } from "../lib/datalayer/stores";
+import { Item } from "../lib/types";
 
 export const StoreList = ({ stock }: { stock: Item["stock"] }) => {
   return (

@@ -4,7 +4,7 @@ import {
   getTrackingPopularity,
   getTrackingQueries,
   getTrackingSessions,
-} from "../datalayer/api";
+} from "../lib/datalayer/api";
 
 export const useSessions = () => {
   return useSWR("/api/sessions", getTrackingSessions);

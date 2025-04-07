@@ -8,7 +8,7 @@ import {
   CartEvent,
   ImpressionEvent,
   ActionEvent,
-} from "../types";
+} from "../lib/types";
 import { cm, isDefined, makeImageUrl } from "../utils";
 import { useFacetList } from "../hooks/searchHooks";
 import { Eye, Flashlight, Search, ShoppingCart } from "lucide-react";

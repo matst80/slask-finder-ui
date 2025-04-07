@@ -1,6 +1,6 @@
 import { AutoSuggest } from "../../components/AutoSuggest";
 import { CurrentFilters } from "../../components/CurrentFilters";
-import { Facets } from "../../components/facets/Facets";
+import { Facets } from "../../components/Facets";
 import { Paging } from "../../components/Paging";
 import { ResultHeader } from "../../components/ResultHeader";
 import { TableSearchResultList } from "./TableSearchResultList";

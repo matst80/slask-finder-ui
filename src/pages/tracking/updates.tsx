@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getTrackingUpdates } from "../../datalayer/api";
+import { getTrackingUpdates } from "../../lib/datalayer/api";
 import { ResultItem } from "../../components/ResultItem";
 
 export const UpdatedItems = () => {

@@ -1,13 +1,9 @@
 import { ShoppingCart } from "lucide-react";
-import {
-  queryToHash,
-  useFacetList,
-  useRelatedItems,
-} from "../hooks/searchHooks";
+import { useFacetList, useRelatedItems } from "../hooks/searchHooks";
 import { useMemo, useState } from "react";
 import { byPriority, makeImageUrl } from "../utils";
-import { ItemDetail } from "../types";
-import { stores } from "../datalayer/stores";
+import { ItemDetail } from "../lib/types";
+import { stores } from "../lib/datalayer/stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Price } from "./Price";
@@ -109,13 +105,11 @@ const Properties = ({
                   <button
                     className="text-blue-500 hover:underline"
                     onClick={() => {
-                      globalThis.location.hash = queryToHash({
-                        string: [
-                          { id: field.linkedId!, value: String(field.value!) },
-                        ],
-                        page: 0,
-                        stock: [],
-                      });
+                      console.log(
+                        "change filter!",
+                        field.linkedId,
+                        field.value
+                      );
                     }}
                   >
                     Visa kompatibla

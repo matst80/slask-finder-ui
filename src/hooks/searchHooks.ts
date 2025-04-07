@@ -4,9 +4,9 @@ import {
   getFacetList,
   getRelated,
   streamItems,
-} from "../datalayer/api";
-import { FacetQuery, FilteringQuery, ItemsQuery } from "../types";
-import { useEffect, useState, useCallback } from "react";
+} from "../lib/datalayer/api";
+import { FacetQuery, FilteringQuery, ItemsQuery } from "../lib/types";
+import { isDefined } from "../utils";
 
 const FIELD_SEPARATOR = ":";
 const ID_VALUE_SEPARATOR = "=";
@@ -36,7 +36,7 @@ export const queryFromHash = (hash: string): ItemsQuery => {
       const [id, value] = s.split(ID_VALUE_SEPARATOR);
       return {
         id: Number(id),
-        value: value.includes("||") ? value.split("||") : value,
+        value: value.includes("||") ? value.split("||") : [value],
       };
     });
   const query = hashData.q;
@@ -111,12 +111,16 @@ export const filteringQueryToHash = ({
 
   const strs =
     string?.map(({ id, value }) => {
+      if (Array.isArray(value) && value.length === 0) {
+        console.log("Empty value for id:", id);
+        return undefined;
+      }
       return `${id}${ID_VALUE_SEPARATOR}${
         Array.isArray(value) ? value.join("||") : value
       }`;
     }) ?? [];
   if (strs.length) {
-    result.s = strs.join(FIELD_SEPARATOR);
+    result.s = strs.filter(isDefined).join(FIELD_SEPARATOR);
   }
   return result;
 };
@@ -135,7 +139,7 @@ const itemsKey = (data: ItemsQuery) => `items-` + queryToHash(data);
 
 const facetsKey = (data: FacetQuery) => "facets-" + facetQueryToHash(data);
 
-const toQuery = (data: ItemsQuery): string => {
+export const toQuery = (data: ItemsQuery): string => {
   const { range, sort, page, pageSize, query, stock, string } = data;
 
   const result = new URLSearchParams({
@@ -148,12 +152,14 @@ const toQuery = (data: ItemsQuery): string => {
     result.append("rng", `${id}:${min}-${max}`);
   });
 
-  string?.forEach(({ id, value }) => {
-    result.append(
-      "str",
-      `${id}:${Array.isArray(value) ? value.join("||") : value}`
-    );
-  });
+  string
+    ?.filter(({ value }) => Array.isArray(value) && value.length > 0)
+    .forEach(({ id, value }) => {
+      result.append(
+        "str",
+        `${id}:${Array.isArray(value) ? value.join("||") : value}`
+      );
+    });
   stock?.forEach((s) => {
     result.append("stock", s);
   });
@@ -173,183 +179,179 @@ export const useItemsSearch = (query: ItemsQuery) => {
   );
 };
 
-const delay = <T>(fn: () => Promise<T>, ms: number): (() => Promise<T>) => {
-  return () =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(fn());
-      }, ms);
-    });
-};
+// const delay = <T>(fn: () => Promise<T>, ms: number): (() => Promise<T>) => {
+//   return () =>
+//     new Promise((resolve) => {
+//       setTimeout(() => {
+//         resolve(fn());
+//       }, ms);
+//     });
+// };
 
 export const useFacets = (data: FacetQuery) => {
-  return useSWR(
-    facetsKey(data),
-    delay(() => facets(toQuery(data)), 80),
-    {
-      keepPreviousData: true,
-      revalidateOnFocus: false,
-      refreshInterval: 0,
-    }
-  );
+  return useSWR(facetsKey(data), () => facets(toQuery(data)), {
+    keepPreviousData: true,
+    revalidateOnFocus: false,
+    refreshInterval: 0,
+  });
 };
 
-const getLocationHashData = (): ItemsQuery => {
-  const hash = globalThis.location.hash;
-  if (hash.length > 1) {
-    return queryFromHash(hash.substring(1));
-  }
-  return { stock: [], page: 0, pageSize: 40, sort: "popular" };
-};
+// const getLocationHashData = (): ItemsQuery => {
+//   const hash = globalThis.location.hash;
+//   if (hash.length > 1) {
+//     return queryFromHash(hash.substring(1));
+//   }
+//   return { stock: [], page: 0, pageSize: 40, sort: "popular" };
+// };
 
-export const useHashQuery = () => {
-  const [query, setInternalQuery] = useState<ItemsQuery>(getLocationHashData());
+// export const useHashQuery = () => {
+//   const [query, setInternalQuery] = useState<ItemsQuery>(getLocationHashData());
 
-  useEffect(() => {
-    const onHashChange = () => {
-      setInternalQuery(getLocationHashData());
-    };
-    globalThis.window.addEventListener("hashchange", onHashChange);
-    return () =>
-      globalThis.window.removeEventListener("hashchange", onHashChange);
-  }, []);
+//   useEffect(() => {
+//     const onHashChange = () => {
+//       setInternalQuery(getLocationHashData());
+//     };
+//     globalThis.window.addEventListener("hashchange", onHashChange);
+//     return () =>
+//       globalThis.window.removeEventListener("hashchange", onHashChange);
+//   }, []);
 
-  const setQuery = useCallback(
-    (fn: (data: ItemsQuery) => ItemsQuery) => {
-      globalThis.location.hash = queryToHash(fn(query));
-    },
-    [query]
-  );
+//   const setQuery = useCallback(
+//     (fn: (data: ItemsQuery) => ItemsQuery) => {
+//       globalThis.location.hash = queryToHash(fn(query));
+//     },
+//     [query]
+//   );
 
-  const partialUpdate = useCallback(
-    <T extends keyof ItemsQuery>(key: T) =>
-      (fnOrValue: FunctionOrValue<ItemsQuery[T]>) => {
-        setQuery((prev) => {
-          const value =
-            typeof fnOrValue === "function" ? fnOrValue(prev[key]) : fnOrValue;
+//   const partialUpdate = useCallback(
+//     <T extends keyof ItemsQuery>(key: T) =>
+//       (fnOrValue: FunctionOrValue<ItemsQuery[T]>) => {
+//         setQuery((prev) => {
+//           const value =
+//             typeof fnOrValue === "function" ? fnOrValue(prev[key]) : fnOrValue;
 
-          if (key != "page") {
-            return { ...prev, [key]: value, page: 0 };
-          }
-          return { ...prev, [key]: value };
-        });
-      },
-    [setQuery]
-  );
+//           if (key != "page") {
+//             return { ...prev, [key]: value, page: 0 };
+//           }
+//           return { ...prev, [key]: value };
+//         });
+//       },
+//     [setQuery]
+//   );
 
-  return {
-    query,
-    partialUpdate,
-    setQuery,
-  };
-};
+//   return {
+//     query,
+//     partialUpdate,
+//     setQuery,
+//   };
+// };
 
-export const useHashResultItems = () => {
-  const { query } = useHashQuery();
-  return useItemsSearch(query);
-};
+// export const useHashResultItems = () => {
+//   const { query } = useHashQuery();
+//   return useItemsSearch(query);
+// };
 
-export const useHashFacets = () => {
-  const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    query: { sort, pageSize, page, ...facetQuery },
-  } = useHashQuery();
-  return useFacets(facetQuery);
-};
+// export const useHashFacets = () => {
+//   const {
+//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//     query: { sort, pageSize, page, ...facetQuery },
+//   } = useHashQuery();
+//   return useFacets(facetQuery);
+// };
 
-type FunctionOrValue<T> = T | ((prev: T) => T);
+// type FunctionOrValue<T> = T | ((prev: T) => T);
 
-export const useQueryHelpers = () => {
-  const { query, partialUpdate, setQuery } = useHashQuery();
+// export const useQueryHelpers = () => {
+//   const { query, partialUpdate, setQuery } = useHashQuery();
 
-  const setPage = partialUpdate("page");
-  const setPageSize = partialUpdate("pageSize");
-  const setSort = partialUpdate("sort");
-  const setStock = partialUpdate("stock");
-  const setTerm = partialUpdate("query");
-  const setKeyFilters = partialUpdate("string");
-  const setRangeFilters = partialUpdate("range");
+//   const setPage = partialUpdate("page");
+//   const setPageSize = partialUpdate("pageSize");
+//   const setSort = partialUpdate("sort");
+//   const setStock = partialUpdate("stock");
+//   const setTerm = partialUpdate("query");
+//   const setKeyFilters = partialUpdate("string");
+//   const setRangeFilters = partialUpdate("range");
 
-  const setGlobalTerm = (term: string) => {
-    setQuery((prev) => ({
-      ...prev,
-      string: [],
-      number: [],
-      integer: [],
-      query: term,
-    }));
-  };
-  return {
-    query,
-    setPage,
-    setGlobalTerm,
-    setPageSize,
-    setSort,
-    setStock,
-    setTerm,
-    setKeyFilters,
-    setRangeFilters,
-  };
-};
+//   const setGlobalTerm = (term: string) => {
+//     setQuery((prev) => ({
+//       ...prev,
+//       string: [],
+//       number: [],
+//       integer: [],
+//       query: term,
+//     }));
+//   };
+//   return {
+//     query,
+//     setPage,
+//     setGlobalTerm,
+//     setPageSize,
+//     setSort,
+//     setStock,
+//     setTerm,
+//     setKeyFilters,
+//     setRangeFilters,
+//   };
+// };
 
-export const useFilters = () => {
-  const { query, setKeyFilters, setRangeFilters } = useQueryHelpers();
-  return {
-    keyFilters: query.string ?? [],
-    addKeyFilter: (id: number, value: string) => {
-      setKeyFilters((prev) => {
-        if (!prev) {
-          return [{ id, value }];
-        }
-        const foundIdx = prev?.findIndex((f) => f.id === id);
-        if (foundIdx !== -1) {
-          const p = prev[foundIdx];
-          if (p.value === value) {
-            return prev;
-          } else {
-            prev[foundIdx].value = [
-              ...(Array.isArray(p.value) ? p.value : [p.value]),
-              value,
-            ];
-          }
-          return prev;
-        }
-        return [...prev, { id, value }];
-      });
-      //setPage(0);
-    },
-    removeKeyFilter: (id: number, value?: string) => {
-      setKeyFilters((prev) => {
-        if (!prev) {
-          return [];
-        }
-        const foundIdx = prev?.findIndex((f) => f.id === id);
-        if (foundIdx !== -1) {
-          const p = prev[foundIdx];
-          if (p.value === value) {
-            return [...prev].filter((f) => f.id !== id);
-          } else {
-            prev[foundIdx].value = [
-              ...(Array.isArray(p.value) ? p.value : [p.value]),
-            ].filter((v) => v !== value);
-          }
-          return prev;
-        }
-        return [...prev].filter((f) => f.id !== id);
-      });
-      //setPage(0);
-    },
-    numberFilters: query.range ?? [],
-    addNumberFilter: (id: number, min: number, max: number) => {
-      setRangeFilters((prev) => [...(prev ?? []), { id, min, max }]);
-      //setPage(0);
-    },
-    removeNumberFilter: (id: number) => {
-      setRangeFilters((prev) => [...(prev ?? [])].filter((f) => f.id !== id));
-      //setPage(0);
-    },
-  };
-};
+// export const useFilters = () => {
+//   const { query, setKeyFilters, setRangeFilters } = useQueryHelpers();
+//   return {
+//     keyFilters: query.string ?? [],
+//     addKeyFilter: (id: number, value: string) => {
+//       setKeyFilters((prev) => {
+//         if (!prev) {
+//           return [{ id, value }];
+//         }
+//         const foundIdx = prev?.findIndex((f) => f.id === id);
+//         if (foundIdx !== -1) {
+//           const p = prev[foundIdx];
+//           if (p.value === value) {
+//             return prev;
+//           } else {
+//             prev[foundIdx].value = [
+//               ...(Array.isArray(p.value) ? p.value : [p.value]),
+//               value,
+//             ];
+//           }
+//           return prev;
+//         }
+//         return [...prev, { id, value }];
+//       });
+//       //setPage(0);
+//     },
+//     removeKeyFilter: (id: number, value?: string) => {
+//       setKeyFilters((prev) => {
+//         if (!prev) {
+//           return [];
+//         }
+//         const foundIdx = prev?.findIndex((f) => f.id === id);
+//         if (foundIdx !== -1) {
+//           const p = prev[foundIdx];
+//           if (p.value === value) {
+//             return [...prev].filter((f) => f.id !== id);
+//           } else {
+//             prev[foundIdx].value = [
+//               ...(Array.isArray(p.value) ? p.value : [p.value]),
+//             ].filter((v) => v !== value);
+//           }
+//           return prev;
+//         }
+//         return [...prev].filter((f) => f.id !== id);
+//       });
+//       //setPage(0);
+//     },
+//     numberFilters: query.range ?? [],
+//     addNumberFilter: (id: number, min: number, max: number) => {
+//       setRangeFilters((prev) => [...(prev ?? []), { id, min, max }]);
+//       //setPage(0);
+//     },
+//     removeNumberFilter: (id: number) => {
+//       setRangeFilters((prev) => [...(prev ?? [])].filter((f) => f.id !== id));
+//       //setPage(0);
+//     },
+//   };
+// };
 
 export const useFacetList = () => {
   return useSWR("facet-list", getFacetList, {

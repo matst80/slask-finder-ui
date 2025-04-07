@@ -1,12 +1,14 @@
-import { Item } from "../types";
+import { Item } from "../lib/types";
 import { makeImageUrl } from "../utils";
 import { Price } from "./Price";
 import { Stars } from "./Stars";
 
 import { useState } from "react";
-import { useHashQuery } from "../hooks/searchHooks";
-import { trackClick } from "../datalayer/beacons";
+//import { useHashQuery } from "../hooks/searchHooks";
+import { trackClick } from "../lib/datalayer/beacons";
 import { Link } from "react-router-dom";
+import { useQuery } from "../lib/hooks/QueryProvider";
+import { useImpression } from "../lib/hooks/ImpressionProvider";
 
 const StockIndicator = ({
   stock,
@@ -14,7 +16,7 @@ const StockIndicator = ({
 }: Pick<Item, "stock" | "stockLevel">) => {
   const {
     query: { stock: stockQuery },
-  } = useHashQuery();
+  } = useQuery();
   const locationId = stockQuery?.[0];
   const stockOnLocation = locationId != null ? stock?.[locationId] : null;
   const storesWithStock = Object.entries(stock ?? {}).length;
@@ -174,26 +176,67 @@ export const ResultItemInner = ({
   );
 };
 
+const Value = ({ value }: { value: unknown }) => {
+  if (Array.isArray(value)) {
+    return (
+      <div className="flex flex-col gap-2">
+        {value.map((v, i) => (
+          <Value key={i} value={v} />
+        ))}
+      </div>
+    );
+  }
+  if (typeof value === "object") {
+    return (
+      <div className="flex flex-col gap-2 pl-2">
+        {Object.entries(value ?? {}).map(([key, val]) => (
+          <DataProperty key={key} title={key} value={val} />
+        ))}
+      </div>
+    );
+  }
+  return <>{String(value)}</>;
+};
+
+const DataProperty = ({ title, value }: { title: string; value: unknown }) => {
+  if (value == null) {
+    return null;
+  }
+
+  return (
+    <details className="text-sm font-semibold" open={typeof value !== "object"}>
+      <summary>{title}</summary>
+      <Value value={value} />
+    </details>
+  );
+};
+
+export const DataView = ({ item }: { item: Item }) => {
+  return <Value value={item} />;
+};
+
 export const ResultItem = ({
   position,
   ...item
 }: Item & {
   position: number;
 }) => {
+  //return <DataView item={item} />;
+  const { watch } = useImpression();
   const trackItem = () => {
     trackClick(item.id, position);
   };
 
   return (
     <Link
+      ref={(r) => r != null && watch(r, { id: Number(item.id), position })}
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
-      data-id={item.id}
-      data-position={position}
       className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item`}
       onClick={trackItem}
     >
       <ResultItemInner {...item} />
+      {/* <DataView item={item} /> */}
     </Link>
   );
 };

@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router-dom";
 import { ItemDetails } from "./ItemDetails";
-import { ItemDetail } from "../types";
+import { ItemDetail } from "../lib/types";
 
 type Props = {
   isEdit?: boolean;

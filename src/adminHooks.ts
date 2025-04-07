@@ -1,11 +1,12 @@
 import useSWR from "swr";
 import {
+  getFieldList,
   getKeyFieldsValues,
   getPopularity,
   getStaticPositions,
   setStaticPositions,
   updatePopularity,
-} from "./datalayer/api";
+} from "./lib/datalayer/api";
 import { useState } from "react";
 import useSWRMutation from "swr/mutation";
 
@@ -31,6 +32,10 @@ export const useUser = () => {
       errorRetryInterval: 50000,
     }
   );
+};
+
+export const useFields = () => {
+  return useSWR("/admin/fields", getFieldList);
 };
 
 export const useIsAdmin = () => {

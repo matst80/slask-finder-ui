@@ -1,11 +1,7 @@
 import { Link, Edit, Trash } from "lucide-react";
 import { useMemo } from "react";
 import { usePopularity, useStaticPositions } from "../../adminHooks";
-import {
-  useHashResultItems,
-  useHashQuery,
-  useFacetList,
-} from "../../hooks/searchHooks";
+import { useFacetList } from "../../hooks/searchHooks";
 import { CategoryList } from "../../components/SearchResultList";
 import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
@@ -18,9 +14,14 @@ import {
   TableBody,
   TableCell,
 } from "../../components/ui/table";
+import { useQuery } from "../../lib/hooks/QueryProvider";
 
 export const TableSearchResultList = () => {
-  const { data: results, isLoading: loadingItems } = useHashResultItems();
+  const {
+    hits: items,
+    isLoading: loadingItems,
+    query: { query },
+  } = useQuery();
   const {
     popular,
     setItemPopularity,
@@ -33,21 +34,19 @@ export const TableSearchResultList = () => {
     isDirty: isDirtyPositions,
     save: savePositions,
   } = useStaticPositions();
-  const {
-    query: { query },
-  } = useHashQuery();
+
   const { data } = useFacetList();
   const virtualCategories = useMemo(
     () => data?.filter((facet) => facet.type === "virtual"),
     [data]
   );
-  const items = results?.items ?? [];
+
   //const start = (page ?? 0) * (pageSize ?? 40);
   if (loadingItems) {
     return <div>Loading...</div>;
   }
 
-  if ((!items.length && (query == null || query.length < 1))) {
+  if (!items.length && (query == null || query.length < 1)) {
     return <CategoryList />;
   }
   return (

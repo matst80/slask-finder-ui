@@ -1,98 +1,28 @@
 import { useMemo } from "react";
 import { X } from "lucide-react";
-import { FacetListItem, Field, KeyField, NumberField } from "../types";
-import { stores } from "../datalayer/stores";
-import {
-  useFacetList,
-  useFilters,
-  useQueryHelpers,
-} from "../hooks/searchHooks";
+import { FacetListItem, Field, isNumberValue } from "../lib/types";
+import { stores } from "../lib/datalayer/stores";
+import { useFacetList } from "../hooks/searchHooks";
+import { useQuery } from "../lib/hooks/QueryProvider";
+import { isDefined } from "../utils";
 
-type KeyFilter = {
-  key: number;
-  name?: string;
-  type?: string;
-  fieldType: "key";
-  value: string;
-};
+function toFilter(facets?: FacetListItem[]) {
+  return (data: Field) => {
+    const field = facets?.find((field) => field.id === data?.id);
+    if (field == null) return null;
 
-type NumberFilter = {
-  key: number;
-  name?: string;
-  type?: string;
-  fieldType: "integer" | "float";
-  value: {
-    min: number;
-    max: number;
-  };
-};
+    const value = isNumberValue(data)
+      ? field.type === "currency"
+        ? `${data.min / 100}kr - ${data.max / 100} kr`
+        : `${data.min} - ${data.max}`
+      : Array.isArray(data.value)
+      ? data.value.join(", ")
+      : data.value;
 
-type Filter = KeyFilter | NumberFilter;
-
-const isNumberFilter = (filter: Filter): filter is NumberFilter => {
-  return (
-    typeof filter.value === "object" &&
-    "min" in filter.value &&
-    "max" in filter.value
-  );
-};
-
-const hasValue = (filter: unknown): filter is Filter => {
-  if (!filter) return false;
-  return (filter as { value: unknown }).value !== undefined;
-};
-
-const isKeyField = (filter: Field): filter is KeyField => {
-  return (
-    typeof (filter as KeyField).value === "string" ||
-    Array.isArray((filter as KeyField).value)
-  );
-};
-
-const isNumberField = (filter: Field): filter is NumberField => {
-  return "min" in filter && "max" in filter;
-};
-
-function toFilter(
-  fieldType: "integer" | "float" | "key",
-  facets?: FacetListItem[]
-) {
-  return (data: Field): KeyFilter | NumberFilter | KeyFilter[] => {
-    const field = facets?.find((field) => field.id === data.id);
-    if (fieldType === "key" && isKeyField(data)) {
-      if (Array.isArray(data.value)) {
-        return data.value.map((value) => ({
-          key: data.id,
-          name: field?.name,
-          type: field?.type,
-          fieldType: "key",
-          value,
-        }));
-      }
-      return {
-        key: data.id,
-        name: field?.name,
-        type: field?.type,
-        fieldType: "key",
-        value: data.value,
-      };
-    }
-    if (
-      (fieldType === "integer" || fieldType === "float") &&
-      isNumberField(data)
-    ) {
-      return {
-        key: data.id,
-        name: field?.name,
-        type: field?.type,
-        fieldType,
-        value: {
-          min: data.min,
-          max: data.max,
-        },
-      };
-    }
-    throw new Error("Invalid filter type");
+    return {
+      ...field,
+      value,
+    };
   };
 }
 
@@ -116,16 +46,18 @@ export const CurrentFilters = () => {
   const {
     query: { stock },
     setStock,
-  } = useQueryHelpers();
+  } = useQuery();
   const locationId = stock?.[0];
-  const { keyFilters, numberFilters, removeKeyFilter, removeNumberFilter } =
-    useFilters();
+  const {
+    query: { string: keyFilters, range: numberFilters },
+    removeFilter,
+  } = useQuery();
 
   const selectedFilters = useMemo(() => {
     return [
-      ...keyFilters.flatMap(toFilter("key", data)),
-      ...numberFilters.map(toFilter("float", data)),
-    ].filter(hasValue);
+      ...(keyFilters?.map(toFilter(data)) ?? []),
+      ...(numberFilters?.map(toFilter(data)) ?? []),
+    ].filter(isDefined);
   }, [keyFilters, numberFilters, data]);
   return (
     (selectedFilters.length > 0 || locationId != null) && (
@@ -144,25 +76,11 @@ export const CurrentFilters = () => {
           )}
           {selectedFilters.map((filter) => (
             <FilterItem
-              key={filter.key}
+              key={filter.id}
               name={filter.name}
-              value={
-                isNumberFilter(filter)
-                  ? filter.type === "currency"
-                    ? `${filter.value.min / 100}kr - ${
-                        filter.value.max / 100
-                      } kr`
-                    : `${filter.value.min} - ${filter.value.max}`
-                  : Array.isArray(filter.value)
-                  ? filter.value.join(", ")
-                  : filter.value
-              }
+              value={filter.value}
               onClick={() => {
-                if (filter.fieldType === "key") {
-                  removeKeyFilter(filter.key, Array.isArray(filter.value)?undefined:filter.value);
-                } else {
-                  removeNumberFilter(filter.key);
-                }
+                removeFilter(filter.id);
               }}
             />
           ))}

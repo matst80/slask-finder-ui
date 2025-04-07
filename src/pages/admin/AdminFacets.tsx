@@ -1,7 +1,7 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
-import { FacetListItem } from "../../types";
+import { FacetListItem } from "../../lib/types";
 import { useFieldValues } from "../../adminHooks";
 
 const FacetValues = ({ id }: { id: number }) => {

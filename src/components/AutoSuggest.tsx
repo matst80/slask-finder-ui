@@ -6,12 +6,13 @@ import {
   KeyFacet,
   NumberFacet,
   Suggestion,
-} from "../types";
-import { autoSuggestResponse } from "../datalayer/api";
+} from "../lib/types";
+import { autoSuggestResponse } from "../lib/datalayer/api";
 import { Search } from "lucide-react";
-import { queryToHash, useQueryHelpers } from "../hooks/searchHooks";
+
 import { makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
+import { useQuery } from "../lib/hooks/QueryProvider";
 
 // type MappedSuggestion = {
 //   match: string;
@@ -77,15 +78,7 @@ const useAutoSuggest = () => {
   return { results, items, facets, setValue };
 };
 
-const MatchingFacets = ({
-  facets,
-  query,
-  close,
-}: {
-  close: () => void;
-  facets: (KeyFacet | NumberFacet)[];
-  query: string;
-}) => {
+const MatchingFacets = ({ facets }: { facets: (KeyFacet | NumberFacet)[] }) => {
   const toShow = useMemo(() => {
     const keyFacets = facets.filter(isKeyFacet);
     const hasType = keyFacets.some((d) => d.type === "type");
@@ -93,12 +86,12 @@ const MatchingFacets = ({
       return keyFacets.filter((d) => d.type === "type");
     }
     const hasCategories = keyFacets.some(
-      (d) => d.categoryLevel != null && d.categoryLevel > 0,
+      (d) => d.categoryLevel != null && d.categoryLevel > 0
     );
     if (hasCategories) {
       return keyFacets.filter(
         (d) =>
-          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type",
+          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type"
       );
     }
 
@@ -116,17 +109,17 @@ const MatchingFacets = ({
               .map(([value, hits]) => (
                 <span
                   className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
-                  onClick={() => {
-                    globalThis.location.hash = queryToHash({
-                      string: [{ id: f.id, value }],
-                      query: value.toLowerCase().includes(query.toLowerCase())
-                        ? undefined
-                        : query,
-                      stock: [],
-                      page: 0,
-                    });
-                    close();
-                  }}
+                  // onClick={() => {
+                  //   globalThis.location.hash = queryToHash({
+                  //     string: [{ id: f.id, value }],
+                  //     query: value.toLowerCase().includes(query.toLowerCase())
+                  //       ? undefined
+                  //       : query,
+                  //     stock: [],
+                  //     page: 0,
+                  //   });
+                  //   close();
+                  // }}
                 >
                   {value}
                   <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
@@ -142,7 +135,10 @@ const MatchingFacets = ({
 };
 
 export const AutoSuggest = () => {
-  const {setGlobalTerm, query:{query=""}} = useQueryHelpers();
+  const {
+    setTerm: setGlobalTerm,
+    query: { query = "" },
+  } = useQuery();
   const { facets, items, results, setValue: setSuggestTerm } = useAutoSuggest();
   const [value, setValue] = useState(query);
   const [open, setOpen] = useState(false);
@@ -246,8 +242,8 @@ export const AutoSuggest = () => {
           <div className="border-b border-gray-300">
             <MatchingFacets
               facets={facets}
-              query={value}
-              close={() => setOpen(false)}
+              // query={value}
+              // close={() => setOpen(false)}
             />
           </div>
           <div>

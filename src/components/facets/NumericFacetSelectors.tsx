@@ -1,25 +1,24 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
-import { NumberFacet } from "../../types";
+import { NumberFacet } from "../../lib/types";
 import { converters } from "../../utils";
 import { Slider } from "./Slider";
-import { useFacetSelectors } from "./facet-context"
+import { useQueryRangeFacet } from "../../lib/hooks/QueryProvider";
 
-const NumberFacetSelector = ({
+export const NumberFacetSelector = ({
+  id,
   name,
   result: { min, max },
   type,
-  updateFilerValue,
   defaultOpen,
 }: NumberFacet & {
-  updateFilerValue: (min: number, max: number) => void;
-  defaultOpen: boolean;
+  defaultOpen?: boolean;
 }) => {
   const [open, setOpen] = useState(defaultOpen);
-
+  const { updateValue } = useQueryRangeFacet(id);
   const { toDisplayValue, fromDisplayValue } = useMemo(
     () => converters(type),
-    [type],
+    [type]
   );
 
   return (
@@ -42,39 +41,14 @@ const NumberFacetSelector = ({
             min={toDisplayValue(min)}
             max={toDisplayValue(max)}
             onChange={(min, max) => {
-              updateFilerValue(fromDisplayValue(min), fromDisplayValue(max));
+              updateValue({
+                min: fromDisplayValue(min),
+                max: fromDisplayValue(max),
+              });
             }}
           />
         </div>
       )}
     </div>
-  );
-};
-
-export const FloatFacetSelector = (facet: NumberFacet) => {
-  const {addFilter} = useFacetSelectors(facet.id);
-
-  return (
-    <NumberFacetSelector
-      {...facet}
-      defaultOpen={false}
-      updateFilerValue={(min, max) => {
-        addFilter({min, max});
-      }}
-    />
-  );
-};
-
-export const IntegerFacetSelector = (facet: NumberFacet) => {
-  const { addFilter } = useFacetSelectors(facet.id);
-
-  return (
-    <NumberFacetSelector
-      {...facet}
-      defaultOpen={false}
-      updateFilerValue={(min, max) => {
-        addFilter({ min, max });
-      }}
-    />
   );
 };

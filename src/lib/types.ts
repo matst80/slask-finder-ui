@@ -146,9 +146,18 @@ export type PageResult = {
 
 export type ItemResult = Item[];
 
-export type NumberField = { id: number; min: number; max: number };
+export type NumberValue = { min: number; max: number };
 
-export type KeyField = { id: number; value: string | string[] };
+export const isNumberValue = (value: unknown): value is NumberValue => {
+  if (typeof value === "object" && value != null) {
+    return typeof (value as NumberValue).min === "number";
+  }
+  return false;
+};
+
+export type NumberField = { id: number } & NumberValue;
+
+export type KeyField = { id: number; value: string[] };
 
 export type Field = NumberField | KeyField;
 
@@ -404,3 +413,9 @@ export const itemProperties = [
   "Sku",
   "Title",
 ];
+export type FieldListItem = {
+  id: number;
+  name: string;
+  description: string;
+  purpose?: string[];
+};

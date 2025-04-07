@@ -1,20 +1,17 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  useHashQuery,
-  useHashResultItems,
-  useQueryHelpers,
-} from "../hooks/searchHooks";
+import { useQuery } from "../lib/hooks/QueryProvider";
 
 export const Paging = () => {
   const {
     query: { page: currentPage = 0, pageSize = 40 },
-  } = useHashQuery();
-  const { setPage: changePage } = useQueryHelpers();
-  const { data: results } = useHashResultItems();
-  if (results == null) return null;
+    isLoading,
+    setPage: changePage,
+    totalHits,
+  } = useQuery();
 
-  const totalPages = Math.ceil(results.totalHits / pageSize) - 1;
-  if (totalPages <= 1) return null;
+  const totalPages = Math.ceil(totalHits / pageSize) - 1;
+  if (isNaN(totalHits) || totalPages <= 1 || isLoading) return null;
+
   return (
     <div className="mt-8 flex items-center justify-center">
       <button
