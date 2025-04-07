@@ -12,6 +12,7 @@ import {
   Facet,
   PageResult,
   Rules,
+  FieldListItem,
 } from "../types";
 
 const baseUrl = "";
@@ -165,6 +166,11 @@ export const getRawData = (id: string) =>
 export const getFacetList = () =>
   fetch(`${baseUrl}/api/facet-list`).then((d) => toJson<FacetListItem[]>(d));
 
+export const getFieldList = () =>
+  fetch(`${baseUrl}/admin/fields`).then((d) =>
+    toJson<Record<string, FieldListItem>>(d)
+  );
+
 export const getCategories = () =>
   fetch(`${baseUrl}/api/categories`).then((d) => toJson<Category[]>(d));
 
@@ -196,6 +202,9 @@ export const updateCategories = (
   }).then((d) => {
     return d.ok;
   });
+
+export const createFacetFromField = (fieldKey: string) =>
+  fetch(`${baseUrl}/admin/fields/${fieldKey}/add`);
 
 export const getStaticPositions = () =>
   fetch(`${baseUrl}/admin/sort/static`).then((d) =>

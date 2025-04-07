@@ -21,6 +21,7 @@ import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx";
 import { Builder } from "./components/Builder.tsx";
 import { QueryProvider } from "./lib/hooks/QueryProvider.tsx";
 import { ImpressionProvider } from "./lib/hooks/ImpressionProvider.tsx";
+import { EditFieldsView } from "./pages/admin/EditFieldsView.tsx";
 
 const router = createBrowserRouter([
   {
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
       {
         path: "facets",
         element: <EditFacetsView />,
+      },
+      {
+        path: "fields",
+        element: <EditFieldsView />,
       },
     ],
   },

@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import {
+  getFieldList,
   getKeyFieldsValues,
   getPopularity,
   getStaticPositions,
@@ -31,6 +32,10 @@ export const useUser = () => {
       errorRetryInterval: 50000,
     }
   );
+};
+
+export const useFields = () => {
+  return useSWR("/admin/fields", getFieldList);
 };
 
 export const useIsAdmin = () => {
