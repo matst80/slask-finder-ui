@@ -211,7 +211,7 @@ const DataProperty = ({ title, value }: { title: string; value: unknown }) => {
   );
 };
 
-const DataView = ({ item }: { item: Item }) => {
+export const DataView = ({ item }: { item: Item }) => {
   return <Value value={item} />;
 };
 

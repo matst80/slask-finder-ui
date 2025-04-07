@@ -7,14 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { useFacetList, useFacets, useItemsSearch } from "../hooks/searchHooks";
-import {
-  FilteringQuery,
-  Item,
-  ItemsQuery,
-  ItemValues,
-  Sort,
-} from "../lib/types";
+import { useFacetList } from "../hooks/searchHooks";
+import { FilteringQuery, Item, ItemsQuery, ItemValues } from "../lib/types";
 import { ResultItemInner } from "./ResultItem";
 import { cm, isDefined } from "../utils";
 import { PriceValue } from "./Price";

@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getPopularity, updatePopularity } from "../datalayer/api";
+import { getPopularity, updatePopularity } from "../lib/datalayer/api";
 import { useFetchMutation } from "../utils";
 
 const popularityKey = "/popular-items";

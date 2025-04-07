@@ -1,9 +1,5 @@
 import { ShoppingCart } from "lucide-react";
-import {
-  queryToHash,
-  useFacetList,
-  useRelatedItems,
-} from "../hooks/searchHooks";
+import { useFacetList, useRelatedItems } from "../hooks/searchHooks";
 import { useMemo, useState } from "react";
 import { byPriority, makeImageUrl } from "../utils";
 import { ItemDetail } from "../lib/types";

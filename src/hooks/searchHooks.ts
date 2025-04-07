@@ -179,14 +179,14 @@ export const useItemsSearch = (query: ItemsQuery) => {
   );
 };
 
-const delay = <T>(fn: () => Promise<T>, ms: number): (() => Promise<T>) => {
-  return () =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(fn());
-      }, ms);
-    });
-};
+// const delay = <T>(fn: () => Promise<T>, ms: number): (() => Promise<T>) => {
+//   return () =>
+//     new Promise((resolve) => {
+//       setTimeout(() => {
+//         resolve(fn());
+//       }, ms);
+//     });
+// };
 
 export const useFacets = (data: FacetQuery) => {
   return useSWR(facetsKey(data), () => facets(toQuery(data)), {
@@ -196,13 +196,13 @@ export const useFacets = (data: FacetQuery) => {
   });
 };
 
-const getLocationHashData = (): ItemsQuery => {
-  const hash = globalThis.location.hash;
-  if (hash.length > 1) {
-    return queryFromHash(hash.substring(1));
-  }
-  return { stock: [], page: 0, pageSize: 40, sort: "popular" };
-};
+// const getLocationHashData = (): ItemsQuery => {
+//   const hash = globalThis.location.hash;
+//   if (hash.length > 1) {
+//     return queryFromHash(hash.substring(1));
+//   }
+//   return { stock: [], page: 0, pageSize: 40, sort: "popular" };
+// };
 
 // export const useHashQuery = () => {
 //   const [query, setInternalQuery] = useState<ItemsQuery>(getLocationHashData());

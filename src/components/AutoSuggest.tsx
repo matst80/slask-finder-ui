@@ -78,15 +78,7 @@ const useAutoSuggest = () => {
   return { results, items, facets, setValue };
 };
 
-const MatchingFacets = ({
-  facets,
-  query,
-  close,
-}: {
-  close: () => void;
-  facets: (KeyFacet | NumberFacet)[];
-  query: string;
-}) => {
+const MatchingFacets = ({ facets }: { facets: (KeyFacet | NumberFacet)[] }) => {
   const toShow = useMemo(() => {
     const keyFacets = facets.filter(isKeyFacet);
     const hasType = keyFacets.some((d) => d.type === "type");
@@ -250,8 +242,8 @@ export const AutoSuggest = () => {
           <div className="border-b border-gray-300">
             <MatchingFacets
               facets={facets}
-              query={value}
-              close={() => setOpen(false)}
+              // query={value}
+              // close={() => setOpen(false)}
             />
           </div>
           <div>
