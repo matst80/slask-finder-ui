@@ -11,7 +11,7 @@ export const EditFieldsView = () => {
       ?.filter(([key, field]) => {
         if (!filter.length) return false;
         if (key?.includes(filter) || key == filter) return true;
-        return field.name?.includes(filter);
+        return field.name.toLowerCase()?.includes(filter.toLowerCase());
       })
       .map(([key, field]) => ({
         ...field,
@@ -41,7 +41,9 @@ export const EditFieldsView = () => {
             <span className="text-sm font-bold">{field.name}</span>
             <span className="text-sm">{field.description}</span>
             <span className="text-sm">{field.purpose?.join(", ")}</span>
-            <Button onClick={() => addField(field.key)}>Add</Button>
+            <Button size="sm" onClick={() => addField(field.key)}>
+              Add
+            </Button>
           </li>
         ))}
       </ul>

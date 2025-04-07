@@ -243,6 +243,7 @@ export const useQueryKeyFacet = (id: number) => {
     facets,
     query: { string: keys },
     setFilter,
+    removeFilter,
   } = useQuery();
   const facet = useMemo(() => facets.find((f) => f.id === id), [facets, id]);
   const filter = useMemo(
@@ -265,9 +266,13 @@ export const useQueryKeyFacet = (id: number) => {
   const removeValue = useCallback(
     (value: string) => {
       filter?.delete(value);
-      setFilter(id, Array.from(filter));
+      if (filter?.size === 0) {
+        removeFilter(id);
+      } else {
+        setFilter(id, Array.from(filter));
+      }
     },
-    [id, filter, setFilter]
+    [id, filter, setFilter, removeFilter]
   );
 
   return { facet, filter, updateValue, addValue, removeValue };

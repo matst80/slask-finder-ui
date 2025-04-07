@@ -14,6 +14,12 @@ export const AdminNavBar = () => {
                 Facets
               </Link>
               <Link
+                to="/edit/fields"
+                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Fields
+              </Link>
+              <Link
                 to="/edit/bulk"
                 className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
               >
