@@ -4,7 +4,6 @@ import { Button } from "../../components/ui/button";
 import { createFacetFromField, deleteFacet } from "../../lib/datalayer/api";
 import { cm } from "../../utils";
 import { FieldListItem } from "../../lib/types";
-import { useFacetList } from "../../hooks/searchHooks";
 
 const byCount = (a: FieldListItem, b: FieldListItem) => {
   return (b.itemCount ?? 0) - (a.itemCount ?? 0);
