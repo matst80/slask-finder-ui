@@ -39,8 +39,15 @@ const FilteredFieldView = ({
         if (field.key?.includes(filter) || field.key == filter) return true;
         return field.name.toLowerCase()?.includes(filter.toLowerCase());
       })
+      .map((field) => {
+        const isFacet = facets.some((f) => f.id == field.id);
+        return {
+          ...field,
+          isFacet,
+        };
+      })
       .sort(byCount);
-  }, [filter, data, selectedPurpose]);
+  }, [filter, data, selectedPurpose, facets]);
   const addField = (fieldKey: string) => {
     createFacetFromField(fieldKey);
   };
@@ -110,7 +117,7 @@ const FilteredFieldView = ({
                   </span>
                 ))}
               </span>
-              {facets.some((d) => d.id == field.id) ? (
+              {field.isFacet ? (
                 <Button
                   size="sm"
                   variant="outline"
