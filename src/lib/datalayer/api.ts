@@ -211,6 +211,9 @@ export const updateCategories = (
 export const createFacetFromField = (fieldKey: string) =>
   fetch(`${baseUrl}/admin/fields/${fieldKey}/add`);
 
+export const deleteFacet = (fieldId: number | string) =>
+  fetch(`${baseUrl}/admin/facets/${fieldId}`, { method: "DELETE" });
+
 export const getStaticPositions = () =>
   fetch(`${baseUrl}/admin/sort/static`).then((d) =>
     toJson<Record<number, number>>(d)

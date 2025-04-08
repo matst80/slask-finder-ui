@@ -1,9 +1,14 @@
 import { useMemo, useState } from "react";
 import { useFields, useMissingFacets } from "../../adminHooks";
 import { Button } from "../../components/ui/button";
-import { createFacetFromField } from "../../lib/datalayer/api";
+import { createFacetFromField, deleteFacet } from "../../lib/datalayer/api";
 import { cm } from "../../utils";
 import { FieldListItem } from "../../lib/types";
+import { useFacetList } from "../../hooks/searchHooks";
+
+const byCount = (a: FieldListItem, b: FieldListItem) => {
+  return (b.itemCount ?? 0) - (a.itemCount ?? 0);
+};
 
 const FilteredFieldView = ({
   data,
@@ -11,6 +16,7 @@ const FilteredFieldView = ({
   data: (FieldListItem & { key: string })[];
 }) => {
   const [filter, setFilter] = useState<string>("");
+  const { data: facets = [] } = useFacetList();
   const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
   const uniquePurpose = useMemo(() => {
     const purposeSet = new Set<string>();
@@ -22,16 +28,26 @@ const FilteredFieldView = ({
     return Array.from(purposeSet);
   }, [data]);
   const filteredData = useMemo(() => {
-    return data.filter((field) => {
-      if (selectedPurpose != null && !field.purpose?.includes(selectedPurpose))
-        return false;
-      if (!filter.length) return selectedPurpose != null;
-      if (field.key?.includes(filter) || field.key == filter) return true;
-      return field.name.toLowerCase()?.includes(filter.toLowerCase());
-    });
+    return data
+      .filter((field) => {
+        if (
+          selectedPurpose != null &&
+          !field.purpose?.includes(selectedPurpose)
+        )
+          return false;
+        if (!filter.length) return selectedPurpose != null;
+        if (field.key?.includes(filter) || field.key == filter) return true;
+        return field.name.toLowerCase()?.includes(filter.toLowerCase());
+      })
+      .sort(byCount);
   }, [filter, data, selectedPurpose]);
   const addField = (fieldKey: string) => {
     createFacetFromField(fieldKey);
+  };
+  const removeFacet = (facetId: number) => {
+    if (confirm("Are you sure you want to remove this facet?")) {
+      deleteFacet(facetId);
+    }
   };
   return (
     <div className="flex flex-col gap-2">
@@ -70,25 +86,44 @@ const FilteredFieldView = ({
       />
       <ul>
         {filteredData?.map((field) => (
-          <li key={field.id} className="flex gap-2 items-center">
-            <span className="text-sm font-bold">{field.name}</span>
-            <span className="text-sm">
-              ({field.key} - {field.itemCount ?? "0"})
-            </span>
-            <span className="text-sm">{field.description}</span>
-            <span className="flex gap-2">
-              {field.purpose?.map((str) => (
-                <span
-                  key={str}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                >
-                  {str}
+          <li
+            key={field.id}
+            className="flex items-center justify-between border-b border-gray-300 pb-1 mb-1"
+          >
+            <div className="flex flex-col">
+              <div>
+                <span className="text-sm font-bold">{field.name}</span>
+                <span className="text-sm">
+                  ({field.key} - {field.itemCount ?? "0"})
                 </span>
-              ))}
-            </span>
-            <Button size="sm" onClick={() => addField(field.key)}>
-              Add
-            </Button>
+              </div>
+              <span className="text-sm">{field.description}</span>
+            </div>
+            <div className="flex gap-3">
+              <span className="flex gap-2">
+                {field.purpose?.map((str) => (
+                  <span
+                    key={str}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                  >
+                    {str}
+                  </span>
+                ))}
+              </span>
+              {facets.some((d) => d.id == field.id) ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => removeFacet(field.id)}
+                >
+                  Remove
+                </Button>
+              ) : (
+                <Button size="sm" onClick={() => addField(field.key)}>
+                  Add
+                </Button>
+              )}
+            </div>
           </li>
         ))}
       </ul>

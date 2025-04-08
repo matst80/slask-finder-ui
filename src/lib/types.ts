@@ -413,6 +413,7 @@ export const itemProperties = [
   "Sku",
   "Title",
 ];
+
 export type FieldListItem = {
   id: number;
   name: string;
