@@ -42,9 +42,9 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
         </div>
         <div>
           <Input
-            value={value.type ?? ""}
+            value={value.valueType ?? ""}
             onChange={(e) =>
-              setValue((prev) => ({ ...prev, type: e.target.value }))
+              setValue((prev) => ({ ...prev, valueType: e.target.value }))
             }
             placeholder="Type"
           />
@@ -134,7 +134,7 @@ export const AdminFacet = (facet: FacetListItem) => {
             )} */}
           </button>
         </div>
-        <span>{facet.type ? facet.type : ""}</span>
+        <span>{facet.valueType ? facet.valueType : ""}</span>
         <span>{facet.sort ? facet.sort : ""}</span>
         <span>{facet.prio}</span>
 
