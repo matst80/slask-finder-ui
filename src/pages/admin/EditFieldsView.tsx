@@ -72,7 +72,9 @@ const FilteredFieldView = ({
         {filteredData?.map((field) => (
           <li key={field.id} className="flex gap-2 items-center">
             <span className="text-sm font-bold">{field.name}</span>
-            <span className="text-sm">({field.key})</span>
+            <span className="text-sm">
+              ({field.key} - {field.itemCount ?? "0"})
+            </span>
             <span className="text-sm">{field.description}</span>
             <span className="flex gap-2">
               {field.purpose?.map((str) => (

@@ -416,6 +416,7 @@ export const itemProperties = [
 export type FieldListItem = {
   id: number;
   name: string;
+  itemCount?: number;
   description: string;
   purpose?: string[];
 };
