@@ -56,6 +56,32 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
           </select>{" "}
         </div>
         <div>
+          <Input
+            value={value.prio ?? "0"}
+            type="number"
+            onChange={(e) => {
+              const nr = Number(e.target.value);
+              if (!isNaN(nr)) {
+                setValue((prev) => ({ ...prev, prio: nr }));
+              }
+            }}
+            placeholder="Priority"
+          />
+        </div>
+        <div>
+          <Input
+            value={value.categoryLevel ?? "0"}
+            type="number"
+            onChange={(e) => {
+              const nr = Number(e.target.value);
+              if (!isNaN(nr)) {
+                setValue((prev) => ({ ...prev, categoryLevel: nr }));
+              }
+            }}
+            placeholder="Category level"
+          />
+        </div>
+        <div>
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -78,19 +104,6 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
             />
             Hide facet
           </label>
-        </div>
-        <div>
-          <Input
-            value={value.prio ?? "0"}
-            type="number"
-            onChange={(e) => {
-              const nr = Number(e.target.value);
-              if (!isNaN(nr)) {
-                setValue((prev) => ({ ...prev, prio: nr }));
-              }
-            }}
-            placeholder="Priority"
-          />
         </div>
       </div>
       <Button onClick={() => saveFacet(value)}>Save</Button>

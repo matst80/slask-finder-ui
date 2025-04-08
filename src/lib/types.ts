@@ -209,6 +209,7 @@ export type FacetListItem = {
   fieldType: string;
   name: string;
   prio?: number;
+  categoryLevel?: number;
   sort?: number;
   linkedId?: number;
   count: number;
