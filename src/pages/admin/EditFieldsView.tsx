@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useFields, useMissingFacets } from "../../adminHooks";
+import { useAdminFacets, useFields, useMissingFacets } from "../../adminHooks";
 import { Button } from "../../components/ui/button";
 import { createFacetFromField, deleteFacet } from "../../lib/datalayer/api";
 import { cm } from "../../utils";
@@ -16,7 +16,7 @@ const FilteredFieldView = ({
   data: (FieldListItem & { key: string })[];
 }) => {
   const [filter, setFilter] = useState<string>("");
-  const { data: facets = [] } = useFacetList();
+  const { data: facets = [] } = useAdminFacets();
   const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
   const uniquePurpose = useMemo(() => {
     const purposeSet = new Set<string>();

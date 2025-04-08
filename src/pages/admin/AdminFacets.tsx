@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
 import { FacetListItem } from "../../lib/types";
-import { useFieldValues } from "../../adminHooks";
+import { useFieldValues, useUpdateFacet } from "../../adminHooks";
+import { Button } from "../../components/ui/button";
 
 const FacetValues = ({ id }: { id: number }) => {
   const { data } = useFieldValues(id);
@@ -14,16 +15,85 @@ const FacetValues = ({ id }: { id: number }) => {
             <li key={value}>{value}</li>
           ) : (
             <li key={idx}>
-              <pre>{JSON.stringify(value, null, 2)}</pre>
+              Min: {value.min} Max: {value.max}
             </li>
           )
         )}
       </ul>
     );
   }
+  return null;
+};
+
+const FacetEditor = ({ data }: { data: FacetListItem }) => {
+  const [value, setValue] = useState(data);
+  const saveFacet = useUpdateFacet();
   return (
     <div>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <div className="grid grid-cols-2 gap-4 p-4">
+        <div>
+          <Input
+            value={value.name ?? ""}
+            onChange={(e) =>
+              setValue((prev) => ({ ...prev, name: e.target.value }))
+            }
+            placeholder="Name"
+          />
+        </div>
+        <div>
+          <Input
+            value={value.type ?? ""}
+            onChange={(e) =>
+              setValue((prev) => ({ ...prev, type: e.target.value }))
+            }
+            placeholder="Type"
+          />
+        </div>
+        <div>
+          <select className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <option value="0">By hits</option>
+            <option value="1">By name</option>
+          </select>{" "}
+        </div>
+        <div>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={value.searchable}
+              onChange={(e) =>
+                setValue((prev) => ({ ...prev, searchable: e.target.checked }))
+              }
+            />
+            Searchable
+          </label>
+        </div>
+        <div>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={value.hide}
+              onChange={(e) =>
+                setValue((prev) => ({ ...prev, hide: e.target.checked }))
+              }
+            />
+            Hide facet
+          </label>
+        </div>
+        <div>
+          <Input
+            value={value.prio ?? "0"}
+            type="number"
+            onChange={(e) => {
+              const nr = Number(e.target.value);
+              if (!isNaN(nr)) {
+                setValue((prev) => ({ ...prev, prio: nr }));
+              }
+            }}
+            placeholder="Priority"
+          />
+        </div>
+      </div>
+      <Button onClick={() => saveFacet(value)}>Save</Button>
     </div>
   );
 };
@@ -51,19 +121,16 @@ export const AdminFacet = (facet: FacetListItem) => {
             )} */}
           </button>
         </div>
-        <span>
-          <Input defaultValue={facet.type} />
-        </span>
-        <span>
-          <select value={facet.sort}>
-            <option value="">By number of hits</option>
-            <option value="name">Name</option>
-          </select>
-        </span>
-        <Input defaultValue={facet.prio} type="number" />
+        <span>{facet.type ? facet.type : ""}</span>
+        <span>{facet.sort ? facet.sort : ""}</span>
+        <span>{facet.prio}</span>
+
+        {/* <span>{facet.searchable}</span> */}
       </div>
+
       {open && (
-        <div className="grid grid-cols-subgrid col-span-full border-b border-gray-100 p-4">
+        <div className="flex flex-col p-4 col-span-full">
+          <FacetEditor data={facet} />
           <FacetValues id={facet.id} />
         </div>
       )}

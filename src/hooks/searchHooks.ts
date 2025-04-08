@@ -2,6 +2,7 @@ import useSWR from "swr";
 import {
   facets,
   getFacetList,
+  getFacets,
   getRelated,
   streamItems,
 } from "../lib/datalayer/api";

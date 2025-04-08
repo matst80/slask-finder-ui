@@ -1,11 +1,11 @@
-import { useFacetList } from "../../hooks/searchHooks";
 import { AdminFacet } from "./AdminFacets";
 import { byPriority } from "../../utils";
 import { useMemo, useState } from "react";
+import { useAdminFacets } from "../../adminHooks";
 
 export const AllFacets = () => {
   const [filter, setFilter] = useState<string>("");
-  const { data } = useFacetList();
+  const { data } = useAdminFacets();
   const filteredData = useMemo(() => {
     return data
       ?.filter((field) => {
@@ -31,7 +31,7 @@ export const AllFacets = () => {
           <div>Sort</div>
           <div>Priority</div>
         </div>
-        {filteredData?.sort(byPriority).map((facet) => (
+        {filteredData?.map((facet) => (
           <AdminFacet key={facet.id} {...facet} />
         ))}
       </div>

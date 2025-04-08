@@ -213,6 +213,8 @@ export type FacetListItem = {
   linkedId?: number;
   count: number;
   description?: string;
+  searchable?: boolean;
+  hide?: boolean;
 };
 
 export type Promotion = {

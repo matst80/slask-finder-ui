@@ -64,7 +64,9 @@ export const autoSuggestResponse = (
 };
 
 export const getKeyFieldsValues = (id: string | number) =>
-  fetch(`${baseUrl}/api/values/${id}`).then((d) => toJson<string[]>(d));
+  fetch(`${baseUrl}/api/values/${id}`).then((d) =>
+    toJson<string[] | { min: number; max: number }[]>(d)
+  );
 
 export const facets = (query: string) =>
   fetch(`${baseUrl}/api/facets?${query}`, {
@@ -213,6 +215,9 @@ export const createFacetFromField = (fieldKey: string) =>
 
 export const deleteFacet = (fieldId: number | string) =>
   fetch(`${baseUrl}/admin/facets/${fieldId}`, { method: "DELETE" });
+
+export const getFacets = () =>
+  fetch(`${baseUrl}/admin/facets`).then((d) => toJson<FacetListItem[]>(d));
 
 export const getStaticPositions = () =>
   fetch(`${baseUrl}/admin/sort/static`).then((d) =>

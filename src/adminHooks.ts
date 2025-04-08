@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import {
+  getFacets,
   getFieldList,
   getKeyFieldsValues,
   getMissingFieldList,
@@ -11,12 +12,8 @@ import {
 import { useState } from "react";
 import useSWRMutation from "swr/mutation";
 
-const byName = (a: string, b: string) => a.localeCompare(b);
-
 export const useFieldValues = (id: string | number) =>
-  useSWR(`field-values/${id}`, () =>
-    getKeyFieldsValues(id).then((d) => d.sort(byName))
-  );
+  useSWR(`field-values/${id}`, () => getKeyFieldsValues(id));
 
 export const useUser = () => {
   return useSWR(
@@ -52,6 +49,26 @@ export const useMissingFacets = () => {
       }))
     )
   );
+};
+
+export const useAdminFacets = () => {
+  return useSWR("admin-facet-list", getFacets, {
+    revalidateOnFocus: false,
+    refreshInterval: 0,
+    focusThrottleInterval: 3600,
+  });
+};
+
+export const useUpdateFacet = () => {
+  const { trigger } = useSWRMutation(
+    "/admin/facets",
+    (_: string, { arg }: { arg: { id: number; [key: string]: unknown } }) =>
+      fetch(`/admin/facets/${arg.id}`, {
+        method: "PUT",
+        body: JSON.stringify(arg),
+      })
+  );
+  return trigger;
 };
 
 export const useIsAdmin = () => {
