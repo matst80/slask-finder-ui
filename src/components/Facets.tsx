@@ -3,7 +3,7 @@ import { Facet, isKeyFacet, isNumberFacet, KeyFacet } from "../lib/types";
 import { LoaderCircle } from "lucide-react";
 
 import { stores } from "../lib/datalayer/stores";
-import { useQuery, useQueryKeyFacet } from "../lib/hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/QueryProvider";
 import { KeyFacetSelector } from "./facets/KeyFacetSelector";
 import { ColorFacetSelector } from "./facets/ColorFacet";
 import { NumberFacetSelector } from "./facets/NumericFacetSelectors";
