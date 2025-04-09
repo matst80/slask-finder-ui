@@ -1,6 +1,5 @@
 import { Link, Edit, Trash } from "lucide-react";
 import { useMemo } from "react";
-import { usePopularity, useStaticPositions } from "../../adminHooks";
 import { useFacetList } from "../../hooks/searchHooks";
 import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
@@ -129,24 +128,6 @@ export const TableSearchResultList = () => {
           </Table>
         </div>
       </form>
-      <div className="flex gap-2 mt-4 sticky bottom-4">
-        <Button
-          disabled={!isDirtyPopular}
-          onClick={() => {
-            savePopular();
-          }}
-        >
-          Save popular
-        </Button>
-        <Button
-          disabled={!isDirtyPositions}
-          onClick={() => {
-            savePositions();
-          }}
-        >
-          Save static positions
-        </Button>
-      </div>
     </>
   );
 };

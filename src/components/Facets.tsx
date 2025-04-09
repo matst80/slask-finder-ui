@@ -134,7 +134,7 @@ export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
                 />
               );
             }
-            if (facet.type === "color") {
+            if (facet.valueType === "color") {
               return (
                 <ColorFacetSelector
                   {...facet}

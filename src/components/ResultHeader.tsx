@@ -40,7 +40,7 @@ const EditCategories = ({ onClose }: { onClose: () => void }) => {
       </button>
       <ul className="flex flex-col gap-2">
         {facets
-          ?.filter((d) => d.type === "virtual")
+          ?.filter((d) => d.valueType === "virtual")
           .map((category) => (
             <li key={category.id} className="flex">
               <label className="flex gap-4 items-center justify-between">

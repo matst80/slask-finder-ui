@@ -9,7 +9,7 @@ export const NumberFacetSelector = ({
   id,
   name,
   result: { min, max },
-  type,
+  valueType,
   defaultOpen,
 }: NumberFacet & {
   defaultOpen?: boolean;
@@ -17,8 +17,8 @@ export const NumberFacetSelector = ({
   const [open, setOpen] = useState(defaultOpen);
   const { updateValue } = useQueryRangeFacet(id);
   const { toDisplayValue, fromDisplayValue } = useMemo(
-    () => converters(type),
-    [type]
+    () => converters(valueType),
+    [valueType]
   );
 
   return (
