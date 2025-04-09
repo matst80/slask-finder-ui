@@ -2,7 +2,6 @@ import { Link, Edit, Trash } from "lucide-react";
 import { useMemo } from "react";
 import { usePopularity, useStaticPositions } from "../../adminHooks";
 import { useFacetList } from "../../hooks/searchHooks";
-import { CategoryList } from "../../components/SearchResultList";
 import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
 import { Input } from "../../components/ui/input";
@@ -47,7 +46,7 @@ export const TableSearchResultList = () => {
   }
 
   if (!items.length && (query == null || query.length < 1)) {
-    return <CategoryList />;
+    return null;
   }
   return (
     <>

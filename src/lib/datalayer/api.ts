@@ -1,6 +1,5 @@
 import {
   Cart,
-  Category,
   Item,
   ItemsQuery,
   ItemDetail,
@@ -178,8 +177,8 @@ export const getMissingFieldList = () =>
     toJson<FieldListItem[]>(d)
   );
 
-export const getCategories = () =>
-  fetch(`${baseUrl}/api/categories`).then((d) => toJson<Category[]>(d));
+// export const getCategories = () =>
+//   fetch(`${baseUrl}/api/categories`).then((d) => toJson<Category[]>(d));
 
 export const getItemIds = (query: ItemsQuery) =>
   fetch(`${baseUrl}/api/ids`, {

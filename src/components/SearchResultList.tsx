@@ -1,47 +1,44 @@
-import { useCategories } from "../hooks/categoryHooks";
 import { ResultItem } from "./ResultItem";
-
-import { ButtonLink } from "./ui/button";
-import { byName, CategoryItem } from "./CategoryItem";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 
-const searchList = [
-  {
-    title: "I lager i falun",
-    href: "#stock=2299&page=0",
-  },
-  {
-    title: "Alla produkter",
-    href: "#i=4%3D0-169999999",
-  },
-  {
-    title: "Rabatterade produkter",
-    href: "#i=5%3D0-169999999",
-  },
-];
+// const searchList = [
+//   {
+//     title: "I lager i falun",
+//     href: "#stock=2299&page=0",
+//   },
+//   {
+//     title: "Alla produkter",
+//     href: "#i=4%3D0-169999999",
+//   },
+//   {
+//     title: "Rabatterade produkter",
+//     href: "#i=5%3D0-169999999",
+//   },
+// ];
 
 const NoResults = () => {
-  const { data } = useCategories();
-  return (
-    <div>
-      <ul className="mt-2">
-        {data?.sort(byName).map((category, idx) => (
-          <CategoryItem
-            key={category.value}
-            {...category}
-            level={1}
-            defaultOpen={idx < 3}
-          />
-        ))}
-      </ul>
-      <div className="flex gap-4 mt-6">
-        {searchList.map(({ title, href }) => (
-          <ButtonLink href={href}>{title}</ButtonLink>
-        ))}
-      </div>
-    </div>
-  );
+  return <div>No results</div>;
+  // const { data } = useCategories();
+  // return (
+  //   <div>
+  //     <ul className="mt-2">
+  //       {data?.sort(byName).map((category, idx) => (
+  //         <CategoryItem
+  //           key={category.value}
+  //           {...category}
+  //           level={1}
+  //           defaultOpen={idx < 3}
+  //         />
+  //       ))}
+  //     </ul>
+  //     <div className="flex gap-4 mt-6">
+  //       {searchList.map(({ title, href }) => (
+  //         <ButtonLink href={href}>{title}</ButtonLink>
+  //       ))}
+  //     </div>
+  //   </div>
+  // );
 };
 
 export const SearchResultList = () => {
@@ -70,15 +67,15 @@ export const SearchResultList = () => {
   );
 };
 
-export const CategoryList = () => {
-  const { data } = useCategories();
-  return (
-    <div>
-      <ul>
-        {data?.sort(byName).map((category) => (
-          <CategoryItem key={category.value} {...category} level={1} />
-        ))}
-      </ul>
-    </div>
-  );
-};
+// export const CategoryList = () => {
+//   const { data } = useCategories();
+//   return (
+//     <div>
+//       <ul>
+//         {data?.sort(byName).map((category) => (
+//           <CategoryItem key={category.value} {...category} level={1} />
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// };
