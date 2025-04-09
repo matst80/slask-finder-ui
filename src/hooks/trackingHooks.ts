@@ -7,15 +7,15 @@ import {
 } from "../lib/datalayer/api";
 
 export const useSessions = () => {
-  return useSWR("/api/sessions", getTrackingSessions);
+  return useSWR("/tracking/sessions", getTrackingSessions);
 };
 
 export const useSearchQueries = () => {
-  return useSWR("/api/queries", getTrackingQueries);
+  return useSWR("/tracking/queries", getTrackingQueries);
 };
 
 export const useTrackingPopularity = () => {
-  return useSWR("/api/popularity", getTrackingPopularity);
+  return useSWR("/tracking/popularity", getTrackingPopularity);
 };
 
 export const useItemData = (id: number) => {

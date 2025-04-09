@@ -1,13 +1,16 @@
 export const trackClick = (id: string, position: number) =>
-  globalThis.navigator.sendBeacon(`/api/track/click?id=${id}&pos=${position}`);
+  globalThis.navigator.sendBeacon(`/track/click?id=${id}&pos=${position}`);
 
 export type Impression = { id: number; position: number };
 
 export const trackImpression = (impressions: Impression[]) =>
   globalThis.navigator.sendBeacon(
-    `/api/track/impressions`,
+    `/track/impressions`,
     JSON.stringify([...impressions])
   );
 
 export const trackAction = (payload: { action: string; reason: string }) =>
-  globalThis.navigator.sendBeacon(`/api/track/action`, JSON.stringify(payload));
+  globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload));
+
+export const trackCart = (payload: { item: number; quantity: number }) =>
+  globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload));
