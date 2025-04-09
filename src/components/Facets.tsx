@@ -18,7 +18,7 @@ const CategoryLevel = ({
   facets: KeyFacet[];
   index: number;
 }) => {
-  const { updateValue } = useQueryKeyFacet(id);
+  const { setQuery } = useQuery();
   const facet = facets[index];
   if (!facet) {
     return null;
@@ -32,7 +32,16 @@ const CategoryLevel = ({
             <button
               className={cm("text-left", selected ? "font-bold" : undefined)}
               onClick={() => {
-                updateValue(selected ? [] : [value]);
+                setQuery((prev) => ({
+                  ...prev,
+                  string: [
+                    ...(prev.string?.filter(
+                      (d) => !facets.some((e) => e.id == d.id)
+                    ) ?? []),
+                    { id, value: selected ? [] : [value] },
+                  ],
+                }));
+                //updateValue(selected ? [] : [value]);
               }}
             >
               {value} ({results})
