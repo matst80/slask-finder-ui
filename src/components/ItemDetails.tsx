@@ -83,7 +83,7 @@ const Properties = ({
       </h3>
       <div className="grid grid-cols-2 gap-2">
         {fields.map((field) => (
-          <div key={`prop-${field.id}-${field.type}`} className="mb-2">
+          <div key={`prop-${field.id}-${field.valueType}`} className="mb-2">
             <h3 className="text-lg font-bold flex gap-4 items-center">
               {field.name}
             </h3>

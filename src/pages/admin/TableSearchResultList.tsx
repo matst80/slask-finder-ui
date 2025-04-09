@@ -37,7 +37,7 @@ export const TableSearchResultList = () => {
 
   const { data } = useFacetList();
   const virtualCategories = useMemo(
-    () => data?.filter((facet) => facet.type === "virtual"),
+    () => data?.filter((facet) => facet.valueType === "virtual"),
     [data]
   );
 

@@ -12,7 +12,7 @@ function toFilter(facets?: FacetListItem[]) {
     if (field == null) return null;
 
     const value = isNumberValue(data)
-      ? field.type === "currency"
+      ? field.valueType === "currency"
         ? `${data.min / 100}kr - ${data.max / 100} kr`
         : `${data.min} - ${data.max}`
       : Array.isArray(data.value)
