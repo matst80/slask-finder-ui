@@ -78,12 +78,22 @@ const useAutoSuggest = () => {
   return { results, items, facets, setValue };
 };
 
-const MatchingFacets = ({ facets }: { facets: (KeyFacet | NumberFacet)[] }) => {
+const MatchingFacets = ({
+  facets,
+  query,
+  close,
+}: {
+  facets: (KeyFacet | NumberFacet)[];
+  query: string;
+  close: () => void;
+}) => {
+  const { setQuery } = useQuery();
   const toShow = useMemo(() => {
+    console.log("facets", facets);
     const keyFacets = facets.filter(isKeyFacet);
-    const hasType = keyFacets.some((d) => d.type === "type");
+    const hasType = keyFacets.some((d) => d.valueType === "type");
     if (hasType) {
-      return keyFacets.filter((d) => d.type === "type");
+      return keyFacets.filter((d) => d.valueType === "type");
     }
     const hasCategories = keyFacets.some(
       (d) => d.categoryLevel != null && d.categoryLevel > 0
@@ -91,7 +101,8 @@ const MatchingFacets = ({ facets }: { facets: (KeyFacet | NumberFacet)[] }) => {
     if (hasCategories) {
       return keyFacets.filter(
         (d) =>
-          (d.categoryLevel != null && d.categoryLevel > 0) || d.type === "type"
+          (d.categoryLevel != null && d.categoryLevel > 0) ||
+          d.valueType === "type"
       );
     }
 
@@ -107,25 +118,29 @@ const MatchingFacets = ({ facets }: { facets: (KeyFacet | NumberFacet)[] }) => {
               .sort((a, b) => b[1] - a[1])
               .slice(undefined, 10)
               .map(([value, hits]) => (
-                <span
+                <button
                   className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
-                  // onClick={() => {
-                  //   globalThis.location.hash = queryToHash({
-                  //     string: [{ id: f.id, value }],
-                  //     query: value.toLowerCase().includes(query.toLowerCase())
-                  //       ? undefined
-                  //       : query,
-                  //     stock: [],
-                  //     page: 0,
-                  //   });
-                  //   close();
-                  // }}
+                  onClick={() => {
+                    console.log("set query", f.id, value, close);
+                    setQuery({
+                      string: [{ id: f.id, value: [value] }],
+                      query:
+                        query != null &&
+                        value.toLowerCase().includes(query.toLowerCase())
+                          ? undefined
+                          : query,
+                      stock: [],
+                      page: 0,
+                    });
+
+                    close();
+                  }}
                 >
                   {value}
                   <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
                     {hits}
                   </span>
-                </span>
+                </button>
               ))}
           </div>
         </div>
@@ -242,8 +257,8 @@ export const AutoSuggest = () => {
           <div className="border-b border-gray-300">
             <MatchingFacets
               facets={facets}
-              // query={value}
-              // close={() => setOpen(false)}
+              query={value}
+              close={() => setOpen(false)}
             />
           </div>
           <div>

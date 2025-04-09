@@ -86,7 +86,7 @@ export type ItemProps = {
 
 export type BaseFacet = {
   id: number;
-  type: string;
+  valueType: string;
   name: string;
   prio?: number;
   description: string;
