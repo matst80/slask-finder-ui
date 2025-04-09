@@ -112,7 +112,7 @@ export const filteringQueryToHash = ({
   const strs =
     string?.map(({ id, value }) => {
       if (Array.isArray(value) && value.length === 0) {
-        console.log("Empty value for id:", id);
+        // console.log("Empty value for id:", id);
         return undefined;
       }
       return `${id}${ID_VALUE_SEPARATOR}${
