@@ -13,6 +13,7 @@ import { Search } from "lucide-react";
 import { makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/QueryProvider";
+import { StockIndicator } from "./ResultItem";
 
 // type MappedSuggestion = {
 //   match: string;
@@ -39,12 +40,19 @@ const useAutoSuggest = () => {
       let part = 0;
       const suggestions: Suggestion[] = [];
       const items: Item[] = [];
+      const facetsBuffer: Facet[] = [];
       let buffer = "";
       const reader = d.body.getReader();
       const decoder = new TextDecoder();
       const pump = async (): Promise<void> => {
         return reader?.read().then(async ({ done, value }) => {
           if (done) {
+            setResults(suggestions.sort((a, b) => b.hits - a.hits));
+
+            setItems(items);
+
+            setFacets(facetsBuffer);
+
             return;
           }
 
@@ -53,9 +61,14 @@ const useAutoSuggest = () => {
           buffer = lines.pop() ?? "";
           lines.forEach((line) => {
             if (line.length < 2) {
+              if (part === 0) {
+                setResults(suggestions.sort((a, b) => b.hits - a.hits));
+              } else if (part === 1) {
+                setItems(items);
+              } else {
+                setFacets(facetsBuffer);
+              }
               part++;
-              setItems(items);
-              setResults(suggestions.sort((a, b) => b.hits - a.hits));
             } else {
               const item = JSON.parse(line);
               if (part === 0) {
@@ -63,7 +76,8 @@ const useAutoSuggest = () => {
               } else if (part === 1) {
                 items.push(item);
               } else {
-                setFacets(item.fields ?? []);
+                console.log("pushing facet", item);
+                facetsBuffer.push(item);
               }
             }
           });
@@ -89,36 +103,21 @@ const MatchingFacets = ({
 }) => {
   const { setQuery } = useQuery();
   const toShow = useMemo(() => {
-    console.log("facets", facets);
-    const keyFacets = facets.filter(isKeyFacet);
-    const hasType = keyFacets.some((d) => d.valueType === "type");
-    if (hasType) {
-      return keyFacets.filter((d) => d.valueType === "type");
-    }
-    const hasCategories = keyFacets.some(
-      (d) => d.categoryLevel != null && d.categoryLevel > 0
-    );
-    if (hasCategories) {
-      return keyFacets.filter(
-        (d) =>
-          (d.categoryLevel != null && d.categoryLevel > 0) ||
-          d.valueType === "type"
-      );
-    }
-
-    return facets;
+    return facets.filter(isKeyFacet).filter((d) => d.valueType != null);
   }, [facets]);
+  console.log("toShow", toShow, facets);
   return (
     <div>
       {toShow.map((f) => (
         <div className="p-2">
           <h2 className="font-bold">{f.name}:</h2>
           <div className="flex gap-2 flex-wrap">
-            {Object.entries(f.result)
+            {Object.entries(f.result.values)
               .sort((a, b) => b[1] - a[1])
-              .slice(undefined, 10)
+              //.slice(undefined, 10)
               .map(([value, hits]) => (
                 <button
+                  key={value}
                   className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
                   onClick={() => {
                     console.log("set query", f.id, value, close);
@@ -159,20 +158,20 @@ export const AutoSuggest = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    // if (value.length < 2) {
+    //   return;
+    // }
+    // const timeout = setTimeout(() => {
     if (value.length < 2) {
-      return;
+      setSuggestTerm(null);
+    } else {
+      setSuggestTerm(value);
     }
-    const timeout = setTimeout(() => {
-      if (value.length < 2) {
-        setSuggestTerm(null);
-      } else {
-        setSuggestTerm(value);
-      }
-    }, 250);
+    //}, 250);
 
-    return () => {
-      clearTimeout(timeout);
-    };
+    // return () => {
+    //   clearTimeout(timeout);
+    // };
   }, [value, setSuggestTerm]);
 
   // const applySuggestion = (value: string) => {
@@ -268,14 +267,16 @@ export const AutoSuggest = () => {
                 <Link
                   key={i.id}
                   to={`/product/${i.id}`}
-                  className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer"
+                  className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center"
                 >
                   <img
                     src={makeImageUrl(i.img)}
                     alt={i.title}
-                    className="w-10 h-10"
+                    className="w-10 h-10 object-contain aspect-square"
                   />
-                  {i.title}
+                  <span>{i.title}</span>
+
+                  <StockIndicator stock={i.stock} stockLevel={i.stockLevel} />
                 </Link>
               ))}
             </div>

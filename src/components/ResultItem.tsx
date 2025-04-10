@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { useImpression } from "../lib/hooks/ImpressionProvider";
 
-const StockIndicator = ({
+export const StockIndicator = ({
   stock,
   stockLevel,
 }: Pick<Item, "stock" | "stockLevel">) => {
