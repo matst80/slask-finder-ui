@@ -125,7 +125,7 @@ export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
         <h2 className="text-lg font-semibold mb-4">Filter</h2>
         <CategoryResult categories={cat} />
         <div>
-          {allFacets.map((facet, i) => {
+          {allFacets.map((facet) => {
             if (isNumberFacet(facet)) {
               return (
                 <NumberFacetSelector
