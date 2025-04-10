@@ -49,7 +49,7 @@ export const NumberFacetSelector = ({
               }}
             />
           </div>
-          {buckets != null && buckets.length > 0 && (
+          {buckets != null && buckets.length > 1 && (
             <div className="relative mt-4 h-20 w-full border border-gray-300 rounded-md overflow-hidden">
               {buckets.map((size, i, all) => {
                 return (
