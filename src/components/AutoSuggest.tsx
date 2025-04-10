@@ -6,7 +6,6 @@ import {
   ItemsQuery,
   KeyFacet,
   NumberFacet,
-  PopularQuery,
   Suggestion,
 } from "../lib/types";
 import {
@@ -23,7 +22,7 @@ import { StockIndicator } from "./ResultItem";
 import { trackSuggest } from "../lib/datalayer/beacons";
 import useSWR from "swr";
 import fuzzysort from "fuzzysort";
-import { useFacetList, useFacetMap } from "../hooks/searchHooks";
+import { useFacetMap } from "../hooks/searchHooks";
 
 type SuggestField = { name: string; id: number; value: string[] };
 
@@ -348,11 +347,12 @@ export const AutoSuggest = () => {
         />
         {possibleTriggers.length > 0 && (
           <div className="border-b border-gray-300 absolute -top-5 left-8 border bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs">
-            {possibleTriggers.map(({ word, result }) =>
+            {possibleTriggers.map(({ result }) =>
               result[0]?.score > 0.7 ? (
                 <span key={result[0].obj.word}>
                   {result[0].obj.name}{" "}
-                  <span className="font-bold">{result[0].obj.word}</span>
+                  <span className="font-bold">{result[0].obj.word}</span>(
+                  {result[0]?.score.toFixed(2)})
                 </span>
               ) : null
             )}
