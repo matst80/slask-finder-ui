@@ -101,6 +101,7 @@ export type NumberResult = {
   min: number;
   max: number;
   count: number;
+  buckets?: number[];
 };
 
 export type NumberFacet = BaseFacet & {
@@ -421,6 +422,8 @@ export type FieldListItem = {
   id: number;
   name: string;
   itemCount?: number;
+  lastSeen?: number;
+  created?: number;
   description: string;
   purpose?: string[];
 };

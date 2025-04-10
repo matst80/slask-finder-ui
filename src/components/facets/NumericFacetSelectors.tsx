@@ -8,7 +8,7 @@ import { useQueryRangeFacet } from "../../lib/hooks/QueryProvider";
 export const NumberFacetSelector = ({
   id,
   name,
-  result: { min, max },
+  result: { min, max, count, buckets },
   valueType,
   defaultOpen,
 }: NumberFacet & {
@@ -27,7 +27,7 @@ export const NumberFacetSelector = ({
         className="font-medium bold mb-2 flex items-center justify-between w-full text-left"
         onClick={() => setOpen((p) => !p)}
       >
-        {name}
+        {name} ({count})
         {open ? (
           <ChevronUp className="size-4" />
         ) : (
@@ -36,18 +36,36 @@ export const NumberFacetSelector = ({
       </button>
 
       {open && (
-        <div className="flex gap-2">
-          <Slider
-            min={toDisplayValue(min)}
-            max={toDisplayValue(max)}
-            onChange={(min, max) => {
-              updateValue({
-                min: fromDisplayValue(min),
-                max: fromDisplayValue(max),
-              });
-            }}
-          />
-        </div>
+        <>
+          <div className="flex gap-2">
+            <Slider
+              min={toDisplayValue(min)}
+              max={toDisplayValue(max)}
+              onChange={(min, max) => {
+                updateValue({
+                  min: fromDisplayValue(min),
+                  max: fromDisplayValue(max),
+                });
+              }}
+            />
+          </div>
+          {buckets != null && buckets.length > 0 && (
+            <div className="relative mt-4 h-20 w-full border border-gray-300 rounded-md overflow-hidden">
+              {buckets.map((size, i, all) => {
+                return (
+                  <div
+                    style={{
+                      height: `${size}%`,
+                      width: `${100 / all.length}%`,
+                      left: `${(100 / all.length) * i}%`,
+                    }}
+                    className="bg-slate-600 bottom-0 absolute"
+                  ></div>
+                );
+              })}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

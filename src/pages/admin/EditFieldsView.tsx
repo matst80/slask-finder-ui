@@ -4,6 +4,7 @@ import { Button } from "../../components/ui/button";
 import { createFacetFromField, deleteFacet } from "../../lib/datalayer/api";
 import { cm } from "../../utils";
 import { FieldListItem } from "../../lib/types";
+import { TimeAgo } from "../../components/TimeAgo";
 
 const byCount = (a: FieldListItem, b: FieldListItem) => {
   return (b.itemCount ?? 0) - (a.itemCount ?? 0);
@@ -55,6 +56,7 @@ const FilteredFieldView = ({
       deleteFacet(facetId);
     }
   };
+  console.log(filteredData);
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-2xl font-bold">Edit Fields</h1>
@@ -98,14 +100,22 @@ const FilteredFieldView = ({
           >
             <div className="flex flex-col">
               <div>
-                <span className="text-sm font-bold">{field.name}</span>
-                <span className="text-sm">
-                  ({field.key} - {field.itemCount ?? "0"})
+                <span title={field.key} className="text-sm font-bold">
+                  {field.name}
                 </span>
+                <span className="text-sm"> ({field.itemCount ?? "0"}st)</span>
               </div>
               <span className="text-sm">{field.description}</span>
             </div>
-            <div className="flex gap-3">
+
+            <div className="flex gap-3 items-center">
+              {field.lastSeen != null && field.lastSeen > 0 && (
+                <span className="text-xs bg-yellow-200 rounded-md px-2 py-1">
+                  <span>Last update: </span>
+                  <TimeAgo ts={field.lastSeen} />
+                </span>
+              )}
+
               <span className="flex gap-2">
                 {field.purpose?.map((str) => (
                   <span
