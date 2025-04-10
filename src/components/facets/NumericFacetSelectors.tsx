@@ -55,7 +55,7 @@ export const NumberFacetSelector = ({
                 return (
                   <div
                     style={{
-                      height: `${size}%`,
+                      height: `${size + 1}%`,
                       width: `${100 / all.length}%`,
                       left: `${(100 / all.length) * i}%`,
                     }}
