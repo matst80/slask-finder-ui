@@ -2,6 +2,7 @@ import useSWR from "swr";
 import {
   facets,
   getFacetList,
+  getFacetMap,
   getRelated,
   streamItems,
 } from "../lib/datalayer/api";
@@ -352,6 +353,14 @@ export const useFacets = (data: FacetQuery) => {
 //     },
 //   };
 // };
+
+export const useFacetMap = () => {
+  return useSWR("facet-map", getFacetMap, {
+    revalidateOnFocus: false,
+    refreshInterval: 0,
+    focusThrottleInterval: 3600,
+  });
+};
 
 export const useFacetList = () => {
   return useSWR("facet-list", getFacetList, {

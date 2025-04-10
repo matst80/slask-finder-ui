@@ -12,6 +12,7 @@ import {
   PageResult,
   Rules,
   FieldListItem,
+  PopularQuery,
 } from "../types";
 
 const baseUrl = "";
@@ -36,6 +37,16 @@ export const getPrometheusData = async (url: string) => {
     toJson<PrometheusResponse>(res)
   );
 };
+
+export const getTriggerWords = () =>
+  fetch(`${baseUrl}/api/trigger-words`)
+    .then((d) => toJson<Record<string, number>>(d))
+    .then((d) => {
+      return Object.entries(d).map(([word, fieldId]) => ({
+        word,
+        fieldId: Number(fieldId),
+      }));
+    });
 
 export const getPopularityRules = () =>
   fetch(`${baseUrl}/admin/rules/popular`).then((d) => toJson<Rules>(d));
@@ -87,7 +98,7 @@ export const getRelated = (id: number) =>
 export const getPopularQueries = (q: string) =>
   fetch(
     `${baseUrl}/tracking/suggest?${new URLSearchParams({ q }).toString()}`
-  ).then((d) => toJson<unknown>(d));
+  ).then((d) => toJson<Record<string, PopularQuery>>(d));
 
 const readStreamed = <T>(
   d: Response,
@@ -171,6 +182,13 @@ export const getRawData = (id: string) =>
 
 export const getFacetList = () =>
   fetch(`${baseUrl}/api/facet-list`).then((d) => toJson<FacetListItem[]>(d));
+
+export const getFacetMap = () =>
+  fetch(`${baseUrl}/api/facet-list`)
+    .then((d) => toJson<FacetListItem[]>(d))
+    .then((d) => {
+      return Object.fromEntries(d.map((item) => [item.id, item] as const));
+    });
 
 export const getFieldList = () =>
   fetch(`${baseUrl}/admin/fields`).then((d) =>

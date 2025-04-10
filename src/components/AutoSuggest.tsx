@@ -3,35 +3,131 @@ import {
   Facet,
   isKeyFacet,
   Item,
+  ItemsQuery,
   KeyFacet,
   NumberFacet,
+  PopularQuery,
   Suggestion,
 } from "../lib/types";
-import { autoSuggestResponse, getPopularQueries } from "../lib/datalayer/api";
+import {
+  autoSuggestResponse,
+  getPopularQueries,
+  getTriggerWords,
+} from "../lib/datalayer/api";
 import { Search } from "lucide-react";
 
-import { byPriority, makeImageUrl } from "../utils";
+import { byPriority, isDefined, makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { StockIndicator } from "./ResultItem";
 import { trackSuggest } from "../lib/datalayer/beacons";
+import useSWR from "swr";
+import fuzzysort from "fuzzysort";
+import { useFacetList, useFacetMap } from "../hooks/searchHooks";
 
-// type MappedSuggestion = {
-//   match: string;
-//   hits: number;
-//   id: string;
-//   value: string;
-// };
+type SuggestField = { name: string; id: number; value: string[] };
+
+type SuggestQuery = {
+  term: string;
+  fields: SuggestField[];
+};
 
 const useAutoSuggest = () => {
+  const { data: facetData } = useFacetMap();
+  const { data } = useSWR("trigger-words", () => getTriggerWords());
   const [value, setValue] = useState<string | null>(null);
-  const [popularQueries, setPopularQueries] = useState<unknown>();
+  const [popularQueries, setPopularQueries] = useState<SuggestQuery[] | null>();
   const [results, setResults] = useState<Suggestion[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [facets, setFacets] = useState<Facet[]>([]);
   useEffect(() => {
-    getPopularQueries(value ?? "").then(setPopularQueries);
+    if (facetData == null) {
+      return;
+    }
+    getPopularQueries(value ?? "").then((d) => {
+      setPopularQueries(
+        Object.entries(d).map(([term, data]) => {
+          const fields = Object.entries(data.keyFacets)
+            .map(([fieldId, { values }]) => {
+              const facet = facetData[fieldId];
+              if (facet == null) {
+                return;
+              }
+              return {
+                name: facet.name,
+                id: Number(fieldId),
+                value: Object.keys(values),
+              };
+            })
+            .filter(isDefined);
+
+          return { term, fields };
+        })
+      );
+    });
+  }, [value, facetData]);
+
+  const parts = useMemo(() => {
+    if (value == null) {
+      return [];
+    }
+    const words = value.toLocaleLowerCase().split(" ");
+    const lastWord = words.pop();
+    if (lastWord == null) {
+      return [];
+    }
+    return new Set(words.concat(lastWord));
   }, [value]);
+
+  const [possibleTriggers, smartQuery] = useMemo(() => {
+    const wordResults = Array.from(parts).map((word) => {
+      const result = fuzzysort.go(
+        word,
+        data?.map(({ fieldId, word }) => ({
+          fieldId,
+          word,
+          name: facetData?.[String(fieldId)]?.name ?? "",
+        })) ?? [],
+        {
+          keys: ["word"],
+          limit: 10,
+          threshold: -100,
+        }
+      );
+
+      //console.log("reslt total", word, result.total);
+      return { word, result };
+    });
+
+    const words = new Set(parts);
+
+    const newQuery: ItemsQuery = {
+      string: [],
+      range: [],
+    };
+
+    wordResults.forEach(({ word, result }) => {
+      const [best] = result;
+      if (best != null && best.score > 0.7) {
+        words.delete(word);
+        newQuery.string = [
+          ...(newQuery.string?.filter((d) => d.id !== best.obj.fieldId) ?? []),
+          {
+            id: best.obj.fieldId,
+            value: [
+              ...(newQuery.string?.find((d) => d.id)?.value ?? []),
+              best.obj.word,
+            ],
+          },
+        ];
+      }
+    });
+
+    newQuery.query = words.size > 0 ? Array.from(words).join(" ") : undefined;
+
+    return [wordResults, newQuery];
+  }, [data, parts, facetData]);
+
   useEffect(() => {
     if (value == null || value.length < 2) {
       return;
@@ -98,7 +194,16 @@ const useAutoSuggest = () => {
     });
     return cancel;
   }, [value]);
-  return { results, items, facets, setValue, popularQueries };
+  return {
+    results,
+    items,
+    facets,
+    setValue,
+    popularQueries,
+    value,
+    possibleTriggers,
+    smartQuery,
+  };
 };
 
 const MatchingFacets = ({
@@ -164,28 +269,26 @@ export const AutoSuggest = () => {
   const {
     setTerm: setGlobalTerm,
     query: { query = "" },
+    setQuery,
   } = useQuery();
-  const { facets, items, results, setValue: setSuggestTerm } = useAutoSuggest();
-  const [value, setValue] = useState(query);
+  const [value, setValue] = useState<string | null>(query);
+  const {
+    facets,
+    items,
+    results,
+    setValue: setTerm,
+    popularQueries,
+    possibleTriggers,
+    smartQuery,
+  } = useAutoSuggest();
+
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // if (value.length < 2) {
-    //   return;
-    // }
-    // const timeout = setTimeout(() => {
-    if (value.length < 2) {
-      setSuggestTerm(null);
-    } else {
-      setSuggestTerm(value);
-    }
-    //}, 250);
-
-    // return () => {
-    //   clearTimeout(timeout);
-    // };
-  }, [value, setSuggestTerm]);
-
+    requestAnimationFrame(() => {
+      setTerm(value);
+    });
+  }, [value, setTerm]);
   // const applySuggestion = (value: string) => {
   //   globalThis.location.hash = queryToHash({
   //     query: value,
@@ -195,7 +298,11 @@ export const AutoSuggest = () => {
   // };
 
   const showItems =
-    open && (items.length > 0 || facets.length > 0 || results.length > 0);
+    open &&
+    (items.length > 0 ||
+      facets.length > 0 ||
+      results.length > 0 ||
+      (popularQueries != null && Object.keys(popularQueries).length > 0));
 
   useEffect(() => {
     const close = () => setOpen(false);
@@ -215,13 +322,17 @@ export const AutoSuggest = () => {
         <input
           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           type="search"
-          value={value}
+          value={value ?? ""}
           placeholder="Search..."
           onFocus={() => setOpen(true)}
           //onBlur={() => applySuggestion(value)}
           onKeyUp={(e) => {
             if (e.key === "Enter") {
-              setGlobalTerm(value);
+              if (smartQuery.string?.length) {
+                setQuery(smartQuery);
+              } else {
+                setGlobalTerm(value ?? "*");
+              }
               setOpen(false);
               return;
             } else if (e.key === "ArrowRight" && results.length > 0) {
@@ -235,6 +346,23 @@ export const AutoSuggest = () => {
           }}
           onChange={(e) => setValue(e.target.value)}
         />
+        {possibleTriggers.length > 0 && (
+          <div className="border-b border-gray-300 absolute -top-5 left-8 border bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs">
+            {possibleTriggers.map(({ word, result }) =>
+              result[0]?.score > 0.7 ? (
+                <span key={result[0].obj.word}>
+                  {result[0].obj.name}{" "}
+                  <span className="font-bold">{result[0].obj.word}</span>
+                </span>
+              ) : null
+            )}
+            {smartQuery.query != null && smartQuery.query.length > 1 && (
+              <span>
+                Sökning: <span className="font-bold">{smartQuery.query}</span>
+              </span>
+            )}
+          </div>
+        )}
         <Search
           className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
           size={20}
@@ -245,6 +373,39 @@ export const AutoSuggest = () => {
           className="absolute block top-12 left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-xl max-h-[50vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
+          {popularQueries != null && popularQueries.length > 0 && (
+            <div className="border-b border-gray-300">
+              <h2 className="font-bold px-2 pt-2">Populära sökningar:</h2>
+              <div className="flex flex-col gap-2 p-2">
+                {popularQueries.map(({ term, fields }) => (
+                  <button
+                    key={term}
+                    className="flex gap-2"
+                    onClick={() => {
+                      setQuery((prev) => ({
+                        ...prev,
+                        query: term,
+                        string: fields.map(({ value, id }) => ({
+                          id,
+                          value,
+                        })),
+                      }));
+                    }}
+                  >
+                    <span>{term}</span>
+                    <div className="flex gap-2">
+                      {fields.map(({ value, id, name }) => (
+                        <div className="flex gap-2">
+                          <span key={id}>{name}</span>
+                          <span className="font-bold">{value.join(", ")}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="border-b border-gray-300">
             <h2 className="font-bold p-2">Förslag:</h2>
             <div className="flex gap-2">
@@ -268,7 +429,7 @@ export const AutoSuggest = () => {
           <div className="border-b border-gray-300">
             <MatchingFacets
               facets={facets}
-              query={value}
+              query={value ?? ""}
               close={() => setOpen(false)}
             />
           </div>

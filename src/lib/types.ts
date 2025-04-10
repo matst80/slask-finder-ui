@@ -427,3 +427,18 @@ export type FieldListItem = {
   description: string;
   purpose?: string[];
 };
+
+export type Popularity = {
+  value: number;
+};
+
+export type PopularQuery = {
+  query: string;
+  popularity: Popularity;
+  keyFacets: Record<number, PopularFacet>;
+};
+
+export type PopularFacet = {
+  popularity: Popularity;
+  values: Record<string, Popularity>;
+};
