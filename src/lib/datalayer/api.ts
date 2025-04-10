@@ -84,6 +84,11 @@ export const facets = (query: string) =>
 export const getRelated = (id: number) =>
   fetch(`${baseUrl}/api/related/${id}`).then((d) => readStreamed<Item>(d));
 
+export const getPopularQueries = (q: string) =>
+  fetch(
+    `${baseUrl}/tracking/suggest?${new URLSearchParams({ q }).toString()}`
+  ).then((d) => toJson<unknown>(d));
+
 const readStreamed = <T>(
   d: Response,
   afterSeparator?: (line: string) => void

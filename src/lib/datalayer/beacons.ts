@@ -12,5 +12,12 @@ export const trackImpression = (impressions: Impression[]) =>
 export const trackAction = (payload: { action: string; reason: string }) =>
   globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload));
 
+export const trackSuggest = (payload: {
+  value: string;
+  items: number;
+  suggestions: number;
+}) =>
+  globalThis.navigator.sendBeacon(`/track/suggest`, JSON.stringify(payload));
+
 export const trackCart = (payload: { item: number; quantity: number }) =>
   globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload));

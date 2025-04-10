@@ -7,13 +7,14 @@ import {
   NumberFacet,
   Suggestion,
 } from "../lib/types";
-import { autoSuggestResponse } from "../lib/datalayer/api";
+import { autoSuggestResponse, getPopularQueries } from "../lib/datalayer/api";
 import { Search } from "lucide-react";
 
-import { makeImageUrl } from "../utils";
+import { byPriority, makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { StockIndicator } from "./ResultItem";
+import { trackSuggest } from "../lib/datalayer/beacons";
 
 // type MappedSuggestion = {
 //   match: string;
@@ -24,9 +25,13 @@ import { StockIndicator } from "./ResultItem";
 
 const useAutoSuggest = () => {
   const [value, setValue] = useState<string | null>(null);
+  const [popularQueries, setPopularQueries] = useState<unknown>();
   const [results, setResults] = useState<Suggestion[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [facets, setFacets] = useState<Facet[]>([]);
+  useEffect(() => {
+    getPopularQueries(value ?? "").then(setPopularQueries);
+  }, [value]);
   useEffect(() => {
     if (value == null || value.length < 2) {
       return;
@@ -45,18 +50,22 @@ const useAutoSuggest = () => {
       const reader = d.body.getReader();
       const decoder = new TextDecoder();
       const pump = async (): Promise<void> => {
-        return reader?.read().then(async ({ done, value }) => {
+        return reader?.read().then(async ({ done, value: dataChunk }) => {
           if (done) {
             setResults(suggestions.sort((a, b) => b.hits - a.hits));
 
             setItems(items);
 
             setFacets(facetsBuffer);
-
+            trackSuggest({
+              value,
+              items: items.length,
+              suggestions: suggestions.length,
+            });
             return;
           }
 
-          buffer += decoder.decode(value);
+          buffer += decoder.decode(dataChunk);
           const lines = buffer.split("\n");
           buffer = lines.pop() ?? "";
           lines.forEach((line) => {
@@ -89,7 +98,7 @@ const useAutoSuggest = () => {
     });
     return cancel;
   }, [value]);
-  return { results, items, facets, setValue };
+  return { results, items, facets, setValue, popularQueries };
 };
 
 const MatchingFacets = ({
@@ -103,7 +112,10 @@ const MatchingFacets = ({
 }) => {
   const { setQuery } = useQuery();
   const toShow = useMemo(() => {
-    return facets.filter(isKeyFacet).filter((d) => d.valueType != null);
+    return facets
+      .filter(isKeyFacet)
+      .filter((d) => d.valueType != null)
+      .sort(byPriority);
   }, [facets]);
   console.log("toShow", toShow, facets);
   return (
@@ -114,7 +126,7 @@ const MatchingFacets = ({
           <div className="flex gap-2 flex-wrap">
             {Object.entries(f.result.values)
               .sort((a, b) => b[1] - a[1])
-              //.slice(undefined, 10)
+              .slice(undefined, 10)
               .map(([value, hits]) => (
                 <button
                   key={value}

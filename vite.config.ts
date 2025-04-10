@@ -1,24 +1,27 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+const target = "https://slask-finder.knatofs.se/";
+const _target = "http://localhost:8080/";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://slask-finder.knatofs.se/",
+        target,
         changeOrigin: true,
       },
       "/tracking": {
-        target: "https://slask-finder.knatofs.se",
+        target,
         changeOrigin: true,
       },
       "/track": {
-        target: "https://slask-finder.knatofs.se",
+        target,
         changeOrigin: true,
       },
       "/admin": {
-        target: "https://slask-finder.knatofs.se",
+        target,
         changeOrigin: true,
       },
     },
