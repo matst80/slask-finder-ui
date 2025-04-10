@@ -70,7 +70,7 @@ const CategoryResult = ({ categories }: { categories: KeyFacet[] }) => {
     [categories]
   );
   // console.log("sorted", sorted);
-  if (sorted[0].categoryLevel !== 1) {
+  if (sorted.length === 0 || sorted[0].categoryLevel !== 1) {
     return null;
   }
   return (
