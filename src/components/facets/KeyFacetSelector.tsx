@@ -21,7 +21,10 @@ export const KeyFacetSelector = ({
   const { values } = result;
   const { filter: filterValue, addValue, removeValue } = useQueryKeyFacet(id);
   const [filter, setFilter] = useState("");
-  const allSorted = useMemo(() => toSorted(values, filterValue), [values]);
+  const allSorted = useMemo(
+    () => toSorted(values, filterValue),
+    [values, filterValue]
+  );
   const filtered = useMemo(() => {
     return filter.length > 2
       ? allSorted.filter(
@@ -30,11 +33,11 @@ export const KeyFacetSelector = ({
             filterValue.has(value)
         )
       : allSorted;
-  }, [allSorted, filter]);
-  const [open, setOpen] = useState(defaultOpen && allSorted.length < 10);
+  }, [allSorted, filter, filterValue]);
+  const [open, setOpen] = useState(defaultOpen);
   const [expanded, setExpanded] = useState(false);
 
-  const toShow = expanded ? filtered : filtered.slice(0, 15);
+  const toShow = expanded ? filtered : filtered.slice(0, 10);
 
   return (
     <div className="mb-4 border-b border-gray-100 pb-2">
@@ -89,7 +92,7 @@ export const KeyFacetSelector = ({
             </label>
           ))}
 
-          {allSorted.length > 14 && (
+          {allSorted.length > 9 && (
             <button
               className="underline text-sm"
               onClick={() => setExpanded((p) => !p)}

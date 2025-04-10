@@ -130,6 +130,7 @@ export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
               return (
                 <NumberFacetSelector
                   {...facet}
+                  defaultOpen={facet.selected != null}
                   key={`fld-${facet.id}-${facet.name}`}
                 />
               );
@@ -146,7 +147,7 @@ export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
               <KeyFacetSelector
                 {...facet}
                 key={`fld-${facet.id}-${facet.name}`}
-                defaultOpen={i < 5}
+                defaultOpen={facet.selected != null}
               />
             );
           })}

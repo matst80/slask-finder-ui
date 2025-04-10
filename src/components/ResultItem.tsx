@@ -149,8 +149,11 @@ export const ResultItemInner = ({
           {bp
             ?.split("\n")
             .filter((d) => d?.length)
-            .map((bp) => (
-              <li key={bp} className="line-clamp-1 overflow-ellipsis">
+            .map((bp, idx) => (
+              <li
+                key={`${bp}-${idx}`}
+                className="line-clamp-1 overflow-ellipsis"
+              >
                 {bp}
               </li>
             ))}
