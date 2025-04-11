@@ -347,7 +347,10 @@ export const AutoSuggest = () => {
           onChange={(e) => setValue(e.target.value)}
         />
         {possibleTriggers.length > 0 && (
-          <div className="border-b border-gray-300 absolute -top-5 left-8 border bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs">
+          <button
+            onClick={() => setQuery(smartQuery)}
+            className="border-b border-gray-300 absolute -top-5 left-8 border bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs"
+          >
             {possibleTriggers.map(({ result }) =>
               result[0]?.score > MIN_SCORE ? (
                 <span key={result[0].obj.word}>
@@ -362,7 +365,7 @@ export const AutoSuggest = () => {
                 Sökning: <span className="font-bold">{smartQuery.query}</span>
               </span>
             )}
-          </div>
+          </button>
         )}
         <Search
           className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
