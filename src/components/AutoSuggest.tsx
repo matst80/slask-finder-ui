@@ -25,7 +25,7 @@ import fuzzysort from "fuzzysort";
 import { useFacetMap } from "../hooks/searchHooks";
 
 type SuggestField = { name: string; id: number; value: string[] };
-
+const MIN_SCORE = 0.9;
 type SuggestQuery = {
   term: string;
   fields: SuggestField[];
@@ -107,14 +107,15 @@ const useAutoSuggest = () => {
 
     wordResults.forEach(({ word, result }) => {
       const [best] = result;
-      if (best != null && best.score > 0.7) {
+      if (best != null && best.score > MIN_SCORE) {
         words.delete(word);
         newQuery.string = [
           ...(newQuery.string?.filter((d) => d.id !== best.obj.fieldId) ?? []),
           {
             id: best.obj.fieldId,
             value: [
-              ...(newQuery.string?.find((d) => d.id)?.value ?? []),
+              ...(newQuery.string?.find((d) => d.id === best.obj.fieldId)
+                ?.value ?? []),
               best.obj.word,
             ],
           },
@@ -348,7 +349,7 @@ export const AutoSuggest = () => {
         {possibleTriggers.length > 0 && (
           <div className="border-b border-gray-300 absolute -top-5 left-8 border bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs">
             {possibleTriggers.map(({ result }) =>
-              result[0]?.score > 0.7 ? (
+              result[0]?.score > MIN_SCORE ? (
                 <span key={result[0].obj.word}>
                   {result[0].obj.name}{" "}
                   <span className="font-bold">{result[0].obj.word}</span>(

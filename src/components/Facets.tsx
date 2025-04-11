@@ -75,6 +75,9 @@ const CategoryResult = ({ categories }: { categories: KeyFacet[] }) => {
   }
   return (
     <div className="mb-4 border-b border-gray-100 pb-2">
+      <div className="font-medium bold mb-2 flex items-center justify-between w-full text-left">
+        <span>{sorted[0].name}</span>
+      </div>
       <CategoryLevel facets={sorted} index={0} id={sorted[0].id} />
     </div>
   );
