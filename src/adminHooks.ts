@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import {
+  cleanFields,
   getFacets,
   getFieldList,
   getKeyFieldsValues,
@@ -49,6 +50,21 @@ export const useMissingFacets = () => {
       }))
     )
   );
+};
+
+export const useCleanFields = () => {
+  const { isMutating, trigger, error } = useSWRMutation(
+    "/admin/fields",
+    () => cleanFields().then(() => getFieldList()),
+    {}
+  );
+  return {
+    cleanFields: () => {
+      trigger();
+    },
+    error,
+    isLoading: isMutating,
+  };
 };
 
 export const useAdminFacets = () => {

@@ -1,13 +1,42 @@
 import { useMemo, useState } from "react";
-import { useAdminFacets, useFields, useMissingFacets } from "../../adminHooks";
+import {
+  useAdminFacets,
+  useCleanFields,
+  useFields,
+  useMissingFacets,
+} from "../../adminHooks";
 import { Button } from "../../components/ui/button";
 import { createFacetFromField, deleteFacet } from "../../lib/datalayer/api";
 import { cm } from "../../utils";
 import { FieldListItem } from "../../lib/types";
 import { TimeAgo } from "../../components/TimeAgo";
+import { LoaderCircle } from "lucide-react";
 
 const byCount = (a: FieldListItem, b: FieldListItem) => {
   return (b.itemCount ?? 0) - (a.itemCount ?? 0);
+};
+
+const CleanFieldsButton = () => {
+  const { cleanFields, isLoading, error } = useCleanFields();
+  console.log({ error, isLoading });
+  return (
+    <>
+      {error && <span>fel:{JSON.stringify(error, null, 2)}</span>}
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => {
+          cleanFields;
+        }}
+      >
+        {isLoading ? (
+          <LoaderCircle className="size-5 animate-spin inline-block ml-2" />
+        ) : (
+          <span>Clean Fields</span>
+        )}
+      </Button>
+    </>
+  );
 };
 
 const FilteredFieldView = ({
@@ -147,6 +176,9 @@ const FilteredFieldView = ({
         <span>
           {filteredData.length} / {Object.keys(data ?? {}).length}
         </span>
+      </div>
+      <div>
+        <CleanFieldsButton />
       </div>
     </div>
   );

@@ -200,6 +200,9 @@ export const getMissingFieldList = () =>
     toJson<FieldListItem[]>(d)
   );
 
+export const cleanFields = () =>
+  fetch(`${baseUrl}/admin/clean-fields`).then((d) => d.ok);
+
 // export const getCategories = () =>
 //   fetch(`${baseUrl}/api/categories`).then((d) => toJson<Category[]>(d));
 
