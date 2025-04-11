@@ -81,7 +81,7 @@ export const ResultHeader = () => {
           <Sorting />
         </div>
       </header>
-      <FilterQuery show={(totalHits ?? 0) > 40} />
+      {/* <FilterQuery show={(totalHits ?? 0) > 40} /> */}
       {open && admin && <EditCategories onClose={() => setOpen(false)} />}
     </>
   );
