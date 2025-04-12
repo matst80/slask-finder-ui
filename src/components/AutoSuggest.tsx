@@ -31,14 +31,32 @@ type SuggestQuery = {
   fields: SuggestField[];
 };
 
+type FlatFacetValue = {
+  value: string;
+  id: number;
+  valueType: string;
+  name: string;
+  prio?: number;
+  description: string;
+  categoryLevel?: number;
+};
+
 const useAutoSuggest = () => {
   const { data: facetData } = useFacetMap();
-  const { data } = useSWR("trigger-words", () => getTriggerWords());
+  //const { data } = useSWR("trigger-words", () => getTriggerWords());
   const [value, setValue] = useState<string | null>(null);
   const [popularQueries, setPopularQueries] = useState<SuggestQuery[] | null>();
   const [results, setResults] = useState<Suggestion[]>([]);
   const [items, setItems] = useState<Item[]>([]);
-  const [facets, setFacets] = useState<Facet[]>([]);
+  const [smartQuery, setSmartQuery] = useState<ItemsQuery | null>(null);
+  const [possibleTriggers, setPossibleTriggers] = useState<
+    | {
+        word: string;
+        result: Fuzzysort.KeysResults<FlatFacetValue>;
+      }[]
+    | null
+  >(null);
+  const [facets, setFacets] = useState<KeyFacet[]>([]);
   useEffect(() => {
     if (facetData == null) {
       return;
@@ -68,27 +86,34 @@ const useAutoSuggest = () => {
 
   const parts = useMemo(() => {
     if (value == null) {
-      return [];
+      return new Set<string>();
     }
     const words = value.toLocaleLowerCase().split(" ");
     const lastWord = words.pop();
     if (lastWord == null) {
-      return [];
+      return new Set<string>();
     }
     return new Set(words.concat(lastWord));
   }, [value]);
 
-  const [possibleTriggers, smartQuery] = useMemo(() => {
+  useEffect(() => {
+    if (facets == null || facets.length === 0) {
+      //setSmartQuery(null);
+      //setPossibleTriggers(null);
+      return;
+    }
     const wordResults = Array.from(parts).map((word) => {
       const result = fuzzysort.go(
         word,
-        data?.map(({ fieldId, word }) => ({
-          fieldId,
-          word,
-          name: facetData?.[String(fieldId)]?.name ?? "",
-        })) ?? [],
+        facets
+          .filter((d) => d.valueType != null)
+          .flatMap(({ result: { values }, selected: _, ...rest }) =>
+            Object.keys(values ?? {}).map(
+              (value): FlatFacetValue => ({ ...rest, value })
+            )
+          ) ?? [],
         {
-          keys: ["word"],
+          keys: ["value"],
           limit: 10,
           threshold: -100,
         }
@@ -110,23 +135,31 @@ const useAutoSuggest = () => {
       if (best != null && best.score > MIN_SCORE) {
         words.delete(word);
         newQuery.string = [
-          ...(newQuery.string?.filter((d) => d.id !== best.obj.fieldId) ?? []),
+          ...(newQuery.string?.filter((d) => d.id !== best.obj.id) ?? []),
           {
-            id: best.obj.fieldId,
+            id: best.obj.id,
             value: [
-              ...(newQuery.string?.find((d) => d.id === best.obj.fieldId)
-                ?.value ?? []),
-              best.obj.word,
+              ...(newQuery.string?.find((d) => d.id === best.obj.id)?.value ??
+                []),
+              best.obj.value,
             ],
           },
         ];
       }
     });
 
-    newQuery.query = words.size > 0 ? Array.from(words).join(" ") : undefined;
-
-    return [wordResults, newQuery];
-  }, [data, parts, facetData]);
+    newQuery.query = parts.size > 0 ? Array.from(parts).join(" ") : undefined;
+    const validTriggers = wordResults.filter(({ result }) => result.length > 0);
+    if (validTriggers.length === 0) {
+      setSmartQuery(null);
+      setPossibleTriggers(null);
+      return;
+    } else {
+      setSmartQuery(newQuery);
+      setPossibleTriggers(validTriggers);
+    }
+    //return [wordResults, newQuery];
+  }, [parts, facets]);
 
   useEffect(() => {
     if (value == null || value.length < 2) {
@@ -141,7 +174,7 @@ const useAutoSuggest = () => {
       let part = 0;
       const suggestions: Suggestion[] = [];
       const items: Item[] = [];
-      const facetsBuffer: Facet[] = [];
+      const facetsBuffer: KeyFacet[] = [];
       let buffer = "";
       const reader = d.body.getReader();
       const decoder = new TextDecoder();
@@ -152,7 +185,7 @@ const useAutoSuggest = () => {
 
             setItems(items);
 
-            setFacets(facetsBuffer);
+            setFacets(facetsBuffer.filter(isKeyFacet));
             trackSuggest({
               value,
               items: items.length,
@@ -171,7 +204,7 @@ const useAutoSuggest = () => {
               } else if (part === 1) {
                 setItems(items);
               } else {
-                setFacets(facetsBuffer);
+                setFacets(facetsBuffer.filter(isKeyFacet));
               }
               part++;
             } else {
@@ -211,16 +244,13 @@ const MatchingFacets = ({
   query,
   close,
 }: {
-  facets: (KeyFacet | NumberFacet)[];
+  facets: KeyFacet[];
   query: string;
   close: () => void;
 }) => {
   const { setQuery } = useQuery();
   const toShow = useMemo(() => {
-    return facets
-      .filter(isKeyFacet)
-      .filter((d) => d.valueType != null)
-      .sort(byPriority);
+    return facets.filter((d) => d.valueType != null).sort(byPriority);
   }, [facets]);
   console.log("toShow", toShow, facets);
   return (
@@ -328,11 +358,12 @@ export const AutoSuggest = () => {
           //onBlur={() => applySuggestion(value)}
           onKeyUp={(e) => {
             if (e.key === "Enter") {
-              if (smartQuery.string?.length) {
+              if (e.ctrlKey && smartQuery?.string?.length) {
                 setQuery(smartQuery);
               } else {
                 setGlobalTerm(value ?? "*");
               }
+
               setOpen(false);
               return;
             } else if (e.key === "ArrowRight" && results.length > 0) {
@@ -346,21 +377,21 @@ export const AutoSuggest = () => {
           }}
           onChange={(e) => setValue(e.target.value)}
         />
-        {possibleTriggers.length > 0 && (
+        {possibleTriggers != null && (
           <button
-            onClick={() => setQuery(smartQuery)}
+            onClick={() => smartQuery != null && setQuery(smartQuery)}
             className="border-b border-gray-300 absolute -top-5 left-8 border bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs"
           >
             {possibleTriggers.map(({ result }) =>
               result[0]?.score > MIN_SCORE ? (
-                <span key={result[0].obj.word}>
+                <span key={result[0].obj.value}>
                   {result[0].obj.name}{" "}
-                  <span className="font-bold">{result[0].obj.word}</span>(
+                  <span className="font-bold">{result[0].obj.value}</span>(
                   {result[0]?.score.toFixed(2)})
                 </span>
               ) : null
             )}
-            {smartQuery.query != null && smartQuery.query.length > 1 && (
+            {smartQuery?.query != null && smartQuery.query.length > 1 && (
               <span>
                 Sökning: <span className="font-bold">{smartQuery.query}</span>
               </span>
