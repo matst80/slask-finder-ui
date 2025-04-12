@@ -27,7 +27,9 @@ export const NumberFacetSelector = ({
         className="font-medium bold mb-2 flex items-center justify-between w-full text-left"
         onClick={() => setOpen((p) => !p)}
       >
-        {name} ({count})
+        <span>
+          {name} <span className="text-gray-500 text-sm">({count})</span>
+        </span>
         {open ? (
           <ChevronUp className="size-4" />
         ) : (

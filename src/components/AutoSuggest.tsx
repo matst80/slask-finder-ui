@@ -30,27 +30,25 @@ const MatchingFacets = () => {
   };
 
   return facets.length ? (
-    <SuggestionSection title="Matchande fält">
-      <div>
-        {facets.map((f) => (
-          <div className="flex gap-2 flex-wrap p-2 text-sm items-center">
-            <span className="font-bold">{f.name}: </span>
-            {f.values.map(({ value, hits }) => (
-              <button
-                key={value}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
-                onClick={updateQuery(value, f.id)}
-              >
-                {value}
-                <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
-                  {hits}
-                </span>
-              </button>
-            ))}
-          </div>
-        ))}
-      </div>
-    </SuggestionSection>
+    <div className="bg-gray-100 border-t border-gray-200 p-2">
+      {facets.map((f) => (
+        <div className="flex gap-2 flex-wrap p-2 text-sm items-center">
+          <span className="font-bold">{f.name}: </span>
+          {f.values.map(({ value, hits }) => (
+            <button
+              key={value}
+              className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
+              onClick={updateQuery(value, f.id)}
+            >
+              {value}
+              <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
+                {hits}
+              </span>
+            </button>
+          ))}
+        </div>
+      ))}
+    </div>
   ) : null;
 };
 
@@ -243,7 +241,7 @@ export const AutoSuggest = () => {
       >
         <input
           ref={inputRef}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+          className="w-full pl-10 pr-4 py-2 transition-all border border-gray-300 rounded-md focus:outline-none focus:rounded-b-none focus:border-b-0"
           type="search"
           value={value ?? ""}
           placeholder="Search..."
@@ -280,6 +278,7 @@ export const AutoSuggest = () => {
               Sökning: <span className="font-bold">{smartQuery.query}</span>
             </span>
           )}
+          <span className="text-[10px]">⌥ + ↵</span>
         </button>
 
         <Search
@@ -287,26 +286,29 @@ export const AutoSuggest = () => {
           size={20}
         />
       </div>
-      {showItems && <SuggestionResults />}
+      <SuggestionResults open={showItems} />
     </>
   );
 };
 
-const SuggestionResults = () => {
+const SuggestionResults = ({ open }: { open: boolean }) => {
   const { setQuery } = useQuery();
   const { popularQueries, items } = useSuggestions();
   return (
     <div
-      className="absolute block top-12 left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-xl max-h-[50vh] overflow-y-auto"
+      className={cm(
+        "transition-all absolute block top-11 left-0 right-0 bg-white border-gray-300 rounded-b-md overflow-y-auto border-t-0",
+        open ? "shadow-xl max-h-[70vh] border" : "shadow-none max-h-0"
+      )}
       onClick={(e) => e.stopPropagation()}
     >
       {popularQueries != null && popularQueries.length > 0 && (
         <SuggestionSection title="Populära sökningar">
           <div className="flex flex-col gap-2 p-2">
-            {popularQueries.map(({ term, fields }) => (
+            {popularQueries.slice(undefined, 5).map(({ term, fields }) => (
               <button
                 key={term}
-                className="flex gap-2"
+                className="flex gap-2 items-center text-left"
                 onClick={() => {
                   setQuery((prev) => ({
                     ...prev,
@@ -319,10 +321,10 @@ const SuggestionResults = () => {
                 }}
               >
                 <span>{term}</span>
-                <div className="flex gap-2">
+                <div className="flex gap-2 text-xs">
                   {fields.map(({ value, id, name }) => (
-                    <div className="flex gap-2">
-                      <span key={id}>{name}</span>
+                    <div className="px-2 py-1 rounded-full font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer">
+                      <span key={id}>{name} </span>
                       <span className="font-bold">{value.join(", ")}</span>
                     </div>
                   ))}
@@ -332,7 +334,6 @@ const SuggestionResults = () => {
           </div>
         </SuggestionSection>
       )}
-      <MatchingFacets />
       {items.length > 0 && (
         <SuggestionSection title="Produkter">
           <div className="lg:grid grid-cols-2">
@@ -355,6 +356,7 @@ const SuggestionResults = () => {
           </div>
         </SuggestionSection>
       )}
+      <MatchingFacets />
     </div>
   );
 };
