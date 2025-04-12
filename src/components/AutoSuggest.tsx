@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  FacetListItem,
   isKeyFacet,
   Item,
   ItemsQuery,
   KeyFacet,
+  PopularFacet,
+  PopularQuery,
   Suggestion,
 } from "../lib/types";
 import { autoSuggestResponse, getPopularQueries } from "../lib/datalayer/api";
@@ -49,6 +52,56 @@ const convertFacets = (facets: KeyFacet[]): ConvertedFacet[] => {
   );
 };
 
+const byPopularity = (a: { popularity: number }, b: { popularity: number }) =>
+  b.popularity - a.popularity;
+
+const convertKeyFacetEntry =
+  (facetData: Record<string, FacetListItem>) =>
+  ([
+    fieldId,
+    {
+      values,
+      popularity: { value },
+    },
+  ]: [string, PopularFacet]) => {
+    const facet = facetData[fieldId];
+    if (facet == null) {
+      return null;
+    }
+    return {
+      name: facet.name,
+      id: Number(fieldId),
+      value: Object.keys(values),
+      popularity: value,
+    };
+  };
+
+const convertFacetEntry =
+  (facetData: Record<string, FacetListItem>) =>
+  ([
+    term,
+    {
+      keyFacets,
+      popularity: { value },
+      query,
+    },
+  ]: [string, PopularQuery]) => {
+    const fields = Object.entries(keyFacets)
+      .map(convertKeyFacetEntry(facetData))
+      .filter(isDefined)
+      .sort(byPopularity);
+
+    return { term, fields, popularity: value, query };
+  };
+
+const convertPopularQueries =
+  (facetData: Record<string, FacetListItem>) =>
+  (d: Record<string, PopularQuery>) => {
+    return Object.entries(d)
+      .map(convertFacetEntry(facetData))
+      .sort(byPopularity);
+  };
+
 const useAutoSuggest = () => {
   const { data: facetData } = useFacetMap();
   //const { data } = useSWR("trigger-words", () => getTriggerWords());
@@ -69,27 +122,9 @@ const useAutoSuggest = () => {
     if (facetData == null) {
       return;
     }
-    getPopularQueries(value ?? "").then((d) => {
-      setPopularQueries(
-        Object.entries(d).map(([term, data]) => {
-          const fields = Object.entries(data.keyFacets)
-            .map(([fieldId, { values }]) => {
-              const facet = facetData[fieldId];
-              if (facet == null) {
-                return;
-              }
-              return {
-                name: facet.name,
-                id: Number(fieldId),
-                value: Object.keys(values),
-              };
-            })
-            .filter(isDefined);
-
-          return { term, fields };
-        })
-      );
-    });
+    getPopularQueries(value ?? "")
+      .then(convertPopularQueries(facetData))
+      .then(setPopularQueries);
   }, [value, facetData]);
 
   const parts = useMemo(() => {
@@ -154,7 +189,7 @@ const useAutoSuggest = () => {
       }
     });
 
-    newQuery.query = parts.size > 0 ? Array.from(parts).join(" ") : undefined;
+    newQuery.query = words.size > 0 ? Array.from(words).join(" ") : undefined;
     const validTriggers = wordResults.filter(({ result }) => result.length > 0);
     if (validTriggers.length === 0) {
       setSmartQuery(null);
@@ -370,7 +405,7 @@ export const AutoSuggest = () => {
               setOpen(false);
               return;
             } else if (
-              (e.ctrlKey || e.altKey || e.metaKey) &&
+              !(e.ctrlKey || e.altKey || e.metaKey) &&
               e.key === "ArrowRight" &&
               results.length > 0
             ) {

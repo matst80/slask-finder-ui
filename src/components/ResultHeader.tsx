@@ -5,7 +5,6 @@ import { useAdmin } from "../hooks/appState";
 import { Sorting } from "./Sorting";
 import { SelectedStore } from "./StoreSelector";
 import { X } from "lucide-react";
-import { FilterQuery } from "./FilterQuery";
 import { useQuery } from "../lib/hooks/QueryProvider";
 
 const EditCategories = ({ onClose }: { onClose: () => void }) => {
