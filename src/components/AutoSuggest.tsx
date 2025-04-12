@@ -1,4 +1,11 @@
-import { PropsWithChildren, useEffect, useState } from "react";
+import {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Search } from "lucide-react";
 import { cm, makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
@@ -26,22 +33,20 @@ const MatchingFacets = () => {
     <SuggestionSection title="Matchande fält">
       <div>
         {facets.map((f) => (
-          <div className="p-2">
-            <h2 className="font-bold">{f.name}:</h2>
-            <div className="flex gap-2 flex-wrap">
-              {f.values.map(({ value, hits }) => (
-                <button
-                  key={value}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
-                  onClick={updateQuery(value, f.id)}
-                >
-                  {value}
-                  <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
-                    {hits}
-                  </span>
-                </button>
-              ))}
-            </div>
+          <div className="flex gap-2 flex-wrap p-2 text-sm items-center">
+            <span className="font-bold">{f.name}: </span>
+            {f.values.map(({ value, hits }) => (
+              <button
+                key={value}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
+                onClick={updateQuery(value, f.id)}
+              >
+                {value}
+                <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
+                  {hits}
+                </span>
+              </button>
+            ))}
           </div>
         ))}
       </div>
@@ -68,13 +73,94 @@ const measureSize = (element: HTMLElement, text: string): number => {
   return textWidth;
 };
 
-export const AutoSuggest = () => {
-  const {
-    query: { query = "" },
-    setQuery,
-  } = useQuery();
-  const [value, setValue] = useState<string | null>(query);
+const useCursorPosition = (
+  ref: React.RefObject<HTMLInputElement>,
+  { useCursorPosition = true }: { useCursorPosition?: boolean } = {}
+) => {
   const [left, setLeft] = useState(0);
+
+  const updatePosition = useCallback(() => {
+    const input = ref?.current;
+    if (input == null) {
+      return;
+    }
+    const position = input.selectionStart ?? 0;
+    const text = useCursorPosition
+      ? input.value.substring(0, position)
+      : input.value;
+    setLeft(Math.round(measureSize(input, text)));
+  }, [ref, useCursorPosition]);
+
+  useEffect(() => {
+    const input = ref?.current;
+    if (input == null) {
+      return;
+    }
+
+    input.addEventListener("focus", updatePosition);
+    input.addEventListener("change", updatePosition);
+    return () => {
+      input.removeEventListener("focus", updatePosition);
+      input.removeEventListener("change", updatePosition);
+    };
+  }, [ref, updatePosition]);
+
+  return { left, updatePosition };
+};
+
+const TrieSuggestions = ({
+  toShow,
+  open,
+  left,
+  onQueryChange,
+  max = 10,
+}: {
+  toShow: number;
+  max?: number;
+  open: boolean;
+  left: number;
+  onQueryChange: (query: string) => void;
+}) => {
+  const { suggestions } = useSuggestions();
+  const [showMore, setShowMore] = useState(false);
+  const [visible, hasMore] = useMemo(() => {
+    const l = showMore ? max : toShow;
+    const visible = suggestions.slice(0, l);
+    const hasMore = suggestions.length > l;
+    return [visible, hasMore];
+  }, [toShow, max, showMore, suggestions]);
+  return (
+    <div
+      className={cm(
+        "transition-opacity border border-gray-200 bg-gray-100/50 hover:bg-gray-100/20 px-2 py-1 absolute text-xs top-2 bottom-2 rounded-md z-20 flex gap-2 items-center",
+        open && suggestions.length > 0 ? "opacity-100" : "opacity-0"
+      )}
+      style={{ left: `${left + 50}px` }}
+    >
+      {visible.map(({ hits, match, other }) => (
+        <button
+          key={match}
+          onClick={() => onQueryChange([...other, match].join(" "))}
+        >
+          {match}
+          <span className="ml-2 inline-flex items-center justify-center px-2 h-4 rounded-full bg-blue-200 text-blue-500">
+            {hits}
+          </span>
+        </button>
+      ))}
+      {hasMore && <button onClick={() => setShowMore((p) => !p)}>...</button>}
+    </div>
+  );
+};
+
+export const AutoSuggest = () => {
+  const { query: globalQuery, setQuery } = useQuery();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { left, updatePosition } = useCursorPosition(inputRef, {
+    useCursorPosition: false,
+  });
+  const [value, setValue] = useState<string | null>(globalQuery.query ?? "");
+
   const {
     suggestions,
     setValue: setTerm,
@@ -88,16 +174,56 @@ export const AutoSuggest = () => {
   useEffect(() => {
     requestAnimationFrame(() => {
       setTerm(value);
+      updatePosition();
     });
-  }, [value, setTerm]);
+  }, [value, setTerm, updatePosition]);
 
   const showItems = open && hasSuggestions;
+
+  const onKeyUp = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      const input = e.target as HTMLInputElement;
+      const isAtEnd = input.selectionEnd == input.value.length;
+      const bestSuggestion = suggestions[0];
+      if (e.key === "Enter") {
+        if (
+          (e.ctrlKey || e.altKey || e.metaKey) &&
+          smartQuery?.string?.length
+        ) {
+          setQuery(smartQuery);
+        } else {
+          setQuery((prev) => ({
+            ...prev,
+            string: [],
+            range: [],
+            page: 0,
+            query: input.value,
+          }));
+        }
+
+        setOpen(false);
+        return;
+      } else if (isAtEnd && e.key === "ArrowRight" && bestSuggestion != null) {
+        const query = [...bestSuggestion.other, bestSuggestion.match]
+          .filter((d) => d != null && d.length > 0)
+          .join(" ");
+        setValue(query);
+        //setGlobalTerm(query);
+      }
+      setOpen(true);
+    },
+    [suggestions, smartQuery, setQuery]
+  );
 
   useEffect(() => {
     const close = () => setOpen(false);
     globalThis.document.addEventListener("click", close);
     return () => globalThis.document.removeEventListener("click", close);
   }, []);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [globalQuery]);
 
   return (
     <>
@@ -109,80 +235,22 @@ export const AutoSuggest = () => {
         }}
       >
         <input
+          ref={inputRef}
           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           type="search"
           value={value ?? ""}
           placeholder="Search..."
           onFocus={() => setOpen(true)}
-          //onBlur={() => applySuggestion(value)}
-          onKeyUp={(e) => {
-            const input = e.target as HTMLInputElement;
-
-            setLeft(measureSize(input, input.value) + 30);
-
-            if (e.key === "Enter") {
-              if (
-                (e.ctrlKey || e.altKey || e.metaKey) &&
-                smartQuery?.string?.length
-              ) {
-                setQuery(smartQuery);
-              } else {
-                setQuery((prev) =>
-                  value != null
-                    ? {
-                        ...prev,
-                        string: [],
-                        range: [],
-                        page: 0,
-                        query: value,
-                      }
-                    : prev
-                );
-              }
-
-              setOpen(false);
-              return;
-            } else if (
-              !(e.ctrlKey || e.altKey || e.metaKey) &&
-              e.key === "ArrowRight" &&
-              suggestions.length > 0
-            ) {
-              e.preventDefault();
-              const query = [...suggestions[0].other, suggestions[0].match]
-                .filter((d) => d != null && d.length > 0)
-                .join(" ");
-              setValue(query);
-              //setGlobalTerm(query);
-            }
-            setOpen(true);
-          }}
+          onKeyUp={onKeyUp}
           onChange={(e) => setValue(e.target.value)}
         />
-        {
-          <div
-            className={cm(
-              "transition-opacity border border-gray-300 bg-gray-100 px-2 py-1 absolute text-xs -bottom-5 rounded-md z-20 flex gap-2",
-              open && suggestions.length > 0 ? "opacity-100" : "opacity-0"
-            )}
-            style={{ left: `${Math.round(left)}px` }}
-          >
-            {suggestions.slice(undefined, 3).map(({ hits, match, other }) => (
-              <button
-                key={match}
-                onClick={() => {
-                  const query = [...other, match].join(" ");
-                  setValue(query);
-                }}
-              >
-                {match}
-                <span className="ml-2 inline-flex items-center justify-center px-2 h-4 rounded-full bg-blue-200 text-blue-500">
-                  {hits}
-                </span>
-              </button>
-            ))}
-            {suggestions.length > 3 && <>...</>}
-          </div>
-        }
+        <TrieSuggestions
+          onQueryChange={setValue}
+          open={open}
+          left={left}
+          toShow={1}
+          max={5}
+        />
 
         <button
           onClick={() => smartQuery != null && setQuery(smartQuery)}

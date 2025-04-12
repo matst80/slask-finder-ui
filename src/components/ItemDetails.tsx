@@ -7,6 +7,7 @@ import { stores } from "../lib/datalayer/stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Price } from "./Price";
+import { useQuery } from "../lib/hooks/QueryProvider";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -60,6 +61,7 @@ const Properties = ({
 }: Pick<ItemDetail, "values"> & {
   isEdit?: boolean;
 }) => {
+  const { setQuery } = useQuery();
   const { data } = useFacetList();
   const fields = useMemo(() => {
     return Object.entries(values)
@@ -105,6 +107,19 @@ const Properties = ({
                   <button
                     className="text-blue-500 hover:underline"
                     onClick={() => {
+                      if (field.linkedId != null && field.value != null) {
+                        setQuery({
+                          page: 0,
+                          string: [
+                            {
+                              id: field.linkedId,
+                              value: Array.isArray(field.value)
+                                ? field.value
+                                : [String(field.value)],
+                            },
+                          ],
+                        });
+                      }
                       console.log(
                         "change filter!",
                         field.linkedId,
