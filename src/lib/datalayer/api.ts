@@ -17,7 +17,6 @@ import {
   Suggestion,
   KeyFacet,
 } from "../types";
-import { trackSuggest } from "./beacons";
 
 const baseUrl = "";
 
