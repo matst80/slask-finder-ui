@@ -225,6 +225,13 @@ export const AutoSuggest = () => {
     setOpen(false);
   }, [globalQuery]);
 
+  const { query } = globalQuery;
+  useEffect(() => {
+    if (query != null) {
+      setValue(query);
+    }
+  }, [query]);
+
   return (
     <>
       <div
@@ -236,7 +243,7 @@ export const AutoSuggest = () => {
       >
         <input
           ref={inputRef}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none"
           type="search"
           value={value ?? ""}
           placeholder="Search..."

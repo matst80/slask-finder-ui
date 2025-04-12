@@ -1,7 +1,5 @@
-import { useState } from "react";
-
 import { Filter } from "lucide-react";
-import { cm, useDebounce } from "../utils";
+import { cm } from "../utils";
 import { useQuery } from "../lib/hooks/QueryProvider";
 
 type Props = {
@@ -14,9 +12,6 @@ export const FilterQuery = ({ show }: Props) => {
     setTerm,
   } = useQuery();
 
-  const [value, setValue] = useState(query ?? "");
-  const debouncedSet = useDebounce(setTerm, 500);
-
   const doShow = show || !!query?.length;
   return (
     <div
@@ -26,13 +21,12 @@ export const FilterQuery = ({ show }: Props) => {
       )}
     >
       <input
-        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none"
         type="search"
-        value={value}
+        value={query}
         placeholder="Filter items..."
         onChange={(e) => {
-          debouncedSet(e.target.value);
-          setValue(e.target.value);
+          setTerm(e.target.value);
         }}
       />
       <Filter

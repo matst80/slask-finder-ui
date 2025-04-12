@@ -6,6 +6,7 @@ import { Sorting } from "./Sorting";
 import { SelectedStore } from "./StoreSelector";
 import { X } from "lucide-react";
 import { useQuery } from "../lib/hooks/QueryProvider";
+import { FilterQuery } from "./FilterQuery";
 
 const EditCategories = ({ onClose }: { onClose: () => void }) => {
   const { facets, query } = useQuery();
@@ -61,12 +62,9 @@ const EditCategories = ({ onClose }: { onClose: () => void }) => {
 
 export const ResultHeader = () => {
   const [admin] = useAdmin();
-  // const {
-  //   query: { query },
-  // } = useHashQuery();
+
   const { totalHits } = useQuery();
   const [open, setOpen] = useState(false);
-  // const hasQuery = Boolean(query?.length);
 
   return (
     <>
@@ -80,7 +78,7 @@ export const ResultHeader = () => {
           <Sorting />
         </div>
       </header>
-      {/* <FilterQuery show={(totalHits ?? 0) > 40} /> */}
+      <FilterQuery show={(totalHits ?? 0) > 40} />
       {open && admin && <EditCategories onClose={() => setOpen(false)} />}
     </>
   );
