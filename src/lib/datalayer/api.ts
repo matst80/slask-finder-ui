@@ -1,3 +1,4 @@
+import { ConvertedFacet, convertFacets } from "../hooks/suggestionUtils";
 import {
   Cart,
   Item,
@@ -13,7 +14,10 @@ import {
   Rules,
   FieldListItem,
   PopularQuery,
+  Suggestion,
+  KeyFacet,
 } from "../types";
+import { trackSuggest } from "./beacons";
 
 const baseUrl = "";
 
@@ -71,6 +75,61 @@ export const autoSuggestResponse = (
     }),
     cancel: doCancel,
   };
+};
+
+export type SuggestionResponse = {
+  suggestions: Suggestion[];
+  items: Item[];
+  facets: ConvertedFacet[];
+};
+
+export const handleSuggestResponse = (d: Response) => {
+  if (!d.ok || d.body == null) {
+    return {
+      suggestions: [],
+      items: [],
+      facets: [],
+    };
+  }
+  let part = 0;
+  const suggestions: Suggestion[] = [];
+  const items: Item[] = [];
+  const facetsBuffer: KeyFacet[] = [];
+  let buffer = "";
+  const reader = d.body.getReader();
+  const decoder = new TextDecoder();
+  const pump = async (): Promise<SuggestionResponse> => {
+    return reader.read().then(({ done, value: dataChunk }) => {
+      if (done) {
+        return {
+          suggestions: suggestions.sort((a, b) => b.hits - a.hits),
+          items,
+          facets: convertFacets(facetsBuffer),
+        };
+      }
+
+      buffer += decoder.decode(dataChunk);
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+      lines.forEach((line) => {
+        if (line.length < 2) {
+          part++;
+        } else {
+          const item = JSON.parse(line);
+          if (part === 0) {
+            suggestions.push(item);
+          } else if (part === 1) {
+            items.push(item);
+          } else {
+            facetsBuffer.push(item);
+          }
+        }
+      });
+
+      return pump();
+    });
+  };
+  return pump();
 };
 
 export const getKeyFieldsValues = (id: string | number) =>

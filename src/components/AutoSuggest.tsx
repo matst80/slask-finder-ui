@@ -1,351 +1,87 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  FacetListItem,
-  isKeyFacet,
-  Item,
-  ItemsQuery,
-  KeyFacet,
-  PopularFacet,
-  PopularQuery,
-  Suggestion,
-} from "../lib/types";
-import { autoSuggestResponse, getPopularQueries } from "../lib/datalayer/api";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { Search } from "lucide-react";
-
-import { byPriority, isDefined, makeImageUrl } from "../utils";
+import { cm, makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { StockIndicator } from "./ResultItem";
-import { trackSuggest } from "../lib/datalayer/beacons";
-import fuzzysort from "fuzzysort";
-import { useFacetMap } from "../hooks/searchHooks";
+import { useSuggestions } from "../lib/hooks/useSuggestions";
 
-type SuggestField = { name: string; id: number; value: string[] };
-const MIN_SCORE = 0.9;
-type SuggestQuery = {
-  term: string;
-  fields: SuggestField[];
-};
-
-type FlatFacetValue = Omit<KeyFacet, "result" | "selected"> & {
-  value: string;
-  hits: number;
-};
-
-type ConvertedFacet = Omit<KeyFacet, "result" | "selected"> & {
-  values: { value: string; hits: number }[];
-};
-
-const convertFacets = (facets: KeyFacet[]): ConvertedFacet[] => {
-  return (
-    facets
-      .filter(isKeyFacet)
-      .filter((d) => d.valueType != null)
-      .sort(byPriority)
-      .map(({ result: { values }, selected: _, ...rest }) => ({
-        ...rest,
-        values: Object.entries(values ?? {})
-          .sort((a, b) => b[1] - a[1])
-          .slice(undefined, 10)
-          .map(([value, hits]) => ({ value, hits })),
-      })) ?? []
-  );
-};
-
-const byPopularity = (a: { popularity: number }, b: { popularity: number }) =>
-  b.popularity - a.popularity;
-
-const convertKeyFacetEntry =
-  (facetData: Record<string, FacetListItem>) =>
-  ([
-    fieldId,
-    {
-      values,
-      popularity: { value },
-    },
-  ]: [string, PopularFacet]) => {
-    const facet = facetData[fieldId];
-    if (facet == null) {
-      return null;
-    }
-    return {
-      name: facet.name,
-      id: Number(fieldId),
-      value: Object.keys(values),
-      popularity: value,
-    };
-  };
-
-const convertFacetEntry =
-  (facetData: Record<string, FacetListItem>) =>
-  ([
-    term,
-    {
-      keyFacets,
-      popularity: { value },
-      query,
-    },
-  ]: [string, PopularQuery]) => {
-    const fields = Object.entries(keyFacets)
-      .map(convertKeyFacetEntry(facetData))
-      .filter(isDefined)
-      .sort(byPopularity);
-
-    return { term, fields, popularity: value, query };
-  };
-
-const convertPopularQueries =
-  (facetData: Record<string, FacetListItem>) =>
-  (d: Record<string, PopularQuery>) => {
-    return Object.entries(d)
-      .map(convertFacetEntry(facetData))
-      .sort(byPopularity);
-  };
-
-const useAutoSuggest = () => {
-  const { data: facetData } = useFacetMap();
-  //const { data } = useSWR("trigger-words", () => getTriggerWords());
-  const [value, setValue] = useState<string | null>(null);
-  const [popularQueries, setPopularQueries] = useState<SuggestQuery[] | null>();
-  const [results, setResults] = useState<Suggestion[]>([]);
-  const [items, setItems] = useState<Item[]>([]);
-  const [smartQuery, setSmartQuery] = useState<ItemsQuery | null>(null);
-  const [possibleTriggers, setPossibleTriggers] = useState<
-    | {
-        word: string;
-        result: Fuzzysort.KeysResults<FlatFacetValue>;
-      }[]
-    | null
-  >(null);
-  const [facets, setFacets] = useState<ConvertedFacet[]>([]);
-  useEffect(() => {
-    if (facetData == null) {
-      return;
-    }
-    getPopularQueries(value ?? "")
-      .then(convertPopularQueries(facetData))
-      .then(setPopularQueries);
-  }, [value, facetData]);
-
-  const parts = useMemo(() => {
-    if (value == null) {
-      return new Set<string>();
-    }
-    const words = value.toLocaleLowerCase().split(" ");
-    const lastWord = words.pop();
-    if (lastWord == null) {
-      return new Set<string>();
-    }
-    return new Set(words.concat(lastWord));
-  }, [value]);
-
-  useEffect(() => {
-    if (facets == null || facets.length === 0) {
-      //setSmartQuery(null);
-      //setPossibleTriggers(null);
-      return;
-    }
-    const wordResults = Array.from(parts).map((word) => {
-      const result = fuzzysort.go(
-        word,
-        facets.flatMap(({ values, ...rest }) =>
-          values.map(
-            ({ value, hits }): FlatFacetValue => ({ ...rest, value, hits })
-          )
-        ) ?? [],
-        {
-          keys: ["value"],
-          limit: 10,
-          threshold: -100,
-        }
-      );
-
-      //console.log("reslt total", word, result.total);
-      return { word, result };
-    });
-
-    const words = new Set(parts);
-
-    const newQuery: ItemsQuery = {
-      string: [],
-      range: [],
-    };
-
-    wordResults.forEach(({ word, result }) => {
-      const [best] = result;
-      if (best != null && best.score > MIN_SCORE) {
-        words.delete(word);
-        newQuery.string = [
-          ...(newQuery.string?.filter((d) => d.id !== best.obj.id) ?? []),
-          {
-            id: best.obj.id,
-            value: [
-              ...(newQuery.string?.find((d) => d.id === best.obj.id)?.value ??
-                []),
-              best.obj.value,
-            ],
-          },
-        ];
-      }
-    });
-
-    newQuery.query = words.size > 0 ? Array.from(words).join(" ") : undefined;
-    const validTriggers = wordResults.filter(({ result }) => result.length > 0);
-    if (validTriggers.length === 0) {
-      setSmartQuery(null);
-      setPossibleTriggers(null);
-      return;
-    } else {
-      setSmartQuery(newQuery);
-      setPossibleTriggers(validTriggers);
-    }
-    //return [wordResults, newQuery];
-  }, [parts, facets]);
-
-  useEffect(() => {
-    if (value == null || value.length < 2) {
-      return;
-    }
-    const { cancel, promise } = autoSuggestResponse(value);
-
-    promise.then((d) => {
-      if (!d.ok || d.body == null) {
-        return;
-      }
-      let part = 0;
-      const suggestions: Suggestion[] = [];
-      const items: Item[] = [];
-      const facetsBuffer: KeyFacet[] = [];
-      let buffer = "";
-      const reader = d.body.getReader();
-      const decoder = new TextDecoder();
-      const pump = async (): Promise<void> => {
-        return reader?.read().then(async ({ done, value: dataChunk }) => {
-          if (done) {
-            setResults(suggestions.sort((a, b) => b.hits - a.hits));
-
-            setItems(items);
-
-            setFacets(convertFacets(facetsBuffer));
-            trackSuggest({
-              value,
-              items: items.length,
-              suggestions: suggestions.length,
-            });
-            return;
-          }
-
-          buffer += decoder.decode(dataChunk);
-          const lines = buffer.split("\n");
-          buffer = lines.pop() ?? "";
-          lines.forEach((line) => {
-            if (line.length < 2) {
-              if (part === 0) {
-                setResults(suggestions.sort((a, b) => b.hits - a.hits));
-              } else if (part === 1) {
-                setItems(items);
-              }
-              part++;
-            } else {
-              const item = JSON.parse(line);
-              if (part === 0) {
-                suggestions.push(item);
-              } else if (part === 1) {
-                items.push(item);
-              } else {
-                console.log("pushing facet", item);
-                facetsBuffer.push(item);
-              }
-            }
-          });
-
-          return pump();
-        });
-      };
-      pump();
-    });
-    return cancel;
-  }, [value]);
-  return {
-    results,
-    items,
-    facets,
-    setValue,
-    popularQueries,
-    value,
-    possibleTriggers,
-    smartQuery,
-  };
-};
-
-const MatchingFacets = ({
-  facets,
-  query,
-  close,
-}: {
-  facets: ConvertedFacet[];
-  query: string;
-  close: () => void;
-}) => {
+const MatchingFacets = () => {
+  const { facets, value: query } = useSuggestions();
   const { setQuery } = useQuery();
-  const toShow = useMemo(() => {
-    return facets.filter((d) => d.valueType != null).sort(byPriority);
-  }, [facets]);
-  console.log("toShow", toShow, facets);
-  return (
-    <div>
-      {toShow.map((f) => (
-        <div className="p-2">
-          <h2 className="font-bold">{f.name}:</h2>
-          <div className="flex gap-2 flex-wrap">
-            {f.values.map(({ value, hits }) => (
-              <button
-                key={value}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
-                onClick={() => {
-                  setQuery({
-                    string: [{ id: f.id, value: [value] }],
-                    query:
-                      query != null &&
-                      value.toLowerCase().includes(query.toLowerCase())
-                        ? undefined
-                        : query,
-                    stock: [],
-                    page: 0,
-                  });
 
-                  close();
-                }}
-              >
-                {value}
-                <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
-                  {hits}
-                </span>
-              </button>
-            ))}
+  const updateQuery = (value: string, id: number) => () => {
+    setQuery({
+      string: [{ id, value: [value] }],
+      query:
+        query != null && value.toLowerCase().includes(query.toLowerCase())
+          ? undefined
+          : query ?? undefined,
+      stock: [],
+      page: 0,
+    });
+  };
+
+  return facets.length ? (
+    <SuggestionSection title="Matchande fält">
+      <div>
+        {facets.map((f) => (
+          <div className="p-2">
+            <h2 className="font-bold">{f.name}:</h2>
+            <div className="flex gap-2 flex-wrap">
+              {f.values.map(({ value, hits }) => (
+                <button
+                  key={value}
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
+                  onClick={updateQuery(value, f.id)}
+                >
+                  {value}
+                  <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
+                    {hits}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
-  );
+        ))}
+      </div>
+    </SuggestionSection>
+  ) : null;
+};
+
+let tempCanvas: HTMLCanvasElement | null = null;
+const getCanvas = () => {
+  if (tempCanvas == null) {
+    tempCanvas = globalThis.document.createElement("canvas");
+  }
+  return tempCanvas;
+};
+
+const measureSize = (element: HTMLElement, text: string): number => {
+  const canvas = getCanvas();
+  const context = canvas.getContext("2d");
+  if (context == null) {
+    return 0;
+  }
+  context.font = getComputedStyle(element).font;
+  const textWidth = context.measureText(text).width;
+  return textWidth;
 };
 
 export const AutoSuggest = () => {
   const {
-    setTerm: setGlobalTerm,
     query: { query = "" },
     setQuery,
   } = useQuery();
   const [value, setValue] = useState<string | null>(query);
+  const [left, setLeft] = useState(0);
   const {
-    facets,
-    items,
-    results,
+    suggestions,
     setValue: setTerm,
-    popularQueries,
     possibleTriggers,
+    hasSuggestions,
     smartQuery,
-  } = useAutoSuggest();
+  } = useSuggestions();
 
   const [open, setOpen] = useState(false);
 
@@ -354,20 +90,8 @@ export const AutoSuggest = () => {
       setTerm(value);
     });
   }, [value, setTerm]);
-  // const applySuggestion = (value: string) => {
-  //   globalThis.location.hash = queryToHash({
-  //     query: value,
-  //     stock: [],
-  //     page: 0,
-  //   });
-  // };
 
-  const showItems =
-    open &&
-    (items.length > 0 ||
-      facets.length > 0 ||
-      results.length > 0 ||
-      (popularQueries != null && Object.keys(popularQueries).length > 0));
+  const showItems = open && hasSuggestions;
 
   useEffect(() => {
     const close = () => setOpen(false);
@@ -392,6 +116,10 @@ export const AutoSuggest = () => {
           onFocus={() => setOpen(true)}
           //onBlur={() => applySuggestion(value)}
           onKeyUp={(e) => {
+            const input = e.target as HTMLInputElement;
+
+            setLeft(measureSize(input, input.value) + 30);
+
             if (e.key === "Enter") {
               if (
                 (e.ctrlKey || e.altKey || e.metaKey) &&
@@ -399,7 +127,17 @@ export const AutoSuggest = () => {
               ) {
                 setQuery(smartQuery);
               } else {
-                setGlobalTerm(value ?? "*");
+                setQuery((prev) =>
+                  value != null
+                    ? {
+                        ...prev,
+                        string: [],
+                        range: [],
+                        page: 0,
+                        query: value,
+                      }
+                    : prev
+                );
               }
 
               setOpen(false);
@@ -407,133 +145,153 @@ export const AutoSuggest = () => {
             } else if (
               !(e.ctrlKey || e.altKey || e.metaKey) &&
               e.key === "ArrowRight" &&
-              results.length > 0
+              suggestions.length > 0
             ) {
               e.preventDefault();
-              const query = [...results[0].other, results[0].match]
+              const query = [...suggestions[0].other, suggestions[0].match]
                 .filter((d) => d != null && d.length > 0)
                 .join(" ");
               setValue(query);
-              setGlobalTerm(query);
+              //setGlobalTerm(query);
             }
             setOpen(true);
           }}
           onChange={(e) => setValue(e.target.value)}
         />
-        {possibleTriggers != null && (
-          <button
-            onClick={() => smartQuery != null && setQuery(smartQuery)}
-            className="border-b border-gray-300 absolute -top-5 left-8 border bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs"
+        {
+          <div
+            className={cm(
+              "transition-opacity border border-gray-300 bg-gray-100 px-2 py-1 absolute text-xs -bottom-5 rounded-md z-20 flex gap-2",
+              open && suggestions.length > 0 ? "opacity-100" : "opacity-0"
+            )}
+            style={{ left: `${Math.round(left)}px` }}
           >
-            {possibleTriggers.map(({ result }) =>
-              result[0]?.score > MIN_SCORE ? (
-                <span key={result[0].obj.value}>
-                  {result[0].obj.name}{" "}
-                  <span className="font-bold">{result[0].obj.value}</span>(
-                  {result[0]?.score.toFixed(2)})
+            {suggestions.slice(undefined, 3).map(({ hits, match, other }) => (
+              <button
+                key={match}
+                onClick={() => {
+                  const query = [...other, match].join(" ");
+                  setValue(query);
+                }}
+              >
+                {match}
+                <span className="ml-2 inline-flex items-center justify-center px-2 h-4 rounded-full bg-blue-200 text-blue-500">
+                  {hits}
                 </span>
-              ) : null
-            )}
-            {smartQuery?.query != null && smartQuery.query.length > 1 && (
-              <span>
-                Sökning: <span className="font-bold">{smartQuery.query}</span>
+              </button>
+            ))}
+            {suggestions.length > 3 && <>...</>}
+          </div>
+        }
+
+        <button
+          onClick={() => smartQuery != null && setQuery(smartQuery)}
+          className={cm(
+            "transition-opacity border-b border-gray-300 absolute -top-5 left-8 border bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs",
+            open && possibleTriggers != null ? "opacity-100" : "opacity-0"
+          )}
+        >
+          {possibleTriggers?.map(({ result }) =>
+            result[0]?.score > 0.8 ? (
+              <span key={result[0].obj.value}>
+                {result[0].obj.name}{" "}
+                <span className="font-bold">{result[0].obj.value}</span>(
+                {result[0]?.score.toFixed(2)})
               </span>
-            )}
-          </button>
-        )}
+            ) : null
+          )}
+          {smartQuery?.query != null && smartQuery.query.length > 1 && (
+            <span>
+              Sökning: <span className="font-bold">{smartQuery.query}</span>
+            </span>
+          )}
+        </button>
+
         <Search
           className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
           size={20}
         />
       </div>
-      {showItems && (
-        <div
-          className="absolute block top-12 left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-xl max-h-[50vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {popularQueries != null && popularQueries.length > 0 && (
-            <div className="border-b border-gray-300">
-              <h2 className="font-bold px-2 pt-2">Populära sökningar:</h2>
-              <div className="flex flex-col gap-2 p-2">
-                {popularQueries.map(({ term, fields }) => (
-                  <button
-                    key={term}
-                    className="flex gap-2"
-                    onClick={() => {
-                      setQuery((prev) => ({
-                        ...prev,
-                        query: term,
-                        string: fields.map(({ value, id }) => ({
-                          id,
-                          value,
-                        })),
-                      }));
-                    }}
-                  >
-                    <span>{term}</span>
-                    <div className="flex gap-2">
-                      {fields.map(({ value, id, name }) => (
-                        <div className="flex gap-2">
-                          <span key={id}>{name}</span>
-                          <span className="font-bold">{value.join(", ")}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          <div className="border-b border-gray-300">
-            <h2 className="font-bold p-2">Förslag:</h2>
-            <div className="flex gap-2">
-              {results.slice(undefined, 6).map(({ hits, match, other }) => (
-                <button
-                  key={match}
-                  className="p-2 hover:bg-gray-100"
-                  onClick={() => {
-                    const query = [...other, match].join(" ");
-                    setValue(query);
-                  }}
-                >
-                  {match}
-                  <span className="ml-2 text-sm inline-flex items-center justify-center px-2 h-4 rounded-full bg-blue-200 text-blue-500">
-                    {hits}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="border-b border-gray-300">
-            <MatchingFacets
-              facets={facets}
-              query={value ?? ""}
-              close={() => setOpen(false)}
-            />
-          </div>
-          <div>
-            <h2 className="font-bold p-2">Produkter:</h2>
-            <div className="lg:grid grid-cols-2">
-              {items.map((i) => (
-                <Link
-                  key={i.id}
-                  to={`/product/${i.id}`}
-                  className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center"
-                >
-                  <img
-                    src={makeImageUrl(i.img)}
-                    alt={i.title}
-                    className="w-10 h-10 object-contain aspect-square"
-                  />
-                  <span>{i.title}</span>
-
-                  <StockIndicator stock={i.stock} stockLevel={i.stockLevel} />
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      {showItems && <SuggestionResults />}
     </>
+  );
+};
+
+const SuggestionResults = () => {
+  const { setQuery } = useQuery();
+  const { popularQueries, items } = useSuggestions();
+  return (
+    <div
+      className="absolute block top-12 left-0 right-0 bg-white border border-gray-300 rounded-b-md shadow-xl max-h-[50vh] overflow-y-auto"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {popularQueries != null && popularQueries.length > 0 && (
+        <SuggestionSection title="Populära sökningar">
+          <div className="flex flex-col gap-2 p-2">
+            {popularQueries.map(({ term, fields }) => (
+              <button
+                key={term}
+                className="flex gap-2"
+                onClick={() => {
+                  setQuery((prev) => ({
+                    ...prev,
+                    query: term,
+                    string: fields.map(({ value, id }) => ({
+                      id,
+                      value,
+                    })),
+                  }));
+                }}
+              >
+                <span>{term}</span>
+                <div className="flex gap-2">
+                  {fields.map(({ value, id, name }) => (
+                    <div className="flex gap-2">
+                      <span key={id}>{name}</span>
+                      <span className="font-bold">{value.join(", ")}</span>
+                    </div>
+                  ))}
+                </div>
+              </button>
+            ))}
+          </div>
+        </SuggestionSection>
+      )}
+      <MatchingFacets />
+      {items.length > 0 && (
+        <SuggestionSection title="Produkter">
+          <div className="lg:grid grid-cols-2">
+            {items.map((i) => (
+              <Link
+                key={i.id}
+                to={`/product/${i.id}`}
+                className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center"
+              >
+                <img
+                  src={makeImageUrl(i.img)}
+                  alt={i.title}
+                  className="w-10 h-10 object-contain aspect-square"
+                />
+                <span>{i.title}</span>
+
+                <StockIndicator stock={i.stock} stockLevel={i.stockLevel} />
+              </Link>
+            ))}
+          </div>
+        </SuggestionSection>
+      )}
+    </div>
+  );
+};
+
+const SuggestionSection = ({
+  children,
+  title,
+}: PropsWithChildren<{ title: string }>) => {
+  return (
+    <div>
+      <h2 className="font-bold p-2">{title}:</h2>
+      {children}
+    </div>
   );
 };
