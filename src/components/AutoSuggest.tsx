@@ -1,18 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Facet,
   isKeyFacet,
   Item,
   ItemsQuery,
   KeyFacet,
-  NumberFacet,
   Suggestion,
 } from "../lib/types";
-import {
-  autoSuggestResponse,
-  getPopularQueries,
-  getTriggerWords,
-} from "../lib/datalayer/api";
+import { autoSuggestResponse, getPopularQueries } from "../lib/datalayer/api";
 import { Search } from "lucide-react";
 
 import { byPriority, isDefined, makeImageUrl } from "../utils";
@@ -20,7 +14,6 @@ import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { StockIndicator } from "./ResultItem";
 import { trackSuggest } from "../lib/datalayer/beacons";
-import useSWR from "swr";
 import fuzzysort from "fuzzysort";
 import { useFacetMap } from "../hooks/searchHooks";
 
@@ -31,14 +24,29 @@ type SuggestQuery = {
   fields: SuggestField[];
 };
 
-type FlatFacetValue = {
+type FlatFacetValue = Omit<KeyFacet, "result" | "selected"> & {
   value: string;
-  id: number;
-  valueType: string;
-  name: string;
-  prio?: number;
-  description: string;
-  categoryLevel?: number;
+  hits: number;
+};
+
+type ConvertedFacet = Omit<KeyFacet, "result" | "selected"> & {
+  values: { value: string; hits: number }[];
+};
+
+const convertFacets = (facets: KeyFacet[]): ConvertedFacet[] => {
+  return (
+    facets
+      .filter(isKeyFacet)
+      .filter((d) => d.valueType != null)
+      .sort(byPriority)
+      .map(({ result: { values }, selected: _, ...rest }) => ({
+        ...rest,
+        values: Object.entries(values ?? {})
+          .sort((a, b) => b[1] - a[1])
+          .slice(undefined, 10)
+          .map(([value, hits]) => ({ value, hits })),
+      })) ?? []
+  );
 };
 
 const useAutoSuggest = () => {
@@ -56,7 +64,7 @@ const useAutoSuggest = () => {
       }[]
     | null
   >(null);
-  const [facets, setFacets] = useState<KeyFacet[]>([]);
+  const [facets, setFacets] = useState<ConvertedFacet[]>([]);
   useEffect(() => {
     if (facetData == null) {
       return;
@@ -105,13 +113,11 @@ const useAutoSuggest = () => {
     const wordResults = Array.from(parts).map((word) => {
       const result = fuzzysort.go(
         word,
-        facets
-          .filter((d) => d.valueType != null)
-          .flatMap(({ result: { values }, selected: _, ...rest }) =>
-            Object.keys(values ?? {}).map(
-              (value): FlatFacetValue => ({ ...rest, value })
-            )
-          ) ?? [],
+        facets.flatMap(({ values, ...rest }) =>
+          values.map(
+            ({ value, hits }): FlatFacetValue => ({ ...rest, value, hits })
+          )
+        ) ?? [],
         {
           keys: ["value"],
           limit: 10,
@@ -185,7 +191,7 @@ const useAutoSuggest = () => {
 
             setItems(items);
 
-            setFacets(facetsBuffer.filter(isKeyFacet));
+            setFacets(convertFacets(facetsBuffer));
             trackSuggest({
               value,
               items: items.length,
@@ -203,8 +209,6 @@ const useAutoSuggest = () => {
                 setResults(suggestions.sort((a, b) => b.hits - a.hits));
               } else if (part === 1) {
                 setItems(items);
-              } else {
-                setFacets(facetsBuffer.filter(isKeyFacet));
               }
               part++;
             } else {
@@ -244,7 +248,7 @@ const MatchingFacets = ({
   query,
   close,
 }: {
-  facets: KeyFacet[];
+  facets: ConvertedFacet[];
   query: string;
   close: () => void;
 }) => {
@@ -259,35 +263,31 @@ const MatchingFacets = ({
         <div className="p-2">
           <h2 className="font-bold">{f.name}:</h2>
           <div className="flex gap-2 flex-wrap">
-            {Object.entries(f.result.values)
-              .sort((a, b) => b[1] - a[1])
-              .slice(undefined, 10)
-              .map(([value, hits]) => (
-                <button
-                  key={value}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
-                  onClick={() => {
-                    console.log("set query", f.id, value, close);
-                    setQuery({
-                      string: [{ id: f.id, value: [value] }],
-                      query:
-                        query != null &&
-                        value.toLowerCase().includes(query.toLowerCase())
-                          ? undefined
-                          : query,
-                      stock: [],
-                      page: 0,
-                    });
+            {f.values.map(({ value, hits }) => (
+              <button
+                key={value}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
+                onClick={() => {
+                  setQuery({
+                    string: [{ id: f.id, value: [value] }],
+                    query:
+                      query != null &&
+                      value.toLowerCase().includes(query.toLowerCase())
+                        ? undefined
+                        : query,
+                    stock: [],
+                    page: 0,
+                  });
 
-                    close();
-                  }}
-                >
-                  {value}
-                  <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
-                    {hits}
-                  </span>
-                </button>
-              ))}
+                  close();
+                }}
+              >
+                {value}
+                <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
+                  {hits}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
       ))}
@@ -358,7 +358,10 @@ export const AutoSuggest = () => {
           //onBlur={() => applySuggestion(value)}
           onKeyUp={(e) => {
             if (e.key === "Enter") {
-              if (e.ctrlKey && smartQuery?.string?.length) {
+              if (
+                (e.ctrlKey || e.altKey || e.metaKey) &&
+                smartQuery?.string?.length
+              ) {
                 setQuery(smartQuery);
               } else {
                 setGlobalTerm(value ?? "*");
@@ -366,7 +369,12 @@ export const AutoSuggest = () => {
 
               setOpen(false);
               return;
-            } else if (e.key === "ArrowRight" && results.length > 0) {
+            } else if (
+              (e.ctrlKey || e.altKey || e.metaKey) &&
+              e.key === "ArrowRight" &&
+              results.length > 0
+            ) {
+              e.preventDefault();
               const query = [...results[0].other, results[0].match]
                 .filter((d) => d != null && d.length > 0)
                 .join(" ");
