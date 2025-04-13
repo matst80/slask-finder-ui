@@ -262,13 +262,13 @@ export const ItemDetails = (details: ItemDetail & { isEdit?: boolean }) => {
       </div>
 
       <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
-        Tillbehör
+        Kompatibla produkter
       </h3>
       <CompatibleItems id={details.id} />
 
       <Properties values={details.values} isEdit={details.isEdit} />
       <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
-        Kompatibla produkter
+        Liknande produkter
       </h3>
       <RelatedItems id={details.id} />
     </>
