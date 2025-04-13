@@ -9,6 +9,7 @@ import { useAddToCart } from "../hooks/cartHooks";
 import { Price } from "./Price";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -146,8 +147,9 @@ const Properties = ({
               {field.linkedId != null &&
                 field.linkedId > 0 &&
                 field.value != null && (
-                  <button
+                  <Link
                     className="text-blue-500 hover:underline"
+                    to="/"
                     onClick={() => {
                       if (field.linkedId != null && field.value != null) {
                         setQuery({
@@ -170,7 +172,7 @@ const Properties = ({
                     }}
                   >
                     Visa kompatibla
-                  </button>
+                  </Link>
                 )}
             </p>
           </div>
