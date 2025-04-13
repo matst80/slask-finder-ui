@@ -32,67 +32,86 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
     <div>
       <div className="grid grid-cols-2 gap-4 p-4">
         <div>
-          <Input
-            value={value.name ?? ""}
-            onChange={(e) =>
-              setValue((prev) => ({ ...prev, name: e.target.value }))
-            }
-            placeholder="Name"
-          />
-        </div>
-        <div>
-          <Input
-            value={value.valueType ?? ""}
-            onChange={(e) =>
-              setValue((prev) => ({ ...prev, valueType: e.target.value }))
-            }
-            placeholder="Type"
-          />
-        </div>
-        <div>
-          <Input
-            value={value.linkedId ?? "0"}
-            type="number"
-            onChange={(e) => {
-              const nr = Number(e.target.value);
-              if (!isNaN(nr)) {
-                setValue((prev) => ({ ...prev, linkedId: nr }));
+          <label>
+            <span>Name</span>
+            <Input
+              value={value.name ?? ""}
+              onChange={(e) =>
+                setValue((prev) => ({ ...prev, name: e.target.value }))
               }
-            }}
-            placeholder="Type"
-          />
+              placeholder="Name"
+            />
+          </label>
         </div>
         <div>
-          <select className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            <option value="0">By hits</option>
-            <option value="1">By name</option>
-          </select>{" "}
-        </div>
-        <div>
-          <Input
-            value={value.prio ?? "0"}
-            type="number"
-            onChange={(e) => {
-              const nr = Number(e.target.value);
-              if (!isNaN(nr)) {
-                setValue((prev) => ({ ...prev, prio: nr }));
+          <label>
+            <span>Value type</span>
+            <Input
+              value={value.valueType ?? ""}
+              onChange={(e) =>
+                setValue((prev) => ({ ...prev, valueType: e.target.value }))
               }
-            }}
-            placeholder="Priority"
-          />
+              placeholder="Type"
+            />
+          </label>
         </div>
         <div>
-          <Input
-            value={value.categoryLevel ?? "0"}
-            type="number"
-            onChange={(e) => {
-              const nr = Number(e.target.value);
-              if (!isNaN(nr)) {
-                setValue((prev) => ({ ...prev, categoryLevel: nr }));
-              }
-            }}
-            placeholder="Category level"
-          />
+          <label>
+            <span>Linked to:</span>
+            <Input
+              value={value.linkedId ?? "0"}
+              type="number"
+              onChange={(e) => {
+                const nr = Number(e.target.value);
+                if (!isNaN(nr)) {
+                  setValue((prev) => ({ ...prev, linkedId: nr }));
+                }
+              }}
+              placeholder="Type"
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            <span>Value sorting</span>
+            <select className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              <option value="0">By hits</option>
+              <option value="1">By name</option>
+              <option value="1">By popularity</option>
+            </select>
+          </label>
+        </div>
+        <div>
+          <label>
+            <span>Priority</span>
+            <Input
+              value={value.prio ?? "0"}
+              type="number"
+              onChange={(e) => {
+                const nr = Number(e.target.value);
+                if (!isNaN(nr)) {
+                  setValue((prev) => ({ ...prev, prio: nr }));
+                }
+              }}
+              placeholder="Priority"
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            <span>Category level</span>
+            <Input
+              value={value.categoryLevel ?? "0"}
+              type="number"
+              onChange={(e) => {
+                const nr = Number(e.target.value);
+                if (!isNaN(nr)) {
+                  setValue((prev) => ({ ...prev, categoryLevel: nr }));
+                }
+              }}
+              placeholder="Category level"
+            />
+          </label>
         </div>
         <div>
           <label className="flex items-center gap-2">
