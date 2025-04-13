@@ -32,7 +32,10 @@ const MatchingFacets = () => {
   return facets.length ? (
     <div className="bg-gray-100 border-t border-gray-200 p-2">
       {facets.map((f) => (
-        <div className="flex gap-2 flex-wrap p-2 text-sm items-center">
+        <div
+          key={f.id}
+          className="flex gap-2 flex-wrap p-2 text-sm items-center"
+        >
           <span className="font-bold">{f.name}: </span>
           {f.values.map(({ value, hits }) => (
             <button
@@ -323,7 +326,10 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
                 <span>{term}</span>
                 <div className="flex gap-2 text-xs">
                   {fields.map(({ value, id, name }) => (
-                    <div className="px-2 py-1 rounded-full font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer">
+                    <div
+                      key={id}
+                      className="px-2 py-1 rounded-full font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
+                    >
                       <span key={id}>{name} </span>
                       <span className="font-bold">{value.join(", ")}</span>
                     </div>
