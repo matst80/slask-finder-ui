@@ -155,11 +155,9 @@ export const ResultItemInner = ({
               </li>
             ))}
         </ul>
-        <div className="flex justify-between items-center">
-          <span className="text-xl font-bold">
-            <Price values={values} disclaimer={disclaimer} />
-          </span>
-        </div>
+
+        <Price size="large" values={values} disclaimer={disclaimer} />
+
         {/* <CompatibleButton values={values} /> */}
         {advertisingText != null && (
           <em className="italic text-xs">{advertisingText}</em>

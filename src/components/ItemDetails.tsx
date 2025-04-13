@@ -53,7 +53,10 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
         <div className="flex w-fit">
           {isLoading && <p>Laddar...</p>}
           {data?.map((item, idx) => (
-            <div key={item.id} className="flex-shrink-0 w-[250px] snap-start">
+            <div
+              key={item.id}
+              className="flex-shrink-0 w-[250px] flex snap-start"
+            >
               <ResultItem {...item} position={idx} />
             </div>
           ))}

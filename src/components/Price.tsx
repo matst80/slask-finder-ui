@@ -1,6 +1,6 @@
 import { InfoIcon } from "lucide-react";
 import { ItemValues } from "../lib/types";
-import { getPrice } from "../utils";
+import { cm, getPrice } from "../utils";
 
 const SEK = new Intl.NumberFormat("se-SV", {
   minimumFractionDigits: 0,
@@ -26,24 +26,29 @@ export const PriceValue = ({
     <span className={className}>{SEK.format(value / 100)}</span>
   );
 
-export const Price = ({ values, disclaimer }: ValueProps) => {
+const sizes = { large: "text-2xl", medium: "text-xl", small: "text-lg" };
+
+export const Price = ({
+  values,
+  disclaimer,
+  size = "large",
+}: ValueProps & { size?: keyof typeof sizes }) => {
   const prc = getPrice(values);
   if (prc.isDiscounted) {
     return (
-      <div className="flex gap-1 items-end">
-        <PriceValue value={prc.current} className="bold" />
-        <PriceValue value={prc.original} className="opacity-50 text-sm" />
-        <span className="text-sm bg-yellow-400 py-1 px-2">
-          -{Math.round((prc.discount / prc.original) * 100)}%
-        </span>
-        {disclaimer != null && (
-          <button className="relative group">
-            <InfoIcon size={20} />
+      <div className={cm("flex justify-between font-bold", sizes[size])}>
+        <div className="flex flex-col flex-1">
+          <PriceValue value={prc.current} className="bold" />
+          <PriceValue value={prc.original} className="opacity-50 text-sm" />
+        </div>
+        <span className="text-sm bg-yellow-400 flex items-center px-2 relative group">
+          <span>-{Math.round((prc.discount / prc.original) * 100)}% </span>
+          {disclaimer != null && (
             <span className="hidden group-hover:block absolute p-3 right-5 bottom-0 bg-white border border-gray-950 text-xs">
               {disclaimer}
             </span>
-          </button>
-        )}
+          )}
+        </span>
       </div>
     );
   }
