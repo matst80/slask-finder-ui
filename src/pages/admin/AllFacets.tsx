@@ -9,9 +9,13 @@ export const AllFacets = () => {
   const filteredData = useMemo(() => {
     return data
       ?.filter((field) => {
-        if (!filter.length) return false;
-        return field.name.toLowerCase()?.includes(filter.toLowerCase());
+        if (!filter.length) return true;
+        return (
+          String(field.id).includes(filter) ||
+          field.name.toLowerCase()?.includes(filter.toLowerCase())
+        );
       })
+      .slice(undefined, 100)
       .sort(byPriority);
   }, [filter, data]);
   return (
