@@ -204,7 +204,7 @@ export const QueryProvider = ({
     if (itemsKey == null) {
       return;
     }
-    console.log("itemsKey", itemsKey);
+
     if (itemsCache.has(itemsKey)) {
       setHits(itemsCache.get(itemsKey) ?? []);
     }
