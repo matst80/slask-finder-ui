@@ -30,6 +30,7 @@ type QueryContextType = {
   totalHits: number;
   isLoading: boolean;
   isLoadingFacets: boolean;
+  queryHistory: HistoryQuery[];
   setQuery: React.Dispatch<React.SetStateAction<ItemsQuery>>;
   setPage: (page: number) => void;
   setPageSize: (pageSize: number) => void;
@@ -63,6 +64,8 @@ export const mergeFilters = (
   return { string, range };
 };
 
+type HistoryQuery = ItemsQuery & { key: string };
+
 const QueryContext = createContext({} as QueryContextType);
 export const QueryProvider = ({
   initialQuery,
@@ -72,6 +75,7 @@ export const QueryProvider = ({
   initialQuery?: ItemsQuery;
   ref?: React.Ref<QueryProviderRef>;
 }>) => {
+  const [queryHistory, setQueryHistory] = useState<HistoryQuery[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingFacets, setIsLoadingFacets] = useState(false);
   const [facetsKey, setFacetsKey] = useState<string | null>(null);
@@ -167,6 +171,19 @@ export const QueryProvider = ({
   }, [query]);
 
   useEffect(() => {
+    setQueryHistory((prev) => {
+      const currentKey = facetQueryToHash(query);
+      if (prev.some((d) => d.key === currentKey)) {
+        return prev;
+      }
+      if (prev.length >= 10) {
+        prev.shift();
+      }
+      return [...prev, { ...query, key: currentKey }];
+    });
+  }, [query]);
+
+  useEffect(() => {
     if (facetsKey == null) {
       return;
     }
@@ -215,6 +232,7 @@ export const QueryProvider = ({
         setPageSize,
         setSort,
         setStock,
+        queryHistory,
         setTerm,
         removeFilter,
         setFilter,

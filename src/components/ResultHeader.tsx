@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { getItemIds, updateCategories } from "../lib/datalayer/api";
 import { useAdmin } from "../hooks/appState";
 
@@ -7,6 +7,8 @@ import { SelectedStore } from "./StoreSelector";
 import { X } from "lucide-react";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { FilterQuery } from "./FilterQuery";
+import { facetQueryToHash } from "../hooks/searchHooks";
+import { Button } from "./ui/button";
 
 const EditCategories = ({ onClose }: { onClose: () => void }) => {
   const { facets, query } = useQuery();
@@ -63,18 +65,36 @@ const EditCategories = ({ onClose }: { onClose: () => void }) => {
 export const ResultHeader = () => {
   const [admin] = useAdmin();
 
-  const { totalHits } = useQuery();
+  const { totalHits, queryHistory, query, setQuery } = useQuery();
+  const currentKey = useMemo(() => facetQueryToHash(query), [query]);
   const [open, setOpen] = useState(false);
 
+  const prevQuery = useMemo(() => {
+    const idx = queryHistory.findIndex((d) => d.key === currentKey);
+    if (idx === -1) {
+      return null;
+    }
+    return queryHistory[idx - 1] ?? null;
+  }, [queryHistory, currentKey]);
   return (
     <>
       <header className="flex justify-between gap-2 items-center mb-2">
         <h1 className="md:text-2xl font-bold">
-          Produkter ({totalHits ?? "~"})
+          Produkter ({totalHits ?? "~"}){" "}
         </h1>
+
         {admin && <button onClick={() => setOpen(true)}>Update</button>}
         <SelectedStore />
         <div className="relative">
+          {prevQuery != null && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setQuery(prevQuery)}
+            >
+              ⇦ Back
+            </Button>
+          )}
           <Sorting />
         </div>
       </header>
