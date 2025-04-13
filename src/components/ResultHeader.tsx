@@ -63,11 +63,8 @@ const EditCategories = ({ onClose }: { onClose: () => void }) => {
 };
 
 export const ResultHeader = () => {
-  const [admin] = useAdmin();
-
   const { totalHits, queryHistory, query, setQuery } = useQuery();
   const currentKey = useMemo(() => facetQueryToHash(query), [query]);
-  const [open, setOpen] = useState(false);
 
   const prevQuery = useMemo(() => {
     const idx = queryHistory.findIndex((d) => d.key === currentKey);
@@ -83,15 +80,10 @@ export const ResultHeader = () => {
           Produkter ({totalHits ?? "~"}){" "}
         </h1>
 
-        {admin && <button onClick={() => setOpen(true)}>Update</button>}
         <SelectedStore />
         <div className="relative">
           {prevQuery != null && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setQuery(prevQuery)}
-            >
+            <Button size="sm" onClick={() => setQuery(prevQuery)}>
               ⇦ Back
             </Button>
           )}
@@ -99,7 +91,6 @@ export const ResultHeader = () => {
         </div>
       </header>
       <FilterQuery show={(totalHits ?? 0) > 40} />
-      {open && admin && <EditCategories onClose={() => setOpen(false)} />}
     </>
   );
 };
