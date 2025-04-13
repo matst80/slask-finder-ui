@@ -16,10 +16,19 @@ import { trackClick } from "../lib/datalayer/beacons";
 import { CmsPicture } from "../lib/types";
 import { MagicMotion } from "react-magic-motion";
 import { PriceValue } from "./Price";
+import { MIN_FUZZY_SCORE } from "../lib/hooks/SuggestionProvider";
 
 const MatchingFacets = () => {
   const { facets, value: query } = useSuggestions();
   const { setQuery } = useQuery();
+  const toShow = useMemo(() => {
+    return facets.filter(
+      (f) =>
+        f.valueType != null &&
+        f.valueType != "" &&
+        (f.categoryLevel == null || f.categoryLevel === 0)
+    );
+  }, [facets]);
 
   const updateQuery = (value: string, id: number) => () => {
     setQuery({
@@ -33,9 +42,9 @@ const MatchingFacets = () => {
     });
   };
 
-  return facets.length ? (
+  return toShow.length ? (
     <div className="bg-gray-100 border-t border-gray-200 p-2">
-      {facets.map((f) => (
+      {toShow.map((f) => (
         <div
           key={f.id}
           className="flex gap-2 flex-wrap p-2 text-sm items-center"
@@ -272,7 +281,7 @@ export const AutoSuggest = () => {
           )}
         >
           {possibleTriggers?.map(({ result }) =>
-            result[0]?.score > 0.8 ? (
+            result[0]?.score > MIN_FUZZY_SCORE ? (
               <span key={result[0].obj.value}>
                 {result[0].obj.name}{" "}
                 <span className="font-bold">{result[0].obj.value}</span>

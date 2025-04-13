@@ -30,7 +30,11 @@ export const convertFacets = (facets: KeyFacet[]): ConvertedFacet[] => {
   return (
     facets
       .filter(isKeyFacet)
-      .filter((d) => d.valueType != null)
+      .filter(
+        (d) =>
+          d.valueType != null ||
+          (d.categoryLevel != null && d.categoryLevel > 0)
+      )
       .sort(byPriority)
       .map(({ result: { values }, selected: _, ...rest }) => ({
         ...rest,

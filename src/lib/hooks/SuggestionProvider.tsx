@@ -18,7 +18,7 @@ import {
 } from "./suggestionUtils";
 import { SuggestionContext } from "./suggestionContext";
 
-const MIN_SCORE = 0.9;
+export const MIN_FUZZY_SCORE = 0.85;
 
 type Options = {
   includeContent?: boolean;
@@ -104,7 +104,7 @@ export const SuggestionProvider = ({
 
     wordResults.forEach(({ word, result }) => {
       const [best] = result;
-      if (best != null && best.score > MIN_SCORE) {
+      if (best != null && best.score > MIN_FUZZY_SCORE) {
         words.delete(word);
         newQuery.string = [
           ...(newQuery.string?.filter((d) => d.id !== best.obj.id) ?? []),
