@@ -18,7 +18,7 @@ const byCount = (a: FieldListItem, b: FieldListItem) => {
 
 const CleanFieldsButton = () => {
   const { cleanFields, isLoading, error } = useCleanFields();
-  console.log({ error, isLoading });
+
   return (
     <>
       {error && <span>fel:{JSON.stringify(error, null, 2)}</span>}
@@ -30,7 +30,7 @@ const CleanFieldsButton = () => {
         }}
       >
         {isLoading ? (
-          <LoaderCircle className="size-5 animate-spin inline-block ml-2" />
+          <LoaderCircle className="size-5 animate-spin inline-block" />
         ) : (
           <span>Clean Fields</span>
         )}
