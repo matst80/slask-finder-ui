@@ -74,14 +74,16 @@ export const ResultHeader = () => {
   return (
     <>
       <header className="flex justify-between gap-2 items-center mb-2">
-        <h1 className="md:text-2xl font-bold">
-          Produkter ({totalHits ?? "~"}){" "}
-        </h1>
+        <h1 className="md:text-2xl font-bold">Results ({totalHits ?? "~"}) </h1>
 
         <SelectedStore />
         <div className="relative flex gap-2 items-center">
           {prevQuery != null && (
-            <Button size="sm" onClick={() => setQuery(prevQuery)}>
+            <Button
+              className="hidden md:block"
+              size="sm"
+              onClick={() => setQuery(prevQuery)}
+            >
               ⇦ Back
             </Button>
           )}

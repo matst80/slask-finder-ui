@@ -19,7 +19,7 @@ export const Sorting = () => {
         <option value="price">Pris</option>
         <option value="price_desc">Pris fallande</option>
         <option value="updated">Senast uppdaterat</option>
-        <option value="updated_desc">Senast uppdaterat (fallande)</option>
+        {/* <option value="updated_desc">Senast uppdaterat (fallande)</option> */}
         <option value="created">Nyheter</option>
         <option value="created_desc">Älsta</option>
       </select>

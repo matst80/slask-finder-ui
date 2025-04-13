@@ -119,7 +119,7 @@ export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
 
   return (
     hasFacets && (
-      <aside className="w-full md:w-72">
+      <aside className="w-full md:w-72 border-b-2 border-gray-200 md:border-none">
         <h2 className="text-lg font-semibold mb-4">Filter</h2>
         <CategoryResult categories={cat} />
         <div>
