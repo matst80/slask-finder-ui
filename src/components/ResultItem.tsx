@@ -4,12 +4,10 @@ import { Price } from "./Price";
 import { Stars } from "./Stars";
 
 import { useState } from "react";
-//import { useHashQuery } from "../hooks/searchHooks";
 import { trackClick } from "../lib/datalayer/beacons";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { useImpression } from "../lib/hooks/ImpressionProvider";
-import { CompatibleButton } from "./ItemDetails";
 
 export const StockIndicator = ({
   stock,
@@ -162,7 +160,7 @@ export const ResultItemInner = ({
             <Price values={values} disclaimer={disclaimer} />
           </span>
         </div>
-        <CompatibleButton values={values} />
+        {/* <CompatibleButton values={values} /> */}
         {advertisingText != null && (
           <em className="italic text-xs">{advertisingText}</em>
         )}
