@@ -26,7 +26,7 @@ const CleanFieldsButton = () => {
         size="sm"
         variant="outline"
         onClick={() => {
-          cleanFields;
+          cleanFields();
         }}
       >
         {isLoading ? (

@@ -60,7 +60,7 @@ export const useCleanFields = () => {
   );
   return {
     cleanFields: () => {
-      trigger();
+      return trigger();
     },
     error,
     isLoading: isMutating,

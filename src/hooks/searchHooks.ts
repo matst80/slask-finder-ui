@@ -1,6 +1,7 @@
 import useSWR from "swr";
 import {
   facets,
+  getCompatible,
   getFacetList,
   getFacetMap,
   getRelated,
@@ -372,6 +373,14 @@ export const useFacetList = () => {
 
 export const useRelatedItems = (id: number) => {
   return useSWR(`related-items-${id}`, () => getRelated(id), {
+    revalidateOnFocus: false,
+    refreshInterval: 0,
+    focusThrottleInterval: 3600,
+  });
+};
+
+export const useCompatibleItems = (id: number) => {
+  return useSWR(`compatible-items-${id}`, () => getCompatible(id), {
     revalidateOnFocus: false,
     refreshInterval: 0,
     focusThrottleInterval: 3600,

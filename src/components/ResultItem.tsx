@@ -82,10 +82,10 @@ const ImageWithPlaceHolder = ({ img, title }: Pick<Item, "img" | "title">) => {
     );
   }
   return (
-    <div className="relative w-full h-48">
+    <div className="relative w-full h-48 px-2">
       {img != null && (
         <img
-          className={`w-full h-48 object-contain top-0 left-0 ${
+          className={`w-full h-48 transition-all object-contain top-0 left-0 ${
             loaded ? "opacity-100" : "opacity-0"
           }`}
           src={makeImageUrl(img)}

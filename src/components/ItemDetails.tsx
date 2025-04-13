@@ -1,5 +1,9 @@
 import { ShoppingCart } from "lucide-react";
-import { useFacetMap, useRelatedItems } from "../hooks/searchHooks";
+import {
+  useCompatibleItems,
+  useFacetMap,
+  useRelatedItems,
+} from "../hooks/searchHooks";
 import { useMemo, useState } from "react";
 import { byPriority, isDefined, makeImageUrl } from "../utils";
 import { ItemDetail } from "../lib/types";
@@ -42,6 +46,23 @@ const StockList = ({ stock }: Pick<ItemDetail, "stock">) => {
 
 export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
   const { data, isLoading } = useRelatedItems(id);
+
+  return (
+    <div className="-mx-6">
+      <div className="max-w-full overflow-y-auto snap-y">
+        <div className="flex w-fit">
+          {isLoading && <p>Laddar...</p>}
+          {data?.map((item, idx) => (
+            <ResultItem key={item.id} {...item} position={idx} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
+  const { data, isLoading } = useCompatibleItems(id);
 
   return (
     <div className="-mx-6">
@@ -236,6 +257,11 @@ export const ItemDetails = (details: ItemDetail & { isEdit?: boolean }) => {
         Relaterade produkter
       </h3>
       <RelatedItems id={details.id} />
+
+      <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
+        Tillbehör
+      </h3>
+      <CompatibleItems id={details.id} />
 
       <Properties values={details.values} isEdit={details.isEdit} />
     </>

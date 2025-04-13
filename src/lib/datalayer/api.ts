@@ -161,6 +161,9 @@ export const facets = (query: string) =>
 export const getRelated = (id: number) =>
   fetch(`${baseUrl}/api/related/${id}`).then((d) => readStreamed<Item>(d));
 
+export const getCompatible = (id: number) =>
+  fetch(`${baseUrl}/api/compatible/${id}`).then((d) => readStreamed<Item>(d));
+
 export const getPopularQueries = (q: string) =>
   fetch(
     `${baseUrl}/tracking/suggest?${new URLSearchParams({ q }).toString()}`
