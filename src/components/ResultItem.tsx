@@ -9,6 +9,7 @@ import { trackClick } from "../lib/datalayer/beacons";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { useImpression } from "../lib/hooks/ImpressionProvider";
+import { CompatibleButton } from "./ItemDetails";
 
 export const StockIndicator = ({
   stock,
@@ -140,11 +141,9 @@ export const ResultItemInner = ({
             numberOfRatings={Number(values["7"])}
           />
         )}
-
         <div className="flex items-center gap-2 mt-2">
           <StockIndicator stock={stock} stockLevel={stockLevel} />
         </div>
-
         <ul className="text-sm">
           {bp
             ?.split("\n")
@@ -158,13 +157,12 @@ export const ResultItemInner = ({
               </li>
             ))}
         </ul>
-
         <div className="flex justify-between items-center">
           <span className="text-xl font-bold">
             <Price values={values} disclaimer={disclaimer} />
           </span>
         </div>
-
+        <CompatibleButton values={values} />
         {advertisingText != null && (
           <em className="italic text-xs">{advertisingText}</em>
         )}

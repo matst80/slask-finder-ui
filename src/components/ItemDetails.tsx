@@ -1,13 +1,18 @@
 import { ShoppingCart } from "lucide-react";
-import { useFacetList, useRelatedItems } from "../hooks/searchHooks";
+import {
+  useFacetList,
+  useFacetMap,
+  useRelatedItems,
+} from "../hooks/searchHooks";
 import { useMemo, useState } from "react";
-import { byPriority, makeImageUrl } from "../utils";
-import { ItemDetail } from "../lib/types";
+import { byPriority, isDefined, makeImageUrl } from "../utils";
+import { isKeyFacet, ItemDetail } from "../lib/types";
 import { stores } from "../lib/datalayer/stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Price } from "./Price";
 import { useQuery } from "../lib/hooks/QueryProvider";
+import { Button } from "./ui/button";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -55,6 +60,47 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
   );
 };
 
+export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
+  const { setQuery } = useQuery();
+  const { data } = useFacetMap();
+  const stringFilters = useMemo(() => {
+    const filter = Object.entries(values)
+      .map(([id, value]) => {
+        const facet = data?.[id];
+        if (!facet || facet.linkedId == null) {
+          return null;
+        }
+        if (facet.linkedId == 31158) {
+          return null;
+        }
+        return {
+          id: facet.linkedId!,
+          value: Array.isArray(value) ? value : [String(value)],
+        };
+      })
+      .filter(isDefined);
+
+    return filter;
+  }, [values, data]);
+
+  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setQuery({
+      page: 0,
+      string: stringFilters,
+      range: [],
+      query: undefined,
+    });
+  };
+  if (stringFilters.length === 0) return null;
+  return (
+    <Button size="sm" onClick={handleClick}>
+      Visa kompatibla
+    </Button>
+  );
+};
+
 const Properties = ({
   values,
   isEdit,
@@ -62,11 +108,11 @@ const Properties = ({
   isEdit?: boolean;
 }) => {
   const { setQuery } = useQuery();
-  const { data } = useFacetList();
+  const { data } = useFacetMap();
   const fields = useMemo(() => {
     return Object.entries(values)
       .map(([id, value]) => {
-        const facet = data?.find((f) => f.id === Number(id));
+        const facet = data?.[id];
         if (!facet || ignoreFaceIds.includes(facet.id)) {
           return null;
         }
