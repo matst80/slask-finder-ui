@@ -19,9 +19,12 @@ export const PriceValue = ({
   value,
   className,
 }: {
-  value: number;
+  value?: number;
   className?: string;
-}) => <span className={className}>{SEK.format(value / 100)}</span>;
+}) =>
+  value == null ? null : (
+    <span className={className}>{SEK.format(value / 100)}</span>
+  );
 
 export const Price = ({ values, disclaimer }: ValueProps) => {
   const prc = getPrice(values);

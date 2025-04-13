@@ -23,7 +23,7 @@ export const StockIndicator = ({
   const storesWithStock = Object.entries(stock ?? {}).length;
 
   return (
-    <>
+    <span className="inline-flex items-center gap-1">
       {locationId != null ? (
         <span
           className={`text-sm ${
@@ -55,7 +55,7 @@ export const StockIndicator = ({
           ? `Online: ${stockLevel}`
           : "Inte i lager"}
       </span>
-    </>
+    </span>
   );
 };
 

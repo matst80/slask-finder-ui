@@ -15,6 +15,7 @@ import {
   FieldListItem,
   PopularQuery,
   Suggestion,
+  ContentRecord,
   KeyFacet,
 } from "../types";
 
@@ -101,7 +102,9 @@ export const handleSuggestResponse = (d: Response) => {
     return reader.read().then(({ done, value: dataChunk }) => {
       if (done) {
         return {
-          suggestions: suggestions.sort((a, b) => b.hits - a.hits),
+          suggestions: suggestions
+            .filter((d) => d.match.toLowerCase() != d.prefix)
+            .sort((a, b) => b.hits - a.hits),
           items,
           facets: convertFacets(facetsBuffer),
         };
@@ -134,6 +137,11 @@ export const handleSuggestResponse = (d: Response) => {
 export const getKeyFieldsValues = (id: string | number) =>
   fetch(`${baseUrl}/api/values/${id}`).then((d) =>
     toJson<string[] | { min: number; max: number }[]>(d)
+  );
+
+export const getContentResults = (q: string) =>
+  fetch(`${baseUrl}/api/content?${new URLSearchParams({ q })}`).then((d) =>
+    readStreamed<ContentRecord>(d)
   );
 
 export const facets = (query: string) =>

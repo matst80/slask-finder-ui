@@ -7,9 +7,10 @@ import {
   autoSuggestResponse,
   handleSuggestResponse,
   SuggestionResponse,
+  getContentResults,
 } from "../datalayer/api";
 import { trackSuggest } from "../datalayer/beacons";
-import { ItemsQuery } from "../types";
+import { ContentRecord, ItemsQuery } from "../types";
 import {
   convertPopularQueries,
   FlatFacetValue,
@@ -19,9 +20,18 @@ import { SuggestionContext } from "./suggestionContext";
 
 const MIN_SCORE = 0.9;
 
-export const SuggestionProvider = ({ children }: PropsWithChildren) => {
-  const { data: facetData } = useFacetMap();
+type Options = {
+  includeContent?: boolean;
+};
 
+export const SuggestionProvider = ({
+  children,
+  includeContent,
+}: PropsWithChildren<Options>) => {
+  const { data: facetData } = useFacetMap();
+  const [contentResults, setContentResults] = useState<
+    ContentRecord[] | undefined
+  >(undefined);
   const [value, setValue] = useState<string | null>(null);
   const [popularQueries, setPopularQueries] = useState<SuggestQuery[]>([]);
 
@@ -124,6 +134,13 @@ export const SuggestionProvider = ({ children }: PropsWithChildren) => {
   }, [parts, facets]);
 
   useEffect(() => {
+    if (value == null || !includeContent) {
+      return;
+    }
+    getContentResults(value).then((d) => setContentResults(d.splice(0, 10)));
+  }, [value, includeContent]);
+
+  useEffect(() => {
     if (value == null) {
       return;
     }
@@ -145,8 +162,9 @@ export const SuggestionProvider = ({ children }: PropsWithChildren) => {
       items.length > 0 ||
       facets.length > 0 ||
       suggestions.length > 0 ||
+      (contentResults != null && contentResults.length > 0) ||
       (popularQueries != null && Object.keys(popularQueries).length > 0),
-    [items, facets, suggestions, popularQueries]
+    [items, facets, suggestions, popularQueries, contentResults]
   );
 
   return (
@@ -155,6 +173,7 @@ export const SuggestionProvider = ({ children }: PropsWithChildren) => {
         suggestions,
         items,
         facets,
+        content: contentResults,
         setValue,
         popularQueries,
         hasSuggestions,

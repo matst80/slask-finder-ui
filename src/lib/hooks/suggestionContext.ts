@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import { Suggestion, Item, ItemsQuery } from "../types";
+import { Suggestion, Item, ItemsQuery, ContentRecord } from "../types";
 import {
   ConvertedFacet,
   FlatFacetValue,
@@ -11,6 +11,7 @@ type SuggestionProviderType = {
   suggestions: Suggestion[];
   items: Item[];
   facets: ConvertedFacet[];
+  content?: ContentRecord[];
   setValue: React.Dispatch<React.SetStateAction<string | null>>;
   popularQueries: SuggestQuery[] | null;
   value: string | null;

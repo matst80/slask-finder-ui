@@ -13,6 +13,9 @@ import { useQuery } from "../lib/hooks/QueryProvider";
 import { StockIndicator } from "./ResultItem";
 import { useSuggestions } from "../lib/hooks/useSuggestions";
 import { trackClick } from "../lib/datalayer/beacons";
+import { CmsPicture } from "../lib/types";
+import { MagicMotion } from "react-magic-motion";
+import { PriceValue } from "./Price";
 
 const MatchingFacets = () => {
   const { facets, value: query } = useSuggestions();
@@ -343,30 +346,83 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
       )}
       {items.length > 0 && (
         <SuggestionSection title="Produkter">
-          <div className="lg:grid grid-cols-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
             {items.map((i, idx) => (
               <Link
                 key={i.id}
                 onClick={() => trackClick(i.id, idx)}
                 to={`/product/${i.id}`}
-                className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center"
+                className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full"
               >
                 <img
                   src={makeImageUrl(i.img)}
                   alt={i.title}
                   className="w-10 h-10 object-contain aspect-square"
                 />
-                <span>{i.title}</span>
-
-                <StockIndicator stock={i.stock} stockLevel={i.stockLevel} />
+                <div className="flex flex-col flex-1">
+                  <span>{i.title}</span>
+                  <StockIndicator stock={i.stock} stockLevel={i.stockLevel} />
+                </div>
+                <span className="font-bold text-sm justify-end">
+                  <PriceValue value={i.values[4]} />
+                </span>
               </Link>
             ))}
           </div>
         </SuggestionSection>
       )}
+      <ContentHits />
       <MatchingFacets />
     </div>
   );
+};
+
+const ParsedImage = ({ picture }: { picture?: CmsPicture }) => {
+  if (picture == null) {
+    return null;
+  }
+  const { alt, uris } = picture;
+  const images = uris.filter(({ images }) => images.some((d) => d.imageURL));
+  const image = images[0]?.images[0];
+  if (image == null) {
+    return null;
+  }
+  const src = makeImageUrl(image.imageURL);
+  return (
+    <img
+      alt={alt ?? ""}
+      src={src}
+      className="w-full object-contain aspect-video"
+    />
+  );
+};
+
+const ContentHits = () => {
+  const { content } = useSuggestions();
+
+  return content?.length ? (
+    <SuggestionSection title="Innehåll">
+      <div className="overflow-x-auto max-w-full">
+        <div className="flex flex-nowrap">
+          {content.map(({ id, name, description, picture, url }) => (
+            <div key={id} className="p-2 flex-shrink-0 w-[300px]">
+              <ParsedImage picture={picture} />
+              <h3 className="font-bold line-clamp-1 text-ellipsis">{name}</h3>
+              <p className="line-clamp-3 text-ellipsis">{description}</p>
+              <a
+                href={url}
+                className="text-blue-500 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {name}
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </SuggestionSection>
+  ) : null;
 };
 
 const SuggestionSection = ({
@@ -376,7 +432,9 @@ const SuggestionSection = ({
   return (
     <div>
       <h2 className="font-bold p-2">{title}:</h2>
-      {children}
+      <MagicMotion>
+        <div>{children}</div>
+      </MagicMotion>
     </div>
   );
 };

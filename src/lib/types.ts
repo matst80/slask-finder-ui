@@ -2,6 +2,7 @@ import { Impression } from "./datalayer/beacons";
 
 export type Suggestion = {
   match: string;
+  prefix: string;
   other: string[];
   hits: number;
 };
@@ -427,6 +428,59 @@ export type FieldListItem = {
   description: string;
   purpose?: string[];
 };
+
+type BaseContentRecord = {
+  id: string;
+  name: string;
+  description: string;
+  url?: string;
+  image?: string;
+  picture?: CmsPicture;
+};
+
+export type CmsPicture = {
+  alt: string;
+  id: string;
+  isExternalPicture: boolean;
+  name: string;
+  responsiveViewType: string;
+  uris: CmsUri[];
+};
+
+export interface CmsUri {
+  breakpoint: string;
+  images: CmsImage[];
+  sizes: string;
+}
+
+export interface CmsImage {
+  height: number;
+  imageURL: string;
+  width: number;
+}
+
+type StoreContentRecord = BaseContentRecord & {
+  lat?: string;
+  lng?: string;
+};
+
+export const isStoreContentRecord = (
+  record: ContentRecord
+): record is StoreContentRecord => {
+  return (
+    (record as StoreContentRecord).lat != null ||
+    (record as StoreContentRecord).lng != null
+  );
+};
+
+type CmsContentRecord = BaseContentRecord;
+
+type SellerContentRecord = BaseContentRecord;
+
+export type ContentRecord =
+  | StoreContentRecord
+  | CmsContentRecord
+  | SellerContentRecord;
 
 export type Popularity = {
   value: number;
