@@ -53,7 +53,9 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
         <div className="flex w-fit">
           {isLoading && <p>Laddar...</p>}
           {data?.map((item, idx) => (
-            <ResultItem key={item.id} {...item} position={idx} />
+            <div key={item.id} className="flex-shrink-0 w-[250px] snap-start">
+              <ResultItem {...item} position={idx} />
+            </div>
           ))}
         </div>
       </div>
@@ -70,7 +72,12 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
         <div className="flex w-fit">
           {isLoading && <p>Laddar...</p>}
           {data?.map((item, idx) => (
-            <ResultItem key={item.id} {...item} position={idx} />
+            <div
+              key={item.id}
+              className="flex-shrink-0 w-[250px] flex snap-start"
+            >
+              <ResultItem {...item} position={idx} />
+            </div>
           ))}
         </div>
       </div>
