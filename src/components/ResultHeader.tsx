@@ -79,7 +79,7 @@ export const ResultHeader = () => {
         </h1>
 
         <SelectedStore />
-        <div className="relative">
+        <div className="relative flex gap-2 items-center">
           {prevQuery != null && (
             <Button size="sm" onClick={() => setQuery(prevQuery)}>
               ⇦ Back
