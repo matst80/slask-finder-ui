@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { StockIndicator } from "./ResultItem";
 import { useSuggestions } from "../lib/hooks/useSuggestions";
+import { trackClick } from "../lib/datalayer/beacons";
 
 const MatchingFacets = () => {
   const { facets, value: query } = useSuggestions();
@@ -343,9 +344,10 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
       {items.length > 0 && (
         <SuggestionSection title="Produkter">
           <div className="lg:grid grid-cols-2">
-            {items.map((i) => (
+            {items.map((i, idx) => (
               <Link
                 key={i.id}
+                onClick={() => trackClick(i.id, idx)}
                 to={`/product/${i.id}`}
                 className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center"
               >
