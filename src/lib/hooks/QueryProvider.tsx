@@ -190,7 +190,7 @@ export const QueryProvider = ({
     if (facetCache.has(facetsKey)) {
       setFacets(facetCache.get(facetsKey) ?? []);
     }
-    console.log("facetsKey", facetsKey);
+
     setIsLoadingFacets(true);
     api.facets(toQuery(query)).then((data) => {
       facetCache.set(facetsKey, data);
