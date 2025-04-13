@@ -1,4 +1,3 @@
-import { InfoIcon } from "lucide-react";
 import { ItemValues } from "../lib/types";
 import { cm, getPrice } from "../utils";
 
@@ -36,19 +35,22 @@ export const Price = ({
   const prc = getPrice(values);
   if (prc.isDiscounted) {
     return (
-      <div className={cm("flex justify-between font-bold", sizes[size])}>
+      <div
+        className={cm(
+          "flex justify-between font-bold relative group",
+          sizes[size]
+        )}
+      >
         <div className="flex flex-col flex-1">
           <PriceValue value={prc.current} className="bold" />
           <PriceValue value={prc.original} className="opacity-50 text-sm" />
         </div>
-        <span className="text-sm bg-yellow-400 flex items-center px-2 relative group">
-          <span>-{Math.round((prc.discount / prc.original) * 100)}% </span>
-          {disclaimer != null && (
-            <span className="hidden group-hover:block absolute p-3 right-5 bottom-0 bg-white border border-gray-950 text-xs">
-              {disclaimer}
-            </span>
-          )}
-        </span>
+
+        {disclaimer != null && (
+          <span className="hidden group-hover:block absolute p-3 right-5 top-15 z-10 bg-white border border-gray-300 rounded-md text-xs">
+            {disclaimer}
+          </span>
+        )}
       </div>
     );
   }

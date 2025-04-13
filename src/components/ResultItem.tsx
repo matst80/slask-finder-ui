@@ -40,8 +40,8 @@ export const StockIndicator = ({
         >
           Finns i {storesWithStock} butiker
         </button>
-      )}{" "}
-      |{" "}
+      )}
+
       <span
         className={`text-sm ${
           stockLevel != null && stockLevel != "0"
@@ -105,7 +105,6 @@ export const ResultItemInner = ({
   values,
   stock,
   bp,
-
   stockLevel,
   disclaimer,
   advertisingText,

@@ -267,7 +267,7 @@ export const AutoSuggest = () => {
         <button
           onClick={() => smartQuery != null && setQuery(smartQuery)}
           className={cm(
-            "transition-opacity border-b border-gray-300 absolute -top-5 left-8 border bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs",
+            "transition-opacity border-b border-gray-300 absolute -top-5 left-8 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs",
             open && possibleTriggers != null ? "opacity-100" : "opacity-0"
           )}
         >
@@ -275,13 +275,12 @@ export const AutoSuggest = () => {
             result[0]?.score > 0.8 ? (
               <span key={result[0].obj.value}>
                 {result[0].obj.name}{" "}
-                <span className="font-bold">{result[0].obj.value}</span>(
-                {result[0]?.score.toFixed(2)})
+                <span className="font-bold">{result[0].obj.value}</span>
               </span>
             ) : null
           )}
           {smartQuery?.query != null && smartQuery.query.length > 1 && (
-            <span>
+            <span className="hidden md:block">
               Sökning: <span className="font-bold">{smartQuery.query}</span>
             </span>
           )}
@@ -363,7 +362,7 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
                   <span>{i.title}</span>
                   <StockIndicator stock={i.stock} stockLevel={i.stockLevel} />
                 </div>
-                <span className="font-bold text-sm justify-end">
+                <span className="font-bold text-lg justify-end">
                   <PriceValue value={i.values[4]} />
                 </span>
               </Link>

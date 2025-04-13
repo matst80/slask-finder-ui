@@ -84,12 +84,7 @@ const CategoryResult = ({ categories }: { categories: KeyFacet[] }) => {
 };
 
 export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
-  const {
-    query: { stock },
-    setStock,
-    facets: results,
-    isLoadingFacets: isLoading,
-  } = useQuery();
+  const { facets: results, isLoadingFacets: isLoading } = useQuery();
 
   const [cat, allFacets] = useMemo(
     () =>
@@ -158,22 +153,38 @@ export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
 
         <div className="mb-4">
           <h3 className="font-medium mb-2">Select Store</h3>
-          <select
-            value={stock?.[0] ?? ""}
-            onChange={(e) =>
-              setStock(e.target.value === "" ? [] : [e.target.value])
-            }
-            className="w-full p-2 border border-gray-300 rounded-md"
-          >
-            <option value="">Ingen butik</option>
-            {stores.map((store) => (
-              <option key={store.id} value={store.id}>
-                {store.displayName.replace("Elgiganten ", "")}
-              </option>
-            ))}
-          </select>
+          <StoreSelector />
         </div>
       </aside>
     )
+  );
+};
+
+const StoreSelector = () => {
+  const {
+    query: { stock = [] },
+    setStock,
+  } = useQuery();
+  const sortedStores = useMemo(() => {
+    return Object.values(stores)
+      .map(({ displayName, id }) => ({
+        displayName: displayName.replace("Elgiganten ", ""),
+        id,
+      }))
+      .sort((a, b) => a.displayName.localeCompare(b.displayName));
+  }, []);
+  return (
+    <select
+      value={stock?.[0] ?? ""}
+      onChange={(e) => setStock(e.target.value === "" ? [] : [e.target.value])}
+      className="w-full p-2 border border-gray-300 rounded-md"
+    >
+      <option value="">Ingen butik</option>
+      {sortedStores.map((store) => (
+        <option key={store.id} value={store.id}>
+          {store.displayName.replace("Elgiganten ", "")}
+        </option>
+      ))}
+    </select>
   );
 };

@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Link, To } from "react-router-dom";
 import { cm } from "../utils";
 import { useIsAdmin, useUser } from "../adminHooks";
-import { PropsWithChildren } from "react"
+import { PropsWithChildren } from "react";
 
 const UserButton = () => {
   const { data, isLoading } = useUser();
@@ -25,7 +25,7 @@ const UserButton = () => {
   );
 };
 
-const MenuLink = ({ to, children }:PropsWithChildren<{to:To}>) => (
+const MenuLink = ({ to, children }: PropsWithChildren<{ to: To }>) => (
   <Link
     to={to}
     className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
@@ -37,7 +37,7 @@ const MenuLink = ({ to, children }:PropsWithChildren<{to:To}>) => (
 export function Navbar() {
   const isAdmin = useIsAdmin();
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-white shadow-md hidden md:block">
       <div className="mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
