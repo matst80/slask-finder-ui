@@ -17,6 +17,7 @@ import { CmsPicture } from "../lib/types";
 import { PriceValue } from "./Price";
 import { MIN_FUZZY_SCORE } from "../lib/hooks/SuggestionProvider";
 import fuzzysort from "fuzzysort";
+import { ConvertedFacet } from "../lib/hooks/suggestionUtils";
 
 const byCategoryLevel = (
   a: { categoryLevel?: number },
@@ -28,22 +29,26 @@ const byCategoryLevel = (
   return b.categoryLevel - a.categoryLevel;
 };
 
-const byMatch =
-  (query?: string | null) =>
-  (a: { value: string; hits: number }, b: { value: string; hits: number }) => {
-    if (query == null) {
-      return b.hits - a.hits;
-    }
-    const aMatch = a.value.toLowerCase().includes(query.toLowerCase());
-    const bMatch = b.value.toLowerCase().includes(query.toLowerCase());
+// const byMatch =
+//   (query?: string | null) =>
+//   (a: { value: string; hits: number }, b: { value: string; hits: number }) => {
+//     if (query == null) {
+//       return b.hits - a.hits;
+//     }
+//     const aMatch = a.value.toLowerCase().includes(query.toLowerCase());
+//     const bMatch = b.value.toLowerCase().includes(query.toLowerCase());
 
-    if (aMatch && !bMatch) {
-      return -1;
-    } else if (!aMatch && bMatch) {
-      return 1;
-    }
-    return b.hits - a.hits;
-  };
+//     if (aMatch && !bMatch) {
+//       return -1;
+//     } else if (!aMatch && bMatch) {
+//       return 1;
+//     }
+//     return b.hits - a.hits;
+//   };
+
+const byBestHits = (a: ConvertedFacet, b: ConvertedFacet) => {
+  return b.values[0].hits - a.values[0].hits;
+};
 
 const MatchingFacets = () => {
   const { facets, value: query } = useSuggestions();
@@ -72,7 +77,7 @@ const MatchingFacets = () => {
           categoryLevel,
         }))
       ),
-      b,
+      b.sort(byBestHits),
     ];
   }, [facets]);
 
@@ -81,7 +86,7 @@ const MatchingFacets = () => {
       fuzzysort
         .go(query ?? "", categories, {
           limit: 10,
-          threshold: -100,
+          threshold: 0.5,
           keys: ["value"],
         })
         .map((d) => d.obj),
@@ -112,20 +117,22 @@ const MatchingFacets = () => {
 
   return other.length ? (
     <div className="bg-gray-100 border-t border-gray-200 p-2 grid grid-cols-1 md:grid-cols-2">
-      <div className="flex flex-col flex-wrap gap-1 p-2 text-sm">
-        {sortedCategories.map(({ hits, value, id }) => (
-          <button
-            key={value}
-            className="text-left flex gap-2 items-center"
-            onClick={setCategory(value, id)}
-          >
-            Kategori: {value}
-            <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
-              {hits}
-            </span>
-          </button>
-        ))}
-      </div>
+      {sortedCategories.length > 0 && (
+        <div className="flex flex-col flex-wrap gap-1 p-2 text-sm">
+          {sortedCategories.map(({ hits, value, id }) => (
+            <button
+              key={value}
+              className="text-left flex items-center"
+              onClick={setCategory(value, id)}
+            >
+              Kategori: {value}
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-1 rounded-full bg-white text-xs">
+                {hits}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
       <div className="hidden md:block">
         {other.map((f) => (
           <div
