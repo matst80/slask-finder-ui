@@ -94,7 +94,7 @@ const FilteredFieldView = ({
         or edit fields.
       </p>
       <div className="my-4 overflow-x-auto">
-        <span className="flex gap-2 flex-nowrap">
+        <span className="flex gap-2 flex-nowrap md:flex-wrap">
           {uniquePurpose?.map((str) => (
             <button
               key={str}
