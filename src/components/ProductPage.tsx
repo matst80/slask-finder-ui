@@ -6,17 +6,13 @@ type Props = {
   isEdit?: boolean;
 };
 
-export const ProductPage = ({ isEdit }: Props) => {
+export const ProductPage = (props: Props) => {
   const details = useLoaderData() as ItemDetail | null;
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Produktsida</h1>
-      {details ? (
-        <ItemDetails {...details} isEdit={isEdit} />
-      ) : (
-        <p>Laddar...</p>
-      )}
+      {details ? <ItemDetails {...details} /> : <p>Laddar...</p>}
     </div>
   );
 };
