@@ -7,7 +7,7 @@ import { useQuery } from "../lib/hooks/QueryProvider";
 import { FilterQuery } from "./FilterQuery";
 import { facetQueryToHash } from "../hooks/searchHooks";
 import { Button } from "./ui/button";
-import { CopyIcon } from "lucide-react";
+import { ArrowLeft, ArrowLeftIcon, CopyIcon } from "lucide-react";
 import { queryToHash } from "../lib/utils";
 
 // const EditCategories = ({ onClose }: { onClose: () => void }) => {
@@ -82,16 +82,17 @@ export const ResultHeader = () => {
         <div className="relative flex gap-2 items-center">
           {prevQuery != null && (
             <Button
-              className="hidden md:block"
-              size="sm"
+              size="icon"
+              title="Go back to previous search"
+              variant="ghost"
               onClick={() => setQuery(prevQuery)}
             >
-              ⇦ Back
+              <ArrowLeftIcon className="size-5 m-1" />
             </Button>
           )}
           <Button
-            variant="outline"
-            size="sm"
+            variant="ghost"
+            size="icon"
             title="Copy link to this search"
             onClick={() =>
               navigator.clipboard.writeText(
@@ -99,7 +100,7 @@ export const ResultHeader = () => {
               )
             }
           >
-            <CopyIcon />
+            <CopyIcon className="size-5 m-1" />
           </Button>
           <Sorting />
         </div>
