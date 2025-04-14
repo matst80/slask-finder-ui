@@ -76,7 +76,7 @@ const router = createBrowserRouter([
         path: "product/:id",
         loader: ({ params: { id } }) =>
           id != null ? getRawData(id) : Promise.resolve(null),
-        element: <ProductPage isEdit={true} />,
+        element: <ProductPage />,
       },
       {
         path: "facets",

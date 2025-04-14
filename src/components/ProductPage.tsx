@@ -2,11 +2,11 @@ import { useLoaderData } from "react-router-dom";
 import { ItemDetails } from "./ItemDetails";
 import { ItemDetail } from "../lib/types";
 
-type Props = {
-  isEdit?: boolean;
-};
+// type Props = {
+//   isEdit?: boolean;
+// };
 
-export const ProductPage = (props: Props) => {
+export const ProductPage = () => {
   const details = useLoaderData() as ItemDetail | null;
 
   return (
