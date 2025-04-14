@@ -85,7 +85,7 @@ const FilteredFieldView = ({
       deleteFacet(facetId);
     }
   };
-  console.log(filteredData);
+
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-2xl font-bold">Edit Fields</h1>

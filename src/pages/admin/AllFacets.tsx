@@ -1,22 +1,28 @@
 import { AdminFacet } from "./AdminFacets";
-import { byPriority } from "../../utils";
 import { useMemo, useState } from "react";
 import { useAdminFacets } from "../../adminHooks";
+import fuzzysort from "fuzzysort";
+import { byPriority } from "../../utils";
 
 export const AllFacets = () => {
   const [filter, setFilter] = useState<string>("");
   const { data } = useAdminFacets();
   const filteredData = useMemo(() => {
-    return data
-      ?.filter((field) => {
-        if (!filter.length) return true;
-        return (
-          String(field.id).includes(filter) ||
-          field.name.toLowerCase()?.includes(filter.toLowerCase())
-        );
-      })
-      .slice(undefined, 100)
-      .sort(byPriority);
+    return fuzzysort.go(filter, data?.sort(byPriority) ?? [], {
+      keys: ["name", "type"],
+      all: filter.length == 0,
+      limit: 50,
+    });
+    // return data
+    //   ?.filter((field) => {
+    //     if (!filter.length) return true;
+    //     return (
+    //       String(field.id).includes(filter) ||
+    //       field.name.toLowerCase()?.includes(filter.toLowerCase())
+    //     );
+    //   })
+    //   .slice(undefined, 100)
+    //   .sort(byPriority);
   }, [filter, data]);
   return (
     <div className="container">
@@ -36,8 +42,8 @@ export const AllFacets = () => {
           <div>Sort</div>
           <div>Priority</div>
         </div>
-        {filteredData?.map((facet) => (
-          <AdminFacet key={facet.id} {...facet} />
+        {filteredData?.map(({ obj }) => (
+          <AdminFacet key={obj.id} {...obj} />
         ))}
       </div>
     </div>

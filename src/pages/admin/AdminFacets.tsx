@@ -4,8 +4,11 @@ import { FacetListItem } from "../../lib/types";
 import { useFieldValues, useUpdateFacet } from "../../adminHooks";
 import { Button, ButtonLink } from "../../components/ui/button";
 import { useQuery } from "../../lib/hooks/QueryProvider";
+import fuzzysort from "fuzzysort";
 
-type KeyValues = [true, string[]] | [false, { min: number; max: number }];
+type KeyValues =
+  | [true, Fuzzysort.Results]
+  | [false, { min: number; max: number }];
 
 const FacetValues = ({ id }: { id: number }) => {
   const { setQuery } = useQuery();
@@ -13,26 +16,26 @@ const FacetValues = ({ id }: { id: number }) => {
   const [filter, setFilter] = useState<string>("");
 
   const [isKeyValues, values] = useMemo<KeyValues>(() => {
-    if (!data) return [true, []];
+    if (!data) return [false, { min: 0, max: 0 }];
     const isKeys = typeof data[0] === "string";
     if (!isKeys) {
       return [false, data[0] as { min: number; max: number }];
     }
-    return [
-      true,
-      data
-        .filter((d): d is string => {
-          if (typeof d !== "string") return false;
-          if (!filter.length) return true;
-          return d.toLowerCase()?.includes(filter.toLowerCase());
-        })
-        .sort((a, b) => a.localeCompare(b)),
-    ];
+    const keyValues = data.filter((d): d is string => typeof d === "string");
+    const filtered = fuzzysort.go(filter, keyValues, {
+      limit: 50,
+      threshold: 0.5,
+      all: filter.length == 0,
+    });
+    return [true, filtered];
   }, [data, filter]);
+  if (!data) {
+    return <div>Loading...</div>;
+  }
   if (!isKeyValues) {
     return (
       <div>
-        Min: {values.min} Max: {values.max}
+        Min: {values?.min ?? 0} Max: {values?.max ?? 0}
       </div>
     );
   }
@@ -45,7 +48,7 @@ const FacetValues = ({ id }: { id: number }) => {
         value={filter}
       />
       <ul>
-        {values.map((value) => (
+        {values.map(({ target: value }) => (
           <li key={value} className="flex items-center gap-2">
             <span className="font-bold">{value}</span>
             <Button variant="ghost" size="sm">
@@ -68,6 +71,9 @@ const FacetValues = ({ id }: { id: number }) => {
           </li>
         ))}
       </ul>
+      <span>
+        {values.length} / {data.length}
+      </span>
     </div>
   );
 };
