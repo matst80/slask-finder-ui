@@ -1,27 +1,62 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Input } from "../../components/ui/input";
-import { FacetListItem } from "../../lib/types";
+import { FacetListItem, isKeyFacet } from "../../lib/types";
 import { useFieldValues, useUpdateFacet } from "../../adminHooks";
 import { Button } from "../../components/ui/button";
 
+type KeyValues = [true, string[]] | [false, { min: number; max: number }];
+
 const FacetValues = ({ id }: { id: number }) => {
   const { data } = useFieldValues(id);
+  const [filter, setFilter] = useState<string>("");
 
-  if (Array.isArray(data)) {
+  const [isKeyValues, values] = useMemo<KeyValues>(() => {
+    if (!data) return [true, []];
+    const isKeys = typeof data[0] === "string";
+    if (!isKeys) {
+      const min = Math.min(
+        ...(data as { min: number; max: number }[]).map((d) => d.min)
+      );
+      const max = Math.max(
+        ...(data as { min: number; max: number }[]).map((d) => d.max)
+      );
+      return [false, { min, max }];
+    }
+    return [
+      true,
+      data
+        .filter((d): d is string => {
+          if (typeof d !== "string") return false;
+          if (!filter.length) return true;
+          return d.toLowerCase()?.includes(filter.toLowerCase());
+        })
+        .sort((a, b) => a.localeCompare(b)),
+    ];
+  }, [data, filter]);
+  if (!isKeyValues) {
     return (
-      <ul>
-        {data?.map((value, idx) =>
-          typeof value === "string" ? (
-            <li key={value}>{value}</li>
-          ) : (
-            <li key={idx}>
-              Min: {value.min} Max: {value.max}
-            </li>
-          )
-        )}
-      </ul>
+      <div>
+        Min: {values.min} Max: {values.max}
+      </div>
     );
   }
+
+  return (
+    <div>
+      <Input onChange={(e) => setFilter(e.target.value)} value={filter} />
+      <ul>
+        {values.map((value) => (
+          <li key={value} className="flex items-center gap-2">
+            <span className="font-bold">{value}</span>
+            <Button variant="outline" size="sm">
+              Find compatible
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
   return null;
 };
 
@@ -148,6 +183,7 @@ export const AdminFacet = (facet: FacetListItem) => {
   return (
     <>
       <div className="grid grid-cols-subgrid col-span-full border-b border-gray-100 p-4">
+        <div>{facet.id}</div>
         <div>
           <button
             className="font-medium bold"

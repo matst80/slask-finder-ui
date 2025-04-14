@@ -93,12 +93,16 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
   const { data } = useFacetMap();
   const stringFilters = useMemo(() => {
     const filter = Object.entries(values)
-      .map(([id, value]) => {
+      .map(([id]) => {
         const facet = data?.[id];
         if (!facet || facet.linkedId == null) {
           return null;
         }
         if (facet.linkedId == 31158) {
+          return null;
+        }
+        const value = values[id];
+        if (value == null) {
           return null;
         }
         return {
@@ -118,7 +122,6 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
       page: 0,
       string: stringFilters,
       range: [],
-      query: undefined,
     });
   };
   if (stringFilters.length === 0) return null;
@@ -149,7 +152,7 @@ const Properties = ({
           value,
         };
       })
-      .filter((value) => value != null)
+      .filter(isDefined)
       .sort(byPriority);
   }, [values, data]);
   return (
@@ -160,8 +163,9 @@ const Properties = ({
       <div className="grid grid-cols-2 gap-2">
         {fields.map((field) => (
           <div key={`prop-${field.id}-${field.valueType}`} className="mb-2">
-            <h3 className="text-lg font-bold flex gap-4 items-center">
-              {field.name}
+            <h3 className="flex gap-1 items-center">
+              <span className="text-lg font-bold">{field.name}</span>
+              <span className="text-sm text-gray-400">({field.id})</span>
             </h3>
             <p className="text-gray-700">
               {isEdit ? (
@@ -172,7 +176,9 @@ const Properties = ({
                 />
               ) : (
                 <span>
-                  {field.value} ({field.id})
+                  {Array.isArray(field.value)
+                    ? field.value.join(", ")
+                    : String(field.value)}{" "}
                 </span>
               )}{" "}
               {field.linkedId != null &&

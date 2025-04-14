@@ -8,7 +8,7 @@ export type Suggestion = {
 };
 
 export type ItemValues = {
-  [key: string]: string | number | undefined;
+  [key: string]: string | string[] | number | undefined;
   "4": number;
   "5"?: number;
   "8"?: number;

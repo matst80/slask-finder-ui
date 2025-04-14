@@ -28,8 +28,9 @@ export const AllFacets = () => {
           placeholder="Search fields..."
         />
       </div>
-      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6 grid grid-cols-4 gap-3">
+      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6 grid grid-cols-5 gap-3">
         <div className="grid grid-cols-subgrid col-span-full border-b border-gray-300 p-4 font-bold">
+          <div>Id</div>
           <div>Name</div>
           <div>Type</div>
           <div>Sort</div>
