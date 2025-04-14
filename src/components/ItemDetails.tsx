@@ -132,12 +132,7 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
   );
 };
 
-const Properties = ({
-  values,
-  isEdit,
-}: Pick<ItemDetail, "values"> & {
-  isEdit?: boolean;
-}) => {
+const Properties = ({ values }: Pick<ItemDetail, "values">) => {
   const { setQuery } = useQuery();
   const { data } = useFacetMap();
   const fields = useMemo(() => {
@@ -165,22 +160,16 @@ const Properties = ({
           <div key={`prop-${field.id}-${field.valueType}`} className="mb-2">
             <h3 className="flex gap-1 items-center">
               <span className="text-lg font-bold">{field.name}</span>
-              <span className="text-sm text-gray-400">({field.id})</span>
+              <span className="hidden md:block text-sm text-gray-400">
+                ({field.id})
+              </span>
             </h3>
             <p className="text-gray-700">
-              {isEdit ? (
-                <input
-                  type={field.fieldType === "key" ? "text" : "number"}
-                  defaultValue={field.value}
-                  name={String(field.id)}
-                />
-              ) : (
-                <span>
-                  {Array.isArray(field.value)
-                    ? field.value.join(", ")
-                    : String(field.value)}{" "}
-                </span>
-              )}{" "}
+              <span>
+                {Array.isArray(field.value)
+                  ? field.value.join(", ")
+                  : String(field.value)}{" "}
+              </span>{" "}
               {field.linkedId != null &&
                 field.linkedId > 0 &&
                 field.value != null && (
@@ -219,7 +208,7 @@ const Properties = ({
   );
 };
 
-export const ItemDetails = (details: ItemDetail & { isEdit?: boolean }) => {
+export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart } = useAddToCart();
 
   if (!details) return null;
@@ -275,7 +264,7 @@ export const ItemDetails = (details: ItemDetail & { isEdit?: boolean }) => {
       </h3>
       <CompatibleItems id={details.id} />
 
-      <Properties values={details.values} isEdit={details.isEdit} />
+      <Properties values={details.values} />
       <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
         Liknande produkter
       </h3>
