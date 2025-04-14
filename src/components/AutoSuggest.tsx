@@ -14,7 +14,6 @@ import { StockIndicator } from "./ResultItem";
 import { useSuggestions } from "../lib/hooks/useSuggestions";
 import { trackClick } from "../lib/datalayer/beacons";
 import { CmsPicture } from "../lib/types";
-import { MagicMotion } from "react-magic-motion";
 import { PriceValue } from "./Price";
 import { MIN_FUZZY_SCORE } from "../lib/hooks/SuggestionProvider";
 
@@ -276,7 +275,7 @@ export const AutoSuggest = () => {
         <button
           onClick={() => smartQuery != null && setQuery(smartQuery)}
           className={cm(
-            "transition-opacity border-b border-gray-300 absolute -top-5 left-8 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs",
+            "transition-all border-b border-gray-300 absolute -top-5 left-8 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs",
             open && possibleTriggers != null ? "opacity-100" : "opacity-0"
           )}
         >
@@ -440,9 +439,7 @@ const SuggestionSection = ({
   return (
     <div>
       <h2 className="font-bold p-2">{title}:</h2>
-      <MagicMotion>
-        <div>{children}</div>
-      </MagicMotion>
+      <div>{children}</div>
     </div>
   );
 };

@@ -54,5 +54,9 @@ export const Price = ({
       </div>
     );
   }
-  return <PriceValue value={prc.current} className="bold" />;
+  return (
+    <div className="font-bold">
+      <PriceValue value={prc.current} className="bold" />
+    </div>
+  );
 };
