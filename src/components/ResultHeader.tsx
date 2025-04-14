@@ -7,6 +7,8 @@ import { useQuery } from "../lib/hooks/QueryProvider";
 import { FilterQuery } from "./FilterQuery";
 import { facetQueryToHash } from "../hooks/searchHooks";
 import { Button } from "./ui/button";
+import { CopyIcon } from "lucide-react";
+import { queryToHash } from "../lib/utils";
 
 // const EditCategories = ({ onClose }: { onClose: () => void }) => {
 //   const { facets, query } = useQuery();
@@ -87,6 +89,18 @@ export const ResultHeader = () => {
               ⇦ Back
             </Button>
           )}
+          <Button
+            variant="outline"
+            size="sm"
+            title="Copy link to this search"
+            onClick={() =>
+              navigator.clipboard.writeText(
+                `${location.origin}/#${queryToHash(query)}`
+              )
+            }
+          >
+            <CopyIcon />
+          </Button>
           <Sorting />
         </div>
       </header>

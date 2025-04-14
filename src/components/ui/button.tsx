@@ -1,13 +1,13 @@
 import React from "react";
 import { cm } from "../../utils";
+import { Link, LinkProps } from "react-router-dom";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: keyof typeof variantStyles;
   size?: keyof typeof sizeStyles;
 }
 
-interface ButtonLinkProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+interface ButtonLinkProps extends LinkProps {
   variant?: keyof typeof variantStyles;
   size?: keyof typeof sizeStyles;
 }
@@ -26,7 +26,7 @@ export const Button: React.FC<ButtonProps> = ({
         variantStyles[variant],
         sizeStyles[size],
         className,
-        props.disabled ? "opacity-50" : "",
+        props.disabled ? "opacity-50" : ""
       )}
       {...props}
     >
@@ -43,17 +43,17 @@ export const ButtonLink: React.FC<ButtonLinkProps> = ({
   ...props
 }) => {
   return (
-    <a
+    <Link
       className={cm(
         baseStyles,
         variantStyles[variant],
         sizeStyles[size],
-        className,
+        className
       )}
       {...props}
     >
       {children}
-    </a>
+    </Link>
   );
 };
 

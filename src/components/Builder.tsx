@@ -705,7 +705,7 @@ export const Builder = () => {
       .map((item) => {
         return wattIds.reduce((sum, id) => {
           const value = item.values[id];
-          if (value != null) {
+          if (value != null && !Array.isArray(value)) {
             if (typeof value === "string") return sum + parseInt(value, 10);
             else return sum + value;
           }

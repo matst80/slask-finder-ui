@@ -19,6 +19,7 @@ import {
 } from "../types";
 import {
   facetQueryToHash,
+  queryFromHash,
   queryToHash,
   toQuery,
 } from "../../hooks/searchHooks";
@@ -66,6 +67,22 @@ export const mergeFilters = (
 
 type HistoryQuery = ItemsQuery & { key: string };
 
+const loadQueryFromHash = (): ItemsQuery => {
+  const hash = window.location.hash.substring(1);
+  if (!hash) {
+    return {
+      page: 0,
+      pageSize: 20,
+      range: [],
+      //query: "*",
+      sort: "popular",
+      string: [],
+      stock: [],
+    };
+  }
+  return queryFromHash(hash);
+};
+
 const QueryContext = createContext({} as QueryContextType);
 export const QueryProvider = ({
   initialQuery,
@@ -84,15 +101,7 @@ export const QueryProvider = ({
   const [hits, setHits] = useState<Item[]>([]);
   const [totalHits, setTotalHits] = useState<number>(0);
   const [query, setQuery] = useState<ItemsQuery>(
-    initialQuery ?? {
-      page: 0,
-      pageSize: 20,
-      range: [],
-      //query: "*",
-      sort: "popular",
-      string: [],
-      stock: [],
-    }
+    initialQuery ?? loadQueryFromHash()
   );
   const setPage = useCallback((page: number) => {
     setQuery((prev) => ({ ...prev, page }));

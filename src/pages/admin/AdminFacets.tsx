@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
 import { Input } from "../../components/ui/input";
-import { FacetListItem, isKeyFacet } from "../../lib/types";
+import { FacetListItem } from "../../lib/types";
 import { useFieldValues, useUpdateFacet } from "../../adminHooks";
-import { Button } from "../../components/ui/button";
+import { Button, ButtonLink } from "../../components/ui/button";
+import { useQuery } from "../../lib/hooks/QueryProvider";
 
 type KeyValues = [true, string[]] | [false, { min: number; max: number }];
 
 const FacetValues = ({ id }: { id: number }) => {
+  const { setQuery } = useQuery();
   const { data } = useFieldValues(id);
   const [filter, setFilter] = useState<string>("");
 
@@ -42,22 +44,38 @@ const FacetValues = ({ id }: { id: number }) => {
   }
 
   return (
-    <div>
-      <Input onChange={(e) => setFilter(e.target.value)} value={filter} />
+    <div className="bg-slate-200 p-4 rounded-md flex flex-col gap-2">
+      <Input
+        placeholder="Filter..."
+        onChange={(e) => setFilter(e.target.value)}
+        value={filter}
+      />
       <ul>
         {values.map((value) => (
           <li key={value} className="flex items-center gap-2">
             <span className="font-bold">{value}</span>
-            <Button variant="outline" size="sm">
+            <Button variant="ghost" size="sm">
               Find compatible
             </Button>
+            <ButtonLink
+              to="/"
+              onClick={() => {
+                setQuery({
+                  page: 0,
+                  string: [{ id, value: [value] }],
+                  range: [],
+                });
+              }}
+              variant="ghost"
+              size="sm"
+            >
+              Find products
+            </ButtonLink>
           </li>
         ))}
       </ul>
     </div>
   );
-
-  return null;
 };
 
 const FacetEditor = ({ data }: { data: FacetListItem }) => {
@@ -210,7 +228,7 @@ export const AdminFacet = (facet: FacetListItem) => {
       </div>
 
       {open && (
-        <div className="flex flex-col p-4 col-span-full">
+        <div className="flex flex-col p-4 gap-4 col-span-full">
           <FacetEditor data={facet} />
           <FacetValues id={facet.id} />
         </div>
