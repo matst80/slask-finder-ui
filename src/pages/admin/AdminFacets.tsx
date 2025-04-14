@@ -16,13 +16,7 @@ const FacetValues = ({ id }: { id: number }) => {
     if (!data) return [true, []];
     const isKeys = typeof data[0] === "string";
     if (!isKeys) {
-      const min = Math.min(
-        ...(data as { min: number; max: number }[]).map((d) => d.min)
-      );
-      const max = Math.max(
-        ...(data as { min: number; max: number }[]).map((d) => d.max)
-      );
-      return [false, { min, max }];
+      return [false, data[0] as { min: number; max: number }];
     }
     return [
       true,
@@ -204,7 +198,7 @@ export const AdminFacet = (facet: FacetListItem) => {
         <div>{facet.id}</div>
         <div>
           <button
-            className="font-medium bold"
+            className="font-medium bold text-left line-clamp-1 overflow-ellipsis"
             onClick={() => setOpen((p) => !p)}
           >
             {facet.name}
