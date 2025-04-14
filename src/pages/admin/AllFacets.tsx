@@ -34,17 +34,19 @@ export const AllFacets = () => {
           placeholder="Search fields..."
         />
       </div>
-      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6 grid grid-cols-5 gap-3">
-        <div className="grid grid-cols-subgrid col-span-full border-b border-gray-300 p-4 font-bold">
-          <div>Id</div>
-          <div>Name</div>
-          <div>Type</div>
-          <div>Sort</div>
-          <div>Priority</div>
+      <div className="overflow-auto">
+        <div className="bg-white shadow-md rounded-lg overflow-hidden mb-6 grid grid-cols-3 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-subgrid col-span-full border-b border-gray-300 p-4 font-bold">
+            <div>Id</div>
+            <div>Name</div>
+            <div className="hidden md:block">Type</div>
+            <div className="hidden md:block">Sort</div>
+            <div>Priority</div>
+          </div>
+          {filteredData?.map(({ obj }) => (
+            <AdminFacet key={obj.id} {...obj} />
+          ))}
         </div>
-        {filteredData?.map(({ obj }) => (
-          <AdminFacet key={obj.id} {...obj} />
-        ))}
       </div>
     </div>
   );

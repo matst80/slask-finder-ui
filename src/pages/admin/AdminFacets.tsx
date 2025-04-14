@@ -5,6 +5,7 @@ import { useFieldValues, useUpdateFacet } from "../../adminHooks";
 import { Button, ButtonLink } from "../../components/ui/button";
 import { useQuery } from "../../lib/hooks/QueryProvider";
 import fuzzysort from "fuzzysort";
+import { FilterIcon, SearchIcon } from "lucide-react";
 
 type KeyValues =
   | [true, Fuzzysort.Results]
@@ -49,25 +50,30 @@ const FacetValues = ({ id }: { id: number }) => {
       />
       <ul>
         {values.map(({ target: value }) => (
-          <li key={value} className="flex items-center gap-2">
+          <li
+            key={value}
+            className="flex items-center justify-between gap-2 border-b border-gray-300"
+          >
             <span className="font-bold">{value}</span>
-            <Button variant="ghost" size="sm">
-              Find compatible
-            </Button>
-            <ButtonLink
-              to="/"
-              onClick={() => {
-                setQuery({
-                  page: 0,
-                  string: [{ id, value: [value] }],
-                  range: [],
-                });
-              }}
-              variant="ghost"
-              size="sm"
-            >
-              Find products
-            </ButtonLink>
+            <div className="flex">
+              <Button variant="ghost" size="icon">
+                <FilterIcon className="size-5" />
+              </Button>
+              <ButtonLink
+                to="/"
+                onClick={() => {
+                  setQuery({
+                    page: 0,
+                    string: [{ id, value: [value] }],
+                    range: [],
+                  });
+                }}
+                variant="ghost"
+                size="icon"
+              >
+                <SearchIcon className="size-5" />
+              </ButtonLink>
+            </div>
           </li>
         ))}
       </ul>
@@ -220,9 +226,11 @@ export const AdminFacet = (facet: FacetListItem) => {
             )} */}
           </button>
         </div>
-        <span>{facet.valueType ? facet.valueType : ""}</span>
-        <span>{facet.sort ? facet.sort : ""}</span>
-        <span>{facet.prio}</span>
+        <span className="hidden md:block">
+          {facet.valueType ? facet.valueType : ""}
+        </span>
+        <span className="hidden md:block">{facet.sort ? facet.sort : ""}</span>
+        <span className="text-ellipsis">{facet.prio}</span>
 
         {/* <span>{facet.searchable}</span> */}
       </div>

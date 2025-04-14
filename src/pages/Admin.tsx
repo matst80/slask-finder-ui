@@ -30,7 +30,7 @@ export const Admin = () => {
   return (
     <>
       <AdminNavBar />
-      <div className="px-10 py-2 bg-gray-100 min-h-screen">
+      <div className="px-2 md:px-10 py-2 bg-gray-100 min-h-screen">
         <Outlet />
         {/* <SaveButton /> */}
       </div>

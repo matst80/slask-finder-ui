@@ -93,8 +93,8 @@ const FilteredFieldView = ({
         Edit the fields that are used in the search engine. You can add, remove,
         or edit fields.
       </p>
-      <div className="my-4">
-        <span className="flex gap-2">
+      <div className="my-4 overflow-x-auto">
+        <span className="flex gap-2 flex-nowrap">
           {uniquePurpose?.map((str) => (
             <button
               key={str}
@@ -106,7 +106,7 @@ const FilteredFieldView = ({
                 }
               }}
               className={cm(
-                "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-blue-800 cursor-pointer",
+                "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-blue-800 cursor-pointer flex-shrink-0",
                 selectedPurpose === str ? "bg-white" : "bg-blue-100"
               )}
             >
@@ -139,13 +139,13 @@ const FilteredFieldView = ({
 
             <div className="flex gap-3 items-center">
               {field.lastSeen != null && field.lastSeen > 0 && (
-                <span className="text-xs bg-yellow-200 rounded-md px-2 py-1">
+                <span className="text-xs bg-yellow-200 rounded-md px-2 py-1 hidden md:inline-flex">
                   <span>Last update: </span>
                   <TimeAgo ts={field.lastSeen} />
                 </span>
               )}
 
-              <span className="flex gap-2">
+              <span className="hidden md:flex gap-2">
                 {field.purpose?.map((str) => (
                   <span
                     key={str}
