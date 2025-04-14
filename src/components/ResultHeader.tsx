@@ -7,7 +7,7 @@ import { useQuery } from "../lib/hooks/QueryProvider";
 import { FilterQuery } from "./FilterQuery";
 import { facetQueryToHash } from "../hooks/searchHooks";
 import { Button } from "./ui/button";
-import { ArrowLeft, ArrowLeftIcon, CopyIcon } from "lucide-react";
+import { ArrowLeftIcon, CopyIcon } from "lucide-react";
 import { queryToHash } from "../lib/utils";
 
 // const EditCategories = ({ onClose }: { onClose: () => void }) => {
