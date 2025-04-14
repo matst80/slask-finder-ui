@@ -201,11 +201,11 @@ const Properties = ({
                           ],
                         });
                       }
-                      console.log(
-                        "change filter!",
-                        field.linkedId,
-                        field.value
-                      );
+                      // console.log(
+                      //   "change filter!",
+                      //   field.linkedId,
+                      //   field.value
+                      // );
                     }}
                   >
                     Visa kompatibla
