@@ -16,18 +16,78 @@ import { trackClick } from "../lib/datalayer/beacons";
 import { CmsPicture } from "../lib/types";
 import { PriceValue } from "./Price";
 import { MIN_FUZZY_SCORE } from "../lib/hooks/SuggestionProvider";
+import fuzzysort from "fuzzysort";
+
+const byCategoryLevel = (
+  a: { categoryLevel?: number },
+  b: { categoryLevel?: number }
+) => {
+  if (a.categoryLevel == null || b.categoryLevel == null) {
+    return 0;
+  }
+  return b.categoryLevel - a.categoryLevel;
+};
+
+const byMatch =
+  (query?: string | null) =>
+  (a: { value: string; hits: number }, b: { value: string; hits: number }) => {
+    if (query == null) {
+      return b.hits - a.hits;
+    }
+    const aMatch = a.value.toLowerCase().includes(query.toLowerCase());
+    const bMatch = b.value.toLowerCase().includes(query.toLowerCase());
+
+    if (aMatch && !bMatch) {
+      return -1;
+    } else if (!aMatch && bMatch) {
+      return 1;
+    }
+    return b.hits - a.hits;
+  };
 
 const MatchingFacets = () => {
   const { facets, value: query } = useSuggestions();
   const { setQuery } = useQuery();
-  const toShow = useMemo(() => {
-    return facets.filter(
-      (f) =>
-        f.valueType != null &&
-        f.valueType != "" &&
-        (f.categoryLevel == null || f.categoryLevel === 0)
-    );
+  const [categories, other] = useMemo(() => {
+    const [a, b] = facets
+      .filter(
+        (f) =>
+          (f.valueType != null && f.valueType != "") ||
+          (f.categoryLevel != null && f.categoryLevel > 0)
+      )
+      .reduce(
+        ([cat, rest], f) => {
+          if (f.categoryLevel != null && f.categoryLevel > 0) {
+            return [[...cat, f], rest];
+          }
+          return [cat, [...rest, f]];
+        },
+        [[], []] as [typeof facets, typeof facets]
+      );
+    return [
+      a.sort(byCategoryLevel).flatMap(({ id, categoryLevel, values }) =>
+        values.map((value) => ({
+          ...value,
+          id,
+          categoryLevel,
+        }))
+      ),
+      b,
+    ];
   }, [facets]);
+
+  const sortedCategories = useMemo(
+    () =>
+      fuzzysort
+        .go(query ?? "", categories, {
+          limit: 10,
+          threshold: -100,
+          keys: ["value"],
+        })
+        .map((d) => d.obj),
+
+    [categories, query]
+  );
 
   const updateQuery = (value: string, id: number) => () => {
     setQuery({
@@ -41,28 +101,53 @@ const MatchingFacets = () => {
     });
   };
 
-  return toShow.length ? (
-    <div className="bg-gray-100 border-t border-gray-200 p-2">
-      {toShow.map((f) => (
-        <div
-          key={f.id}
-          className="flex gap-2 flex-wrap p-2 text-sm items-center"
-        >
-          <span className="font-bold">{f.name}: </span>
-          {f.values.map(({ value, hits }) => (
-            <button
-              key={value}
-              className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
-              onClick={updateQuery(value, f.id)}
-            >
-              {value}
-              <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
-                {hits}
-              </span>
-            </button>
-          ))}
-        </div>
-      ))}
+  const setCategory = (value: string, id: number) => () => {
+    setQuery({
+      string: [{ id, value: [value] }],
+      query: undefined,
+      stock: [],
+      page: 0,
+    });
+  };
+
+  return other.length ? (
+    <div className="bg-gray-100 border-t border-gray-200 p-2 grid grid-cols-1 md:grid-cols-2">
+      <div className="flex flex-col flex-wrap gap-1 p-2 text-sm">
+        {sortedCategories.map(({ hits, value, id }) => (
+          <button
+            key={value}
+            className="text-left flex gap-2 items-center"
+            onClick={setCategory(value, id)}
+          >
+            Kategori: {value}
+            <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
+              {hits}
+            </span>
+          </button>
+        ))}
+      </div>
+      <div className="hidden md:block">
+        {other.map((f) => (
+          <div
+            key={f.id}
+            className="flex gap-2 flex-wrap p-2 text-sm items-center"
+          >
+            <span className="font-bold">{f.name}: </span>
+            {f.values.map(({ value, hits }) => (
+              <button
+                key={value}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
+                onClick={updateQuery(value, f.id)}
+              >
+                {value}
+                <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
+                  {hits}
+                </span>
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   ) : null;
 };
@@ -351,6 +436,7 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
           </div>
         </SuggestionSection>
       )}
+      <MatchingFacets />
       {items.length > 0 && (
         <SuggestionSection title="Produkter">
           <div className="grid grid-cols-1 lg:grid-cols-2">
@@ -379,7 +465,6 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
         </SuggestionSection>
       )}
       <ContentHits />
-      <MatchingFacets />
     </div>
   );
 };
