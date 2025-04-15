@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cm } from "../../utils";
 
 type SliderProps = {
@@ -29,55 +29,55 @@ export const Slider = ({
   absoluteMax,
   absoluteMin,
 }: SliderProps) => {
-  const [a, setA] = useState(min);
-  const [b, setB] = useState(max);
+  const minRef = useRef<HTMLInputElement>(null);
+  const maxRef = useRef<HTMLInputElement>(null);
 
-  const validMin = clamp(a, absoluteMin, absoluteMax);
-  const validMax = clamp(b, absoluteMin, absoluteMax);
+  const updateValues = useCallback(() => {
+    if (minRef.current && maxRef.current) {
+      const minValue = parseInt(minRef.current.value);
+      const maxValue = parseInt(maxRef.current.value);
+
+      const [newMin, newMax] = orderMinMax(
+        clamp(minValue, absoluteMin, absoluteMax),
+        clamp(maxValue, absoluteMin, absoluteMax)
+      );
+
+      minRef.current.value = newMin.toString();
+      maxRef.current.value = newMax.toString();
+
+      onChange(newMin, newMax);
+    }
+  }, [minRef, maxRef, onChange, absoluteMin, absoluteMax]);
 
   useEffect(() => {
-    setA(min);
-    setB(max);
-  }, [min, max]);
+    if (minRef.current && maxRef.current) {
+      minRef.current.value = min.toString();
+      maxRef.current.value = max.toString();
+    }
+  }, [min, max, minRef, maxRef]);
 
-  useEffect(() => {
-    const [minValue, maxValue] = orderMinMax(a, b);
-
-    onChange(minValue, maxValue);
-  }, [a, b, onChange]);
-  const [minValue, maxValue] = useMemo(() => orderMinMax(a, b), [a, b]);
   return (
     <>
       <input
         type="number"
-        key={`min-${min}`}
+        ref={minRef}
         className={cm(
-          "text-sm text-gray-600 text-left px-2 bg-gray-200 rounded-lg flex-1",
-          validMin ? "" : "border border-red-500"
+          "text-sm text-gray-600 text-left px-2 bg-gray-200 rounded-lg flex-1"
         )}
         min={0}
+        onBlur={updateValues}
         max={absoluteMax}
-        onBlur={(e) => {
-          const nr = Number(e.target.value);
-          if (!isNaN(nr)) setA(clamp(nr, absoluteMin, absoluteMax));
-        }}
-        defaultValue={minValue}
       />
       <span>-</span>
       <input
         type="number"
-        key={`max-${max}`}
+        ref={maxRef}
         className={cm(
-          "text-sm text-gray-600 text-right px-2 bg-gray-200 rounded-lg flex-1",
-          validMax ? "" : "border border-red-500"
+          "text-sm text-gray-600 text-right px-2 bg-gray-200 rounded-lg flex-1"
         )}
         min={0}
-        max={absoluteMax}
-        onBlur={(e) => {
-          const nr = Number(e.target.value);
-          if (!isNaN(nr)) setB(clamp(nr, absoluteMin, absoluteMax));
-        }}
-        defaultValue={maxValue}
+        onBlur={updateValues}
+        max={absoluteMax + 1}
       />
     </>
   );

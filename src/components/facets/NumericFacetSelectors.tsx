@@ -21,15 +21,11 @@ export default function HistogramWithSelection({
 }) {
   const width = 288;
   const height = 80;
-  const [selectionStart, setSelectionStart] = useState<number | null>(
-    selection != null ? selection.min * width : null
-  );
-  const [selectionEnd, setSelectionEnd] = useState<number | null>(
-    selection != null ? selection.max * width : null
-  );
+  const [selectionStart, setSelectionStart] = useState<number | null>(null);
+  const [selectionEnd, setSelectionEnd] = useState<number | null>(null);
 
   useEffect(() => {
-    if (selection) {
+    if (selection != null) {
       setSelectionStart(selection.min * width);
       setSelectionEnd(selection.max * width);
     } else {
@@ -82,21 +78,31 @@ export default function HistogramWithSelection({
       const min = Math.min(selectionStart, selectionEnd);
       const max = Math.max(selectionStart, selectionEnd);
 
-      // Convert pixel positions to data values
+      // Convert pixel positions to percentages
       const dataMin = min / innerWidth;
       const dataMax = max / innerWidth;
 
       onSelection?.({ min: dataMin, max: dataMax });
-
-      // // Calculate selected count
-      // const selectedBins = bins.slice(dataMin, dataMax + 1);
-      // setSelectedCount(selectedBins.reduce((sum, count) => sum + count, 0));
     }
   };
 
   const handleMouseLeave = () => {
     if (isDragging) {
       setIsDragging(false);
+      const end =
+        selectionEnd != null && selectionEnd > innerHeight / 2 ? innerWidth : 0;
+
+      setSelectionEnd(end);
+      if (selectionStart !== null && selectionEnd !== null) {
+        const min = Math.min(selectionStart, end);
+        const max = Math.max(selectionStart, end);
+
+        // Convert pixel positions to percentages
+        const dataMin = min / innerWidth;
+        const dataMax = max / innerWidth;
+
+        onSelection?.({ min: dataMin, max: dataMax });
+      }
     }
   };
 
@@ -232,6 +238,7 @@ export const NumberFacetSelector = ({
     },
     [fromDisplayValue, updateValue]
   );
+  // console.log({ selected, limits: { min, max }, histogramValue });
   return (
     <div className="mb-4 border-b border-gray-100 pb-2">
       <button
