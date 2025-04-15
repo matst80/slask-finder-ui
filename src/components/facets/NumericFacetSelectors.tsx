@@ -216,7 +216,7 @@ export const NumberFacetSelector = ({
   );
   const histogramValue = useMemo(
     () =>
-      selected
+      selected && selected.min !== min && selected.max !== max
         ? { min: selected.min / max, max: selected.max / max }
         : undefined,
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -268,7 +268,7 @@ export const NumberFacetSelector = ({
                   min: Math.floor(max * d.min),
                   max: Math.ceil(max * d.max),
                 };
-                console.log("slider update", value);
+
                 updateValue(value);
               }}
             />

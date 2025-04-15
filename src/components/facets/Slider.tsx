@@ -50,6 +50,7 @@ export const Slider = ({
     <>
       <input
         type="number"
+        key={`min-${min}`}
         className={cm(
           "text-sm text-gray-600 text-left px-2 bg-gray-200 rounded-lg flex-1",
           validMin ? "" : "border border-red-500"
@@ -65,6 +66,7 @@ export const Slider = ({
       <span>-</span>
       <input
         type="number"
+        key={`max-${max}`}
         className={cm(
           "text-sm text-gray-600 text-right px-2 bg-gray-200 rounded-lg flex-1",
           validMax ? "" : "border border-red-500"
