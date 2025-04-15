@@ -1,23 +1,46 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cm } from "../../utils";
 
 type SliderProps = {
   min: number;
   max: number;
+  absoluteMax: number;
+  absoluteMin: number;
   onChange: (min: number, max: number) => void;
 };
 
-export const Slider = ({ min, max, onChange }: SliderProps) => {
-  const [minValue, setMinValue] = useState(min);
-  const [maxValue, setMaxValue] = useState(max);
-  const validMin = min <= minValue && minValue <= max;
-  const validMax = min <= maxValue && maxValue <= max;
+const clamp = (value: number, min: number, max: number): number => {
+  if (value < min) return min;
+  if (value > max) return max;
+  return value;
+};
+
+const orderMinMax = (a: number, b: number) => {
+  if (a > b) {
+    return [b, a];
+  }
+  return [a, b];
+};
+
+export const Slider = ({
+  min,
+  max,
+  onChange,
+  absoluteMax,
+  absoluteMin,
+}: SliderProps) => {
+  const [a, setA] = useState(min);
+  const [b, setB] = useState(max);
+
+  const validMin = clamp(a, absoluteMin, absoluteMax);
+  const validMax = clamp(b, absoluteMin, absoluteMax);
   const valid = validMax && validMin;
-  const isDirty = min !== minValue || max !== maxValue;
+  const isDirty = min !== a || max !== b;
   useEffect(() => {
-    setMinValue(min);
-    setMaxValue(max);
+    setA(min);
+    setB(max);
   }, [min, max]);
+  const [minValue, maxValue] = useMemo(() => orderMinMax(a, b), [a, b]);
   return (
     <>
       <input
@@ -26,13 +49,13 @@ export const Slider = ({ min, max, onChange }: SliderProps) => {
           "text-sm text-gray-600 text-left px-2 bg-gray-200 rounded-lg flex-1",
           validMin ? "" : "border border-red-500"
         )}
-        min={0}
-        max={max}
+        min={absoluteMin}
+        max={absoluteMax}
         onChange={(e) => {
           const nr = Number(e.target.value);
-          if (!isNaN(nr)) setMinValue(nr);
+          if (!isNaN(nr)) setA(nr);
         }}
-        onBlur={() => onChange(minValue, maxValue)}
+        onBlur={() => onChange(a, b)}
         value={minValue}
       />
       <span>-</span>
@@ -42,15 +65,15 @@ export const Slider = ({ min, max, onChange }: SliderProps) => {
           "text-sm text-gray-600 text-right px-2 bg-gray-200 rounded-lg flex-1",
           validMax ? "" : "border border-red-500"
         )}
-        min={0}
-        max={max}
+        min={absoluteMin}
+        max={absoluteMax}
         onChange={(e) => {
           const nr = Number(e.target.value);
-          if (!isNaN(nr)) setMaxValue(nr);
+          if (!isNaN(nr)) setB(nr);
         }}
         onBlur={() => {
           if (isDirty && valid) {
-            onChange(minValue, maxValue);
+            onChange(a, b);
           }
         }}
         value={maxValue}

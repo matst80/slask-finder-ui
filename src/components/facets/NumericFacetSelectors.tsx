@@ -13,12 +13,18 @@ type SelectedRange = {
 export default function HistogramWithSelection({
   bins,
   onSelection,
+  selection,
 }: {
   bins: number[];
+  selection: SelectedRange | undefined;
   onSelection?: (data: SelectedRange) => void;
 }) {
-  const [selectionStart, setSelectionStart] = useState<number | null>(null);
-  const [selectionEnd, setSelectionEnd] = useState<number | null>(null);
+  const [selectionStart, setSelectionStart] = useState<number | null>(
+    selection?.min ?? null
+  );
+  const [selectionEnd, setSelectionEnd] = useState<number | null>(
+    selection?.max ?? null
+  );
   const [isDragging, setIsDragging] = useState(false);
   // const [selectedRange, setSelectedRange] = useState<{
   //   min: number;
@@ -145,7 +151,7 @@ export default function HistogramWithSelection({
         </g>
 
         {/* Selection overlay */}
-        {isDragging && selectionStart !== null && selectionEnd !== null && (
+        {selectionStart !== null && selectionEnd !== null && (
           <rect
             x={margin.left + Math.min(selectionStart, selectionEnd)}
             y={margin.top}
@@ -185,6 +191,7 @@ export const NumberFacetSelector = ({
   id,
   name,
   result: { min, max, count, buckets },
+  selected,
   valueType,
   defaultOpen,
 }: NumberFacet & {
@@ -217,8 +224,10 @@ export const NumberFacetSelector = ({
         <>
           <div className="flex gap-2">
             <Slider
-              min={toDisplayValue(min)}
-              max={toDisplayValue(max)}
+              min={toDisplayValue(selected?.min ?? min)}
+              max={toDisplayValue(selected?.max ?? max)}
+              absoluteMax={toDisplayValue(max)}
+              absoluteMin={toDisplayValue(min)}
               onChange={(min, max) => {
                 updateValue({
                   min: fromDisplayValue(min),
@@ -230,6 +239,11 @@ export const NumberFacetSelector = ({
           {buckets != null && buckets.length > 1 && (
             <HistogramWithSelection
               bins={buckets}
+              selection={
+                selected
+                  ? { min: selected.min / max, max: selected.max / max }
+                  : undefined
+              }
               onSelection={(d) => {
                 updateValue({
                   min: Math.floor(max * d.min),
