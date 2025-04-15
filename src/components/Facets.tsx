@@ -34,6 +34,7 @@ const CategoryLevel = ({
               onClick={() => {
                 setQuery((prev) => ({
                   ...prev,
+                  page: 0,
                   string: [
                     ...(prev.string?.filter(
                       (d) => !facets.some((e) => e.id == d.id)
