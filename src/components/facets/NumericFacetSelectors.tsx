@@ -1,5 +1,5 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { NumberFacet } from "../../lib/types";
 import { converters } from "../../utils";
 import { Slider } from "./Slider";
@@ -19,12 +19,24 @@ export default function HistogramWithSelection({
   selection: SelectedRange | undefined;
   onSelection?: (data: SelectedRange) => void;
 }) {
+  const width = 288;
+  const height = 80;
   const [selectionStart, setSelectionStart] = useState<number | null>(
-    selection?.min ?? null
+    selection != null ? selection.min * width : null
   );
   const [selectionEnd, setSelectionEnd] = useState<number | null>(
-    selection?.max ?? null
+    selection != null ? selection.max * width : null
   );
+
+  useEffect(() => {
+    if (selection) {
+      setSelectionStart(selection.min * width);
+      setSelectionEnd(selection.max * width);
+    } else {
+      setSelectionStart(null);
+      setSelectionEnd(null);
+    }
+  }, [selection]);
   const [isDragging, setIsDragging] = useState(false);
   // const [selectedRange, setSelectedRange] = useState<{
   //   min: number;
@@ -35,8 +47,7 @@ export default function HistogramWithSelection({
   const svgRef = useRef<SVGSVGElement>(null);
 
   // Constants for the SVG dimensions and margins
-  const width = 288;
-  const height = 80;
+
   const margin = { top: 0, right: 0, bottom: 0, left: 0 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
