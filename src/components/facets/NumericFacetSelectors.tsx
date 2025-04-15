@@ -1,5 +1,5 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { NumberFacet } from "../../lib/types";
 import { converters } from "../../utils";
 import { Slider } from "./Slider";
@@ -214,7 +214,24 @@ export const NumberFacetSelector = ({
     () => converters(valueType),
     [valueType]
   );
-
+  const histogramValue = useMemo(
+    () =>
+      selected
+        ? { min: selected.min / max, max: selected.max / max }
+        : undefined,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selected]
+  );
+  const sliderChanged = useCallback(
+    (min: number, max: number) => {
+      // console.log("onChange", min, max);
+      updateValue({
+        min: fromDisplayValue(min),
+        max: fromDisplayValue(max),
+      });
+    },
+    [fromDisplayValue, updateValue]
+  );
   return (
     <div className="mb-4 border-b border-gray-100 pb-2">
       <button
@@ -239,27 +256,20 @@ export const NumberFacetSelector = ({
               max={toDisplayValue(selected?.max ?? max)}
               absoluteMax={toDisplayValue(max)}
               absoluteMin={toDisplayValue(min)}
-              onChange={(min, max) => {
-                updateValue({
-                  min: fromDisplayValue(min),
-                  max: fromDisplayValue(max),
-                });
-              }}
+              onChange={sliderChanged}
             />
           </div>
           {buckets != null && buckets.length > 1 && (
             <HistogramWithSelection
               bins={buckets}
-              selection={
-                selected
-                  ? { min: selected.min / max, max: selected.max / max }
-                  : undefined
-              }
+              selection={histogramValue}
               onSelection={(d) => {
-                updateValue({
+                const value = {
                   min: Math.floor(max * d.min),
                   max: Math.ceil(max * d.max),
-                });
+                };
+                console.log("slider update", value);
+                updateValue(value);
               }}
             />
           )}

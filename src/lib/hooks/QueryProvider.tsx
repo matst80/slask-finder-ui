@@ -170,13 +170,14 @@ export const QueryProvider = ({
   );
 
   useEffect(() => {
-    const facetKey = facetQueryToHash(query);
-    const itemsKey = queryToHash(query);
-
-    setTimeout(() => {
-      setFacetsKey(facetKey);
+    const t = setTimeout(() => {
+      setFacetsKey(facetQueryToHash(query));
     }, 50);
-    setItemsKey(itemsKey);
+
+    setItemsKey(queryToHash(query));
+    return () => {
+      clearTimeout(t);
+    };
   }, [query]);
 
   useEffect(() => {

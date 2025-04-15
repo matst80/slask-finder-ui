@@ -75,7 +75,7 @@ export const Slider = ({
           const nr = Number(e.target.value);
           if (!isNaN(nr)) setB(clamp(nr, absoluteMin, absoluteMax));
         }}
-        value={maxValue}
+        defaultValue={maxValue}
       />
     </>
   );
