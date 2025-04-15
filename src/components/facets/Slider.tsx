@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cm } from "../../utils";
 
 type SliderProps = {
@@ -14,6 +14,10 @@ export const Slider = ({ min, max, onChange }: SliderProps) => {
   const validMax = min <= maxValue && maxValue <= max;
   const valid = validMax && validMin;
   const isDirty = min !== minValue || max !== maxValue;
+  useEffect(() => {
+    setMinValue(min);
+    setMaxValue(max);
+  }, [min, max]);
   return (
     <>
       <input

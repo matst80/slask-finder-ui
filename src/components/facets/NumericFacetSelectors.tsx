@@ -1,9 +1,185 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { NumberFacet } from "../../lib/types";
 import { converters } from "../../utils";
 import { Slider } from "./Slider";
 import { useQueryRangeFacet } from "../../lib/hooks/QueryProvider";
+
+type SelectedRange = {
+  min: number;
+  max: number;
+};
+
+export default function HistogramWithSelection({
+  bins,
+  onSelection,
+}: {
+  bins: number[];
+  onSelection?: (data: SelectedRange) => void;
+}) {
+  const [selectionStart, setSelectionStart] = useState<number | null>(null);
+  const [selectionEnd, setSelectionEnd] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  // const [selectedRange, setSelectedRange] = useState<{
+  //   min: number;
+  //   max: number;
+  // } | null>(null);
+  //const [selectedCount, setSelectedCount] = useState<number>(0);
+
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  // Constants for the SVG dimensions and margins
+  const width = 288;
+  const height = 80;
+  const margin = { top: 0, right: 0, bottom: 0, left: 0 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  // Handle mouse events for selection
+  const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!svgRef.current) return;
+
+    const svgRect = svgRef.current.getBoundingClientRect();
+    const x = e.clientX - svgRect.left - margin.left;
+
+    setSelectionStart(x);
+    setSelectionEnd(x);
+    setIsDragging(true);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!isDragging || !svgRef.current) return;
+
+    const svgRect = svgRef.current.getBoundingClientRect();
+    const x = e.clientX - svgRect.left - margin.left;
+
+    setSelectionEnd(Math.max(0, Math.min(x, innerWidth)));
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+
+    setIsDragging(false);
+
+    if (selectionStart !== null && selectionEnd !== null) {
+      const min = Math.min(selectionStart, selectionEnd);
+      const max = Math.max(selectionStart, selectionEnd);
+
+      // Convert pixel positions to data values
+      const dataMin = min / innerWidth;
+      const dataMax = max / innerWidth;
+
+      onSelection?.({ min: dataMin, max: dataMax });
+
+      // // Calculate selected count
+      // const selectedBins = bins.slice(dataMin, dataMax + 1);
+      // setSelectedCount(selectedBins.reduce((sum, count) => sum + count, 0));
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      setIsDragging(false);
+    }
+  };
+
+  // Calculate the maximum bin height for scaling
+  const maxBinHeight = Math.max(...bins);
+
+  // Calculate bar width based on the number of bins
+  const barWidth = innerWidth / bins.length;
+
+  return (
+    <div className="relative mt-4 h-20 w-full border border-gray-300 rounded-md overflow-hidden">
+      <svg
+        ref={svgRef}
+        width={"100%"}
+        height={"100%"}
+        className="overflow-visible"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* X and Y axes */}
+        <line
+          x1={margin.left}
+          y1={height - margin.bottom}
+          x2={width - margin.right}
+          y2={height - margin.bottom}
+          stroke="black"
+          strokeWidth={1}
+        />
+        <line
+          x1={margin.left}
+          y1={margin.top}
+          x2={margin.left}
+          y2={height - margin.bottom}
+          stroke="black"
+          strokeWidth={1}
+        />
+
+        {/* Histogram bars */}
+        <g transform={`translate(${margin.left}, 0)`}>
+          {bins.map((bin, i) => {
+            const barHeight = (bin / maxBinHeight) * innerHeight;
+            const x = i * barWidth;
+            const y = height - margin.bottom - barHeight;
+
+            // Check if this bar is in the selected range
+            const isSelected = false;
+
+            return (
+              <rect
+                key={i}
+                x={x}
+                y={y}
+                width={barWidth - 1}
+                height={barHeight}
+                fill={isSelected ? "rgb(99, 102, 241)" : "rgb(209, 213, 219)"}
+                stroke="white"
+                strokeWidth={0.5}
+              />
+            );
+          })}
+        </g>
+
+        {/* Selection overlay */}
+        {isDragging && selectionStart !== null && selectionEnd !== null && (
+          <rect
+            x={margin.left + Math.min(selectionStart, selectionEnd)}
+            y={margin.top}
+            width={Math.abs(selectionEnd - selectionStart)}
+            height={innerHeight}
+            fill="rgba(99, 102, 241, 0.3)"
+            stroke="rgb(79, 70, 229)"
+            strokeWidth={1}
+          />
+        )}
+
+        {/* <text
+          x={width / 2}
+          y={height - 5}
+          textAnchor="middle"
+          className="text-xs"
+        >
+          Value
+        </text>
+
+        
+        <text
+          x={15}
+          y={height / 2}
+          textAnchor="middle"
+          transform={`rotate(-90, 15, ${height / 2})`}
+          className="text-xs"
+        >
+          Frequency
+        </text> */}
+      </svg>
+    </div>
+  );
+}
 
 export const NumberFacetSelector = ({
   id,
@@ -52,20 +228,15 @@ export const NumberFacetSelector = ({
             />
           </div>
           {buckets != null && buckets.length > 1 && (
-            <div className="relative mt-4 h-20 w-full border border-gray-300 rounded-md overflow-hidden">
-              {buckets.map((size, i, all) => {
-                return (
-                  <div
-                    style={{
-                      height: `${size + 1}%`,
-                      width: `${100 / all.length}%`,
-                      left: `${(100 / all.length) * i}%`,
-                    }}
-                    className="bg-slate-600 bottom-0 absolute"
-                  ></div>
-                );
-              })}
-            </div>
+            <HistogramWithSelection
+              bins={buckets}
+              onSelection={(d) => {
+                updateValue({
+                  min: Math.floor(max * d.min),
+                  max: Math.ceil(max * d.max),
+                });
+              }}
+            />
           )}
         </>
       )}
