@@ -140,13 +140,14 @@ const FilteredFieldView = ({
             key={field.id}
             className="flex items-center justify-between border-b border-gray-300 pb-1 mb-1"
           >
-            <div className="flex flex-col gap-2 items-center">
+            <div className="flex flex-col">
               <div>
                 <span title={field.key} className="text-sm font-bold">
                   {field.name}
                 </span>
-                <span className="text-sm">({field.itemCount ?? "0"}st)</span>
+                <span className="text-sm"> ({field.itemCount ?? "0"}st)</span>
                 <span className="font-bold text-xs underline hidden md:inline-flex">
+                  {" "}
                   {getDataType(field.type ?? 0)}
                 </span>
               </div>
