@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Search } from "lucide-react";
+import { Search, SearchIcon } from "lucide-react";
 import { cm, makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/QueryProvider";
@@ -272,6 +272,7 @@ export const AutoSuggest = () => {
     possibleTriggers,
     hasSuggestions,
     smartQuery,
+    items,
   } = useSuggestions();
 
   const [open, setOpen] = useState(false);
@@ -283,6 +284,7 @@ export const AutoSuggest = () => {
     });
   }, [value, setTerm, updatePosition]);
 
+  const hasResults = items.length > 0;
   const showItems = open && hasSuggestions;
 
   const onKeyUp = useCallback(
@@ -297,16 +299,17 @@ export const AutoSuggest = () => {
         ) {
           setQuery(smartQuery);
         } else {
-          setQuery((prev) => ({
-            ...prev,
-            string: [],
-            range: [],
-            page: 0,
-            query: input.value,
-          }));
+          if (hasResults || input.value == null || input.value.length < 2) {
+            setQuery((prev) => ({
+              ...prev,
+              string: [],
+              range: [],
+              page: 0,
+              query: input.value,
+            }));
+          }
         }
 
-        setOpen(false);
         return;
       } else if (isAtEnd && e.key === "ArrowRight" && bestSuggestion != null) {
         const query = [...bestSuggestion.other, bestSuggestion.match]
@@ -317,7 +320,7 @@ export const AutoSuggest = () => {
       }
       setOpen(true);
     },
-    [suggestions, smartQuery, setQuery]
+    [suggestions, smartQuery, setQuery, hasResults]
   );
 
   useEffect(() => {
@@ -411,30 +414,33 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
       {popularQueries != null && popularQueries.length > 0 && (
         <SuggestionSection title="Populära sökningar">
           <div className="flex flex-col gap-2 p-2">
-            {popularQueries.slice(undefined, 5).map(({ term, fields }) => (
+            {popularQueries.slice(undefined, 5).map(({ query, fields }) => (
               <button
-                key={term}
+                key={query}
                 className="flex gap-2 items-center text-left"
                 onClick={() => {
                   setQuery((prev) => ({
                     ...prev,
-                    query: term,
-                    string: fields.map(({ value, id }) => ({
+                    query,
+                    string: fields.map(({ values, id }) => ({
                       id,
-                      value,
+                      value: values.map((d) => d.value),
                     })),
                   }));
                 }}
               >
-                <span>{term}</span>
+                <SearchIcon className="size-5" />
+                <span>{query}</span>
                 <div className="flex gap-2 text-xs">
-                  {fields.map(({ value, id, name }) => (
+                  {fields.map(({ values, id, name }) => (
                     <div
                       key={id}
                       className="px-2 py-1 rounded-full font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
                     >
                       <span key={id}>{name} </span>
-                      <span className="font-bold">{value.join(", ")}</span>
+                      <span className="font-bold">
+                        {values.map((d) => d.value).join(", ")}
+                      </span>
                     </div>
                   ))}
                 </div>

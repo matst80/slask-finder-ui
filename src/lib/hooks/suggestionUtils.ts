@@ -7,10 +7,19 @@ import {
   PopularQuery,
 } from "../types";
 
-export type SuggestField = { name: string; id: number; value: string[] };
+export type SuggestField = {
+  name: string;
+  id: number;
+  values: {
+    value: string;
+    popularity: number;
+  }[];
+  popularity: number;
+};
 export type SuggestQuery = {
-  term: string;
   fields: SuggestField[];
+  popularity: number;
+  query: string;
 };
 
 export type FlatFacetValue = Omit<KeyFacet, "result" | "selected"> & {
@@ -51,45 +60,30 @@ const byPopularity = (a: { popularity: number }, b: { popularity: number }) =>
 
 const convertKeyFacetEntry = (
   facet: FacetListItem | undefined,
-  [
-    fieldId,
-    {
-      values,
-      popularity: { value },
-    },
-  ]: [string, PopularFacet]
+  { id, values, score }: PopularFacet
 ) => {
   if (facet == null) {
     return null;
   }
   return {
     name: facet.name,
-    id: Number(fieldId),
-    value: Object.keys(values),
-    popularity: value,
+    id,
+    values: values.map(({ value, score }) => ({ value, popularity: score })),
+    popularity: score,
   };
 };
 
 export const convertPopularQueries =
   (facetData: Record<string, FacetListItem>) =>
-  (d: Record<string, PopularQuery>) => {
-    return Object.entries(d)
-      .map(
-        ([
-          term,
-          {
-            keyFacets,
-            popularity: { value },
-            query,
-          },
-        ]: [string, PopularQuery]) => {
-          const fields = Object.entries(keyFacets)
-            .map((field) => convertKeyFacetEntry(facetData[field[0]], field))
-            .filter(isDefined)
-            .sort(byPopularity);
+  (d: PopularQuery[]): SuggestQuery[] => {
+    return d
+      .map(({ facets, query, score }) => {
+        const fields = facets
+          .map((field) => convertKeyFacetEntry(facetData[field.id], field))
+          .filter(isDefined)
+          .sort(byPopularity);
 
-          return { term, fields, popularity: value, query };
-        }
-      )
+        return { fields, popularity: score, query };
+      })
       .sort(byPopularity);
   };

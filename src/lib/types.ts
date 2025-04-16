@@ -489,11 +489,12 @@ export type Popularity = {
 
 export type PopularQuery = {
   query: string;
-  popularity: Popularity;
-  keyFacets: Record<number, PopularFacet>;
+  score: number;
+  facets: PopularFacet[];
 };
 
 export type PopularFacet = {
-  popularity: Popularity;
-  values: Record<string, Popularity>;
+  id: number;
+  score: number;
+  values: { score: number; value: string }[];
 };

@@ -147,7 +147,17 @@ export const SuggestionProvider = ({
     const { cancel, promise } = autoSuggestResponse(value);
 
     promise.then(handleSuggestResponse).then((state) => {
-      setData(state);
+      setData((prev) => {
+        const hasFacets = state.facets.length > 0;
+        const canMerge =
+          !hasFacets && value.length > 0 && prev.items.length > 0;
+
+        return {
+          facets: canMerge ? prev.facets : state.facets,
+          items: state.items,
+          suggestions: state.suggestions,
+        };
+      });
       trackSuggest({
         items: state.items.length,
         suggestions: state.suggestions.length,

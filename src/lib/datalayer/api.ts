@@ -67,11 +67,16 @@ export const autoSuggestResponse = (
   const cancellationToken = new AbortController();
 
   const doCancel = () => {
-    cancellationToken.abort("new search started");
+    cancellationToken.abort("cancel");
   };
   return {
     promise: fetch(`${baseUrl}/api/suggest?q=${term}`, {
       signal: cancellationToken.signal,
+    }).catch((e) => {
+      if (e.name === "cancel") {
+        return new Response(null, { status: 499 });
+      }
+      throw e;
     }),
     cancel: doCancel,
   };
@@ -167,7 +172,7 @@ export const getCompatible = (id: number) =>
 export const getPopularQueries = (q: string) =>
   fetch(
     `${baseUrl}/tracking/suggest?${new URLSearchParams({ q }).toString()}`
-  ).then((d) => toJson<Record<string, PopularQuery>>(d));
+  ).then((d) => toJson<PopularQuery[]>(d));
 
 const readStreamed = <T>(
   d: Response,
