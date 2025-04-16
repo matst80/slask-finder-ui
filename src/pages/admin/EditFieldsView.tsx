@@ -153,11 +153,10 @@ const FilteredFieldView = ({
             <div className="flex gap-3 items-center">
               {field.lastSeen != null && field.lastSeen > 0 && (
                 <span className="text-xs bg-yellow-200 rounded-md px-2 py-1 hidden md:inline-flex">
-                  <span>Last update: </span>
                   <TimeAgo ts={field.lastSeen} />
                 </span>
               )}
-              <span className="font-bold underline">
+              <span className="font-bold text-sm underline">
                 {getDataType(field.type ?? 0)}
               </span>
               <span className="hidden md:flex gap-2">
