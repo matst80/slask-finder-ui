@@ -39,6 +39,19 @@ const CleanFieldsButton = () => {
   );
 };
 
+const getDataType = (type: number): string => {
+  switch (type) {
+    case 0:
+      return "String";
+    case 1:
+      return "Number";
+    case 2:
+      return "Decimal";
+    default:
+      return "-Unknown-";
+  }
+};
+
 const FilteredFieldView = ({
   data,
 }: {
@@ -144,7 +157,9 @@ const FilteredFieldView = ({
                   <TimeAgo ts={field.lastSeen} />
                 </span>
               )}
-
+              <span className="font-bold underline">
+                {getDataType(field.type ?? 0)}
+              </span>
               <span className="hidden md:flex gap-2">
                 {field.purpose?.map((str) => (
                   <span

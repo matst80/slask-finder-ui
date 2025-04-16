@@ -425,6 +425,7 @@ export type FieldListItem = {
   itemCount?: number;
   lastSeen?: number;
   created?: number;
+  type?: number;
   description: string;
   purpose?: string[];
 };
