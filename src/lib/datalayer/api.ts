@@ -17,6 +17,7 @@ import {
   Suggestion,
   ContentRecord,
   KeyFacet,
+  RelationGroup,
 } from "../types";
 
 const baseUrl = "";
@@ -173,6 +174,12 @@ export const getPopularQueries = (q: string) =>
   fetch(
     `${baseUrl}/tracking/suggest?${new URLSearchParams({ q }).toString()}`
   ).then((d) => toJson<PopularQuery[]>(d));
+
+export const getRelations = () => {
+  return fetch(`${baseUrl}/api/relation-groups`).then((d) =>
+    toJson<RelationGroup[]>(d)
+  );
+};
 
 const readStreamed = <T>(
   d: Response,

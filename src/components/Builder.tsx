@@ -2,7 +2,6 @@ import {
   Fragment,
   PropsWithChildren,
   ReactNode,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -19,6 +18,7 @@ import {
   QueryProviderRef,
   useQuery,
 } from "../lib/hooks/QueryProvider";
+import { QueryMerger } from "./QueryMerger";
 
 type AdditionalFilter = {
   id: number;
@@ -511,7 +511,7 @@ const isStringFilter = (
   );
 };
 
-const HitList = <T extends { item: Item }>({
+export const HitList = <T extends { item: Item }>({
   children,
   className,
   ...props
@@ -531,14 +531,6 @@ const HitList = <T extends { item: Item }>({
       })}
     </div>
   );
-};
-
-const QueryMerger = ({ query }: { query: FilteringQuery }) => {
-  const { setQuery } = useQuery();
-  useEffect(() => {
-    setQuery((old) => ({ ...old, ...mergeFilters(old, query) }));
-  }, [query, setQuery]);
-  return null;
 };
 
 const ComponentSelector = ({

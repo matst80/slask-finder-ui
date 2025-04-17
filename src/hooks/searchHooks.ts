@@ -5,6 +5,7 @@ import {
   getFacetList,
   getFacetMap,
   getRelated,
+  getRelations,
   streamItems,
 } from "../lib/datalayer/api";
 import { FacetQuery, FilteringQuery, ItemsQuery } from "../lib/types";
@@ -357,6 +358,14 @@ export const useFacets = (data: FacetQuery) => {
 
 export const useFacetMap = () => {
   return useSWR("facet-map", getFacetMap, {
+    revalidateOnFocus: false,
+    refreshInterval: 0,
+    focusThrottleInterval: 3600,
+  });
+};
+
+export const useRelationGroups = () => {
+  return useSWR("relationGroups", getRelations, {
     revalidateOnFocus: false,
     refreshInterval: 0,
     focusThrottleInterval: 3600,

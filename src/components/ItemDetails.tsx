@@ -3,17 +3,25 @@ import {
   useCompatibleItems,
   useFacetMap,
   useRelatedItems,
+  useRelationGroups,
 } from "../hooks/searchHooks";
 import { useMemo, useState } from "react";
 import { byPriority, isDefined, makeImageUrl } from "../utils";
-import { ItemDetail } from "../lib/types";
+import {
+  ItemDetail,
+  ItemsQuery,
+  KeyField,
+  NumberField,
+  RelationGroup,
+} from "../lib/types";
 import { stores } from "../lib/datalayer/stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Price } from "./Price";
-import { useQuery } from "../lib/hooks/QueryProvider";
+import { QueryProvider, useQuery } from "../lib/hooks/QueryProvider";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import { QueryMerger } from "./QueryMerger";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -53,6 +61,28 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
         <div className="flex w-fit">
           {isLoading && <p>Laddar...</p>}
           {data?.map((item, idx) => (
+            <div
+              key={item.id}
+              className="flex-shrink-0 w-[250px] flex snap-start"
+            >
+              <ResultItem {...item} position={idx} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const ResultCarousel = () => {
+  const { hits, isLoading } = useQuery();
+
+  return (
+    <div className="-mx-6">
+      <div className="max-w-full overflow-y-auto snap-y">
+        <div className="flex w-fit">
+          {isLoading && <p>Laddar...</p>}
+          {hits?.map((item, idx) => (
             <div
               key={item.id}
               className="flex-shrink-0 w-[250px] flex snap-start"
@@ -132,6 +162,83 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
   );
 };
 
+// const relationGroup = [
+//   {
+//     name: "Passande moderkort",
+//     groupId: 1,
+//     requiredForItem: [
+//       {
+//         facetId: 32,
+//         value: "PT272",
+//       },
+//     ],
+//     additionalQueries: [
+//       {
+//         facetId: 32,
+//         value: "PT264",
+//       },
+//     ],
+//     relations: [
+//       {
+//         fromId: 32103,
+//         toId: 32103,
+//         converter: "none",
+//       },
+//       {
+//         fromId: 36202,
+//         toId: 30276,
+//         converter: "none",
+//       },
+//     ],
+//   },
+//   {
+//     name: "Passande minne",
+//     groupId: 2,
+//     requiredForItem: [
+//       {
+//         facetId: 32,
+//         value: "PT272",
+//       },
+//     ],
+//     additionalQueries: [
+//       {
+//         facetId: 32,
+//         value: ["PT269"],
+//       },
+//     ],
+//     relations: [
+//       {
+//         fromId: 35980,
+//         toId: 31191,
+//         converter: "stringToMin",
+//       },
+//     ],
+//   },
+//   {
+//     name: "Passande CPU",
+//     groupId: 3,
+//     requiredForItem: [
+//       {
+//         facetId: 32,
+//         value: "PT264",
+//       },
+//     ],
+//     additionalQueries: [
+//       {
+//         facetId: 32,
+//         value: "PT272",
+//       },
+//     ],
+//     relations: [
+//       {
+//         fromId: 32103,
+//         toId: 32103,
+//         converter: "none",
+//       },
+//     ],
+//   },
+// ];
+
 const Properties = ({ values }: Pick<ItemDetail, "values">) => {
   const { setQuery } = useQuery();
   const { data } = useFacetMap();
@@ -208,6 +315,113 @@ const Properties = ({ values }: Pick<ItemDetail, "values">) => {
   );
 };
 
+type PossibleValue = string | string[] | number | undefined;
+
+const hasRequiredValue = (
+  requiredValue: PossibleValue,
+  value: PossibleValue
+) => {
+  if (value == null) return false;
+  if (requiredValue == null) return value != null;
+  if (Array.isArray(requiredValue)) {
+    return requiredValue.some((part) =>
+      Array.isArray(value)
+        ? value.includes(part)
+        : String(part) === String(value)
+    );
+  }
+  return String(requiredValue) === String(value);
+};
+
+const isRangeFilter = (d: NumberField | KeyField): d is NumberField => {
+  if ("value" in d) {
+    return false;
+  }
+  if ("min" in d) {
+    return true;
+  }
+  return true;
+};
+
+const makeQuery = (
+  group: RelationGroup,
+  values: ItemDetail["values"]
+): ItemsQuery => {
+  console.log("parse query", group);
+  const globalFilters =
+    group.additionalQueries?.map((query) => {
+      return {
+        id: query.facetId,
+        value: Array.isArray(query.value)
+          ? (query.value as string[])
+          : [String(query.value)],
+      };
+    }) ?? [];
+  const filters = group.relations.map((relation) => {
+    const fromValue = values[relation.fromId];
+    if (fromValue == null) return null;
+    if (relation.converter === "stringToMin") {
+      return {
+        id: relation.toId,
+        min: Number(fromValue),
+        max: 9999999999,
+      };
+    }
+    return {
+      id: relation.toId,
+      value: Array.isArray(fromValue)
+        ? fromValue.map((v) => String(v))
+        : [String(fromValue)],
+    };
+  });
+  const allFilters = [...globalFilters, ...filters.filter(isDefined)];
+  const [string, range] = allFilters.reduce(
+    (acc, filter) => {
+      if (isRangeFilter(filter)) {
+        acc[1]!.push(filter);
+      } else {
+        acc[0]!.push(filter);
+      }
+      return acc;
+    },
+    [[], []] as [ItemsQuery["string"], ItemsQuery["range"]]
+  );
+  console.log(group.name, { string, range });
+  return {
+    page: 0,
+    string,
+    range,
+  };
+};
+
+const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
+  const { data } = useRelationGroups();
+  const validGroups = useMemo(() => {
+    return (
+      data?.filter((group) =>
+        group.requiredForItem.every((requirement) =>
+          hasRequiredValue(requirement.value, values[requirement.facetId])
+        )
+      ) ?? []
+    );
+  }, [values, data]);
+  return (
+    <div>
+      {validGroups.map((group) => {
+        return (
+          <div key={group.groupId} className="mb-4">
+            <span>{group.name}</span>
+            <QueryProvider initialQuery={makeQuery(group, values)}>
+              <QueryMerger query={makeQuery(group, values)} />
+              <ResultCarousel />
+            </QueryProvider>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart } = useAddToCart();
 
@@ -259,10 +473,11 @@ export const ItemDetails = (details: ItemDetail) => {
         {stockLevel != null && <p>I lager online: {stockLevel}</p>}
       </div>
 
-      <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
+      <RelationGroups values={values} />
+      {/* <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
         Kompatibla produkter
       </h3>
-      <CompatibleItems id={details.id} />
+      <CompatibleItems id={details.id} /> */}
 
       <Properties values={details.values} />
       <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">

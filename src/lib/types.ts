@@ -161,6 +161,27 @@ export type NumberField = { id: number } & NumberValue;
 
 export type KeyField = { id: number; value: string[] };
 
+export type RelationMatch = {
+  facetId: number;
+  value?: number | string | string[];
+};
+
+export type RelationGroup = {
+  groupId: number;
+  name: string;
+  requiredForItem: RelationMatch[];
+  additionalQueries?: RelationMatch[];
+  relations: Relation[];
+};
+
+export type RelationConverter = "none" | "stringToMin" | "stringToMax";
+
+export type Relation = {
+  fromId: number;
+  toId: number;
+  converter: RelationConverter;
+};
+
 export type Field = NumberField | KeyField;
 
 export type FilteringQuery = {
