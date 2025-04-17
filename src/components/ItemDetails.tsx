@@ -13,6 +13,7 @@ import {
   KeyField,
   NumberField,
   RelationGroup,
+  relationValueConverters,
 } from "../lib/types";
 import { stores } from "../lib/datalayer/stores";
 import { ResultItem } from "./ResultItem";
@@ -359,19 +360,16 @@ const makeQuery = (
     }) ?? [];
   const filters = group.relations.map((relation) => {
     const fromValue = values[relation.fromId];
+    const converter =
+      relationValueConverters[relation.converter] ??
+      relationValueConverters.none;
     if (fromValue == null) return null;
-    if (relation.converter === "stringToMin") {
-      return {
-        id: relation.toId,
-        min: Number(fromValue),
-        max: 9999999999,
-      };
-    }
+    const filterValue = converter(fromValue);
+    if (filterValue == null) return null;
+
     return {
       id: relation.toId,
-      value: Array.isArray(fromValue)
-        ? fromValue.map((v) => String(v))
-        : [String(fromValue)],
+      ...filterValue,
     };
   });
   const allFilters = [...globalFilters, ...filters.filter(isDefined)];

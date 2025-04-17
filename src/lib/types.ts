@@ -174,7 +174,49 @@ export type RelationGroup = {
   relations: Relation[];
 };
 
-export type RelationConverter = "none" | "stringToMin" | "stringToMax";
+type FacetValue = string | string[] | number;
+
+const toNumber = (input: string | number): number | null => {
+  if (typeof input === "number") {
+    return input;
+  }
+  const nr = parseInt(input, 10);
+  if (isNaN(nr)) {
+    return null;
+  }
+  return nr;
+};
+
+export const relationValueConverters: Record<
+  RelationConverter,
+  (input: FacetValue) => NumberValue | { value: string[] } | undefined
+> = {
+  none: (v: FacetValue) => ({
+    value: Array.isArray(v) ? v : [String(v)],
+  }),
+  valueToMax: (v: FacetValue) => {
+    if (Array.isArray(v)) {
+      return undefined;
+    }
+    const max = toNumber(v);
+    if (max == null) {
+      return undefined;
+    }
+    return { min: 0, max };
+  },
+  valueToMin: (v: FacetValue) => {
+    if (Array.isArray(v)) {
+      return undefined;
+    }
+    const min = toNumber(v);
+    if (min == null) {
+      return undefined;
+    }
+    return { min, max: Number.MAX_VALUE };
+  },
+};
+
+export type RelationConverter = "none" | "valueToMin" | "valueToMax";
 
 export type Relation = {
   fromId: number;
