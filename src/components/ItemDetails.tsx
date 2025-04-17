@@ -6,10 +6,11 @@ import {
   useRelationGroups,
 } from "../hooks/searchHooks";
 import { useMemo, useState } from "react";
-import { byPriority, isDefined, makeImageUrl } from "../utils";
+import { byPriority, cm, isDefined, makeImageUrl } from "../utils";
 import {
   ItemDetail,
   ItemsQuery,
+  ItemValues,
   KeyField,
   NumberField,
   RelationGroup,
@@ -392,6 +393,38 @@ const makeQuery = (
   };
 };
 
+const RelationGroupCarousel = ({
+  group,
+  values,
+}: {
+  group: RelationGroup;
+  values: ItemValues;
+}) => {
+  const query = useMemo(() => makeQuery(group, values), [group, values]);
+  const [open, setOpen] = useState(false);
+  return (
+    <div key={group.groupId} className="mb-4">
+      <button
+        onClick={() => setOpen((p) => !p)}
+        className={cm(
+          "text-xl font-bold transition-all",
+          open ? "border-b border-gray-200 pb-2 mb-2" : ""
+        )}
+      >
+        {group.name}
+      </button>
+      <QueryProvider initialQuery={query}>
+        {open && (
+          <>
+            <QueryMerger query={query} />
+            <ResultCarousel />
+          </>
+        )}
+      </QueryProvider>
+    </div>
+  );
+};
+
 const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
   const { data } = useRelationGroups();
   const validGroups = useMemo(() => {
@@ -407,13 +440,11 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
     <div>
       {validGroups.map((group) => {
         return (
-          <div key={group.groupId} className="mb-4">
-            <span>{group.name}</span>
-            <QueryProvider initialQuery={makeQuery(group, values)}>
-              <QueryMerger query={makeQuery(group, values)} />
-              <ResultCarousel />
-            </QueryProvider>
-          </div>
+          <RelationGroupCarousel
+            key={group.groupId}
+            group={group}
+            values={values}
+          />
         );
       })}
     </div>
