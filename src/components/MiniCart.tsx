@@ -1,4 +1,4 @@
-import { Minus, Plus, ShoppingCart, ShoppingCartIcon, X } from "lucide-react";
+import { Minus, Plus, ShoppingCartIcon, X } from "lucide-react";
 import { useState } from "react";
 
 import { makeImageUrl } from "../utils";
@@ -13,7 +13,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
   const { data: cart, isLoading } = useCart();
   const { trigger: changeQuantity } = useChangeQuantity();
   const items = cart?.items ?? [];
-  const totalPrice = cart?.total_price ?? 0;
+  const totalPrice = cart?.totalPrice ?? 0;
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -48,22 +48,21 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                     {item.image ? (
                       <img
                         src={makeImageUrl(item.image)}
-                        alt={item.title}
+                        alt={item.name}
                         className="h-16 w-16 rounded object-cover mr-4"
                       />
                     ) : (
                       <div>.</div>
                     )}
                     <div className="flex-1">
-                      <h3 className="text-sm font-medium">{item.title}</h3>
+                      <h3 className="text-sm font-medium">{item.name}</h3>
                       <p className="text-sm text-gray-500">
                         {(item.price / 100).toFixed(2)} kr{" "}
-                        {item.original_price &&
-                          item.original_price > item.price && (
-                            <span className="line-through text-gray-400">
-                              {(item.original_price / 100).toFixed(2)} kr
-                            </span>
-                          )}
+                        {item.orgPrice && item.orgPrice > item.price && (
+                          <span className="line-through text-gray-400">
+                            {(item.orgPrice / 100).toFixed(2)} kr
+                          </span>
+                        )}
                       </p>
                     </div>
                     <div className="flex items-center">
