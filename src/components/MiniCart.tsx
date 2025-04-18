@@ -1,5 +1,5 @@
 import { Minus, Plus, ShoppingCartIcon, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { makeImageUrl } from "../utils";
 import { useCart, useChangeQuantity } from "../hooks/cartHooks";
@@ -14,6 +14,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
   const { trigger: changeQuantity } = useChangeQuantity();
   const items = cart?.items ?? [];
   const totalPrice = cart?.totalPrice ?? 0;
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -122,10 +123,29 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
 export const MiniCart = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { data: cart, isLoading } = useCart();
+  const ref = useRef<HTMLSpanElement>(null);
+  const totalItems = useMemo(
+    () =>
+      isLoading
+        ? "~"
+        : cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0,
+    [cart, isLoading]
+  );
 
-  const totalItems = isLoading
-    ? "~"
-    : cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0;
+  useEffect(() => {
+    if (ref.current) {
+      const elm = ref.current;
+      elm.classList.add("animate-ping");
+      const to = setTimeout(() => {
+        elm.classList.remove("animate-ping");
+      }, 300);
+      return () => {
+        clearTimeout(to);
+        elm.classList.remove("animate-ping");
+      };
+    }
+  }, [totalItems, ref]);
+
   return (
     <>
       <Button
@@ -136,7 +156,10 @@ export const MiniCart = () => {
       >
         <ShoppingCartIcon className="size-5" />
 
-        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+        <span
+          ref={ref}
+          className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+        >
           {totalItems}
         </span>
       </Button>
