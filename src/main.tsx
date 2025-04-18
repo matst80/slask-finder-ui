@@ -26,6 +26,8 @@ import {
   MissingFieldsView,
 } from "./pages/admin/EditFieldsView.tsx";
 import { RelationGroupEditor } from "./pages/admin/RelationGroupEditor.tsx";
+import { Checkout } from "./pages/Checkout.tsx";
+import { Confirmation } from "./pages/Confirmation.tsx";
 
 const router = createBrowserRouter([
   {
@@ -137,6 +139,22 @@ const router = createBrowserRouter([
         element: <PopularFacetsView />,
       },
     ],
+  },
+  {
+    path: "checkout",
+    element: (
+      <PageContainer>
+        <Checkout />
+      </PageContainer>
+    ),
+  },
+  {
+    path: "confirmation",
+    element: (
+      <PageContainer>
+        <Confirmation />
+      </PageContainer>
+    ),
   },
   {
     path: "updated",

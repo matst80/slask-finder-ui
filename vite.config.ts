@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-const target = "https://slask-finder.knatofs.se/";
+const target = "https://slask-finder.tornberg.me/";
+//const cartTarget = "https://slask-finder.knatofs.se/";
 // const localTarget = "http://localhost:8080/";
 
 // https://vitejs.dev/config/

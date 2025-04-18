@@ -420,6 +420,11 @@ export const getCart = () =>
     return toJson<Cart>(d);
   });
 
+type Checkout = { html_snippet: string };
+
+export const getCheckout = () =>
+  fetch(`${baseUrl}/cart/checkout`).then((d) => toJson<Checkout>(d));
+
 export const getCartById = (id: string | number) =>
   fetch(`${baseUrl}/cart/${id}`).then((d) => toJson<Cart>(d));
 

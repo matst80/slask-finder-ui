@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { makeImageUrl } from "../utils";
 import { useCart, useChangeQuantity } from "../hooks/cartHooks";
-import { Button } from "./ui/button";
+import { Button, ButtonLink } from "./ui/button";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -98,9 +98,11 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
               <span className="text-lg font-bold">Total:</span>
               <span className="text-lg font-bold">{totalPrice / 100} kr</span>
             </div>
-            <button className="mt-6 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors">
-              Proceed to Checkout
-            </button>
+            <div className="mt-6 w-full">
+              <ButtonLink onClick={onClose} to={"/checkout"}>
+                Proceed to Checkout
+              </ButtonLink>
+            </div>
           </>
         )}
       </div>
