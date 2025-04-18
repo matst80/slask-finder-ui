@@ -393,7 +393,7 @@ type AddToCartArgs = {
 export const addToCart = (payload: AddToCartArgs) =>
   fetch(`${baseUrl}/cart/`, {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ sku: payload.id, quantity: payload.quantity }),
   }).then((d) => toJson<Cart>(d));
 
 type ChangeQuantityArgs = {

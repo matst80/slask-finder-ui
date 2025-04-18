@@ -12,6 +12,10 @@ export default defineConfig({
         target,
         changeOrigin: true,
       },
+      "/cart": {
+        target,
+        changeOrigin: true,
+      },
       "/tracking": {
         target,
         changeOrigin: true,

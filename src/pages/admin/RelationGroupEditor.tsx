@@ -267,7 +267,7 @@ const GroupEditor = ({
       </h2>
       {open && (
         <div className="flex flex-col gap-2">
-          <div>
+          <div className="p-4 border border-gray-300 rounded-md">
             <h3>Additional queries</h3>
             <div className="flex items-center gap-4">
               {value.additionalQueries?.map((relation, idx) => (
@@ -317,7 +317,7 @@ const GroupEditor = ({
             </Button>
             <QueryPreview matches={value.additionalQueries ?? []} />
           </div>
-          <div>
+          <div className="p-4 border border-gray-300 rounded-md">
             <h3>Required on item level</h3>
             <div className="flex items-center gap-4">
               {value.requiredForItem?.map((relation, idx) => (
@@ -367,7 +367,7 @@ const GroupEditor = ({
             </Button>
             <QueryPreview matches={value.requiredForItem ?? []} />
           </div>
-          <div>
+          <div className="p-4 border border-gray-300 rounded-md">
             <h3>Relations</h3>
             <div className="flex items-center gap-4">
               {value.relations?.map((relation, idx) => (

@@ -59,19 +59,17 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
   const { data, isLoading } = useRelatedItems(id);
 
   return (
-    <div className="-mx-6">
-      <div className="max-w-full overflow-y-auto snap-y">
-        <div className="flex w-fit">
-          {isLoading && <p>Laddar...</p>}
-          {data?.map((item, idx) => (
-            <div
-              key={item.id}
-              className="flex-shrink-0 w-[250px] flex snap-start"
-            >
-              <ResultItem {...item} position={idx} />
-            </div>
-          ))}
-        </div>
+    <div className="max-w-full overflow-y-auto snap-y">
+      <div className="flex w-fit">
+        {isLoading && <p>Laddar...</p>}
+        {data?.map((item, idx) => (
+          <div
+            key={item.id}
+            className="flex-shrink-0 w-[250px] flex snap-start"
+          >
+            <ResultItem {...item} position={idx} />
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -81,19 +79,17 @@ export const ResultCarousel = () => {
   const { hits, isLoading } = useQuery();
 
   return (
-    <div className="-mx-6">
-      <div className="max-w-full overflow-y-auto snap-y">
-        <div className="flex w-fit">
-          {isLoading && <p>Laddar...</p>}
-          {hits?.map((item, idx) => (
-            <div
-              key={item.id}
-              className="flex-shrink-0 w-[250px] flex snap-start"
-            >
-              <ResultItem {...item} position={idx} />
-            </div>
-          ))}
-        </div>
+    <div className="max-w-full overflow-y-auto snap-y">
+      <div className="flex w-fit">
+        {isLoading && <p>Laddar...</p>}
+        {hits?.map((item, idx) => (
+          <div
+            key={item.id}
+            className="flex-shrink-0 w-[250px] flex snap-start"
+          >
+            <ResultItem {...item} position={idx} />
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -103,19 +99,17 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
   const { data, isLoading } = useCompatibleItems(id);
 
   return (
-    <div className="-mx-6">
-      <div className="max-w-full overflow-y-auto snap-y">
-        <div className="flex w-fit">
-          {isLoading && <p>Laddar...</p>}
-          {data?.map((item, idx) => (
-            <div
-              key={item.id}
-              className="flex-shrink-0 w-[250px] flex snap-start"
-            >
-              <ResultItem {...item} position={idx} />
-            </div>
-          ))}
-        </div>
+    <div className="max-w-full overflow-y-auto snap-y">
+      <div className="flex w-fit">
+        {isLoading && <p>Laddar...</p>}
+        {data?.map((item, idx) => (
+          <div
+            key={item.id}
+            className="flex-shrink-0 w-[250px] flex snap-start"
+          >
+            <ResultItem {...item} position={idx} />
+          </div>
+        ))}
       </div>
     </div>
   );
