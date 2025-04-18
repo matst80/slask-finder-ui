@@ -155,6 +155,17 @@ const router = createBrowserRouter([
         <Confirmation />
       </PageContainer>
     ),
+    children: [
+      {
+        path: ":id",
+        loader: ({ params: { id } }) => ({ id }),
+        element: (
+          <PageContainer>
+            <Confirmation />
+          </PageContainer>
+        ),
+      },
+    ],
   },
   {
     path: "updated",
