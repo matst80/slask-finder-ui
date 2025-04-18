@@ -1,11 +1,6 @@
 import { useMemo, useState } from "react";
+import { useAdminRelationGroups, useFacetMap } from "../../hooks/searchHooks";
 import {
-  useAdminRelationGroups,
-  useFacetMap,
-  useRelationGroups,
-} from "../../hooks/searchHooks";
-import {
-  Facet,
   FacetListItem,
   ItemsQuery,
   Relation,
