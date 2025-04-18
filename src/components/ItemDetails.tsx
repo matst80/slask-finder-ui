@@ -23,7 +23,6 @@ import { Price } from "./Price";
 import { QueryProvider, useQuery } from "../lib/hooks/QueryProvider";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-import { QueryMerger } from "./QueryMerger";
 import { useAdmin } from "../hooks/appState";
 import { getAdminItem } from "../lib/datalayer/api";
 
