@@ -49,10 +49,10 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                       <img
                         src={makeImageUrl(item.image)}
                         alt={item.name}
-                        className="h-16 w-16 rounded object-cover mr-4"
+                        className="size-16 rounded object-cover aspect-square mr-4"
                       />
                     ) : (
-                      <div>.</div>
+                      <div></div>
                     )}
                     <div className="flex-1">
                       <h3 className="text-sm font-medium">{item.name}</h3>
