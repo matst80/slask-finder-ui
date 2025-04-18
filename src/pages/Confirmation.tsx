@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLoaderData } from "react-router-dom";
 import { ButtonLink } from "../components/ui/button";
+import { clearCart } from "../lib/datalayer/api";
 
 export const Confirmation = () => {
   const ref = useRef<HTMLDivElement>(null);
