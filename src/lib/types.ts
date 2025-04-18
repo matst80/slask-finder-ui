@@ -212,7 +212,7 @@ export const relationValueConverters: Record<
     if (min == null) {
       return undefined;
     }
-    return { min, max: Number.MAX_VALUE };
+    return { min, max: 999999999 };
   },
 };
 

@@ -105,37 +105,43 @@ export const handleSuggestResponse = (d: Response) => {
   const reader = d.body.getReader();
   const decoder = new TextDecoder();
   const pump = async (): Promise<SuggestionResponse> => {
-    return reader.read().then(({ done, value: dataChunk }) => {
-      if (done) {
-        return {
-          suggestions: suggestions
-            .filter((d) => d.match.toLowerCase() != d.prefix)
-            .sort((a, b) => b.hits - a.hits),
-          items,
-          facets: convertFacets(facetsBuffer),
-        };
-      }
-
-      buffer += decoder.decode(dataChunk);
-      const lines = buffer.split("\n");
-      buffer = lines.pop() ?? "";
-      lines.forEach((line) => {
-        if (line.length < 2) {
-          part++;
-        } else {
-          const item = JSON.parse(line);
-          if (part === 0) {
-            suggestions.push(item);
-          } else if (part === 1) {
-            items.push(item);
-          } else {
-            facetsBuffer.push(item);
-          }
+    return reader
+      .read()
+      .catch((e) => {
+        console.log("Error reading stream", e);
+        return { done: true, value: null };
+      })
+      .then(({ done, value: dataChunk }) => {
+        if (done || dataChunk == null) {
+          return {
+            suggestions: suggestions
+              .filter((d) => d.match.toLowerCase() != d.prefix)
+              .sort((a, b) => b.hits - a.hits),
+            items,
+            facets: convertFacets(facetsBuffer),
+          };
         }
-      });
 
-      return pump();
-    });
+        buffer += decoder.decode(dataChunk);
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        lines.forEach((line) => {
+          if (line.length < 2) {
+            part++;
+          } else {
+            const item = JSON.parse(line);
+            if (part === 0) {
+              suggestions.push(item);
+            } else if (part === 1) {
+              items.push(item);
+            } else {
+              facetsBuffer.push(item);
+            }
+          }
+        });
+
+        return pump();
+      });
   };
   return pump();
 };

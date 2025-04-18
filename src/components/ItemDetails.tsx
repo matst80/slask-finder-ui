@@ -325,6 +325,7 @@ const hasRequiredValue = (
 ) => {
   if (value == null) return false;
   if (requiredValue == null) return value != null;
+
   if (Array.isArray(requiredValue)) {
     return requiredValue.some((part) =>
       Array.isArray(value)
@@ -349,7 +350,6 @@ const makeQuery = (
   group: RelationGroup,
   values: ItemDetail["values"]
 ): ItemsQuery => {
-  console.log("parse query", group);
   const globalFilters =
     group.additionalQueries?.map((query) => {
       return {
@@ -385,7 +385,7 @@ const makeQuery = (
     },
     [[], []] as [ItemsQuery["string"], ItemsQuery["range"]]
   );
-  console.log(group.name, { string, range });
+
   return {
     page: 0,
     string,
@@ -403,24 +403,20 @@ const RelationGroupCarousel = ({
   const query = useMemo(() => makeQuery(group, values), [group, values]);
   const [open, setOpen] = useState(false);
   return (
-    <div key={group.groupId} className="mb-4">
+    <div key={group.groupId} className="mb-2 border-b border-gray-200 pb-2">
       <button
         onClick={() => setOpen((p) => !p)}
-        className={cm(
-          "text-xl font-bold transition-all",
-          open ? "border-b border-gray-200 pb-2 mb-2" : ""
-        )}
+        className={cm("text-xl font-bold transition-all", open ? "" : "")}
       >
         {group.name}
       </button>
-      <QueryProvider initialQuery={query}>
-        {open && (
-          <>
-            <QueryMerger query={query} />
-            <ResultCarousel />
-          </>
-        )}
-      </QueryProvider>
+
+      {open && (
+        <QueryProvider initialQuery={query}>
+          {/* <QueryMerger query={query} /> */}
+          <ResultCarousel />
+        </QueryProvider>
+      )}
     </div>
   );
 };
