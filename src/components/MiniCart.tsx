@@ -158,7 +158,7 @@ export const MiniCart = () => {
 
         <span
           ref={ref}
-          className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+          className="absolute transition-all -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
         >
           {totalItems}
         </span>

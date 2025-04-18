@@ -374,7 +374,7 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
 };
 
 export const ItemDetails = (details: ItemDetail) => {
-  const { trigger: addToCart } = useAddToCart();
+  const { trigger: addToCart, isMutating } = useAddToCart();
   const isAdmin = useAdmin();
   if (!details) return null;
   const {
@@ -413,7 +413,10 @@ export const ItemDetails = (details: ItemDetail) => {
           {(buyable || buyableInStore) && (
             <div>
               <button
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors flex"
+                className={cm(
+                  "bg-blue-500 text-white px-4 py-2 transition-all rounded hover:bg-blue-600 flex",
+                  isMutating ? "animate-pulse" : ""
+                )}
                 onClick={() => addToCart({ sku, quantity: 1 })}
               >
                 Lägg i kundvagn <ShoppingCart />
