@@ -1,14 +1,13 @@
 import { useEffect, useRef } from "react";
 import { useLoaderData } from "react-router-dom";
 import { ButtonLink } from "../components/ui/button";
-import { clearCart } from "../lib/datalayer/api";
+import { useResetCart } from "../hooks/cartHooks";
 
 export const Confirmation = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const { trigger: resetCart } = useResetCart();
   const data = useLoaderData() as { html_snippet: string } | undefined;
-  const resetCart = () => {
-    clearCart();
-  };
+
   useEffect(() => {
     if (data != null && ref.current != null) {
       if (!ref.current) return;
@@ -31,9 +30,11 @@ export const Confirmation = () => {
       <div ref={ref} className="my-6">
         Your order is beeing processed...
       </div>
-      <ButtonLink onClick={resetCart} to={"/"} size="lg" className="w-full">
-        Continue shopping
-      </ButtonLink>
+      <div className="flex flex-col items-center">
+        <ButtonLink onClick={resetCart} to={"/"} size="lg">
+          Continue shopping
+        </ButtonLink>
+      </div>
     </div>
   );
 };

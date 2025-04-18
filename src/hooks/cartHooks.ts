@@ -2,6 +2,7 @@ import useSWR from "swr";
 import {
   addToCart,
   changeQuantity,
+  clearCart,
   getCart,
   removeFromCart,
 } from "../lib/datalayer/api";
@@ -14,6 +15,10 @@ export const useCart = () => {
     keepPreviousData: true,
     errorRetryInterval: 50000,
   });
+};
+
+export const useResetCart = () => {
+  return useFetchMutation(cartKey, () => clearCart().then(() => getCart()));
 };
 
 export const useAddToCart = () => {
