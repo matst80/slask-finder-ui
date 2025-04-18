@@ -1,5 +1,9 @@
 import { useMemo, useState } from "react";
-import { useFacetMap, useRelationGroups } from "../../hooks/searchHooks";
+import {
+  useAdminRelationGroups,
+  useFacetMap,
+  useRelationGroups,
+} from "../../hooks/searchHooks";
 import {
   Facet,
   FacetListItem,
@@ -397,7 +401,7 @@ const GroupEditor = ({
 };
 
 export const RelationGroupEditor = () => {
-  const { data: groups, mutate } = useRelationGroups();
+  const { data: groups, mutate } = useAdminRelationGroups();
   const updateRelationGroups = useRelationGroupsMutation();
   //const [groups, setGroups] = useState(data);
   const onItemChange = (idx: number) => (group: RelationGroup) => {

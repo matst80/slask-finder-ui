@@ -91,7 +91,7 @@ export const useUpdateFacet = () => {
 
 export const useRelationGroupsMutation = () => {
   const { trigger } = useSWRMutation(
-    "relationGroups",
+    "admin-relationGroups",
     (_: string, { arg }: { arg: RelationGroup[] }) => updateRelations(arg)
   );
   return trigger;

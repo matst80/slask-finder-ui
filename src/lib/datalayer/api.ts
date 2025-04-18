@@ -187,6 +187,12 @@ export const getRelations = () => {
   );
 };
 
+export const getAdminRelations = () => {
+  return fetch(`${baseUrl}/admin/relation-groups`).then((d) =>
+    toJson<RelationGroup[]>(d)
+  );
+};
+
 export const updateRelations = (data: RelationGroup[]) => {
   return fetch(`${baseUrl}/admin/relation-groups`, {
     method: "POST",

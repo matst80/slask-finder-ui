@@ -1,6 +1,7 @@
 import useSWR from "swr";
 import {
   facets,
+  getAdminRelations,
   getCompatible,
   getFacetList,
   getFacetMap,
@@ -381,6 +382,24 @@ export const useRelationGroups = () => {
     "relationGroups",
     () =>
       getRelations().then((data) =>
+        data.map((d) => ({
+          ...d,
+          key: getKey(d),
+        }))
+      ),
+    {
+      revalidateOnFocus: false,
+      refreshInterval: 0,
+      focusThrottleInterval: 3600,
+    }
+  );
+};
+
+export const useAdminRelationGroups = () => {
+  return useSWR(
+    "admin-relationGroups",
+    () =>
+      getAdminRelations().then((data) =>
         data.map((d) => ({
           ...d,
           key: getKey(d),
