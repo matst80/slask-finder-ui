@@ -247,6 +247,9 @@ export type Cart = {
   id: string;
   items: CartItem[];
   processing: boolean;
+  paymentInProgress: boolean;
+  orderId?: string;
+  orderStatus?: string;
   totalPrice: number;
 };
 

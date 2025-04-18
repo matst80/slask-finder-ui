@@ -8,7 +8,11 @@ import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
 import { EditSearchView } from "./pages/admin/EditSearchView.tsx";
 import { Tracking } from "./pages/Tracking.tsx";
 import { SWRConfig } from "swr";
-import { getRawData, getTrackingSessions } from "./lib/datalayer/api.ts";
+import {
+  getConfirmation,
+  getRawData,
+  getTrackingSessions,
+} from "./lib/datalayer/api.ts";
 import { ProductPage } from "./components/ProductPage.tsx";
 import { SessionView } from "./components/Sessions.tsx";
 import { QueriesView } from "./pages/tracking/queries.tsx";
@@ -149,23 +153,16 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "confirmation",
+    path: "confirmation/:id",
+
+    loader: ({ params: { id } }) =>
+      id != null ? getConfirmation(id) : Promise.reject(),
+    errorElement: <div>Confirmation not found</div>,
     element: (
       <PageContainer>
         <Confirmation />
       </PageContainer>
     ),
-    children: [
-      {
-        path: ":id",
-        loader: ({ params: { id } }) => ({ id }),
-        element: (
-          <PageContainer>
-            <Confirmation />
-          </PageContainer>
-        ),
-      },
-    ],
   },
   {
     path: "updated",
