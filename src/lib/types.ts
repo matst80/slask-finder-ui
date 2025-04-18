@@ -167,6 +167,7 @@ export type RelationMatch = {
 };
 
 export type RelationGroup = {
+  key: string;
   groupId: number;
   name: string;
   requiredForItem: RelationMatch[];

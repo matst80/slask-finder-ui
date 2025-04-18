@@ -4,13 +4,50 @@ import { Relation, RelationGroup, RelationMatch } from "../../lib/types";
 import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { ResultCarousel } from "../../components/ItemDetails";
 import { Button } from "../../components/ui/button";
-import { useRelationGroupsMutation } from "../../adminHooks";
+import { useFieldValues, useRelationGroupsMutation } from "../../adminHooks";
+
+const FacetValueInput = ({
+  value,
+  facetId,
+  onChange,
+}: {
+  value: string | number | string[] | undefined;
+  facetId: number;
+  onChange: (data: string | number | string[] | undefined) => void;
+}) => {
+  const { data } = useFieldValues(facetId);
+
+  return (
+    <>
+      <input
+        value={value}
+        list="fieldValues"
+        onChange={(e) => {
+          onChange(e.target.value);
+        }}
+      />
+      <datalist id="fieldValues">
+        {data
+          ?.filter((d) => typeof d === "string")
+          .map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+      </datalist>
+    </>
+  );
+};
 
 const RelationMatchEditor = ({
   onChange,
   ...value
 }: RelationMatch & { onChange: (data: RelationMatch) => void }) => {
   const { data } = useFacetMap();
+  const { facetId } = value;
+  const fieldName = useMemo(() => {
+    return data?.[facetId]?.name ?? `Loading (${facetId})`;
+  }, [data, facetId]);
   const query = useMemo(() => {
     return {
       string: [
@@ -25,19 +62,46 @@ const RelationMatchEditor = ({
   }, [value]);
   return (
     <>
-      <span>
-        Additional query: {data?.[value.facetId]?.name ?? value.facetId}
-        {" = "}
-        <input
-          value={value.value}
-          onChange={(e) => {
-            onChange({
-              ...value,
-              value: e.target.value,
-            });
-          }}
-        />
-      </span>
+      <div className="flex items-center gap-2">
+        <label className="flex flex-col">
+          Additional query: {fieldName}
+          <input
+            value={facetId}
+            type="number"
+            placeholder="Facet ID"
+            list="facetId"
+            onChange={(e) => {
+              const nr = Number(e.target.value);
+              if (!isNaN(nr)) {
+                onChange({
+                  ...value,
+                  facetId: nr,
+                });
+              }
+            }}
+          />
+          <datalist id="facetId">
+            {Object.entries(data ?? {}).map(([key, value]) => (
+              <option key={key} value={key}>
+                {value.name}
+              </option>
+            ))}
+          </datalist>
+        </label>
+        <label className="flex flex-col">
+          <span>Value</span>
+          <FacetValueInput
+            value={value.value}
+            facetId={facetId}
+            onChange={(v) => {
+              onChange({
+                ...value,
+                value: v,
+              });
+            }}
+          />
+        </label>
+      </div>
       <QueryProvider initialQuery={query} loadFacets={false}>
         <ResultCarousel />
       </QueryProvider>
@@ -126,13 +190,6 @@ const GroupEditor = ({
   );
 };
 
-const getKey = (group: RelationGroup) => {
-  return (
-    group.groupId +
-    group.requiredForItem.map((r) => `${r.facetId}+${r.value}`).join(",")
-  );
-};
-
 export const RelationGroupEditor = () => {
   const { data: groups, mutate } = useRelationGroups();
   const updateRelationGroups = useRelationGroupsMutation();
@@ -146,7 +203,7 @@ export const RelationGroupEditor = () => {
     <div className="flex flex-col gap-4">
       {groups?.map((group, idx) => (
         <GroupEditor
-          key={getKey(group)}
+          key={group.key}
           group={group}
           onChange={onItemChange(idx)}
         />

@@ -8,7 +8,12 @@ import {
   getRelations,
   streamItems,
 } from "../lib/datalayer/api";
-import { FacetQuery, FilteringQuery, ItemsQuery } from "../lib/types";
+import {
+  FacetQuery,
+  FilteringQuery,
+  ItemsQuery,
+  RelationGroup,
+} from "../lib/types";
 import { isDefined } from "../utils";
 
 const FIELD_SEPARATOR = ":";
@@ -364,12 +369,29 @@ export const useFacetMap = () => {
   });
 };
 
+const getKey = (group: RelationGroup) => {
+  return (
+    group.groupId +
+    group.requiredForItem.map((r) => `${r.facetId}+${r.value}`).join(",")
+  );
+};
+
 export const useRelationGroups = () => {
-  return useSWR("relationGroups", getRelations, {
-    revalidateOnFocus: false,
-    refreshInterval: 0,
-    focusThrottleInterval: 3600,
-  });
+  return useSWR(
+    "relationGroups",
+    () =>
+      getRelations().then((data) =>
+        data.map((d) => ({
+          ...d,
+          key: getKey(d),
+        }))
+      ),
+    {
+      revalidateOnFocus: false,
+      refreshInterval: 0,
+      focusThrottleInterval: 3600,
+    }
+  );
 };
 
 export const useFacetList = () => {

@@ -165,83 +165,6 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
   );
 };
 
-// const relationGroup = [
-//   {
-//     name: "Passande moderkort",
-//     groupId: 1,
-//     requiredForItem: [
-//       {
-//         facetId: 32,
-//         value: "PT272",
-//       },
-//     ],
-//     additionalQueries: [
-//       {
-//         facetId: 32,
-//         value: "PT264",
-//       },
-//     ],
-//     relations: [
-//       {
-//         fromId: 32103,
-//         toId: 32103,
-//         converter: "none",
-//       },
-//       {
-//         fromId: 36202,
-//         toId: 30276,
-//         converter: "none",
-//       },
-//     ],
-//   },
-//   {
-//     name: "Passande minne",
-//     groupId: 2,
-//     requiredForItem: [
-//       {
-//         facetId: 32,
-//         value: "PT272",
-//       },
-//     ],
-//     additionalQueries: [
-//       {
-//         facetId: 32,
-//         value: ["PT269"],
-//       },
-//     ],
-//     relations: [
-//       {
-//         fromId: 35980,
-//         toId: 31191,
-//         converter: "stringToMin",
-//       },
-//     ],
-//   },
-//   {
-//     name: "Passande CPU",
-//     groupId: 3,
-//     requiredForItem: [
-//       {
-//         facetId: 32,
-//         value: "PT264",
-//       },
-//     ],
-//     additionalQueries: [
-//       {
-//         facetId: 32,
-//         value: "PT272",
-//       },
-//     ],
-//     relations: [
-//       {
-//         fromId: 32103,
-//         toId: 32103,
-//         converter: "none",
-//       },
-//     ],
-//   },
-// ];
-
 const Properties = ({ values }: Pick<ItemDetail, "values">) => {
   const { setQuery } = useQuery();
   const { data } = useFacetMap();
@@ -438,7 +361,7 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
       {validGroups.map((group) => {
         return (
           <RelationGroupCarousel
-            key={group.groupId}
+            key={group.key}
             group={group}
             values={values}
           />
