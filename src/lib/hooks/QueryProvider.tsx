@@ -87,9 +87,11 @@ const QueryContext = createContext({} as QueryContextType);
 export const QueryProvider = ({
   initialQuery,
   children,
+  loadFacets = true,
   ref,
 }: PropsWithChildren<{
   initialQuery?: ItemsQuery;
+  loadFacets?: boolean;
   ref?: React.Ref<QueryProviderRef>;
 }>) => {
   const [queryHistory, setQueryHistory] = useState<HistoryQuery[]>([]);
@@ -194,7 +196,7 @@ export const QueryProvider = ({
   }, [query]);
 
   useEffect(() => {
-    if (facetsKey == null) {
+    if (facetsKey == null || !loadFacets) {
       return;
     }
     if (facetCache.has(facetsKey)) {
@@ -208,7 +210,7 @@ export const QueryProvider = ({
       setIsLoadingFacets(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [facetsKey]);
+  }, [facetsKey, loadFacets]);
 
   useEffect(() => {
     if (itemsKey == null) {

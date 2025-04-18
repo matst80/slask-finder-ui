@@ -412,7 +412,7 @@ const RelationGroupCarousel = ({
       </button>
 
       {open && (
-        <QueryProvider initialQuery={query}>
+        <QueryProvider initialQuery={query} loadFacets={false}>
           {/* <QueryMerger query={query} /> */}
           <ResultCarousel />
         </QueryProvider>
