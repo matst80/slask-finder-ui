@@ -1,10 +1,17 @@
 import { useMemo, useState } from "react";
 import { useFacetMap, useRelationGroups } from "../../hooks/searchHooks";
-import { Relation, RelationGroup, RelationMatch } from "../../lib/types";
+import {
+  Facet,
+  FacetListItem,
+  Relation,
+  RelationGroup,
+  RelationMatch,
+} from "../../lib/types";
 import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { ResultCarousel } from "../../components/ItemDetails";
 import { Button } from "../../components/ui/button";
 import { useFieldValues, useRelationGroupsMutation } from "../../adminHooks";
+import { DeleteIcon, TrashIcon } from "lucide-react";
 
 const FacetValueInput = ({
   value,
@@ -19,7 +26,31 @@ const FacetValueInput = ({
 
   return (
     <>
-      <input
+      <select
+        multiple={true}
+        className="w-full min-h-64 min-w-32"
+        onChange={(e) => {
+          const selected = Array.from(e.target.selectedOptions).map(
+            (option) => option.value
+          );
+          onChange(selected);
+        }}
+      >
+        {data
+          ?.filter((d) => typeof d === "string")
+          .map((text) => (
+            <option
+              key={text}
+              value={text}
+              selected={
+                Array.isArray(value) ? value.includes(text) : value === text
+              }
+            >
+              {text}
+            </option>
+          ))}
+      </select>
+      {/* <input
         value={value}
         list="fieldValues"
         onChange={(e) => {
@@ -34,8 +65,49 @@ const FacetValueInput = ({
               {value}
             </option>
           ))}
-      </datalist>
+      </datalist> */}
     </>
+  );
+};
+
+const FacetInput = ({
+  id: facetId,
+  onChange,
+  labelFormatter,
+}: {
+  id: number;
+  onChange: (id: number) => void;
+  labelFormatter?: (facet: FacetListItem | undefined) => string;
+}) => {
+  const { data } = useFacetMap();
+  const facet = useMemo(() => {
+    return data?.[facetId];
+  }, [data, facetId]);
+  return (
+    <label className="flex flex-col gap-2">
+      <span>
+        {labelFormatter?.(facet) ?? facet?.name ?? `Loading (${facetId})`}
+      </span>
+      <input
+        value={facetId}
+        type="number"
+        placeholder="Facet ID"
+        list="facetId"
+        onChange={(e) => {
+          const nr = Number(e.target.value);
+          if (!isNaN(nr)) {
+            onChange(nr);
+          }
+        }}
+      />
+      <datalist id="facetId">
+        {Object.entries(data ?? {}).map(([key, value]) => (
+          <option key={key} value={key}>
+            {value.name}
+          </option>
+        ))}
+      </datalist>
+    </label>
   );
 };
 
@@ -43,51 +115,21 @@ const RelationMatchEditor = ({
   onChange,
   ...value
 }: RelationMatch & { onChange: (data: RelationMatch) => void }) => {
-  const { data } = useFacetMap();
   const { facetId } = value;
-  const fieldName = useMemo(() => {
-    return data?.[facetId]?.name ?? `Loading (${facetId})`;
-  }, [data, facetId]);
-  const query = useMemo(() => {
-    return {
-      string: [
-        {
-          id: value.facetId,
-          value: Array.isArray(value.value)
-            ? value.value
-            : [String(value.value)],
-        },
-      ],
-    };
-  }, [value]);
+
   return (
-    <>
-      <div className="flex items-center gap-2">
-        <label className="flex flex-col">
-          Additional query: {fieldName}
-          <input
-            value={facetId}
-            type="number"
-            placeholder="Facet ID"
-            list="facetId"
-            onChange={(e) => {
-              const nr = Number(e.target.value);
-              if (!isNaN(nr)) {
-                onChange({
-                  ...value,
-                  facetId: nr,
-                });
-              }
-            }}
-          />
-          <datalist id="facetId">
-            {Object.entries(data ?? {}).map(([key, value]) => (
-              <option key={key} value={key}>
-                {value.name}
-              </option>
-            ))}
-          </datalist>
-        </label>
+    <div className="relative group">
+      <div className="flex items-center gap-4">
+        <FacetInput
+          id={facetId}
+          onChange={(id) => {
+            onChange({
+              ...value,
+              facetId: id,
+            });
+          }}
+        />
+
         <label className="flex flex-col">
           <span>Value</span>
           <FacetValueInput
@@ -102,10 +144,60 @@ const RelationMatchEditor = ({
           />
         </label>
       </div>
-      <QueryProvider initialQuery={query} loadFacets={false}>
-        <ResultCarousel />
-      </QueryProvider>
-    </>
+      {/* <div className="absolute top-0 left-0 z-10 hidden group-hover:block">
+        <QueryProvider initialQuery={query} loadFacets={false}>
+          <ResultCarousel />
+        </QueryProvider>
+      </div> */}
+    </div>
+  );
+};
+
+const RelationEditor = ({
+  relation,
+  onChange,
+}: {
+  relation: Relation;
+  onChange: (data: Relation) => void;
+}) => {
+  const { fromId, toId } = relation;
+
+  return (
+    <div className="flex items-center gap-4">
+      <FacetInput
+        id={fromId}
+        onChange={(id) => {
+          onChange({
+            ...relation,
+            fromId: id,
+          });
+        }}
+        labelFormatter={(facet) => `From: ${facet?.name ?? fromId}`}
+      />
+      <FacetInput
+        id={toId}
+        onChange={(id) => {
+          onChange({
+            ...relation,
+            toId: id,
+          });
+        }}
+        labelFormatter={(facet) => `To: ${facet?.name ?? fromId}`}
+      />
+      <select
+        value={relation.converter}
+        onChange={(e) => {
+          onChange({
+            ...relation,
+            converter: e.target.value as Relation["converter"],
+          });
+        }}
+      >
+        <option value="none">None</option>
+        <option value="valueToMin">ValueToMin</option>
+        <option value="valueToMax">ValueToMax</option>
+      </select>
+    </div>
   );
 };
 
@@ -117,7 +209,7 @@ const GroupEditor = ({
   onChange: (data: RelationGroup) => void;
 }) => {
   const [open, setOpen] = useState(false);
-  const { data } = useFacetMap();
+
   const onArrayChange =
     (
       prop: "additionalQueries" | "requiredForItem" | "relations",
@@ -155,35 +247,149 @@ const GroupEditor = ({
         <div className="flex flex-col gap-2">
           <div>
             <h3>Additional queries</h3>
-            {value.additionalQueries?.map((relation, idx) => (
-              <div key={`${relation.facetId}-${relation.value}`}>
-                <RelationMatchEditor
-                  {...relation}
-                  onChange={onArrayChange("additionalQueries", idx)}
-                />
-              </div>
-            ))}
+            <div className="flex items-center gap-4">
+              {value.additionalQueries?.map((relation, idx) => (
+                <div
+                  key={`${relation.facetId}-${relation.value}`}
+                  className="relative bg-white p-4 border border-gray-300 rounded-md"
+                >
+                  <RelationMatchEditor
+                    {...relation}
+                    onChange={onArrayChange("additionalQueries", idx)}
+                  />
+                  <button
+                    className="absolute -top-2 -right-2"
+                    onClick={() => {
+                      const newRelations = [...(value.additionalQueries ?? [])];
+                      newRelations.splice(idx, 1);
+                      onChange({
+                        ...value,
+                        additionalQueries: newRelations,
+                      });
+                    }}
+                  >
+                    <TrashIcon className="size-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                const newRelation: RelationMatch = {
+                  facetId: 10,
+                  value: "!nil",
+                };
+                const newRelations = [
+                  ...(value.additionalQueries ?? []),
+                  newRelation,
+                ];
+                onChange({
+                  ...value,
+                  additionalQueries: newRelations,
+                });
+              }}
+            >
+              Add
+            </Button>
           </div>
           <div>
             <h3>Required on item level</h3>
-            {value.requiredForItem?.map((relation, idx) => (
-              <div key={`${relation.facetId}-${relation.value}`}>
-                <RelationMatchEditor
-                  {...relation}
-                  onChange={onArrayChange("requiredForItem", idx)}
-                />
-              </div>
-            ))}
+            <div className="flex items-center gap-4">
+              {value.requiredForItem?.map((relation, idx) => (
+                <div
+                  key={`${relation.facetId}-${relation.value}`}
+                  className="relative bg-white p-4 border border-gray-300 rounded-md"
+                >
+                  <RelationMatchEditor
+                    {...relation}
+                    onChange={onArrayChange("requiredForItem", idx)}
+                  />
+                  <button
+                    className="absolute -top-2 -right-2"
+                    onClick={() => {
+                      const newRelations = [...(value.additionalQueries ?? [])];
+                      newRelations.splice(idx, 1);
+                      onChange({
+                        ...value,
+                        additionalQueries: newRelations,
+                      });
+                    }}
+                  >
+                    <TrashIcon className="size-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                const newRelation: RelationMatch = {
+                  facetId: 10,
+                  value: "!nil",
+                };
+                const newRelations = [
+                  ...(value.requiredForItem ?? []),
+                  newRelation,
+                ];
+                onChange({
+                  ...value,
+                  requiredForItem: newRelations,
+                });
+              }}
+            >
+              Add
+            </Button>
           </div>
-          <ul>
-            {value.relations?.map((relation) => (
-              <li key={`${relation.fromId}-${relation.toId}`}>
-                {data?.[relation.fromId]?.name ?? relation.fromId} -{" "}
-                {data?.[relation.toId]?.name ?? relation.toId} -{" "}
-                {relation.converter}
-              </li>
-            ))}
-          </ul>
+          <div>
+            <h3>Relations</h3>
+            <div className="flex items-center gap-4">
+              {value.relations?.map((relation, idx) => (
+                <div
+                  key={`${relation.fromId}-${relation.toId}`}
+                  className="relative bg-white p-4 border border-gray-300 rounded-md"
+                >
+                  <RelationEditor
+                    relation={relation}
+                    onChange={onArrayChange("relations", idx)}
+                  />
+                  <button
+                    className="absolute -top-2 -right-2"
+                    onClick={() => {
+                      const newRelations = [...(value.relations ?? [])];
+                      newRelations.splice(0, 1);
+                      onChange({
+                        ...value,
+                        relations: newRelations,
+                      });
+                    }}
+                  >
+                    <TrashIcon className="size-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                const newRelation: Relation = {
+                  fromId: 10,
+                  toId: 20,
+                  converter: "none",
+                };
+                const newRelations = [...(value.relations ?? []), newRelation];
+                onChange({
+                  ...value,
+                  relations: newRelations,
+                });
+              }}
+            >
+              Add
+            </Button>
+          </div>
         </div>
       )}
     </div>
@@ -209,6 +415,24 @@ export const RelationGroupEditor = () => {
         />
       ))}
       <div>
+        <Button
+          onClick={() => {
+            if (groups == null) return;
+            const newGroup: RelationGroup = {
+              name: "New group",
+              key: `new-${groups.length}`,
+              groupId: groups.length + 1,
+              additionalQueries: [],
+              relations: [],
+              requiredForItem: [],
+            };
+            const newGroups = [...groups, newGroup];
+            mutate(newGroups, { revalidate: false });
+          }}
+          variant="outline"
+        >
+          Add
+        </Button>
         <Button
           onClick={() => {
             if (groups == null) return;
