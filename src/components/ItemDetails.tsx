@@ -30,6 +30,16 @@ const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
 const StockList = ({ stock }: Pick<ItemDetail, "stock">) => {
   const [open, setOpen] = useState(false);
+  const storesWithStock = useMemo(() => {
+    return Object.entries(stock ?? {})
+      .map(([id, value]) => {
+        const store = stores.find((store) => store.id === id);
+        if (!store) return null;
+        return { ...store, stock: value };
+      })
+      .filter(isDefined)
+      .sort((a, b) => a.displayName.localeCompare(b.displayName));
+  }, [stock]);
   if (stock == null) return null;
   return (
     <div
@@ -40,12 +50,10 @@ const StockList = ({ stock }: Pick<ItemDetail, "stock">) => {
       <p>Finns i lager i {Object.keys(stock ?? {}).length} butiker</p>
       {open && (
         <ul className="max-h-screen overflow-y-auto">
-          {Object.keys(stock).map((s) => {
-            const store = stores.find((store) => store.id === s);
-            if (!store) return null;
+          {storesWithStock.map((s) => {
             return (
-              <li key={s} className="line-clamp-1 overflow-ellipsis">
-                {store?.name}
+              <li key={s.id} className="line-clamp-1 overflow-ellipsis">
+                {s.name}: {s.stock}
               </li>
             );
           })}
