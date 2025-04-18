@@ -7,6 +7,7 @@ import {
 import {
   Facet,
   FacetListItem,
+  ItemsQuery,
   Relation,
   RelationGroup,
   RelationMatch,
@@ -15,7 +16,7 @@ import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { ResultCarousel } from "../../components/ItemDetails";
 import { Button } from "../../components/ui/button";
 import { useFieldValues, useRelationGroupsMutation } from "../../adminHooks";
-import { DeleteIcon, TrashIcon } from "lucide-react";
+import { TrashIcon } from "lucide-react";
 
 const FacetValueInput = ({
   value,
@@ -148,11 +149,6 @@ const RelationMatchEditor = ({
           />
         </label>
       </div>
-      {/* <div className="absolute top-0 left-0 z-10 hidden group-hover:block">
-        <QueryProvider initialQuery={query} loadFacets={false}>
-          <ResultCarousel />
-        </QueryProvider>
-      </div> */}
     </div>
   );
 };
@@ -202,6 +198,33 @@ const RelationEditor = ({
         <option value="valueToMax">ValueToMax</option>
       </select>
     </div>
+  );
+};
+
+const hasValue = (
+  relation: RelationMatch
+): relation is Omit<RelationMatch, "value"> & { value: string | string[] } => {
+  if (relation.value == null) return false;
+  if (Array.isArray(relation.value)) {
+    return relation.value.length > 0;
+  }
+  return true;
+};
+
+const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
+  const query = useMemo<ItemsQuery>(() => {
+    return {
+      string: matches.filter(hasValue).map((match) => ({
+        id: match.facetId,
+        value: Array.isArray(match.value) ? match.value : [match.value],
+      })),
+    };
+  }, [matches]);
+
+  return (
+    <QueryProvider initialQuery={query} loadFacets={false}>
+      <ResultCarousel />
+    </QueryProvider>
   );
 };
 
@@ -297,6 +320,7 @@ const GroupEditor = ({
             >
               Add
             </Button>
+            <QueryPreview matches={value.additionalQueries ?? []} />
           </div>
           <div>
             <h3>Required on item level</h3>
@@ -346,6 +370,7 @@ const GroupEditor = ({
             >
               Add
             </Button>
+            <QueryPreview matches={value.requiredForItem ?? []} />
           </div>
           <div>
             <h3>Relations</h3>
@@ -422,16 +447,21 @@ export const RelationGroupEditor = () => {
         <Button
           onClick={() => {
             if (groups == null) return;
-            const newGroup: RelationGroup = {
-              name: "New group",
-              key: `new-${groups.length}`,
-              groupId: groups.length + 1,
-              additionalQueries: [],
-              relations: [],
-              requiredForItem: [],
-            };
-            const newGroups = [...groups, newGroup];
-            mutate(newGroups, { revalidate: false });
+
+            mutate(
+              [
+                ...groups,
+                {
+                  name: "New group",
+                  key: `new-${groups.length}`,
+                  groupId: groups.length + 1,
+                  additionalQueries: [],
+                  relations: [],
+                  requiredForItem: [],
+                },
+              ],
+              { revalidate: false }
+            );
           }}
           variant="outline"
         >
