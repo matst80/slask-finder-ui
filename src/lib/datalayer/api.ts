@@ -187,6 +187,18 @@ export const getRelations = () => {
   );
 };
 
+export const updateRelations = (data: RelationGroup[]) => {
+  return fetch(`${baseUrl}/admin/relation-groups`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  }).then((d) => {
+    if (d.ok) {
+      return data;
+    }
+    throw new Error("Failed to update relations");
+  });
+};
+
 const readStreamed = <T>(
   d: Response,
   afterSeparator?: (line: string) => void

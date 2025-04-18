@@ -9,9 +9,11 @@ import {
   getStaticPositions,
   setStaticPositions,
   updatePopularity,
+  updateRelations,
 } from "./lib/datalayer/api";
 import { useState } from "react";
 import useSWRMutation from "swr/mutation";
+import { RelationGroup } from "./lib/types";
 
 export const useFieldValues = (id: string | number) =>
   useSWR(`field-values/${id}`, () => getKeyFieldsValues(id));
@@ -83,6 +85,14 @@ export const useUpdateFacet = () => {
         method: "PUT",
         body: JSON.stringify(arg),
       })
+  );
+  return trigger;
+};
+
+export const useRelationGroupsMutation = () => {
+  const { trigger } = useSWRMutation(
+    "relationGroups",
+    (_: string, { arg }: { arg: RelationGroup[] }) => updateRelations(arg)
   );
   return trigger;
 };
