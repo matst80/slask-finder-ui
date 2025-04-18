@@ -1,10 +1,13 @@
 import { useEffect, useRef } from "react";
 import { useLoaderData } from "react-router-dom";
+import { ButtonLink } from "../components/ui/button";
 
 export const Confirmation = () => {
   const ref = useRef<HTMLDivElement>(null);
   const data = useLoaderData() as { html_snippet: string } | undefined;
-  console.log("data", data);
+  const resetCart = () => {
+    clearCart();
+  };
   useEffect(() => {
     if (data != null && ref.current != null) {
       if (!ref.current) return;
@@ -22,5 +25,14 @@ export const Confirmation = () => {
       }
     }
   }, [data, ref]);
-  return <div ref={ref}>Your order is beeing processed...</div>;
+  return (
+    <div>
+      <div ref={ref} className="my-6">
+        Your order is beeing processed...
+      </div>
+      <ButtonLink onClick={resetCart} to={"/"} size="lg" className="w-full">
+        Continue shopping
+      </ButtonLink>
+    </div>
+  );
 };

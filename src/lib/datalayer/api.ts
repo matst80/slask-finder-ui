@@ -187,6 +187,13 @@ export const getRelations = () => {
   );
 };
 
+export const clearCart = () =>
+  fetch(`${baseUrl}/cart/`, {
+    method: "DELETE",
+  }).then((d) => {
+    return d.ok;
+  });
+
 export const getAdminRelations = () => {
   return fetch(`${baseUrl}/admin/relation-groups`).then((d) =>
     toJson<RelationGroup[]>(d)

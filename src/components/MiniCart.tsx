@@ -99,9 +99,18 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
               <span className="text-lg font-bold">{totalPrice / 100} kr</span>
             </div>
             <div className="mt-6 w-full">
-              <ButtonLink onClick={onClose} to={"/checkout"}>
-                Proceed to Checkout
-              </ButtonLink>
+              {cart?.orderReference ? (
+                <ButtonLink
+                  onClick={onClose}
+                  to={`/confirmation/${cart.orderReference}`}
+                >
+                  Show confirmation
+                </ButtonLink>
+              ) : (
+                <ButtonLink onClick={onClose} to={"/checkout"}>
+                  Proceed to Checkout
+                </ButtonLink>
+              )}
             </div>
           </>
         )}
