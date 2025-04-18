@@ -370,6 +370,7 @@ export const ItemDetails = (details: ItemDetail) => {
   const isAdmin = useAdmin();
   if (!details) return null;
   const {
+    sku,
     title,
     img,
     bp,
@@ -405,7 +406,7 @@ export const ItemDetails = (details: ItemDetail) => {
             <div>
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors flex"
-                onClick={() => addToCart({ id, quantity: 1 })}
+                onClick={() => addToCart({ sku, quantity: 1 })}
               >
                 Lägg i kundvagn <ShoppingCart />
               </button>

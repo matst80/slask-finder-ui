@@ -59,6 +59,7 @@ export type FieldValue<T> = {
 
 export type ItemDetail = ItemProps & {
   id: number;
+  sku: string;
   title: string;
   values: ItemProperties;
   stock?: Stock;

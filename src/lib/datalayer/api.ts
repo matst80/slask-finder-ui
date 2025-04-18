@@ -386,14 +386,14 @@ export const updateFieldPopularity = (overrides: Record<string, number>) =>
   });
 
 type AddToCartArgs = {
-  id: number;
+  sku: string;
   quantity: number;
 };
 
 export const addToCart = (payload: AddToCartArgs) =>
   fetch(`${baseUrl}/cart/`, {
     method: "POST",
-    body: JSON.stringify({ sku: payload.id, quantity: payload.quantity }),
+    body: JSON.stringify(payload),
   }).then((d) => toJson<Cart>(d));
 
 type ChangeQuantityArgs = {
