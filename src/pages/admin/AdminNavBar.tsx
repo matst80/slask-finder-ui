@@ -38,6 +38,12 @@ export const AdminNavBar = () => {
               >
                 Updates items
               </Link>
+              <Link
+                to="/relations"
+                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium flex-shrink-0"
+              >
+                Relationer
+              </Link>
             </div>
           </div>
         </div>

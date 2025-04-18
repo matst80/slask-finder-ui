@@ -301,6 +301,9 @@ export const getItemIds = (query: ItemsQuery) =>
     .then((d) => toJson<Record<number, never>>(d))
     .then((d) => Object.keys(d).map((nr) => Number(nr)));
 
+export const getAdminItem = (id: number | string) =>
+  fetch(`${baseUrl}/admin/item/${id}`).then((d) => toJson<ItemDetail>(d));
+
 export const getPopularity = () =>
   fetch(`${baseUrl}/admin/sort/popular`).then((d) =>
     toJson<Record<string, number>>(d)

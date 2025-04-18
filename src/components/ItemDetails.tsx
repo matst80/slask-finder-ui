@@ -24,6 +24,8 @@ import { QueryProvider, useQuery } from "../lib/hooks/QueryProvider";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import { QueryMerger } from "./QueryMerger";
+import { useAdmin } from "../hooks/appState";
+import { getAdminItem } from "../lib/datalayer/api";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -159,7 +161,7 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
   if (stringFilters.length === 0) return null;
   return (
     <Button size="sm" onClick={handleClick}>
-      Visa kompatibla
+      Visa kompatibla ({stringFilters.map((f) => f.id).join(", ")})
     </Button>
   );
 };
@@ -306,7 +308,7 @@ const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                       // );
                     }}
                   >
-                    Visa kompatibla
+                    Visa kompatibla ({field.linkedId})
                   </Link>
                 )}
             </p>
@@ -449,7 +451,7 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
 
 export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart } = useAddToCart();
-
+  const isAdmin = useAdmin();
   if (!details) return null;
   const {
     title,
@@ -492,6 +494,16 @@ export const ItemDetails = (details: ItemDetail) => {
                 Lägg i kundvagn <ShoppingCart />
               </button>
               <StockList stock={stock} />
+              {isAdmin && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-2"
+                  onClick={() => getAdminItem(id).then(console.log)}
+                >
+                  Test
+                </Button>
+              )}
             </div>
           )}
         </div>
