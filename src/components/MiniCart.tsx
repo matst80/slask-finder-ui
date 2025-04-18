@@ -1,8 +1,9 @@
-import { Minus, Plus, ShoppingCart, X } from "lucide-react";
+import { Minus, Plus, ShoppingCart, ShoppingCartIcon, X } from "lucide-react";
 import { useState } from "react";
 
 import { makeImageUrl } from "../utils";
 import { useCart, useChangeQuantity } from "../hooks/cartHooks";
+import { Button } from "./ui/button";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -117,16 +118,18 @@ export const MiniCart = () => {
     : cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0;
   return (
     <>
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => setIsCartOpen(true)}
         className="relative p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
       >
-        <ShoppingCart size={24} />
+        <ShoppingCartIcon className="size-5" />
 
         <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
           {totalItems}
         </span>
-      </button>
+      </Button>
       {isCartOpen && <CartDialog onClose={() => setIsCartOpen(false)} />}
     </>
   );

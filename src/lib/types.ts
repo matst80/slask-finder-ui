@@ -246,17 +246,21 @@ export type FacetQuery = FilteringQuery;
 export type Cart = {
   id: string;
   items: CartItem[];
-  total_price: number;
+  processing: boolean;
+  totalPrice: number;
 };
 
 export type CartItem = {
   id: number;
-  sku: string;
-  title: string;
-  price: number;
-  original_price?: number;
   image: string;
+  name: string;
+  orgPrice: number;
+  price: number;
   qty: number;
+  sku: string;
+  stock: number;
+  tax: number;
+  type: string;
 };
 
 export type Price =

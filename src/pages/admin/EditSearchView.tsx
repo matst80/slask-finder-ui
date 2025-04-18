@@ -11,7 +11,6 @@ export const EditSearchView = () => {
     <SuggestionProvider>
       <div className="flex gap-2 items-center mb-2 py-2 rounded-b-md relative">
         <AutoSuggest />
-        {/* <MiniCart /> */}
       </div>
       <div className="flex flex-col md:flex-row gap-8">
         <Facets />

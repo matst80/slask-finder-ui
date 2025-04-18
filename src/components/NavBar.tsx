@@ -4,6 +4,7 @@ import { Link, To } from "react-router-dom";
 import { cm } from "../utils";
 import { useIsAdmin, useUser } from "../adminHooks";
 import { PropsWithChildren } from "react";
+import { MiniCart } from "./MiniCart";
 
 const UserButton = () => {
   const { data, isLoading } = useUser();
@@ -65,6 +66,7 @@ export function Navbar() {
               <Button variant="ghost" size="icon">
                 <Settings className="h-5 w-5" />
               </Button>
+              <MiniCart />
               <UserButton />
             </div>
           </div>
