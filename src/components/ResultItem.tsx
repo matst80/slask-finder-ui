@@ -8,6 +8,7 @@ import { trackClick } from "../lib/datalayer/beacons";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/QueryProvider";
 import { useImpression } from "../lib/hooks/ImpressionProvider";
+import { TimeAgo } from "./TimeAgo";
 
 export const StockIndicator = ({
   stock,
@@ -106,6 +107,7 @@ export const ResultItemInner = ({
   stock,
   bp,
   stockLevel,
+  lastUpdate,
   disclaimer,
   advertisingText,
 }: Item) => {
@@ -137,6 +139,11 @@ export const ResultItemInner = ({
             rating={Number(values["6"]) / 10}
             numberOfRatings={Number(values["7"])}
           />
+        )}
+        {lastUpdate != null && lastUpdate > 0 && (
+          <span className="text-xs bg-yellow-200 rounded-md px-2 py-1">
+            <TimeAgo ts={lastUpdate} />
+          </span>
         )}
         <div className="flex items-center gap-2 mt-2">
           <StockIndicator stock={stock} stockLevel={stockLevel} />

@@ -25,6 +25,7 @@ import {
   EditFieldsView,
   MissingFieldsView,
 } from "./pages/admin/EditFieldsView.tsx";
+import { RelationGroupEditor } from "./pages/admin/RelationGroupEditor.tsx";
 
 const router = createBrowserRouter([
   {
@@ -89,6 +90,10 @@ const router = createBrowserRouter([
       {
         path: "missing-fields",
         element: <MissingFieldsView />,
+      },
+      {
+        path: "relations",
+        element: <RelationGroupEditor />,
       },
     ],
   },

@@ -13,9 +13,16 @@ export const TimeAgo = ({ ts }: { ts?: number }) => {
     if (ts == null) {
       return;
     }
-    const interval = setInterval(() => {
-      setDiff(utcNow() - ts);
-    }, 1000);
+    const initialDiff = utcNow() - ts;
+    if (initialDiff > 60000 * 10) {
+      return;
+    }
+    const interval = setInterval(
+      () => {
+        setDiff(utcNow() - ts);
+      },
+      initialDiff > 60000 ? 60000 : 1000
+    );
     return () => {
       clearInterval(interval);
     };
