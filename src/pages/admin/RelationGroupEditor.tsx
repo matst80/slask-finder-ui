@@ -11,7 +11,7 @@ import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { ResultCarousel } from "../../components/ItemDetails";
 import { Button } from "../../components/ui/button";
 import { useFieldValues, useRelationGroupsMutation } from "../../adminHooks";
-import { Delete, TrashIcon } from "lucide-react";
+import { TrashIcon } from "lucide-react";
 import fuzzysort from "fuzzysort";
 import { Input } from "../../components/ui/input";
 import { TotalResultText } from "../../components/ResultHeader";
