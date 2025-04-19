@@ -58,7 +58,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                     )}
                     <div className="flex-1">
                       <Link
-                        to={`/product/${item.id}`}
+                        to={`/product/${item.sku}`}
                         className="text-sm font-medium"
                       >
                         {item.name}
