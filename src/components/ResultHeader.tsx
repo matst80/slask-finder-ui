@@ -62,6 +62,15 @@ import { queryToHash } from "../lib/utils";
 //   );
 // };
 
+export const TotalResultText = ({
+  className = "md:text-2xl font-bold",
+}: {
+  className?: string;
+}) => {
+  const { totalHits } = useQuery();
+  return <h1 className={className}>Results ({totalHits ?? "~"}) </h1>;
+};
+
 export const ResultHeader = () => {
   const { totalHits, queryHistory, query, setQuery } = useQuery();
   const currentKey = useMemo(() => facetQueryToHash(query), [query]);
@@ -76,7 +85,7 @@ export const ResultHeader = () => {
   return (
     <>
       <header className="flex justify-between gap-2 items-center mb-2">
-        <h1 className="md:text-2xl font-bold">Results ({totalHits ?? "~"}) </h1>
+        <TotalResultText />
 
         <SelectedStore />
         <div className="relative flex gap-2 items-center">

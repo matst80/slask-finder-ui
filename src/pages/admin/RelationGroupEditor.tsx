@@ -12,6 +12,9 @@ import { ResultCarousel } from "../../components/ItemDetails";
 import { Button } from "../../components/ui/button";
 import { useFieldValues, useRelationGroupsMutation } from "../../adminHooks";
 import { TrashIcon } from "lucide-react";
+import fuzzysort from "fuzzysort";
+import { Input } from "../../components/ui/input";
+import { TotalResultText } from "../../components/ResultHeader";
 
 const FacetValueInput = ({
   value,
@@ -23,12 +26,33 @@ const FacetValueInput = ({
   onChange: (data: string | number | string[] | undefined) => void;
 }) => {
   const { data } = useFieldValues(facetId);
+  const [filter, setFilter] = useState("");
 
+  const filteredData = useMemo(() => {
+    const keyData = data?.filter((d) => typeof d === "string").sort() ?? [];
+    const selected = keyData?.filter((v) =>
+      Array.isArray(value) ? value.includes(v) : value === v
+    );
+    if (filter === "" && selected?.length > 0) {
+      return selected;
+    }
+    const filtered = fuzzysort.go(filter, keyData, {
+      limit: 20,
+      all: filter.length < 1,
+      threshold: 0.4,
+    });
+    return [...selected, ...filtered.map((f) => f.target)];
+  }, [data, filter, value]);
   return (
-    <>
+    <div className="relative group">
+      <input
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        placeholder="Filter values"
+      />
       <select
         multiple={true}
-        className="w-full min-h-64 min-w-32"
+        className="hidden group-hover:flex absolute w-[300px] bg-white border border-gray-300 rounded-md overflow-auto flex-col z-10"
         onChange={(e) => {
           const selected = Array.from(e.target.selectedOptions).map(
             (option) => option.value
@@ -36,19 +60,17 @@ const FacetValueInput = ({
           onChange(selected);
         }}
       >
-        {data
-          ?.filter((d) => typeof d === "string")
-          .map((text) => (
-            <option
-              key={text}
-              value={text}
-              selected={
-                Array.isArray(value) ? value.includes(text) : value === text
-              }
-            >
-              {text}
-            </option>
-          ))}
+        {filteredData.map((text) => (
+          <option
+            key={text}
+            value={text}
+            selected={
+              Array.isArray(value) ? value.includes(text) : value === text
+            }
+          >
+            {text}
+          </option>
+        ))}
       </select>
       {/* <input
         value={value}
@@ -66,7 +88,7 @@ const FacetValueInput = ({
             </option>
           ))}
       </datalist> */}
-    </>
+    </div>
   );
 };
 
@@ -80,33 +102,42 @@ const FacetInput = ({
   labelFormatter?: (facet: FacetListItem | undefined) => string;
 }) => {
   const { data } = useFacetMap();
+  const [filter, setFilter] = useState("");
   const facet = useMemo(() => {
     return data?.[facetId];
   }, [data, facetId]);
+  const filteredData = useMemo(() => {
+    return fuzzysort.go(filter, Object.values(data ?? {}), {
+      key: "name",
+      limit: 20,
+      threshold: 0.4,
+    });
+  }, [data, filter]);
   return (
-    <label className="flex flex-col gap-2">
+    <label className="flex flex-col">
       <span>
         {labelFormatter?.(facet) ?? facet?.name ?? `Loading (${facetId})`}
       </span>
-      <input
-        value={facetId}
-        type="number"
-        placeholder="Facet ID"
-        list="facetId"
-        onChange={(e) => {
-          const nr = Number(e.target.value);
-          if (!isNaN(nr)) {
-            onChange(nr);
-          }
-        }}
-      />
-      <datalist id="facetId">
-        {Object.entries(data ?? {}).map(([key, value]) => (
-          <option key={key} value={key}>
-            {value.name}
-          </option>
-        ))}
-      </datalist>
+      <div>
+        <input
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          placeholder="Filter facets"
+        />
+        {filteredData.length > 0 && (
+          <div className="absolute w-[300px] h-[400px] bg-white border border-gray-300 rounded-md overflow-auto flex flex-col z-10">
+            {filteredData.map((facet) => (
+              <button
+                key={facet.obj.id}
+                onClick={() => onChange(facet.obj.id)}
+                className="text-left border-b border-gray-200 p-2 hover:bg-gray-100"
+              >
+                {facet.target}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </label>
   );
 };
@@ -131,7 +162,14 @@ const RelationMatchEditor = ({
         />
 
         <label className="flex flex-col">
-          <span>Value</span>
+          <span>
+            Value{" "}
+            {value.value != null
+              ? Array.isArray(value.value)
+                ? value.value.join(", ")
+                : String(value)
+              : ""}
+          </span>
           <FacetValueInput
             value={value.value}
             facetId={facetId}
@@ -207,6 +245,7 @@ const hasValue = (
 };
 
 const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
+  const [open, setOpen] = useState(false);
   const query = useMemo<ItemsQuery>(() => {
     return {
       string: matches.filter(hasValue).map((match) => ({
@@ -218,7 +257,10 @@ const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
 
   return (
     <QueryProvider initialQuery={query} loadFacets={false}>
-      <ResultCarousel />
+      <div onClick={() => setOpen((p) => !p)} className="cursor-pointer">
+        <TotalResultText className="font-bold" />
+        {open && <ResultCarousel />}
+      </div>
     </QueryProvider>
   );
 };
@@ -248,10 +290,10 @@ const GroupEditor = ({
 
   return (
     <div className="border border-gray-400 p-4 rounded-md">
-      <h2 className="flex items-center gap-2">
+      <h2 className="flex items-center justify-between gap-2">
         <label className="flex flex-col">
           <span>Name</span>
-          <input
+          <Input
             value={value.name}
             onChange={(e) => {
               onChange({
@@ -266,8 +308,8 @@ const GroupEditor = ({
         </Button>
       </h2>
       {open && (
-        <div className="flex flex-col gap-2">
-          <div className="p-4 border border-gray-300 rounded-md">
+        <div className="flex flex-col mt-2 gap-4">
+          <div className="p-4 border bg-yellow-100 rounded-md">
             <h3>Additional queries</h3>
             <div className="flex items-center gap-4">
               {value.additionalQueries?.map((relation, idx) => (
@@ -280,7 +322,7 @@ const GroupEditor = ({
                     onChange={onArrayChange("additionalQueries", idx)}
                   />
                   <button
-                    className="absolute -top-2 -right-2"
+                    className="absolute -top-2 -right-2 bg-white p-2 rounded-md"
                     onClick={() => {
                       const newRelations = [...(value.additionalQueries ?? [])];
                       newRelations.splice(idx, 1);
@@ -294,30 +336,30 @@ const GroupEditor = ({
                   </button>
                 </div>
               ))}
+              <button
+                className="relative bg-white p-4 border border-gray-300 rounded-md flex"
+                onClick={() => {
+                  const newRelation: RelationMatch = {
+                    facetId: 10,
+                    value: ["!nil"],
+                  };
+                  const newRelations = [
+                    ...(value.additionalQueries ?? []),
+                    newRelation,
+                  ];
+                  onChange({
+                    ...value,
+                    additionalQueries: newRelations,
+                  });
+                }}
+              >
+                Add
+              </button>
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                const newRelation: RelationMatch = {
-                  facetId: 10,
-                  value: "!nil",
-                };
-                const newRelations = [
-                  ...(value.additionalQueries ?? []),
-                  newRelation,
-                ];
-                onChange({
-                  ...value,
-                  additionalQueries: newRelations,
-                });
-              }}
-            >
-              Add
-            </Button>
+
             <QueryPreview matches={value.additionalQueries ?? []} />
           </div>
-          <div className="p-4 border border-gray-300 rounded-md">
+          <div className="p-4 border bg-pink-100 rounded-md">
             <h3>Required on item level</h3>
             <div className="flex items-center gap-4">
               {value.requiredForItem?.map((relation, idx) => (
@@ -330,7 +372,7 @@ const GroupEditor = ({
                     onChange={onArrayChange("requiredForItem", idx)}
                   />
                   <button
-                    className="absolute -top-2 -right-2"
+                    className="absolute -top-2 -right-2 bg-white p-2 rounded-md"
                     onClick={() => {
                       const newRelations = [...(value.additionalQueries ?? [])];
                       newRelations.splice(idx, 1);
@@ -344,32 +386,32 @@ const GroupEditor = ({
                   </button>
                 </div>
               ))}
+              <button
+                className="relative bg-white p-4 border border-gray-300 rounded-md flex"
+                onClick={() => {
+                  const newRelation: RelationMatch = {
+                    facetId: 10,
+                    value: ["!nil"],
+                  };
+                  const newRelations = [
+                    ...(value.requiredForItem ?? []),
+                    newRelation,
+                  ];
+                  onChange({
+                    ...value,
+                    requiredForItem: newRelations,
+                  });
+                }}
+              >
+                Add
+              </button>
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                const newRelation: RelationMatch = {
-                  facetId: 10,
-                  value: "!nil",
-                };
-                const newRelations = [
-                  ...(value.requiredForItem ?? []),
-                  newRelation,
-                ];
-                onChange({
-                  ...value,
-                  requiredForItem: newRelations,
-                });
-              }}
-            >
-              Add
-            </Button>
+
             <QueryPreview matches={value.requiredForItem ?? []} />
           </div>
-          <div className="p-4 border border-gray-300 rounded-md">
+          <div className="p-4 border bg-green-100 rounded-md">
             <h3>Relations</h3>
-            <div className="flex items-center gap-4">
+            <div className="flex gap-4">
               {value.relations?.map((relation, idx) => (
                 <div
                   key={`${relation.fromId}-${relation.toId}`}
@@ -380,7 +422,7 @@ const GroupEditor = ({
                     onChange={onArrayChange("relations", idx)}
                   />
                   <button
-                    className="absolute -top-2 -right-2"
+                    className="absolute -top-2 -right-2 bg-white p-2 rounded-md"
                     onClick={() => {
                       const newRelations = [...(value.relations ?? [])];
                       newRelations.splice(0, 1);
@@ -394,25 +436,27 @@ const GroupEditor = ({
                   </button>
                 </div>
               ))}
+              <button
+                className="relative bg-white p-4 border border-gray-300 rounded-md flex"
+                onClick={() => {
+                  const newRelation: Relation = {
+                    fromId: 10,
+                    toId: 20,
+                    converter: "none",
+                  };
+                  const newRelations = [
+                    ...(value.relations ?? []),
+                    newRelation,
+                  ];
+                  onChange({
+                    ...value,
+                    relations: newRelations,
+                  });
+                }}
+              >
+                Add
+              </button>
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                const newRelation: Relation = {
-                  fromId: 10,
-                  toId: 20,
-                  converter: "none",
-                };
-                const newRelations = [...(value.relations ?? []), newRelation];
-                onChange({
-                  ...value,
-                  relations: newRelations,
-                });
-              }}
-            >
-              Add
-            </Button>
           </div>
         </div>
       )}
