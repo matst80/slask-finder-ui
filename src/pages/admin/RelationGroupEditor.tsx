@@ -11,7 +11,7 @@ import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { ResultCarousel } from "../../components/ItemDetails";
 import { Button } from "../../components/ui/button";
 import { useFieldValues, useRelationGroupsMutation } from "../../adminHooks";
-import { TrashIcon } from "lucide-react";
+import { Delete, TrashIcon } from "lucide-react";
 import fuzzysort from "fuzzysort";
 import { Input } from "../../components/ui/input";
 import { TotalResultText } from "../../components/ResultHeader";
@@ -265,6 +265,17 @@ const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
   );
 };
 
+const DeleteButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <button
+      className="absolute -top-2 -right-2 bg-white p-2 rounded-md"
+      onClick={onClick}
+    >
+      <TrashIcon className="size-5" />
+    </button>
+  );
+};
+
 const GroupEditor = ({
   group: value,
   onChange,
@@ -321,35 +332,31 @@ const GroupEditor = ({
                     {...relation}
                     onChange={onArrayChange("additionalQueries", idx)}
                   />
-                  <button
-                    className="absolute -top-2 -right-2 bg-white p-2 rounded-md"
+                  <DeleteButton
                     onClick={() => {
-                      const newRelations = [...(value.additionalQueries ?? [])];
-                      newRelations.splice(idx, 1);
                       onChange({
                         ...value,
-                        additionalQueries: newRelations,
+                        additionalQueries:
+                          value.additionalQueries?.filter(
+                            (d) => d.facetId !== relation.facetId
+                          ) ?? [],
                       });
                     }}
-                  >
-                    <TrashIcon className="size-5" />
-                  </button>
+                  />
                 </div>
               ))}
               <button
                 className="relative bg-white p-4 border border-gray-300 rounded-md flex"
                 onClick={() => {
-                  const newRelation: RelationMatch = {
-                    facetId: 10,
-                    value: ["!nil"],
-                  };
-                  const newRelations = [
-                    ...(value.additionalQueries ?? []),
-                    newRelation,
-                  ];
                   onChange({
                     ...value,
-                    additionalQueries: newRelations,
+                    additionalQueries: [
+                      ...(value.additionalQueries ?? []),
+                      {
+                        facetId: 10,
+                        value: ["!nil"],
+                      },
+                    ],
                   });
                 }}
               >
@@ -371,35 +378,30 @@ const GroupEditor = ({
                     {...relation}
                     onChange={onArrayChange("requiredForItem", idx)}
                   />
-                  <button
-                    className="absolute -top-2 -right-2 bg-white p-2 rounded-md"
+                  <DeleteButton
                     onClick={() => {
-                      const newRelations = [...(value.additionalQueries ?? [])];
-                      newRelations.splice(idx, 1);
                       onChange({
                         ...value,
-                        additionalQueries: newRelations,
+                        requiredForItem: value.requiredForItem.filter(
+                          (d) => d.facetId != relation.facetId
+                        ),
                       });
                     }}
-                  >
-                    <TrashIcon className="size-5" />
-                  </button>
+                  />
                 </div>
               ))}
               <button
                 className="relative bg-white p-4 border border-gray-300 rounded-md flex"
                 onClick={() => {
-                  const newRelation: RelationMatch = {
-                    facetId: 10,
-                    value: ["!nil"],
-                  };
-                  const newRelations = [
-                    ...(value.requiredForItem ?? []),
-                    newRelation,
-                  ];
                   onChange({
                     ...value,
-                    requiredForItem: newRelations,
+                    requiredForItem: [
+                      ...(value.requiredForItem ?? []),
+                      {
+                        facetId: 10,
+                        value: ["!nil"],
+                      },
+                    ],
                   });
                 }}
               >
@@ -421,36 +423,29 @@ const GroupEditor = ({
                     relation={relation}
                     onChange={onArrayChange("relations", idx)}
                   />
-                  <button
-                    className="absolute -top-2 -right-2 bg-white p-2 rounded-md"
+                  <DeleteButton
                     onClick={() => {
-                      const newRelations = [...(value.relations ?? [])];
-                      newRelations.splice(0, 1);
                       onChange({
                         ...value,
-                        relations: newRelations,
+                        relations: value.relations.filter((_, i) => i !== idx),
                       });
                     }}
-                  >
-                    <TrashIcon className="size-5" />
-                  </button>
+                  />
                 </div>
               ))}
               <button
                 className="relative bg-white p-4 border border-gray-300 rounded-md flex"
                 onClick={() => {
-                  const newRelation: Relation = {
-                    fromId: 10,
-                    toId: 20,
-                    converter: "none",
-                  };
-                  const newRelations = [
-                    ...(value.relations ?? []),
-                    newRelation,
-                  ];
                   onChange({
                     ...value,
-                    relations: newRelations,
+                    relations: [
+                      ...(value.relations ?? []),
+                      {
+                        fromId: 10,
+                        toId: 20,
+                        converter: "none",
+                      },
+                    ],
                   });
                 }}
               >
