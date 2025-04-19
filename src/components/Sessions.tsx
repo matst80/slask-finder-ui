@@ -56,7 +56,7 @@ const ItemPreview = ({ id }: { id: number }) => {
     <img
       src={makeImageUrl(data.img)}
       title={data.title}
-      className="object-cover size-28"
+      className="object-contain size-28"
     />
   );
 };
