@@ -374,7 +374,7 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
 };
 
 export const ItemDetails = (details: ItemDetail) => {
-  const { trigger: addToCart, isMutating } = useAddToCart();
+  const { trigger: addToCart, isMutating } = useAddToCart(details.id);
   const isAdmin = useAdmin();
   if (!details) return null;
   const {

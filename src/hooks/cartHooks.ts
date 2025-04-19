@@ -7,6 +7,7 @@ import {
   removeFromCart,
 } from "../lib/datalayer/api";
 import { useFetchMutation } from "../utils";
+import { trackCart } from "../lib/datalayer/beacons";
 
 const cartKey = "/cart";
 
@@ -21,8 +22,18 @@ export const useResetCart = () => {
   return useFetchMutation(cartKey, () => clearCart().then(() => getCart()));
 };
 
-export const useAddToCart = () => {
-  return useFetchMutation(cartKey, addToCart);
+export const useAddToCart = (itemId: number) => {
+  const { trigger, ...rest } = useFetchMutation(cartKey, addToCart);
+  return {
+    ...rest,
+    trigger: async (item: { sku: string; quantity: number }) => {
+      const data = await trigger(item);
+      if (data) {
+        trackCart({ item: itemId, quantity: item.quantity });
+      }
+      return data;
+    },
+  };
 };
 
 export const useChangeQuantity = () => {
