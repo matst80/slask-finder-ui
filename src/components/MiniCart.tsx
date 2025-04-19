@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { makeImageUrl } from "../utils";
 import { useCart, useChangeQuantity } from "../hooks/cartHooks";
 import { Button, ButtonLink } from "./ui/button";
+import { Link } from "react-router-dom";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -56,10 +57,15 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                       <div></div>
                     )}
                     <div className="flex-1">
-                      <h3 className="text-sm font-medium">{item.name}</h3>
+                      <Link
+                        to={`/product/${item.id}`}
+                        className="text-sm font-medium"
+                      >
+                        {item.name}
+                      </Link>
                       <p className="text-sm text-gray-500">
                         {(item.price / 100).toFixed(2)} kr{" "}
-                        {item.orgPrice && item.orgPrice > item.price && (
+                        {item.orgPrice > 0 && item.orgPrice > item.price && (
                           <span className="line-through text-gray-400">
                             {(item.orgPrice / 100).toFixed(2)} kr
                           </span>
