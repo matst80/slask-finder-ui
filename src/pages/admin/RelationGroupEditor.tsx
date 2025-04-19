@@ -11,7 +11,7 @@ import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { ResultCarousel } from "../../components/ItemDetails";
 import { Button } from "../../components/ui/button";
 import { useFieldValues, useRelationGroupsMutation } from "../../adminHooks";
-import { TrashIcon } from "lucide-react";
+import { PlusIcon, TrashIcon } from "lucide-react";
 import fuzzysort from "fuzzysort";
 import { Input } from "../../components/ui/input";
 import { TotalResultText } from "../../components/ResultHeader";
@@ -276,6 +276,17 @@ const DeleteButton = ({ onClick }: { onClick: () => void }) => {
   );
 };
 
+const AddButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <button
+      className="relative bg-white p-4 border border-gray-300 rounded-md flex justify-center items-center"
+      onClick={onClick}
+    >
+      <PlusIcon className="size-5" />
+    </button>
+  );
+};
+
 const GroupEditor = ({
   group: value,
   onChange,
@@ -322,7 +333,7 @@ const GroupEditor = ({
         <div className="flex flex-col mt-2 gap-4">
           <div className="p-4 border bg-yellow-100 rounded-md">
             <h3>Additional queries</h3>
-            <div className="flex items-center gap-4">
+            <div className="flex gap-4">
               {value.additionalQueries?.map((relation, idx) => (
                 <div
                   key={`${relation.facetId}-${relation.value}`}
@@ -345,8 +356,7 @@ const GroupEditor = ({
                   />
                 </div>
               ))}
-              <button
-                className="relative bg-white p-4 border border-gray-300 rounded-md flex"
+              <AddButton
                 onClick={() => {
                   onChange({
                     ...value,
@@ -359,16 +369,14 @@ const GroupEditor = ({
                     ],
                   });
                 }}
-              >
-                Add
-              </button>
+              />
             </div>
 
             <QueryPreview matches={value.additionalQueries ?? []} />
           </div>
           <div className="p-4 border bg-pink-100 rounded-md">
             <h3>Required on item level</h3>
-            <div className="flex items-center gap-4">
+            <div className="flex gap-4">
               {value.requiredForItem?.map((relation, idx) => (
                 <div
                   key={`${relation.facetId}-${relation.value}`}
@@ -390,8 +398,7 @@ const GroupEditor = ({
                   />
                 </div>
               ))}
-              <button
-                className="relative bg-white p-4 border border-gray-300 rounded-md flex"
+              <AddButton
                 onClick={() => {
                   onChange({
                     ...value,
@@ -404,9 +411,7 @@ const GroupEditor = ({
                     ],
                   });
                 }}
-              >
-                Add
-              </button>
+              />
             </div>
 
             <QueryPreview matches={value.requiredForItem ?? []} />
@@ -433,8 +438,7 @@ const GroupEditor = ({
                   />
                 </div>
               ))}
-              <button
-                className="relative bg-white p-4 border border-gray-300 rounded-md flex"
+              <AddButton
                 onClick={() => {
                   onChange({
                     ...value,
@@ -448,9 +452,7 @@ const GroupEditor = ({
                     ],
                   });
                 }}
-              >
-                Add
-              </button>
+              />
             </div>
           </div>
         </div>
