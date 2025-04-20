@@ -146,7 +146,7 @@ const RelationMatchEditor = ({
   onChange,
   ...value
 }: RelationMatch & { onChange: (data: RelationMatch) => void }) => {
-  const { facetId } = value;
+  const { facetId, value: toMatch } = value;
 
   return (
     <div className="relative group">
@@ -164,10 +164,10 @@ const RelationMatchEditor = ({
         <label className="flex flex-col">
           <span>
             Value{" "}
-            {value.value != null
-              ? Array.isArray(value.value)
-                ? value.value.join(", ")
-                : String(value)
+            {toMatch != null
+              ? Array.isArray(toMatch)
+                ? toMatch.join(", ")
+                : String(toMatch)
               : ""}
           </span>
           <FacetValueInput
