@@ -111,7 +111,7 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
   const saveFacet = useUpdateFacet();
 
   return (
-    <div className="bg-white p-4 rounded-md shadow-sm">
+    <div className="p-4 rounded-md ">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
