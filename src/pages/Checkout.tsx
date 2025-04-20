@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { getCheckout } from "../lib/datalayer/api";
+import { getCheckout } from "../lib/datalayer/cart-api";
 
 export const Checkout = () => {
   const ref = useRef<HTMLDivElement>(null);

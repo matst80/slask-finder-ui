@@ -1,6 +1,5 @@
 import { ConvertedFacet, convertFacets } from "../hooks/suggestionUtils";
 import {
-  Cart,
   Item,
   ItemsQuery,
   ItemDetail,
@@ -20,13 +19,13 @@ import {
   RelationGroup,
 } from "../types";
 
-const baseUrl = "";
+export const baseUrl = "";
 
 export const getPrometheusQueryUrl = (
   query: string,
   start: Date,
   end: Date,
-  step = 14
+  step = 14,
 ) => {
   const params = new URLSearchParams({
     query,
@@ -39,7 +38,7 @@ export const getPrometheusQueryUrl = (
 
 export const getPrometheusData = async (url: string) => {
   return fetch(url, { method: "GET" }).then((res) =>
-    toJson<PrometheusResponse>(res)
+    toJson<PrometheusResponse>(res),
   );
 };
 
@@ -63,7 +62,7 @@ export const setPopularityRules = (data: Rules) =>
   }).then((d) => toJson<Rules>(d));
 
 export const autoSuggestResponse = (
-  term: string
+  term: string,
 ): { promise: Promise<Response>; cancel: () => void } => {
   const cancellationToken = new AbortController();
 
@@ -148,12 +147,12 @@ export const handleSuggestResponse = (d: Response) => {
 
 export const getKeyFieldsValues = (id: string | number) =>
   fetch(`${baseUrl}/api/values/${id}`).then((d) =>
-    toJson<string[] | { min: number; max: number }[]>(d)
+    toJson<string[] | { min: number; max: number }[]>(d),
   );
 
 export const getContentResults = (q: string) =>
   fetch(`${baseUrl}/api/content?${new URLSearchParams({ q })}`).then((d) =>
-    readStreamed<ContentRecord>(d)
+    readStreamed<ContentRecord>(d),
   );
 
 export const facets = (query: string) =>
@@ -178,14 +177,13 @@ export const getCompatible = (id: number) =>
 
 export const getPopularQueries = (q: string) =>
   fetch(
-    `${baseUrl}/tracking/suggest?${new URLSearchParams({ q }).toString()}`
+    `${baseUrl}/tracking/suggest?${new URLSearchParams({ q }).toString()}`,
   ).then((d) => toJson<PopularQuery[]>(d));
 
-export const getRelations = () => {
-  return fetch(`${baseUrl}/api/relation-groups`).then((d) =>
-    toJson<RelationGroup[]>(d)
+export const getRelations = () =>
+  fetch(`${baseUrl}/api/relation-groups`).then((d) =>
+    toJson<RelationGroup[]>(d),
   );
-};
 
 export const clearCart = () =>
   fetch(`${baseUrl}/cart/`, {
@@ -194,14 +192,13 @@ export const clearCart = () =>
     return d.ok;
   });
 
-export const getAdminRelations = () => {
-  return fetch(`${baseUrl}/admin/relation-groups`).then((d) =>
-    toJson<RelationGroup[]>(d)
+export const getAdminRelations = () =>
+  fetch(`${baseUrl}/admin/relation-groups`).then((d) =>
+    toJson<RelationGroup[]>(d),
   );
-};
 
-export const updateRelations = (data: RelationGroup[]) => {
-  return fetch(`${baseUrl}/admin/relation-groups`, {
+export const updateRelations = (data: RelationGroup[]) =>
+  fetch(`${baseUrl}/admin/relation-groups`, {
     method: "POST",
     body: JSON.stringify(data),
   }).then((d) => {
@@ -210,11 +207,10 @@ export const updateRelations = (data: RelationGroup[]) => {
     }
     throw new Error("Failed to update relations");
   });
-};
 
 const readStreamed = <T>(
   d: Response,
-  afterSeparator?: (line: string) => void
+  afterSeparator?: (line: string) => void,
 ): Promise<T[]> => {
   if (!d.ok) {
     return Promise.reject(d);
@@ -259,7 +255,7 @@ const readStreamed = <T>(
 };
 
 export const streamItems = (
-  query: string
+  query: string,
   //onResults: (data: ItemResult) => void,
 ) =>
   fetch(`${baseUrl}/api/stream?${query}`, {
@@ -280,7 +276,7 @@ export const streamItems = (
     });
   });
 
-async function toJson<T>(response: Response): Promise<T> {
+export async function toJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
     return Promise.reject(await response.text());
   }
@@ -289,7 +285,7 @@ async function toJson<T>(response: Response): Promise<T> {
 
 export const getRawData = (id: string) =>
   fetch(`${baseUrl}/api/get/${id}`).then((d) =>
-    d.ok ? (d.json() as Promise<ItemDetail>) : Promise.reject(d)
+    d.ok ? (d.json() as Promise<ItemDetail>) : Promise.reject(d),
   );
 
 export const getFacetList = () =>
@@ -304,12 +300,12 @@ export const getFacetMap = () =>
 
 export const getFieldList = () =>
   fetch(`${baseUrl}/admin/fields`).then((d) =>
-    toJson<Record<string, FieldListItem>>(d)
+    toJson<Record<string, FieldListItem>>(d),
   );
 
 export const getMissingFieldList = () =>
   fetch(`${baseUrl}/admin/missing-fields`).then((d) =>
-    toJson<FieldListItem[]>(d)
+    toJson<FieldListItem[]>(d),
   );
 
 export const cleanFields = () =>
@@ -331,17 +327,17 @@ export const getAdminItem = (id: number | string) =>
 
 export const getPopularity = () =>
   fetch(`${baseUrl}/admin/sort/popular`).then((d) =>
-    toJson<Record<string, number>>(d)
+    toJson<Record<string, number>>(d),
   );
 
 export const getFieldPopularity = () =>
   fetch(`${baseUrl}/admin/sort/fields`).then((d) =>
-    toJson<Record<string, number>>(d)
+    toJson<Record<string, number>>(d),
   );
 
 export const updateCategories = (
   ids: number[],
-  updates: { id: number; value: string }[]
+  updates: { id: number; value: string }[],
 ) =>
   fetch(`${baseUrl}/admin/key-values`, {
     method: "PUT",
@@ -361,7 +357,7 @@ export const getFacets = () =>
 
 export const getStaticPositions = () =>
   fetch(`${baseUrl}/admin/sort/static`).then((d) =>
-    toJson<Record<number, number>>(d)
+    toJson<Record<number, number>>(d),
   );
 
 export const setStaticPositions = (data: Record<number, number>) =>
@@ -392,52 +388,6 @@ export const updateFieldPopularity = (overrides: Record<string, number>) =>
     throw new Error("Failed to update popularity");
   });
 
-type AddToCartArgs = {
-  sku: string;
-  quantity: number;
-};
-
-export const addToCart = (payload: AddToCartArgs) =>
-  fetch(`${baseUrl}/cart/`, {
-    method: "POST",
-    body: JSON.stringify(payload),
-  }).then((d) => toJson<Cart>(d));
-
-type ChangeQuantityArgs = {
-  id: number;
-  quantity: number;
-};
-
-export const changeQuantity = (payload: ChangeQuantityArgs) =>
-  fetch(`${baseUrl}/cart/`, {
-    method: "PUT",
-    body: JSON.stringify(payload),
-  }).then((d) => toJson<Cart>(d));
-
-export const removeFromCart = ({ id }: { id: number }) =>
-  fetch(`${baseUrl}/cart/${id}`, {
-    method: "DELETE",
-  }).then((d) => toJson<Cart>(d));
-
-export const getCart = () =>
-  fetch(`${baseUrl}/cart/`).then(async (d) => {
-    if (d.status === 404) {
-      return null;
-    }
-    return toJson<Cart>(d);
-  });
-
-type Checkout = { html_snippet: string };
-
-export const getCheckout = () =>
-  fetch(`${baseUrl}/cart/checkout`).then((d) => toJson<Checkout>(d));
-
-export const getConfirmation = (id: string) =>
-  fetch(`${baseUrl}/cart/confirmation/${id}`).then((d) => toJson<Checkout>(d));
-
-export const getCartById = (id: string | number) =>
-  fetch(`${baseUrl}/cart/${id}`).then((d) => toJson<Cart>(d));
-
 export const getPromotions = () =>
   fetch(`${baseUrl}/api/promotion`).then((d) => toJson<Promotion[]>(d));
 
@@ -454,12 +404,12 @@ export const removePromotion = (id: string) =>
 
 export const getTrackingPopularity = () =>
   fetch(`${baseUrl}/tracking/popularity`).then((d) =>
-    toJson<Record<string, number>>(d)
+    toJson<Record<string, number>>(d),
   );
 
 export const getTrackingQueries = () =>
   fetch(`${baseUrl}/tracking/queries`).then((d) =>
-    toJson<Record<string, number>>(d)
+    toJson<Record<string, number>>(d),
   );
 
 export const getTrackingSessions = () =>
@@ -467,7 +417,7 @@ export const getTrackingSessions = () =>
 
 export const getTrackingFieldPopularity = () =>
   fetch(`${baseUrl}/tracking/field-popularity`).then((d) =>
-    toJson<Record<number, number>>(d)
+    toJson<Record<number, number>>(d),
   );
 
 export const getTrackingUpdates = () =>

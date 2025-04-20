@@ -8,11 +8,8 @@ import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
 import { EditSearchView } from "./pages/admin/EditSearchView.tsx";
 import { Tracking } from "./pages/Tracking.tsx";
 import { SWRConfig } from "swr";
-import {
-  getConfirmation,
-  getRawData,
-  getTrackingSessions,
-} from "./lib/datalayer/api.ts";
+import { getRawData, getTrackingSessions } from "./lib/datalayer/api.ts";
+import { getConfirmation } from "./lib/datalayer/cart-api.ts";
 import { ProductPage } from "./components/ProductPage.tsx";
 import { SessionView } from "./components/Sessions.tsx";
 import { QueriesView } from "./pages/tracking/queries.tsx";
@@ -183,5 +180,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </SWRConfig>
       </ImpressionProvider>
     </QueryProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

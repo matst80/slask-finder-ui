@@ -1,11 +1,11 @@
 import useSWR from "swr";
+import { clearCart } from "../lib/datalayer/api";
 import {
   addToCart,
   changeQuantity,
-  clearCart,
   getCart,
   removeFromCart,
-} from "../lib/datalayer/api";
+} from "../lib/datalayer/cart-api";
 import { useFetchMutation } from "../utils";
 import { trackCart } from "../lib/datalayer/beacons";
 
