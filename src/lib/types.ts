@@ -407,10 +407,12 @@ export type MatchRule = ValueMatch & {
   $type: "MatchRule";
 };
 
+export type NumberComparitor = ">" | "<" | "<=";
+
 export type NumberLimitRule = ValueMatch & {
   multiplier?: number;
   limit?: number;
-  comparator?: ">" | "<" | "<=";
+  comparator?: NumberComparitor;
   value?: number;
   valueIfNotMatch?: number;
   $type: "NumberLimitRule";

@@ -53,7 +53,7 @@ export function Navbar() {
                 <MenuLink to="/dashboard">Dashboard</MenuLink>
                 <MenuLink to="/builder">PC Builder</MenuLink>
                 <MenuLink to="/stats">Tracking</MenuLink>
-                <MenuLink to="/rules">Rules</MenuLink>
+                
                 {isAdmin && <MenuLink to="/edit">Edit</MenuLink>}
               </div>
             </div>

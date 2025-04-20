@@ -226,10 +226,63 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
   );
 };
 
+const FacetItem = ({ data }: { data: FacetListItem }) => {
+  const { id, name, valueType, prio } = data;
+  const [open, setOpen] = useState(false);
+  const removeFacet = (facetId: number) => {
+    if (confirm("Are you sure you want to remove this facet?")) {
+      deleteFacet(facetId);
+    }
+  };
+  return (
+    <div key={id} className="bg-white rounded-lg shadow-sm">
+      <div
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
+        onClick={() => setOpen((prev) => !prev)}
+      >
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-gray-900">{name}</span>
+            <span className="text-sm text-gray-500">(ID: {id})</span>
+            {valueType != null && (
+              <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                {valueType}
+              </span>
+            )}
+          </div>
+          <div className="text-sm text-gray-500 mt-1">Priority: {prio}</div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              removeFacet(id);
+            }}
+          >
+            Remove
+          </Button>
+          {open ? (
+            <ChevronUp className="size-5 text-gray-500" />
+          ) : (
+            <ChevronDown className="size-5 text-gray-500" />
+          )}
+        </div>
+      </div>
+      {open && (
+        <div className="border-t border-gray-200 p-4 space-y-4">
+          <FacetEditor data={data} />
+          <FacetValues id={id} />
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const AllFacets = () => {
   const [filter, setFilter] = useState<string>("");
   const { data } = useAdminFacets();
-  const [expandedFacets, setExpandedFacets] = useState<Set<number>>(new Set());
 
   const filteredData = useMemo(() => {
     return fuzzysort.go(filter, data?.sort(byPriority) ?? [], {
@@ -239,26 +292,8 @@ export const AllFacets = () => {
     });
   }, [filter, data]);
 
-  const removeFacet = (facetId: number) => {
-    if (confirm("Are you sure you want to remove this facet?")) {
-      deleteFacet(facetId);
-    }
-  };
-
-  const toggleFacet = (facetId: number) => {
-    setExpandedFacets((prev) => {
-      const next = new Set(prev);
-      if (next.has(facetId)) {
-        next.delete(facetId);
-      } else {
-        next.add(facetId);
-      }
-      return next;
-    });
-  };
-
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">All Facets</h1>
         <p className="text-sm text-gray-500 mt-1">
@@ -279,50 +314,7 @@ export const AllFacets = () => {
       </div>
       <div className="space-y-2">
         {filteredData?.map(({ obj }) => (
-          <div key={obj.id} className="bg-white rounded-lg shadow-sm">
-            <div
-              className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
-              onClick={() => toggleFacet(obj.id)}
-            >
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-gray-900">{obj.name}</span>
-                  <span className="text-sm text-gray-500">(ID: {obj.id})</span>
-                  {obj.valueType != null && (
-                    <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                      {obj.valueType}
-                    </span>
-                  )}
-                </div>
-                <div className="text-sm text-gray-500 mt-1">
-                  Priority: {obj.prio}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeFacet(obj.id);
-                  }}
-                >
-                  Remove
-                </Button>
-                {expandedFacets.has(obj.id) ? (
-                  <ChevronUp className="size-5 text-gray-500" />
-                ) : (
-                  <ChevronDown className="size-5 text-gray-500" />
-                )}
-              </div>
-            </div>
-            {expandedFacets.has(obj.id) && (
-              <div className="border-t border-gray-200 p-4 space-y-4">
-                <FacetEditor data={obj} />
-                <FacetValues id={obj.id} />
-              </div>
-            )}
-          </div>
+          <FacetItem key={obj.id} data={obj} />
         ))}
       </div>
     </div>

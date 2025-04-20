@@ -55,14 +55,7 @@ const router = createBrowserRouter([
       </PageContainer>
     ),
   },
-  {
-    path: "rules",
-    element: (
-      <PageContainer>
-        <RuleBuilder />
-      </PageContainer>
-    ),
-  },
+  
   {
     path: "edit",
     element: (
@@ -76,6 +69,14 @@ const router = createBrowserRouter([
         element: <EditSearchView />,
       },
       { path: "bulk", element: <EditSearchView /> },
+      {
+    path: "rules",
+    element: (
+    
+        <RuleBuilder />
+    
+    ),
+  },
       {
         path: "product/:id",
         loader: ({ params: { id } }) =>
