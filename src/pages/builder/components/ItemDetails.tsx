@@ -1,9 +1,5 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-"use client";
-import { Headline } from "@components/common/Headline";
-import { useSiteContext } from "@components/SettingsProvider";
-import { isDebugMode } from "@utils/debugmode";
-import clsx from "clsx";
+
+
 import {
   createContext,
   Dispatch,
@@ -13,8 +9,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Item, ItemValues } from "./slask-finder/slask-finder.types";
-import { useFacetList } from "./slask-finder/searchHooks";
+import { useFacetMap } from "../../../hooks/searchHooks"
+import { Item, ItemValues } from "../../../lib/types"
+import { cm } from "../../../utils"
 
 const groups = {
   "Water cooling specifications": [34650, 32177, 36312, 36308],
@@ -108,17 +105,17 @@ const useItemDetails = () => {
 };
 
 const GroupRenderer = ({ values }: { values: ItemValues }) => {
-  const { data } = useFacetList();
-  const siteContext = useSiteContext();
-  const debug = isDebugMode(siteContext);
+  const { data } = useFacetMap();
+  
+  
   const grouped = useMemo(
     () =>
       Object.entries(values).reduce(
         (acc, [id, value]) => {
-          const group = Object.entries(groups).find(([_, ids]) =>
+          const group = Object.entries(groups).find(([, ids]) =>
             ids.includes(Number(id)),
           );
-          const facet = data?.find((f) => f.id === Number(id));
+          const facet = data?.[Number(id)];
           if (
             value != null &&
             facet != null &&
@@ -145,11 +142,11 @@ const GroupRenderer = ({ values }: { values: ItemValues }) => {
       {Object.entries(grouped)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, values]) => {
-          if (key === "Other" && !debug) return null;
+          
           return (
             <div key={key} className="mb-3 last:mb-0">
-              <h3 className="font-body">
-                <Headline type="spec-title">{key}</Headline>
+              <h3 className="font-body text-xl">
+                {key}
               </h3>
               <div className="mt-4">
                 {values
@@ -162,11 +159,11 @@ const GroupRenderer = ({ values }: { values: ItemValues }) => {
                           <dt>
                             <span className="font-body text-sm lg:text-base break-words hyphens-auto align-top text-pretty">
                               {name}{" "}
-                              {debug && (
+                              
                                 <span className="text-xs text-gray-600">
                                   ({id})
                                 </span>
-                              )}
+                              
                             </span>
                           </dt>
                           <dd className="font-body font-bold text-sm lg:text-base break-words align-top text-pretty">
@@ -197,7 +194,7 @@ export const ItemDetails = ({
   const [open, setOpen] = useState(false);
   return (
     <ItemDetailsContext.Provider value={{ open, setOpen }}>
-      <div onClick={onClick} className={clsx(className, "relative")}>
+      <div onClick={onClick} className={cm(className, "relative")}>
         {children}
 
         {open && <GroupRenderer values={item.values} />}

@@ -9,6 +9,7 @@ import { QueryProvider, QueryProviderRef } from "../lib/hooks/QueryProvider";
 import { QueryMerger } from "./QueryMerger";
 import { HitList } from "./HitList";
 import { mergeFilters } from "../lib/hooks/queryUtils";
+import { isRangeFilter, isStringFilter } from "../pages/builder/builder-utils"
 
 type AdditionalFilter = {
   id: number;
@@ -481,25 +482,6 @@ type ComponentSelectorProps = Component &
     otherFilters: SelectedAdditionalFilter[];
   };
 
-const isRangeFilter = (
-  d: SelectedAdditionalFilter
-): d is { id: number; to: number; value: { min: number; max: number } } => {
-  return (
-    "value" in d &&
-    d.value != null &&
-    typeof d.value === "object" &&
-    "min" in (d.value as { min: number; max: number }) &&
-    "max" in (d.value as { min: number; max: number })
-  );
-};
-
-const isStringFilter = (
-  d: SelectedAdditionalFilter
-): d is { id: number; to: number; value: string[] } => {
-  return (
-    "value" in d && (Array.isArray(d.value) || typeof d.value === "string")
-  );
-};
 
 const ComponentSelector = ({
   title,

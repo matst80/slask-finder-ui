@@ -37,7 +37,7 @@ export type Sort =
   | typeof Sort.CREATED_DESC_SORT;
 
 export type Item = ItemProps & {
-  id: string;
+  id: number;
   title: string;
   values: ItemValues;
   stock?: Stock;
@@ -46,7 +46,7 @@ export type Item = ItemProps & {
 export type ItemProperties = ItemValues;
 
 export type UpdatedItem = ItemProps & {
-  id: string;
+  id: number;
   title: string;
   values: ItemProperties;
   stock?: Stock;

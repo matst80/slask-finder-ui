@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Facet, isKeyFacet, isNumberFacet, KeyFacet } from "../lib/types";
+import { isNumberFacet, KeyFacet } from "../lib/types";
 import { LoaderCircle } from "lucide-react";
 
 import { stores } from "../lib/datalayer/stores";
@@ -84,30 +84,55 @@ const CategoryResult = ({ categories }: { categories: KeyFacet[] }) => {
   );
 };
 
-export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
-  const { facets: results, isLoadingFacets: isLoading } = useQuery();
-
-  const [cat, allFacets] = useMemo(
+type FacetListProps = {
+  facetsToHide?: number[];
+};
+export const FacetList = ({ facetsToHide }: FacetListProps) => {
+  const { facets } = useQuery();
+  const allFacets = useMemo(
     () =>
-      (results ?? [])
-        .filter((d) => facetsToHide == null || !facetsToHide.includes(d.id))
-        .reduce(
-          ([c, all], facet) => {
-            if (
-              facet.categoryLevel != null &&
-              facet.categoryLevel > 0 &&
-              isKeyFacet(facet)
-            ) {
-              return [[...c, facet], all];
-            }
-            return [c, [...all, facet]];
-          },
-          [[] as KeyFacet[], [] as Facet[]]
-        ),
-    [results, facetsToHide]
+      facets.filter(
+        (d) => facetsToHide == null || !facetsToHide.includes(d.id)
+      ),
+
+    [facets, facetsToHide]
   );
-  const hasFacets = allFacets.length > 0;
-  if (isLoading && !hasFacets) {
+  return (
+    <>
+      {allFacets.map((facet) => {
+        if (isNumberFacet(facet)) {
+          return (
+            <NumberFacetSelector
+              {...facet}
+              defaultOpen={facet.selected != null}
+              key={`fld-${facet.id}-${facet.name}`}
+            />
+          );
+        }
+        if (facet.valueType === "color") {
+          return (
+            <ColorFacetSelector
+              {...facet}
+              key={`fld-${facet.id}-${facet.name}`}
+            />
+          );
+        }
+        return (
+          <KeyFacetSelector
+            {...facet}
+            key={`fld-${facet.id}-${facet.name}`}
+            defaultOpen={facet.selected != null}
+          />
+        );
+      })}
+    </>
+  );
+};
+
+export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
+  const { categoryFacets, isLoadingFacets: isLoading } = useQuery();
+
+  if (isLoading) {
     return (
       <aside className="w-full md:w-72 animate-pulse">
         <h2 className="text-lg font-semibold mb-4">Filter</h2>
@@ -119,45 +144,18 @@ export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
   }
 
   return (
-    hasFacets && (
-      <aside className="w-full md:w-72 border-b-2 border-gray-200 md:border-none">
-        <h2 className="text-lg font-semibold mb-4">Filter</h2>
-        <CategoryResult categories={cat} />
-        <div>
-          {allFacets.map((facet) => {
-            if (isNumberFacet(facet)) {
-              return (
-                <NumberFacetSelector
-                  {...facet}
-                  defaultOpen={facet.selected != null}
-                  key={`fld-${facet.id}-${facet.name}`}
-                />
-              );
-            }
-            if (facet.valueType === "color") {
-              return (
-                <ColorFacetSelector
-                  {...facet}
-                  key={`fld-${facet.id}-${facet.name}`}
-                />
-              );
-            }
-            return (
-              <KeyFacetSelector
-                {...facet}
-                key={`fld-${facet.id}-${facet.name}`}
-                defaultOpen={facet.selected != null}
-              />
-            );
-          })}
-        </div>
+    <aside className="w-full md:w-72 border-b-2 border-gray-200 md:border-none">
+      <h2 className="text-lg font-semibold mb-4">Filter</h2>
+      <CategoryResult categories={categoryFacets} />
+      <div>
+        <FacetList facetsToHide={facetsToHide} />
+      </div>
 
-        <div className="mb-4">
-          <h3 className="font-medium mb-2">Select Store</h3>
-          <StoreSelector />
-        </div>
-      </aside>
-    )
+      <div className="mb-4">
+        <h3 className="font-medium mb-2">Select Store</h3>
+        <StoreSelector />
+      </div>
+    </aside>
   );
 };
 

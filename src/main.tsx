@@ -19,7 +19,7 @@ import { UpdatedItems } from "./pages/tracking/updates.tsx";
 import { DashboardView } from "./pages/Dashboard.tsx";
 import { PageContainer } from "./PageContainer.tsx";
 import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx";
-import { Builder } from "./components/Builder.tsx";
+// import { Builder } from "./components/Builder.tsx";
 import { QueryProvider } from "./lib/hooks/QueryProvider.tsx";
 import { ImpressionProvider } from "./lib/hooks/ImpressionProvider.tsx";
 import {
@@ -29,6 +29,7 @@ import {
 import { RelationGroupEditor } from "./pages/admin/RelationGroupEditor.tsx";
 import { Checkout } from "./pages/Checkout.tsx";
 import { Confirmation } from "./pages/Confirmation.tsx";
+import { LocalStorageBuilder } from "./pages/builder/components/LocalStorageBuilder.tsx"
 
 const router = createBrowserRouter([
   {
@@ -51,7 +52,7 @@ const router = createBrowserRouter([
     path: "builder",
     element: (
       <PageContainer>
-        <Builder />
+        <LocalStorageBuilder />
       </PageContainer>
     ),
   },

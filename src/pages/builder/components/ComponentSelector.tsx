@@ -1,27 +1,28 @@
 "use client";
 import {
-  createContext,
-  Dispatch,
-  SetStateAction,
-  useEffect,
   useMemo,
   useState,
+  
 } from "react";
 
 import { ListIcon, TableIcon } from "lucide-react";
 
 
-import { FacetProvider, useFacetSelection } from "./facet-context";
+
 
 import { FacetToggle } from "./FacetToggle";
 import { ToggleResultItem } from "./ResultItem";
-import { QuickFilter, SelectedAdditionalFilter } from "../builder-types"
+import { ComponentSelectorProps, QuickFilter, SelectedAdditionalFilter } from "../builder-types"
 import { useBuilderContext } from "../useBuilderContext"
-import { cm, makeImageUrl } from "../../../utils"
-import { FilteringQuery, Sort } from "../../../lib/types"
+import { cm, isDefined, makeImageUrl } from "../../../utils"
+import { FilteringQuery } from "../../../lib/types"
 import { isRangeFilter, isStringFilter } from "../builder-utils"
 import { QueryProvider } from "../../../lib/hooks/QueryProvider"
 import { QueryMerger } from "../../../components/QueryMerger"
+import { HitList, HitListFragment } from "../../../components/HitList"
+import { useFacetMap } from "../../../hooks/searchHooks"
+import { useQuery } from "../../../lib/hooks/useQuery"
+import { ComponentSelectorContext } from "./ComponentSelectorContext"
 
 const AppliedFilterView = ({
   filters,
@@ -35,8 +36,6 @@ const AppliedFilterView = ({
     );
     return selectedItems.filter((d) => fromIds.has(d.componentId));
   }, [filters, selectedItems]);
-  const { facets } = useFacetSelection();
-  
   
   if (filters.length === 0) {
     return null;
@@ -98,14 +97,12 @@ const matchesValue = (a: string | string[], b: string | string[]) => {
 
 export const QuickFilters = ({
   filters,
-  onApply,
+  
 }: {
   filters?: QuickFilter[];
-  onApply: Dispatch<
-    SetStateAction<Pick<FilteringQuery, "string" | "range" | "query">>
-  >;
+  
 }) => {
-  const { facets, query } = useFacetSelection();
+  const { facets, query, setQuery } = useQuery();
   if (filters == null || filters.length === 0) {
     return null;
   }
@@ -138,7 +135,7 @@ export const QuickFilters = ({
                     onClick={() => {
                       const ids = new Set(option.filters.map((f) => f.id));
 
-                      onApply((prev) => {
+                      setQuery((prev) => {
                         return {
                           ...prev,
                           // range: [
@@ -148,7 +145,7 @@ export const QuickFilters = ({
                           string: [
                             ...(prev.string?.filter((d) => !ids.has(d.id)) ??
                               []),
-                            ...option.filters.filter(isStringFilter),
+                            ...option.filters.filter(isStringFilter).map(fixSingleArray),
                           ],
                         };
                       });
@@ -179,38 +176,14 @@ const fixSingleArray = ({
   value: string | string[];
 }): {
   id: number;
-  value: string | string[];
+  value: string[];
 } => {
   if (
-    Array.isArray(value) &&
-    value.length === 1 &&
-    typeof value[0] === "string"
+    Array.isArray(value) 
   ) {
-    return { id, value: value[0] };
+    return { id, value };
   }
-  return { id, value };
-};
-
-type ComponentSelectorContext = {
-  view: "table" | "list";
-  setView: Dispatch<SetStateAction<"table" | "list">>;
-  selectedIds?: number[];
-  tableSort?: [number, "asc" | "desc"];
-  setTableSort?: Dispatch<SetStateAction<[number, "asc" | "desc"] | undefined>>;
-};
-
-const ComponentSelectorContext = createContext<ComponentSelectorContext | null>(
-  null,
-);
-
-export const useComponentSelectorContext = () => {
-  const context = useFacetSelection();
-  if (context == null) {
-    throw new Error(
-      "useComponentSelectorContext must be used within a ComponentSelectorProvider",
-    );
-  }
-  return context;
+  return { id, value: [value] };
 };
 
 export const ComponentSelector = ({
@@ -224,13 +197,14 @@ export const ComponentSelector = ({
   onSelectedChange,
 }: ComponentSelectorProps) => {
   const { globalFilters } = useBuilderContext();
+  const {data} = useFacetMap();
   //const isLarge = useBreakpoint(1280);
   // const [userFiler, setUserFilter] = useState<
   //   Pick<FilteringQuery, "range" | "string" | "query">
   // >({ range: [], string: [] });
   //const [sort, setSort] = useState<Sort>("popular");
-  //const [view, setView] = useState<"table" | "list">("list");
-  //const [tableSort, setTableSort] = useState<[number, "asc" | "desc"]>();
+  const [view, setView] = useState<"table" | "list">("list");
+  const [tableSort, setTableSort] = useState<[number, "asc" | "desc"]>();
   // useEffect(() => {
   //   setView(isLarge ? "table" : "list");
   // }, [isLarge]);
@@ -243,18 +217,24 @@ export const ComponentSelector = ({
           .filter(isRangeFilter)
           .map(({ id, value }) => ({ id, min: value.min, max: value.max })),
         ...(filter.range ?? []),
-        ...(userFiler.range ?? []),
+        //...(userFiler.range ?? []),
         ...(globalFilters.range ?? []),
       ],
-      query: userFiler.query,
+      //query: userFiler.query,
       string: [
         ...otherFilters.filter(isStringFilter).map(fixSingleArray),
         ...(filter.string ?? []),
-        ...(userFiler.string ?? []),
+        //...(userFiler.string ?? []),
         ...(globalFilters.string ?? []),
       ],
     } satisfies FilteringQuery;
-  }, [filter, otherFilters, userFiler, globalFilters]);
+  }, [filter, otherFilters, globalFilters]);
+
+  const facets = useMemo(() => {
+    return importantFacets?.map((d) => {
+      return data?.[d]
+    }).filter(isDefined)??[];
+  }, [data,importantFacets]);
 
   // const facetResult = useFacets(baseQuery);
   // const { data: facets } = useFacetList();
@@ -276,7 +256,7 @@ export const ComponentSelector = ({
           <div className="space-y-2">
             <AppliedFilterView filters={otherFilters}></AppliedFilterView>
 
-            <QuickFilters filters={quickFilters} onApply={setUserFilter} />
+            <QuickFilters filters={quickFilters}  />
 
             <div className="flex gap-2">
               <FacetToggle topFilters={topFilters ?? []}></FacetToggle>
@@ -295,7 +275,7 @@ export const ComponentSelector = ({
                 </button>
               </div>
             </div>
-            <div className="hidden md:flex gap-2">
+            {/* <div className="hidden md:flex gap-2">
               <input
                 type="text"
                 placeholder="Sök..."
@@ -316,11 +296,10 @@ export const ComponentSelector = ({
                 <option value="updated">Senast uppdaterat</option>
                 <option value="created">Nyheter</option>
               </select>
-            </div>
+            </div> */}
             {view === "list" ? (
-              <div className="flex flex-col gap-2">
-                {data?.items.map((item) => (
-                  <ToggleResultItem
+              
+                <HitList className="grid grid-cols-3">{({item})=>(<ToggleResultItem
                     key={item.id}
                     {...item}
                     tableFacets={importantFacets}
@@ -329,27 +308,27 @@ export const ComponentSelector = ({
                     onSelectedChange={(data) => {
                       onSelectedChange(data);
                     }}
-                  />
-                ))}
-              </div>
+                  />)}</HitList>
+                
+              
             ) : (
               <table className="text-sm datatable">
                 <thead>
                   <tr>
                     <th></th>
                     <th></th>
-                    {importantFacets?.map((d) => {
-                      const facet = facets?.find((f) => f.id === d);
+                    {facets.map((d) => {
+                      
 
-                      return <th key={d}>{facet?.name ?? ""}</th>;
+                      return <th key={d.id}>{d.name}</th>;
                     })}
                     <th>Pris</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data?.items.map((item) => (
-                    <tr key={item.id}>
+                  <HitListFragment>
+                    {({item})=>(<tr key={item.id}>
                       <td>
                         <img
                           src={makeImageUrl(item.img)}
@@ -376,8 +355,9 @@ export const ComponentSelector = ({
                           Välj
                         </button>
                       </th>
-                    </tr>
-                  ))}
+                    </tr>)}
+                  </HitListFragment>
+                  
                 </tbody>
               </table>
             )}

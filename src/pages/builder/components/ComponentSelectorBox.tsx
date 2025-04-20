@@ -1,8 +1,7 @@
 import { CheckCircle } from "lucide-react";
-import Image from "next/image";
-import clsx from "clsx";
-import { addImageDomain } from "./slask-finder/slask-finder.utils";
-import { ItemWithComponentId } from "./builder";
+import { ItemWithComponentId } from "../builder-types"
+import { cm, makeImageUrl } from "../../../utils"
+
 
 type ComponentSelectorBoxProps = {
   onClick: () => void;
@@ -23,7 +22,7 @@ export const ComponentSelectorBox = ({
     <button
       onClick={onClick}
       data-id={String(id)}
-      className={clsx(
+      className={cm(
         "p-2 cursor-pointer text-left transition-colors duration-200 flex-1 min-w-[55vw] md:min-w-0 md:w-auto",
         selected != null ? "bg-gray-100" : "",
         isActive ? "border-accent border-2" : "border-gray-300 border",
@@ -41,10 +40,10 @@ export const ComponentSelectorBox = ({
             </div>
 
             <div className="flex gap-4 items-center justify-between">
-              <Image
+              <img
                 width={48}
                 height={48}
-                src={addImageDomain(selected.img)}
+                src={makeImageUrl(selected.img)}
                 alt={selected.title}
                 className="size-10 object-contain mix-blend-multiply"
               />

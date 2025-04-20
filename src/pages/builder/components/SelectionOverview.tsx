@@ -1,6 +1,7 @@
-import { ItemWithComponentId } from "./builder";
-import { ResultItem } from "./ResultItem";
-import { componentRules } from "./rules";
+import { ResultItemInner } from "../../../components/ResultItem"
+import { ItemWithComponentId } from "../builder-types"
+import { componentRules } from "../rules"
+import { ImportantFacets } from "./ImportantFacets"
 
 type Props = {
   items: ItemWithComponentId[];
@@ -18,15 +19,19 @@ export const SelectionOverview = ({ items }: Props) => {
       </div>
       <div className="flex flex-col gap-4">
         {items.map((item) => (
-          <ResultItem
+          <ResultItemInner
             key={item.id}
-            item={item}
+        {...item}
+            
+          >
+            <ImportantFacets 
+              values={item.values}
             tableFacets={
               componentRules
                 .filter((d) => d.type === "component")
-                .find((d) => d.id == item.componentId)?.importantFacets ?? []
-            }
-          />
+                .find((d) => d.id == item.componentId)?.importantFacets ?? []} />
+            
+            </ResultItemInner>
         ))}
       </div>
     </>

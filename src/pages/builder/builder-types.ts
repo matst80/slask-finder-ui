@@ -55,6 +55,13 @@ export type ComponentGroup = {
   components: Component[];
 };
 
+export type OnSelectedItem = { onSelectedChange: (data: Item | null) => void };
+export type ComponentSelectorProps = Component &
+  OnSelectedItem & {
+    selectedIds: number[];
+    otherFilters: (SelectedAdditionalFilter & { from?: number })[];
+  };
+
 export type Rule = Component | ComponentGroup | ComponentSelection;
 
 export type FilterValue = string | string[] | { min: number; max: number };
