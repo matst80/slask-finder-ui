@@ -1,0 +1,54 @@
+import { useState, useMemo } from "react";
+import { ChevronUp } from "lucide-react";
+import { QueryProvider } from "../lib/hooks/QueryProvider";
+import { ResultCarousel } from "./ItemDetails";
+import { TotalResultText } from "./ResultHeader";
+import { ItemsQuery, RelationMatch } from "../lib/types";
+
+const hasValue = (
+  relation: RelationMatch
+): relation is Omit<RelationMatch, "value"> & { value: string | string[] } => {
+  if (relation.value == null) return false;
+  if (Array.isArray(relation.value)) {
+    return relation.value.length > 0;
+  }
+  return true;
+};
+
+export const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
+  const [open, setOpen] = useState(false);
+  const query = useMemo<ItemsQuery>(() => {
+    return {
+      string: matches.filter(hasValue).map((match) => ({
+        id: match.facetId,
+        value: Array.isArray(match.value) ? match.value : [match.value],
+      })),
+    };
+  }, [matches]);
+
+  return (
+    <QueryProvider initialQuery={query} loadFacets={false}>
+      <div
+        onClick={() => setOpen((p) => !p)}
+        className="cursor-pointer border-b border-gray-200 pb-3 mb-4"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <TotalResultText className="text-sm font-bold text-gray-700" />
+            <span className="text-sm text-gray-500">matching items</span>
+          </div>
+          <ChevronUp
+            className={`size-4 text-gray-500 transition-transform ${
+              open ? "rotate-0" : "rotate-180"
+            }`}
+          />
+        </div>
+        {open && (
+          <div className="mt-3">
+            <ResultCarousel />
+          </div>
+        )}
+      </div>
+    </QueryProvider>
+  );
+};

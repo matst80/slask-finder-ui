@@ -2,19 +2,16 @@ import { useMemo, useState } from "react";
 import { useAdminRelationGroups, useFacetMap } from "../../hooks/searchHooks";
 import {
   FacetListItem,
-  ItemsQuery,
   Relation,
   RelationGroup,
   RelationMatch,
 } from "../../lib/types";
-import { QueryProvider } from "../../lib/hooks/QueryProvider";
-import { ResultCarousel } from "../../components/ItemDetails";
 import { Button } from "../../components/ui/button";
 import { useFieldValues, useRelationGroupsMutation } from "../../adminHooks";
 import { PlusIcon, TrashIcon, ChevronUp } from "lucide-react";
 import fuzzysort from "fuzzysort";
 import { Input } from "../../components/ui/input";
-import { TotalResultText } from "../../components/ResultHeader";
+import { QueryPreview } from "../../components/QueryPreview";
 
 const FacetValueInput = ({
   value,
@@ -226,54 +223,6 @@ const RelationEditor = ({
         </div>
       </div>
     </div>
-  );
-};
-
-const hasValue = (
-  relation: RelationMatch
-): relation is Omit<RelationMatch, "value"> & { value: string | string[] } => {
-  if (relation.value == null) return false;
-  if (Array.isArray(relation.value)) {
-    return relation.value.length > 0;
-  }
-  return true;
-};
-
-const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
-  const [open, setOpen] = useState(false);
-  const query = useMemo<ItemsQuery>(() => {
-    return {
-      string: matches.filter(hasValue).map((match) => ({
-        id: match.facetId,
-        value: Array.isArray(match.value) ? match.value : [match.value],
-      })),
-    };
-  }, [matches]);
-
-  return (
-    <QueryProvider initialQuery={query} loadFacets={false}>
-      <div
-        onClick={() => setOpen((p) => !p)}
-        className="cursor-pointer border-b border-gray-200 pb-3 mb-4"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <TotalResultText className="text-sm font-bold text-gray-700" />
-            <span className="text-sm text-gray-500">matching items</span>
-          </div>
-          <ChevronUp
-            className={`size-4 text-gray-500 transition-transform ${
-              open ? "rotate-0" : "rotate-180"
-            }`}
-          />
-        </div>
-        {open && (
-          <div className="mt-3">
-            <ResultCarousel />
-          </div>
-        )}
-      </div>
-    </QueryProvider>
   );
 };
 
