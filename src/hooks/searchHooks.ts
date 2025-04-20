@@ -407,7 +407,7 @@ export const useAdminRelationGroups = () => {
       ),
     {
       revalidateOnFocus: false,
-      refreshInterval: 3600,
+      refreshInterval: 0,
       focusThrottleInterval: 3600,
     }
   );
@@ -416,7 +416,7 @@ export const useAdminRelationGroups = () => {
 export const useFacetList = () => {
   return useSWR("facet-list", getFacetList, {
     revalidateOnFocus: false,
-    refreshInterval: 3600,
+    refreshInterval: 0,
     focusThrottleInterval: 3600,
   });
 };
