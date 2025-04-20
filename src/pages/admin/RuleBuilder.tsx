@@ -1,6 +1,5 @@
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { useFacetList } from "../../hooks/searchHooks";
-import Downshift from "downshift";
 import {
   getPopularityRules,
   setPopularityRules,
@@ -17,17 +16,18 @@ import {
   PercentMultiplierRule,
   RatingRule,
   Rules,
+  NumberComparitor,
 } from "../../lib/types";
-import { cm } from "../../utils";
 import useSWRMutation from "swr/mutation";
+import {
+  CustomDropdown,
+  DropdownItem,
+} from "../../components/ui/custom-dropdown";
+import { Input } from "../../components/ui/input"
 
 type EditorProps<T extends Rule> = T & {
   onChange: (data: T) => void;
 };
-
-// type FieldSelectorProps = ValueMatch & {
-//   onChange: (data: ValueMatch) => void;
-// };
 
 const itemProperties = [
   "Url",
@@ -63,92 +63,52 @@ const FieldSelector = ({
   ...selection
 }: ValueMatch & { onChange: (data: ValueMatch) => void }) => {
   const { data } = useFacetList();
-  const items = useMemo(() => {
+  const items = useMemo<DropdownItem<ValueMatch>[]>(() => {
     return [
       ...itemProperties.map((d) => ({
         key: d,
-        source: "property",
-        property: d,
+        type: "Property",
+        data: { source: "property", property: d } satisfies ValueMatch,
         text: d,
       })),
       ...(data?.map((field) => ({
         key: String(field.id),
-        source: "fieldId",
-        fieldId: field.id,
+        type: "Field",
+        data: { source: "fieldId", fieldId: field.id } satisfies ValueMatch,
         text: field.name,
       })) ?? []),
     ];
   }, [data]);
+
   const [selectedValue, setSelectedValue] = useState<string | undefined>();
+
   useEffect(() => {
     const { source } = selection;
     setSelectedValue(
       source == "fieldId" ? String(selection.fieldId) : selection.property
     );
   }, [selection]);
+
   const selectedItem = useMemo(
     () => items.find((item) => item.key === selectedValue),
     [items, selectedValue]
   );
+
+  const handleSelect = (item: (typeof items)[number]) => {
+    setSelectedValue(item.key);
+    onChange(item.data);
+  };
+
   return (
-    <Downshift
-      onChange={(selection) => console.log("onChange", selection)}
-      selectedItem={selectedItem}
-      itemToString={(item) => (item ? item.text : "")}
-    >
-      {({
-        getInputProps,
-        getItemProps,
-        getLabelProps,
-        getMenuProps,
-        isOpen,
-        inputValue,
-        highlightedIndex,
-        selectedItem,
-        getRootProps,
-      }) => (
-        <div>
-          <label {...getLabelProps()}>Source</label>
-          <div
-            style={{ display: "inline-block" }}
-            {...getRootProps({}, { suppressRefError: true })}
-          >
-            <input {...getInputProps()} className="border p-2 rounded-md" />
-          </div>
-          <ul {...getMenuProps()}>
-            {isOpen
-              ? items
-                  .filter(
-                    (item) =>
-                      !inputValue ||
-                      item.text
-                        .toLocaleLowerCase()
-                        .includes(inputValue.toLocaleLowerCase())
-                  )
-                  .map((item, index) => (
-                    <li
-                      {...getItemProps({
-                        key: item.key,
-                        index,
-                        item,
-                        style: {
-                          backgroundColor:
-                            highlightedIndex === index ? "lightgray" : "white",
-                          fontWeight: selectedItem === item ? "bold" : "normal",
-                        },
-                      })}
-                    >
-                      {item.source === "property"
-                        ? "Property:"
-                        : "Facet value:"}{" "}
-                      {item.text}
-                    </li>
-                  ))
-              : null}
-          </ul>
-        </div>
-      )}
-    </Downshift>
+    <div className="mb-4">
+      <CustomDropdown
+        items={items}
+        selectedItem={selectedItem}
+        onSelect={handleSelect}
+        placeholder="Select a field or property"
+        label="Source Field"
+      />
+    </div>
   );
 };
 
@@ -157,18 +117,17 @@ const LabelFor = ({
   label,
 }: PropsWithChildren<{ label: string }>) => {
   return (
-    <div>
-      <label className="flex gap-4 items-center">
-        <span>{label}</span>
-        {children}
+    <div className="mb-4">
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {label}
       </label>
+      <div>{children}</div>
     </div>
   );
 };
 
 const InputWithLabel = ({
   label,
-  className,
   ...inputProps
 }: React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -176,8 +135,8 @@ const InputWithLabel = ({
 > & { label: string }) => {
   return (
     <LabelFor label={label}>
-      <input
-        className={cm("border p-2 rounded-md", className)}
+      <Input
+
         {...inputProps}
       />
     </LabelFor>
@@ -189,18 +148,36 @@ const DiscountRuleEditor = ({
   ...rule
 }: EditorProps<DiscountRule>) => {
   return (
-    <div>
-      <h1>Discount based rule</h1>
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.multiplier}
-        label="Multiplier for discount percentage"
-      />
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.valueIfMatch}
-        label="Static value if product is on sale"
-      />
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium leading-6 text-gray-900">
+        Discount Based Rule
+      </h3>
+      <p className="mt-1 text-sm text-gray-500">
+        Apply a multiplier to the discount percentage or a static value for sale
+        items.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <InputWithLabel
+          type="number"
+          value={rule.multiplier || 0}
+          onChange={(e) =>
+            onChange({ ...rule, multiplier: Number(e.target.value) })
+          }
+          label="Discount Multiplier"
+          placeholder="Multiplier value"
+        />
+
+        <InputWithLabel
+          type="number"
+          value={rule.valueIfMatch || 0}
+          onChange={(e) =>
+            onChange({ ...rule, valueIfMatch: Number(e.target.value) })
+          }
+          label="Static Value for Sale Items"
+          placeholder="Value if matching"
+        />
+      </div>
     </div>
   );
 };
@@ -210,33 +187,72 @@ const NumberLimitRuleEditor = ({
   ...rule
 }: EditorProps<NumberLimitRule>) => {
   return (
-    <div>
-      <h1>Number limit rule</h1>
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium leading-6 text-gray-900">
+        Number Limit Rule
+      </h3>
+      <p className="mt-1 text-sm text-gray-500">
+        Apply a value based on numeric field comparisons.
+      </p>
+
       <FieldSelector
         {...rule}
         onChange={(data) => onChange({ ...rule, ...data })}
       />
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.multiplier}
-        label="Multiplier for value"
-      />
-      <InputWithLabel type="number" defaultValue={rule.limit} label="Limit" />
-      <InputWithLabel
-        type="text"
-        defaultValue={rule.comparator}
-        label="Comparator"
-      />
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.value}
-        label="Value if matching"
-      />
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.valueIfNotMatch}
-        label="Value if NOT matching"
-      />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <InputWithLabel
+          type="number"
+          value={rule.multiplier || 0}
+          onChange={(e) =>
+            onChange({ ...rule, multiplier: Number(e.target.value) })
+          }
+          label="Multiplier"
+          placeholder="Value multiplier"
+        />
+
+        <InputWithLabel
+          type="number"
+          value={rule.limit || 0}
+          onChange={(e) => onChange({ ...rule, limit: Number(e.target.value) })}
+          label="Limit"
+        />
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Comparator
+          </label>
+          <select
+            value={rule.comparator || ">"}
+            onChange={(e) => onChange({ ...rule, comparator: e.target.value as NumberComparitor })}
+            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          >
+            <option value=">">Greater than (&gt;)</option>
+            <option value="<">Less than (&lt;)</option>
+            <option value=">=">Greater than or equal (&gt;=)</option>
+            <option value="<=">Less than or equal (&lt;=)</option>
+            <option value="==">Equal (==)</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <InputWithLabel
+          type="number"
+          value={rule.value || 0}
+          onChange={(e) => onChange({ ...rule, value: Number(e.target.value) })}
+          label="Value if Matching"
+        />
+
+        <InputWithLabel
+          type="number"
+          value={rule.valueIfNotMatch || 0}
+          onChange={(e) =>
+            onChange({ ...rule, valueIfNotMatch: Number(e.target.value) })
+          }
+          label="Value if NOT Matching"
+        />
+      </div>
     </div>
   );
 };
@@ -246,51 +262,106 @@ const PercentMultiplierRuleEditor = ({
   ...rule
 }: EditorProps<PercentMultiplierRule>) => {
   return (
-    <div>
-      <h1>Percent multiplier rule</h1>
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium leading-6 text-gray-900">
+        Percent Multiplier Rule
+      </h3>
+      <p className="mt-1 text-sm text-gray-500">
+        Apply a multiplier to percentage values with optional min/max
+        constraints.
+      </p>
+
       <FieldSelector
         {...rule}
         onChange={(data) => onChange({ ...rule, ...data })}
       />
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.multiplier}
-        label="Multiplier for value"
-      />
-      <InputWithLabel type="number" defaultValue={rule.min} label="Min value" />
-      <InputWithLabel type="number" defaultValue={rule.max} label="Max value" />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <InputWithLabel
+          type="number"
+          value={rule.multiplier || 0}
+          onChange={(e) =>
+            onChange({ ...rule, multiplier: Number(e.target.value) })
+          }
+          label="Multiplier"
+        />
+
+        <InputWithLabel
+          type="number"
+          value={rule.min || 0}
+          onChange={(e) => onChange({ ...rule, min: Number(e.target.value) })}
+          label="Minimum Value"
+        />
+
+        <InputWithLabel
+          type="number"
+          value={rule.max || 0}
+          onChange={(e) => onChange({ ...rule, max: Number(e.target.value) })}
+          label="Maximum Value"
+        />
+      </div>
     </div>
   );
 };
 
 const MatchRuleEditor = ({ onChange, ...rule }: EditorProps<MatchRule>) => {
   return (
-    <div>
-      <h1>Match value rule</h1>
-      <InputWithLabel
-        type="text"
-        defaultValue={String(rule.match)}
-        label="Match"
-      />
-      <InputWithLabel
-        type="checkbox"
-        defaultChecked={rule.invert ?? false}
-        label="Invert"
-      />
-      <FieldSelector
-        {...rule}
-        onChange={(data) => onChange({ ...rule, ...data })}
-      />
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.value}
-        label="Value if matching"
-      />
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.valueIfNotMatch}
-        label="Value if NOT matching"
-      />
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium leading-6 text-gray-900">
+        Match Value Rule
+      </h3>
+      <p className="mt-1 text-sm text-gray-500">
+        Apply a value if the selected field matches the specified value.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FieldSelector
+          {...rule}
+          onChange={(data) => onChange({ ...rule, ...data })}
+        />
+
+        <InputWithLabel
+          type="text"
+          value={String(rule.match || "")}
+          onChange={(e) => onChange({ ...rule, match: e.target.value })}
+          label="Match Value"
+          placeholder="Value to match"
+        />
+      </div>
+
+      <div className="flex items-center mt-4 bg-gray-50 p-3 rounded-md">
+        <input
+          id="invert"
+          name="invert"
+          type="checkbox"
+          checked={rule.invert ?? false}
+          onChange={(e) => onChange({ ...rule, invert: e.target.checked })}
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+        />
+        <label htmlFor="invert" className="ml-2 block text-sm text-gray-900">
+          Invert match (apply value when NOT matching)
+        </label>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <InputWithLabel
+          type="number"
+          value={rule.value || 0}
+          onChange={(e) => onChange({ ...rule, value: Number(e.target.value) })}
+          label="Value if Matching"
+          placeholder="Value to apply when matching"
+        />
+
+        <InputWithLabel
+          type="number"
+          value={rule.valueIfNotMatch || 0}
+          onChange={(e) =>
+            onChange({ ...rule, valueIfNotMatch: Number(e.target.value) })
+          }
+          label="Value if NOT Matching"
+          placeholder="Value to apply when not matching"
+        />
+      </div>
     </div>
   );
 };
@@ -300,41 +371,79 @@ const OutOfStockRuleEditor = ({
   ...rule
 }: EditorProps<OutOfStockRule>) => {
   return (
-    <div>
-      <h1>Inventory rule</h1>
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.noStoreMultiplier}
-        label="Multiplier for number of stock locations"
-      />
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.noStockValue}
-        label="Static value if product out of stock"
-      />
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium leading-6 text-gray-900">
+        Inventory Rule
+      </h3>
+      <p className="mt-1 text-sm text-gray-500">
+        Adjust ranking based on product inventory status.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <InputWithLabel
+          type="number"
+          value={rule.noStoreMultiplier || 0}
+          onChange={(e) =>
+            onChange({ ...rule, noStoreMultiplier: Number(e.target.value) })
+          }
+          label="Stock Locations Multiplier"
+          placeholder="Multiplier for stock locations"
+        />
+
+        <InputWithLabel
+          type="number"
+          value={rule.noStockValue || 0}
+          onChange={(e) =>
+            onChange({ ...rule, noStockValue: Number(e.target.value) })
+          }
+          label="Out of Stock Value"
+          placeholder="Value for out of stock items"
+        />
+      </div>
     </div>
   );
 };
 
 const RatingRuleEditor = ({ onChange, ...rule }: EditorProps<RatingRule>) => {
   return (
-    <div>
-      <h1>Rating rule</h1>
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.multiplier}
-        label="Multiplier"
-      />
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.subtractValue}
-        label="Value to subtract from rating before multiplying"
-      />
-      <InputWithLabel
-        type="number"
-        defaultValue={rule.valueIfNoMatch}
-        label="Value if no match"
-      />
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium leading-6 text-gray-900">
+        Rating Rule
+      </h3>
+      <p className="mt-1 text-sm text-gray-500">
+        Adjust ranking based on product ratings.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <InputWithLabel
+          type="number"
+          value={rule.multiplier || 0}
+          onChange={(e) =>
+            onChange({ ...rule, multiplier: Number(e.target.value) })
+          }
+          label="Rating Multiplier"
+        />
+
+        <InputWithLabel
+          type="number"
+          value={rule.subtractValue || 0}
+          onChange={(e) =>
+            onChange({ ...rule, subtractValue: Number(e.target.value) })
+          }
+          label="Subtract from Rating"
+          placeholder="Value to subtract"
+        />
+
+        <InputWithLabel
+          type="number"
+          value={rule.valueIfNoMatch || 0}
+          onChange={(e) =>
+            onChange({ ...rule, valueIfNoMatch: Number(e.target.value) })
+          }
+          label="No Rating Value"
+          placeholder="Value if no rating"
+        />
+      </div>
     </div>
   );
 };
@@ -342,17 +451,25 @@ const RatingRuleEditor = ({ onChange, ...rule }: EditorProps<RatingRule>) => {
 const RuleComponent = (props: EditorProps<Rule>) => {
   switch (props.$type) {
     case "MatchRule":
-      return <MatchRuleEditor {...props} />;
+      return <MatchRuleEditor {...(props as EditorProps<MatchRule>)} />;
     case "DiscountRule":
-      return <DiscountRuleEditor {...props} />;
+      return <DiscountRuleEditor {...(props as EditorProps<DiscountRule>)} />;
     case "OutOfStockRule":
-      return <OutOfStockRuleEditor {...props} />;
+      return (
+        <OutOfStockRuleEditor {...(props as EditorProps<OutOfStockRule>)} />
+      );
     case "NumberLimitRule":
-      return <NumberLimitRuleEditor {...props} />;
+      return (
+        <NumberLimitRuleEditor {...(props as EditorProps<NumberLimitRule>)} />
+      );
     case "PercentMultiplierRule":
-      return <PercentMultiplierRuleEditor {...props} />;
+      return (
+        <PercentMultiplierRuleEditor
+          {...(props as EditorProps<PercentMultiplierRule>)}
+        />
+      );
     case "RatingRule":
-      return <RatingRuleEditor {...props} />;
+      return <RatingRuleEditor {...(props as EditorProps<RatingRule>)} />;
     default:
       return <div>Not implemented</div>;
   }
@@ -360,18 +477,29 @@ const RuleComponent = (props: EditorProps<Rule>) => {
 
 const RuleEditor = (rule: Rule & { onChange: (data: Rule) => void }) => {
   return (
-    <div className="border p-4 rounded-md bg-white">
-      <RuleComponent {...rule} />
-      <select
-        value={rule.$type}
-        onChange={(e) => rule.onChange({ $type: e.target.value } as Rule)}
-      >
-        {ruleTypes.map((type) => (
-          <option key={type} value={type}>
-            {type}
-          </option>
-        ))}
-      </select>
+    <div className="border rounded-lg shadow-sm bg-white overflow-hidden">
+      <div className="px-6 py-4">
+        <RuleComponent {...rule} />
+      </div>
+
+      <div className="bg-gray-50 px-6 py-3 border-t">
+        <div className="flex justify-between items-center">
+          <label className="block text-sm font-medium text-gray-700">
+            Rule Type
+          </label>
+          <select
+            value={rule.$type}
+            onChange={(e) => rule.onChange({ $type: e.target.value } as Rule)}
+            className="mt-1 block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          >
+            {ruleTypes.map((type) => (
+              <option key={type} value={type}>
+                {type.replace(/Rule$/, "")}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
     </div>
   );
 };
@@ -384,21 +512,74 @@ export const RuleBuilder = () => {
     "popularityRules",
     (_, { arg }: { arg: Rules }) => setPopularityRules(arg)
   );
+
   const updateRule = (index: number) => (rule: Rule) => {
     const payload = data?.map((r, i) => (i === index ? rule : r)) ?? [];
-    mutate(payload);
-    update.trigger(data?.map((r, i) => (i === index ? rule : r)) ?? []);
+    mutate(payload,{ revalidate: false });
+    update.trigger(payload);
   };
+
+  const addNewRule = () => {
+    const newRule: MatchRule = {
+      $type: "MatchRule",
+      match: "",
+      source: "property",
+      property: "Title",
+      value: 1,
+      valueIfNotMatch: 0,
+    };
+
+    const newRules = [...(data || []), newRule];
+    mutate(newRules,{ revalidate: false });
+    update.trigger(newRules);
+  };
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1>RuleBuilder</h1>
-      <div className="flex flex-col gap-8">
+    <div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">
+          Popularity Rules Builder
+        </h1>
+        <p className="mt-2 text-gray-600">
+          Configure rules to determine item popularity and influence search
+          result ranking.
+        </p>
+      </div>
+
+      <div className="space-y-6">
         {data?.map((rule, index) => (
           <RuleEditor key={index} {...rule} onChange={updateRule(index)} />
         ))}
+
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={addNewRule}
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            <svg
+              className="-ml-1 mr-2 h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Add New Rule
+          </button>
+        </div>
       </div>
     </div>
   );

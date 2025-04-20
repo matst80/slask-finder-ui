@@ -33,10 +33,10 @@ export const AdminNavBar = () => {
               </Link>
 
               <Link
-                to="/updated"
+                to="/edit/rules"
                 className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium flex-shrink-0"
               >
-                Updates items
+                Rules
               </Link>
               <Link
                 to="/edit/relations"
