@@ -1,0 +1,34 @@
+"use client";
+import { useFacetList } from "./slask-finder/searchHooks";
+import { Item } from "./slask-finder/slask-finder.types";
+
+export const ImportantFacets = ({
+  tableFacets,
+  values,
+}: {
+  tableFacets: number[];
+  values: Item["values"];
+}) => {
+  const { data } = useFacetList();
+  return (
+    <div className="hidden md:flex flex-wrap gap-2 mt-4">
+      {tableFacets.map((id) => {
+        const value = values[id];
+        if (value == null) return null;
+        return (
+          <div
+            key={id}
+            className="px-2 py-1 bg-buybox-gray rounded-xl text-xs font-bold"
+          >
+            <span className="text-gray-500">
+              {data?.find((d) => d.id == id)?.name}:&nbsp;
+            </span>
+            <span className="text-blue-700">
+              {Array.isArray(value) ? value.join(", ") : value}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
