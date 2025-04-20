@@ -1,9 +1,17 @@
 import { createContext } from "react";
-import { ItemsQuery, Facet, Item, NumberField, HistoryQuery } from "../types";
+import {
+  ItemsQuery,
+  Facet,
+  Item,
+  NumberField,
+  HistoryQuery,
+  KeyFacet,
+} from "../types";
 
 type QueryContextType = {
   query: ItemsQuery;
   facets: Facet[];
+  categoryFacets: KeyFacet[];
   hits: Item[];
   totalHits: number;
   isLoading: boolean;

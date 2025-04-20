@@ -23,3 +23,25 @@ export const HitList = <T extends { item: Item }>({
     </div>
   );
 };
+
+export const HitListFragment = <T extends { item: Item }>({
+  children,
+  
+  ...props
+}: {
+  children: (props: T) => ReactNode;
+  
+} & Omit<T, "item">) => {
+  const { hits } = useQuery();
+  return (
+    <Fragment>
+      {hits.map((item) => {
+        return (
+          <Fragment key={item.id}>
+            {children({ ...props, item } as unknown as T)}
+          </Fragment>
+        );
+      })}
+    </Fragment>
+  );
+};

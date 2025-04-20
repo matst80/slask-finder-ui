@@ -3,7 +3,7 @@ import { makeImageUrl } from "../utils";
 import { Price } from "./Price";
 import { Stars } from "./Stars";
 
-import { useState } from "react";
+import { PropsWithChildren, useState } from "react";
 import { trackClick } from "../lib/datalayer/beacons";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
@@ -105,12 +105,13 @@ export const ResultItemInner = ({
   badgeUrl,
   values,
   stock,
+  children,
   bp,
   stockLevel,
   lastUpdate,
   disclaimer,
   advertisingText,
-}: Item) => {
+}: PropsWithChildren<Item>) => {
   const hasRating = values["6"] != null && values["7"] != null;
   const soldBy = values["9"];
   return (
@@ -163,7 +164,7 @@ export const ResultItemInner = ({
         </ul>
 
         <Price size="large" values={values} disclaimer={disclaimer} />
-
+        {children}
         {/* <CompatibleButton values={values} /> */}
         {advertisingText != null && (
           <em className="italic text-xs">{advertisingText}</em>
@@ -221,7 +222,7 @@ export const DataView = ({ item }: { item: Item }) => {
 export const ResultItem = ({
   position,
   ...item
-}: Item & {
+}:  Item & {
   position: number;
 }) => {
   //return <DataView item={item} />;

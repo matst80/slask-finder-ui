@@ -1,4 +1,4 @@
-export const trackClick = (id: string, position: number) =>
+export const trackClick = (id: string | number, position: number) =>
   globalThis.navigator.sendBeacon(`/track/click?id=${id}&pos=${position}`);
 
 export type Impression = { id: number; position: number };
