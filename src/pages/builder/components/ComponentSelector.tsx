@@ -299,7 +299,7 @@ export const ComponentSelector = ({
             </div> */}
             {view === "list" ? (
               
-                <HitList className="grid grid-cols-3">{({item})=>(<ToggleResultItem
+                <HitList className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">{({item})=>(<ToggleResultItem
                     key={item.id}
                     {...item}
                     tableFacets={importantFacets}
