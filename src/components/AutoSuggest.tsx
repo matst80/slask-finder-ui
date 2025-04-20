@@ -9,7 +9,7 @@ import {
 import { Search, SearchIcon } from "lucide-react";
 import { cm, makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
-import { useQuery } from "../lib/hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/useQuery";
 import { StockIndicator } from "./ResultItem";
 import { useSuggestions } from "../lib/hooks/useSuggestions";
 import { trackClick } from "../lib/datalayer/beacons";

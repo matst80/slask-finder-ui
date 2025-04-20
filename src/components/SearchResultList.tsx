@@ -1,5 +1,5 @@
 import { ResultItem } from "./ResultItem";
-import { useQuery } from "../lib/hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/useQuery";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 
 // const searchList = [

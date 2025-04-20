@@ -1,24 +1,14 @@
-import {
-  Fragment,
-  PropsWithChildren,
-  ReactNode,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { PropsWithChildren, useMemo, useRef, useState } from "react";
 import { useFacetList } from "../hooks/searchHooks";
 import { FilteringQuery, Item, ItemsQuery, ItemValues } from "../lib/types";
 import { ResultItemInner } from "./ResultItem";
 import { cm, isDefined } from "../utils";
 import { PriceValue } from "./Price";
 import { Facets } from "./Facets";
-import {
-  mergeFilters,
-  QueryProvider,
-  QueryProviderRef,
-  useQuery,
-} from "../lib/hooks/QueryProvider";
+import { QueryProvider, QueryProviderRef } from "../lib/hooks/QueryProvider";
 import { QueryMerger } from "./QueryMerger";
+import { HitList } from "./HitList";
+import { mergeFilters } from "../lib/hooks/queryUtils";
 
 type AdditionalFilter = {
   id: number;
@@ -508,28 +498,6 @@ const isStringFilter = (
 ): d is { id: number; to: number; value: string[] } => {
   return (
     "value" in d && (Array.isArray(d.value) || typeof d.value === "string")
-  );
-};
-
-export const HitList = <T extends { item: Item }>({
-  children,
-  className,
-  ...props
-}: {
-  children: (props: T) => ReactNode;
-  className?: string;
-} & Omit<T, "item">) => {
-  const { hits } = useQuery();
-  return (
-    <div className={className}>
-      {hits.map((item) => {
-        return (
-          <Fragment key={item.id}>
-            {children({ ...props, item } as unknown as T)}
-          </Fragment>
-        );
-      })}
-    </div>
   );
 };
 

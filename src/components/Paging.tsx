@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useQuery } from "../lib/hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/useQuery";
 
 export const Paging = () => {
   const {

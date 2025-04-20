@@ -1,6 +1,6 @@
 import { Filter } from "lucide-react";
 import { cm } from "../utils";
-import { useQuery } from "../lib/hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/useQuery";
 
 type Props = {
   show: boolean;

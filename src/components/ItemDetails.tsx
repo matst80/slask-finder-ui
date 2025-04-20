@@ -20,11 +20,12 @@ import { stores } from "../lib/datalayer/stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Price } from "./Price";
-import { QueryProvider, useQuery } from "../lib/hooks/QueryProvider";
+import { QueryProvider } from "../lib/hooks/QueryProvider";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import { useAdmin } from "../hooks/appState";
 import { getAdminItem } from "../lib/datalayer/api";
+import { useQuery } from "../lib/hooks/useQuery";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 

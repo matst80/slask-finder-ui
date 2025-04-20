@@ -2,10 +2,9 @@ import { SquareMinus, SquarePlus } from "lucide-react";
 import { useState } from "react";
 import { Category } from "../lib/types";
 import { textSize } from "../utils";
-import { useQuery } from "../lib/hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/useQuery";
 
-export const byName = (a: Category, b: Category) =>
-  a.value.localeCompare(b.value);
+const byName = (a: Category, b: Category) => a.value.localeCompare(b.value);
 
 export const CategoryItem = ({
   value,

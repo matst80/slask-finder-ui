@@ -3,7 +3,7 @@ import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { NumberFacet } from "../../lib/types";
 import { converters } from "../../utils";
 import { Slider } from "./Slider";
-import { useQueryRangeFacet } from "../../lib/hooks/QueryProvider";
+import { useQueryRangeFacet } from "../../lib/hooks/useQueryRangeFacet";
 
 type SelectedRange = {
   min: number;

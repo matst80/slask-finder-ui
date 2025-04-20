@@ -12,7 +12,7 @@ import {
   TableBody,
   TableCell,
 } from "../../components/ui/table";
-import { useQuery } from "../../lib/hooks/QueryProvider";
+import { useQuery } from "../../lib/hooks/useQuery";
 
 export const TableSearchResultList = () => {
   const {

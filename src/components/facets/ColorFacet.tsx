@@ -1,4 +1,4 @@
-import { useQueryKeyFacet } from "../../lib/hooks/QueryProvider";
+import { useQueryKeyFacet } from "../../lib/hooks/useQueryKeyFacet";
 import { KeyFacet } from "../../lib/types";
 import { colourNameToHex, cm } from "../../utils";
 

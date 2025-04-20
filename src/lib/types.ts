@@ -253,6 +253,8 @@ export type Cart = {
   totalPrice: number;
 };
 
+export type HistoryQuery = ItemsQuery & { key: string };
+
 export type CartItem = {
   id: number;
   image: string;

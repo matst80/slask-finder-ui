@@ -1,7 +1,7 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { KeyFacet } from "../../lib/types";
-import { useQueryKeyFacet } from "../../lib/hooks/QueryProvider";
+import { useQueryKeyFacet } from "../../lib/hooks/useQueryKeyFacet";
 
 const toSorted = (values: Record<string, number>, selected: Set<string>) =>
   Object.entries(values)

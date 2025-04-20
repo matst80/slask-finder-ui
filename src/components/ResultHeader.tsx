@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { Sorting } from "./Sorting";
 import { SelectedStore } from "./StoreSelector";
 
-import { useQuery } from "../lib/hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/useQuery";
 import { FilterQuery } from "./FilterQuery";
 import { facetQueryToHash } from "../hooks/searchHooks";
 import { Button } from "./ui/button";

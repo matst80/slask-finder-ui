@@ -6,7 +6,7 @@ import { Stars } from "./Stars";
 import { useState } from "react";
 import { trackClick } from "../lib/datalayer/beacons";
 import { Link } from "react-router-dom";
-import { useQuery } from "../lib/hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/useQuery";
 import { useImpression } from "../lib/hooks/ImpressionProvider";
 import { TimeAgo } from "./TimeAgo";
 

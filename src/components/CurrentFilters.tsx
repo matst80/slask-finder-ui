@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { FacetListItem, Field, isNumberValue } from "../lib/types";
 import { stores } from "../lib/datalayer/stores";
 import { useFacetList } from "../hooks/searchHooks";
-import { useQuery } from "../lib/hooks/QueryProvider";
+import { useQuery } from "../lib/hooks/useQuery";
 import { isDefined } from "../utils";
 
 function toFilter(facets?: FacetListItem[]) {

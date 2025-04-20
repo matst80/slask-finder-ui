@@ -3,7 +3,7 @@ import { Input } from "../../components/ui/input";
 import { FacetListItem } from "../../lib/types";
 import { useFieldValues, useUpdateFacet } from "../../adminHooks";
 import { Button, ButtonLink } from "../../components/ui/button";
-import { useQuery } from "../../lib/hooks/QueryProvider";
+import { useQuery } from "../../lib/hooks/useQuery";
 import fuzzysort from "fuzzysort";
 import { FilterIcon, SearchIcon } from "lucide-react";
 
