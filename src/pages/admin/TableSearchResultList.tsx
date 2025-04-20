@@ -73,7 +73,7 @@ export const TableSearchResultList = () => {
               {items.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>
-                    <Checkbox name={product.id} />
+                    <Checkbox name={String(product.id)} />
                   </TableCell>
                   <TableCell className="font-bold">{product.title}</TableCell>
                   <TableCell>{product.values["10"]}</TableCell>
