@@ -14,7 +14,7 @@ export const trackAction = (payload: { action: string; reason: string }) =>
 
 export const trackSuggest = (payload: {
   value: string;
-  items: number;
+  results: number;
   suggestions: number;
 }) =>
   globalThis.navigator.sendBeacon(`/track/suggest`, JSON.stringify(payload));

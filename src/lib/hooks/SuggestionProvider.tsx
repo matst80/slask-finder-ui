@@ -159,7 +159,7 @@ export const SuggestionProvider = ({
         };
       });
       trackSuggest({
-        items: state.items.length,
+        results: state.items.length,
         suggestions: state.suggestions.length,
         value,
       });

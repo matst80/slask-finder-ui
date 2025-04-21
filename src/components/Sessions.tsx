@@ -121,17 +121,16 @@ const ActionEventElement = ({ action, reason }: ActionEvent) => {
 };
 
 const SuggestionEventElement = (props: SuggestionEvent) => {
-  const { value, items, suggestions } = props;
-  console.log("suggestion", props);
+  const { value, results, suggestions } = props;
+
   return (
     <div>
       <span className="font-bold">
-        <Sparkles className="size-4 inline-block" /> Suggestions
+        <Sparkles className="size-4 inline-block" /> Suggestions: {value}
       </span>
       <div className="mt-1">
-        <div>Value: {value}</div>
-        <div>Items: {items}</div>
-        <div>Suggestions: {suggestions}</div>
+        <div>Items: {results}</div>
+        <div>Suggested words: {suggestions}</div>
       </div>
     </div>
   );

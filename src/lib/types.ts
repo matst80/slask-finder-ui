@@ -580,6 +580,6 @@ export type PopularFacet = {
 export type SuggestionEvent = BaseEvent & {
   event: 7;
   value: string;
-  items: number;
+  results: number;
   suggestions: number;
 };
