@@ -15,7 +15,6 @@ import { useFacetList } from "../hooks/searchHooks";
 import { Eye, Flashlight, Search, ShoppingCart, Sparkles } from "lucide-react";
 import { Link, useLoaderData } from "react-router-dom";
 import { TimeAgo } from "./TimeAgo";
-import { Button } from "./ui/button";
 
 const SearchEventElement = ({ string }: SearchEvent) => {
   const { data } = useFacetList();
@@ -284,30 +283,49 @@ const getDeviceFromUserAgent = (user_agent?: string) => {
   return user_agent.split(" ")[0];
 };
 
+const getBrowserFromUserAgent = (user_agent?: string) => {
+  if (!user_agent) {
+    return null;
+  }
+  if (user_agent.includes("Chrome")) {
+    return "Chrome";
+  }
+  if (user_agent.includes("Firefox")) {
+    return "Firefox";
+  }
+  if (user_agent.includes("Safari")) {
+    return "Safari";
+  }
+  if (user_agent.includes("Edge")) {
+    return "Edge";
+  }
+
+  return user_agent.split(" ")[1];
+};
 const Session = (props: SessionData) => {
   const { user_agent, ip, language, id } = props;
 
   return (
-    <Button variant="outline">
-      <Link
-        to={`/stats/session/${id}`}
-        className="min-w-fit flex flex-col"
-        //onClick={() => setOpen((p) => !p)}
-      >
-        <div title={user_agent}>
-          {trimLanguage(language)}, {getDeviceFromUserAgent(user_agent)}
-          {ip != null && ip.length ? ` (${ip.trim()})` : ""}
+    <Link
+      to={`/stats/session/${id}`}
+      className="min-w-fit flex flex-col p-4 bg-white rounded-sm shadow-sm hover:shadow-md transition-shadow"
+    >
+      <div className="text-lg font-medium mb-2" title={user_agent}>
+        {trimLanguage(language)}, {getDeviceFromUserAgent(user_agent)}{" "}
+        {getBrowserFromUserAgent(user_agent)}
+        {ip != null && ip.length ? ` (${ip.trim()})` : ""}
+      </div>
+      <div className="flex justify-between text-sm text-gray-600">
+        <div className="flex flex-col">
+          <span className="text-xs text-gray-500">Created</span>
+          <TimeAgo ts={props.ts * 1000} />
         </div>
-        <div className="flex justify-between">
-          <div className="text-sm  px-2 py-1">
-            <TimeAgo ts={props.ts * 1000} />
-          </div>
-          <div className="text-sm  px-2 py-1">
-            <TimeAgo ts={props.last_update * 1000} />
-          </div>
+        <div className="flex flex-col">
+          <span className="text-xs text-gray-500">Last Activity</span>
+          <TimeAgo ts={props.last_update * 1000} />
         </div>
-      </Link>
-    </Button>
+      </div>
+    </Link>
   );
 };
 

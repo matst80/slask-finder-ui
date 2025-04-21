@@ -1,32 +1,22 @@
-import { Link, Outlet } from "react-router-dom";
-import { Button } from "../components/ui/button";
+import { Outlet } from "react-router-dom";
+import { ButtonLink } from "../components/ui/button";
 import { Sessions } from "../components/Sessions";
 
 export const Tracking = () => {
   return (
     <div className="grid grid-cols-[25rem,auto] min-h-screen">
-      <div className="border-r border-gray-300 py-10 px-5">
+      <div className="border-r border-gray-300 py-10 px-5 flex flex-col gap-4 bg-gray-50 sticky top-0">
         <div className="flex flex-col gap-4 pb-6">
-          <Button variant="outline">
-            <Link to="/stats/queries" className="font-bold block">
-              Queries
-            </Link>
-          </Button>
+          <ButtonLink to="/stats/queries">Queries</ButtonLink>
 
-          <Button variant="outline">
-            <Link to="/stats/popular" className="font-bold block">
-              Popular items
-            </Link>
-          </Button>
+          <ButtonLink to="/stats/popular">Popular items</ButtonLink>
 
-          <Button variant="outline">
-            <Link to="/stats/facets" className="font-bold block">
-              Popular facets
-            </Link>
-          </Button>
+          <ButtonLink to="/stats/facets">Popular facets</ButtonLink>
         </div>
         <h3 className="font-bold">Sessions</h3>
-        <Sessions />
+        <div className="flex-1 overflow-y-auto">
+          <Sessions />
+        </div>
       </div>
       <div className="p-10">
         <Outlet />
