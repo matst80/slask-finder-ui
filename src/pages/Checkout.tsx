@@ -1,8 +1,17 @@
 import { useEffect, useRef } from "react";
 import { getCheckout } from "../lib/datalayer/cart-api";
+import { useCart } from "../hooks/cartHooks";
+import { trackEnterCheckout } from "../lib/datalayer/beacons";
 
 export const Checkout = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const { data: cart } = useCart();
+  useEffect(() => {
+    if (!cart?.items) return;
+    trackEnterCheckout({
+      items: cart.items.map((item) => ({ item: item.id, quantity: item.qty })),
+    });
+  }, [cart]);
   useEffect(() => {
     if (!ref.current) return;
     getCheckout().then((data) => {

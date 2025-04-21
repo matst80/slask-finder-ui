@@ -106,7 +106,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
               <span className="text-lg font-bold">{totalPrice / 100} kr</span>
             </div>
             <div className="mt-6 w-full">
-              {cart?.orderReference ? (
+              {cart?.paymentStatus === "checkout_completed" ? (
                 <ButtonLink
                   onClick={onClose}
                   to={`/confirmation/${cart.orderReference}`}
@@ -134,8 +134,8 @@ export const MiniCart = () => {
     () =>
       isLoading
         ? "~"
-        : cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0,
-    [cart, isLoading]
+        : (cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0),
+    [cart, isLoading],
   );
 
   useEffect(() => {

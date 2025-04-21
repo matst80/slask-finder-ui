@@ -6,7 +6,7 @@ export type Impression = { id: number; position: number };
 export const trackImpression = (impressions: Impression[]) =>
   globalThis.navigator.sendBeacon(
     `/track/impressions`,
-    JSON.stringify([...impressions])
+    JSON.stringify([...impressions]),
   );
 
 export const trackAction = (payload: { action: string; reason: string }) =>
@@ -24,3 +24,11 @@ export const trackCart = (payload: {
   quantity: number;
   type: "add" | "quantity" | "remove";
 }) => globalThis.navigator.sendBeacon(`/track/cart`, JSON.stringify(payload));
+
+export const trackEnterCheckout = (data: {
+  items: { item: number; quantity: number }[];
+}) =>
+  globalThis.navigator.sendBeacon(
+    `/track/enter-checkout`,
+    JSON.stringify(data),
+  );
