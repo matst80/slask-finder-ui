@@ -382,7 +382,7 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
     const mp = Math.max(item.mp ?? 0, 0);
     const payPercentage = 100 / (100 - mp);
     return (
-      <div>
+      <div className="bg-orange-300 p-4">
         <PriceValue value={item.values[4] * payPercentage} />
         <span>({mp}%)</span>
       </div>
