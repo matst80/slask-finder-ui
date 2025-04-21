@@ -314,8 +314,9 @@ export type PromotionAction = {
 };
 
 export type BaseEvent = {
-  session_id: string;
+  id: string;
   ts: number;
+  last_update: number;
 };
 
 export type TrackedEvent =
@@ -323,7 +324,8 @@ export type TrackedEvent =
   | ImpressionEvent
   | SearchEvent
   | ClickEvent
-  | ActionEvent;
+  | ActionEvent
+  | SuggestionEvent;
 
 export type ActionEvent = BaseEvent & {
   event: 6;
@@ -573,4 +575,11 @@ export type PopularFacet = {
   id: number;
   score: number;
   values: { score: number; value: string }[];
+};
+
+export type SuggestionEvent = BaseEvent & {
+  event: 7;
+  value: string;
+  items: number;
+  suggestions: number;
 };

@@ -120,7 +120,7 @@ const router = createBrowserRouter([
         path: "session/:id",
         loader: ({ params: { id } }) =>
           getTrackingSessions().then((d) => {
-            return d.find((s) => String(s.session_id) === id);
+            return d.find((s) => String(s.id) === id);
           }),
         errorElement: <div>Session not found</div>,
         element: <SessionView />,

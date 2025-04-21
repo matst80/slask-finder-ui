@@ -15,6 +15,7 @@ export const TimeAgo = ({ ts }: { ts?: number }) => {
     }
     const initialDiff = utcNow() - ts;
     if (initialDiff > 60000 * 10) {
+      setDiff(initialDiff);
       return;
     }
     const interval = setInterval(

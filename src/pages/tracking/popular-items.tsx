@@ -6,23 +6,27 @@ import { makeImageUrl } from "../../utils";
 const PopularItem = ({ itemId, value }: { itemId: number; value: number }) => {
   const { data } = useItemData(itemId);
   return (
-    <div className="bg-black text-white aspect-square rounded-2xl relative flex flex-col items-center justify-center gap-4">
-      <div>
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 aspect-square rounded-2xl relative flex flex-col items-center justify-center gap-4 p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200">
+      <div className="w-full flex justify-center">
         {data != null && (
-          <div className="p-2 bg-white rounded-xl">
-            <img
-              src={makeImageUrl(data?.img)}
-              alt={data?.title}
-              className="size-32"
-            />
+          <div className="p-3 bg-white rounded-xl shadow-sm">
+            <div className="relative">
+              <img
+                src={makeImageUrl(data?.img)}
+                alt={data?.title}
+                className="size-32 object-contain mix-blend-multiply"
+              />
+            </div>
           </div>
         )}
       </div>
-      <span className="text-sm">{data?.title}</span>
+      <span className="text-sm font-medium text-center line-clamp-2">
+        {data?.title}
+      </span>
 
-      <h2 className="text-4xl font-bold absolute top-3 right-4">
-        {value.toFixed(2)}
-      </h2>
+      <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+        <h2 className="text-2xl font-bold text-gray-800">{value.toFixed(2)}</h2>
+      </div>
     </div>
   );
 };
@@ -30,12 +34,12 @@ const PopularItem = ({ itemId, value }: { itemId: number; value: number }) => {
 export const PopularItemsView = () => {
   const { data } = useSWR("/api/popular-items", getTrackingPopularity);
   return (
-    <div>
-      <h1 className="font-bold text-xl">Popular Items</h1>
-      <div className="grid grid-cols-5 gap-5">
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <h1 className="font-bold text-3xl mb-8 text-gray-800">Popular Items</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {Object.entries(data ?? {})
-          .sort(([_, a], [__, b]) => b - a)
-          .slice(0, 10)
+          .sort(([, a], [, b]) => b - a)
+          .slice(0, 20)
           .map(([item, value]) => (
             <PopularItem key={item} itemId={Number(item)} value={value} />
           ))}
