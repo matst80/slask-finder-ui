@@ -19,7 +19,7 @@ import {
 import { stores } from "../lib/datalayer/stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
-import { Price } from "./Price";
+import { Price, PriceValue } from "./Price";
 import { QueryProvider } from "../lib/hooks/QueryProvider";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
@@ -248,7 +248,7 @@ type PossibleValue = string | string[] | number | undefined;
 
 const hasRequiredValue = (
   requiredValue: PossibleValue,
-  value: PossibleValue
+  value: PossibleValue,
 ) => {
   if (value == null) return false;
   if (requiredValue == null) return value != null;
@@ -257,7 +257,7 @@ const hasRequiredValue = (
     return requiredValue.some((part) =>
       Array.isArray(value)
         ? value.includes(part)
-        : String(part) === String(value)
+        : String(part) === String(value),
     );
   }
   return String(requiredValue) === String(value);
@@ -275,7 +275,7 @@ const isRangeFilter = (d: NumberField | KeyField): d is NumberField => {
 
 const makeQuery = (
   group: RelationGroup,
-  values: ItemDetail["values"]
+  values: ItemDetail["values"],
 ): ItemsQuery => {
   const globalFilters =
     group.additionalQueries?.map((query) => {
@@ -310,7 +310,7 @@ const makeQuery = (
       }
       return acc;
     },
-    [[], []] as [ItemsQuery["string"], ItemsQuery["range"]]
+    [[], []] as [ItemsQuery["string"], ItemsQuery["range"]],
   );
 
   return {
@@ -354,8 +354,8 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
     return (
       data?.filter((group) =>
         group.requiredForItem.every((requirement) =>
-          hasRequiredValue(requirement.value, values[requirement.facetId])
-        )
+          hasRequiredValue(requirement.value, values[requirement.facetId]),
+        ),
       ) ?? []
     );
   }, [values, data]);
@@ -374,9 +374,35 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
   );
 };
 
+const PopulateAdminDetails = ({ id }: { id: number }) => {
+  const [isAdmin] = useAdmin();
+  const [item, setItem] = useState<ItemDetail | null>(null);
+  if (!isAdmin) return null;
+  if (item != null) {
+    const mp = Math.max(item.mp ?? 0, 0);
+    const payPercentage = 100 / (100 - mp);
+    return (
+      <div>
+        <PriceValue value={item.values[4] * payPercentage} />
+        <span>({mp}%)</span>
+      </div>
+    );
+  }
+  return (
+    <Button
+      size="sm"
+      variant="outline"
+      className="mt-2"
+      onClick={() => getAdminItem(id).then(setItem)}
+    >
+      Fetch details
+    </Button>
+  );
+};
+
 export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart, isMutating } = useAddToCart(details.id);
-  const isAdmin = useAdmin();
+
   if (!details) return null;
   const {
     sku,
@@ -406,33 +432,20 @@ export const ItemDetails = (details: ItemDetail) => {
           <Price values={values} disclaimer={disclaimer} />
         </span>
         <div className="flex justify-between">
-          <ul>
-            {bp?.split("\n").map((txt) => (
-              <li key={txt}>{txt}</li>
-            ))}
-          </ul>
+          <ul>{bp?.split("\n").map((txt) => <li key={txt}>{txt}</li>)}</ul>
           {(buyable || buyableInStore) && (
             <div>
               <button
                 className={cm(
                   "bg-blue-500 text-white px-4 py-2 transition-all rounded hover:bg-blue-600 flex",
-                  isMutating ? "animate-pulse" : ""
+                  isMutating ? "animate-pulse" : "",
                 )}
                 onClick={() => addToCart({ sku, quantity: 1 })}
               >
                 Lägg i kundvagn <ShoppingCart />
               </button>
               <StockList stock={stock} />
-              {isAdmin && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="mt-2"
-                  onClick={() => getAdminItem(id).then(console.log)}
-                >
-                  Test
-                </Button>
-              )}
+              <PopulateAdminDetails id={id} />
             </div>
           )}
         </div>

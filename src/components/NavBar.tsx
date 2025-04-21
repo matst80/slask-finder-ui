@@ -3,12 +3,20 @@ import { Button } from "./ui/button";
 import { Link, To } from "react-router-dom";
 import { cm } from "../utils";
 import { useIsAdmin, useUser } from "../adminHooks";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useEffect } from "react";
 import { MiniCart } from "./MiniCart";
+import { useAdmin } from "../hooks/appState";
 
 const UserButton = () => {
   const { data, isLoading } = useUser();
+  const [, setIsAdmin] = useAdmin();
   const loggedIn = data?.role != null;
+  useEffect(() => {
+    console.log("user changed", data);
+    if (data != null) {
+      setIsAdmin(data?.role != null);
+    }
+  }, [data, setIsAdmin]);
   return (
     <a href={loggedIn ? "/admin/logout" : "/admin/login"}>
       <Button
@@ -53,7 +61,7 @@ export function Navbar() {
                 <MenuLink to="/dashboard">Dashboard</MenuLink>
                 <MenuLink to="/builder">PC Builder</MenuLink>
                 <MenuLink to="/stats">Tracking</MenuLink>
-                
+
                 {isAdmin && <MenuLink to="/edit">Edit</MenuLink>}
               </div>
             </div>

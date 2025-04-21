@@ -77,6 +77,7 @@ export type ItemProps = {
   stockLevel?: string;
   badgeUrl: string;
   bp: string;
+  mp?: number;
   img: string;
   presaleDate: string;
   releaseDate: string;
