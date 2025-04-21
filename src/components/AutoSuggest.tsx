@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Search, SearchIcon } from "lucide-react";
+import { Crosshair, Lightbulb, Search, SearchIcon } from "lucide-react";
 import { cm, makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
@@ -50,48 +50,54 @@ const byBestHits = (a: ConvertedFacet, b: ConvertedFacet) => {
   return b.values[0].hits - a.values[0].hits;
 };
 
+const flatFacetIds = [2];
+
 const MatchingFacets = () => {
   const { facets, value: query } = useSuggestions();
   const { setQuery } = useQuery();
-  const [categories, other] = useMemo(() => {
-    const [a, b] = facets
+  const [flat, other] = useMemo(() => {
+    const [a, c] = facets
       .filter(
         (f) =>
           (f.valueType != null && f.valueType != "") ||
           (f.categoryLevel != null && f.categoryLevel > 0)
       )
       .reduce(
-        ([cat, rest], f) => {
-          if (f.categoryLevel != null && f.categoryLevel > 0) {
-            return [[...cat, f], rest];
+        ([flat, rest], f) => {
+          if ((f.categoryLevel != null && f.categoryLevel > 0) || flatFacetIds.includes(f.id)) {
+            return [[...flat, f], rest];
           }
-          return [cat, [...rest, f]];
+          
+
+          return [flat, [...rest, f]];
         },
         [[], []] as [typeof facets, typeof facets]
       );
     return [
-      a.sort(byCategoryLevel).flatMap(({ id, categoryLevel, values }) =>
+      a.sort(byCategoryLevel).flatMap(({ id, values, name, categoryLevel }) =>
         values.map((value) => ({
           ...value,
           id,
+          name,
           categoryLevel,
         }))
       ),
-      b.sort(byBestHits),
+      c.sort(byBestHits),
     ];
   }, [facets]);
 
-  const sortedCategories = useMemo(
+
+  const sortedFlat = useMemo(
     () =>
       fuzzysort
-        .go(query ?? "", categories, {
+        .go(query ?? "", flat, {
           limit: 10,
           threshold: 0.5,
           keys: ["value"],
         })
         .map((d) => d.obj),
 
-    [categories, query]
+    [flat, query]
   );
 
   const updateQuery = (value: string, id: number) => () => {
@@ -106,7 +112,7 @@ const MatchingFacets = () => {
     });
   };
 
-  const setCategory = (value: string, id: number) => () => {
+  const setFlat = (value: string, id: number) => () => {
     setQuery({
       string: [{ id, value: [value] }],
       query: undefined,
@@ -116,16 +122,17 @@ const MatchingFacets = () => {
   };
 
   return other.length ? (
-    <div className="bg-gray-100 border-t border-gray-200 p-2 grid grid-cols-1 md:grid-cols-2">
-      {sortedCategories.length > 0 && (
-        <div className="flex flex-col flex-wrap gap-1 p-2 text-sm">
-          {sortedCategories.map(({ hits, value, id }) => (
+    <div>
+      {sortedFlat.length > 0 && (
+        <div className="flex flex-col flex-wrap gap-1 p-2">
+          
+          {sortedFlat.map(({ hits, value, id,name }) => (
             <button
               key={value}
-              className="text-left flex items-center"
-              onClick={setCategory(value, id)}
-            >
-              Kategori: {value}
+              className="text-left flex items-center gap-2"
+              onClick={setFlat(value, id)}
+            ><Crosshair className="size-5" />
+              <span>{name}: {value}</span>
               <span className="ml-2 inline-flex items-center justify-center px-2 py-1 rounded-full bg-white text-xs">
                 {hits}
               </span>
@@ -133,17 +140,19 @@ const MatchingFacets = () => {
           ))}
         </div>
       )}
+      
       <div className="hidden md:block">
         {other.map((f) => (
           <div
             key={f.id}
-            className="flex gap-2 flex-wrap p-2 text-sm items-center"
+            className="p-2 flex gap-2 items-center"
           >
-            <span className="font-bold">{f.name}: </span>
+            <Lightbulb className="size-5" /><span>{f.name}</span>
+            
             {f.values.map(({ value, hits }) => (
               <button
                 key={value}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
+                className="border border-gray-200 bg-gray-100/50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
                 onClick={updateQuery(value, f.id)}
               >
                 {value}
@@ -152,6 +161,7 @@ const MatchingFacets = () => {
                 </span>
               </button>
             ))}
+            
           </div>
         ))}
       </div>
@@ -412,7 +422,7 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
       onClick={(e) => e.stopPropagation()}
     >
       {popularQueries != null && popularQueries.length > 0 && (
-        <SuggestionSection title="Populära sökningar">
+        <div>
           <div className="flex flex-col gap-2 p-2">
             {popularQueries.slice(undefined, 5).map(({ query, fields }) => (
               <button
@@ -447,7 +457,7 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
               </button>
             ))}
           </div>
-        </SuggestionSection>
+        </div>
       )}
       <MatchingFacets />
       {items.length > 0 && (
