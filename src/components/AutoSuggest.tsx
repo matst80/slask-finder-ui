@@ -64,10 +64,12 @@ const MatchingFacets = () => {
       )
       .reduce(
         ([flat, rest], f) => {
-          if ((f.categoryLevel != null && f.categoryLevel > 0) || flatFacetIds.includes(f.id)) {
+          if (
+            (f.categoryLevel != null && f.categoryLevel > 0) ||
+            flatFacetIds.includes(f.id)
+          ) {
             return [[...flat, f], rest];
           }
-          
 
           return [flat, [...rest, f]];
         },
@@ -85,7 +87,6 @@ const MatchingFacets = () => {
       c.sort(byBestHits),
     ];
   }, [facets]);
-
 
   const sortedFlat = useMemo(
     () =>
@@ -122,50 +123,43 @@ const MatchingFacets = () => {
   };
 
   return other.length ? (
-    <div>
-      {sortedFlat.length > 0 && (
-        <div className="flex flex-col flex-wrap gap-1 p-2">
-          
-          {sortedFlat.map(({ hits, value, id,name }) => (
+    <SuggestionSection title="Förslag">
+      {sortedFlat.map(({ value, id, name }) => (
+        <button
+          key={value}
+          className="text-left flex items-center gap-2"
+          onClick={setFlat(value, id)}
+        >
+          <Crosshair className="size-5" />
+          <span>
+            {name}: {value}
+          </span>
+          {/* <span className="ml-2 inline-flex items-center justify-center px-2 py-1 rounded-full bg-white text-xs">
+                {hits}
+              </span> */}
+        </button>
+      ))}
+
+      {other.map((f) => (
+        <div key={f.id} className="flex gap-2 items-center">
+          <Lightbulb className="size-5" />
+          <span>{f.name}</span>
+
+          {f.values.map(({ value }) => (
             <button
               key={value}
-              className="text-left flex items-center gap-2"
-              onClick={setFlat(value, id)}
-            ><Crosshair className="size-5" />
-              <span>{name}: {value}</span>
-              <span className="ml-2 inline-flex items-center justify-center px-2 py-1 rounded-full bg-white text-xs">
-                {hits}
-              </span>
+              className="border border-gray-200 bg-gray-100/50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
+              onClick={updateQuery(value, f.id)}
+            >
+              {value}
+              {/* <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
+                  {hits}
+                </span> */}
             </button>
           ))}
         </div>
-      )}
-      
-      <div className="hidden md:block">
-        {other.map((f) => (
-          <div
-            key={f.id}
-            className="p-2 flex gap-2 items-center"
-          >
-            <Lightbulb className="size-5" /><span>{f.name}</span>
-            
-            {f.values.map(({ value, hits }) => (
-              <button
-                key={value}
-                className="border border-gray-200 bg-gray-100/50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
-                onClick={updateQuery(value, f.id)}
-              >
-                {value}
-                <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
-                  {hits}
-                </span>
-              </button>
-            ))}
-            
-          </div>
-        ))}
-      </div>
-    </div>
+      ))}
+    </SuggestionSection>
   ) : null;
 };
 
@@ -416,48 +410,46 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
   return (
     <div
       className={cm(
-        "transition-all absolute block top-11 left-0 right-0 bg-white border-gray-300 rounded-b-md overflow-y-auto border-t-0",
+        "transition-all absolute block top-11 left-0 right-0 bg-white border-gray-300 rounded-b-md overflow-y-auto border-t-0 pt-1",
         open ? "shadow-xl max-h-[70vh] border" : "shadow-none max-h-0"
       )}
       onClick={(e) => e.stopPropagation()}
     >
       {popularQueries != null && popularQueries.length > 0 && (
-        <div>
-          <div className="flex flex-col gap-2 p-2">
-            {popularQueries.slice(undefined, 5).map(({ query, fields }) => (
-              <button
-                key={query}
-                className="flex gap-2 items-center text-left"
-                onClick={() => {
-                  setQuery((prev) => ({
-                    ...prev,
-                    query,
-                    string: fields.map(({ values, id }) => ({
-                      id,
-                      value: values.map((d) => d.value),
-                    })),
-                  }));
-                }}
-              >
-                <SearchIcon className="size-5" />
-                <span>{query}</span>
-                <div className="flex gap-2 text-xs">
-                  {fields.map(({ values, id, name }) => (
-                    <div
-                      key={id}
-                      className="px-2 py-1 rounded-full font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
-                    >
-                      <span key={id}>{name} </span>
-                      <span className="font-bold">
-                        {values.map((d) => d.value).join(", ")}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+        <SuggestionSection title="Populära sökningar">
+          {popularQueries.slice(undefined, 5).map(({ query, fields }) => (
+            <button
+              key={query}
+              className="flex gap-2 items-center text-left"
+              onClick={() => {
+                setQuery((prev) => ({
+                  ...prev,
+                  query,
+                  string: fields.map(({ values, id }) => ({
+                    id,
+                    value: values.map((d) => d.value),
+                  })),
+                }));
+              }}
+            >
+              <SearchIcon className="size-5" />
+              <span>{query}</span>
+              <div className="flex gap-2 text-xs">
+                {fields.map(({ values, id, name }) => (
+                  <div
+                    key={id}
+                    className="px-2 py-1 rounded-full font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
+                  >
+                    <span key={id}>{name} </span>
+                    <span className="font-bold">
+                      {values.map((d) => d.value).join(", ")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </button>
+          ))}
+        </SuggestionSection>
       )}
       <MatchingFacets />
       {items.length > 0 && (
@@ -516,27 +508,25 @@ const ContentHits = () => {
   const { content } = useSuggestions();
 
   return content?.length ? (
-    <SuggestionSection title="Innehåll">
-      <div className="overflow-x-auto max-w-full">
-        <div className="flex flex-nowrap">
-          {content.map(({ id, name, description, picture, url }) => (
-            <div key={id} className="p-2 flex-shrink-0 w-[300px]">
-              <ParsedImage picture={picture} />
-              <h3 className="font-bold line-clamp-1 text-ellipsis">{name}</h3>
-              <p className="line-clamp-3 text-ellipsis">{description}</p>
-              <a
-                href={url}
-                className="text-blue-500 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {name}
-              </a>
-            </div>
-          ))}
-        </div>
+    <div className="overflow-x-auto max-w-full">
+      <div className="flex flex-nowrap">
+        {content.map(({ id, name, description, picture, url }) => (
+          <div key={id} className="p-2 flex-shrink-0 w-[300px]">
+            <ParsedImage picture={picture} />
+            <h3 className="font-bold line-clamp-1 text-ellipsis">{name}</h3>
+            <p className="line-clamp-3 text-ellipsis">{description}</p>
+            <a
+              href={url}
+              className="text-blue-500 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {name}
+            </a>
+          </div>
+        ))}
       </div>
-    </SuggestionSection>
+    </div>
   ) : null;
 };
 
@@ -545,9 +535,9 @@ const SuggestionSection = ({
   title,
 }: PropsWithChildren<{ title: string }>) => {
   return (
-    <div>
-      <h2 className="font-bold p-2">{title}:</h2>
-      <div>{children}</div>
+    <div className="px-2 flex flex-col gap-2 border-b pb-2 mb-2 border-gray-100">
+      <h2 className="sr-only font-bold p-2">{title}:</h2>
+      {children}
     </div>
   );
 };
