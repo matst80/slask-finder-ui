@@ -19,5 +19,8 @@ export const trackSuggest = (payload: {
 }) =>
   globalThis.navigator.sendBeacon(`/track/suggest`, JSON.stringify(payload));
 
-export const trackCart = (payload: { item: number; quantity: number }) =>
-  globalThis.navigator.sendBeacon(`/track/cart`, JSON.stringify(payload));
+export const trackCart = (payload: {
+  item: number;
+  quantity: number;
+  type: "add" | "quantity" | "remove";
+}) => globalThis.navigator.sendBeacon(`/track/cart`, JSON.stringify(payload));

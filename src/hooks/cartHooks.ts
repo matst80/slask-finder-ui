@@ -29,7 +29,7 @@ export const useAddToCart = (itemId: number) => {
     trigger: async (item: { sku: string; quantity: number }) => {
       const data = await trigger(item);
       if (data) {
-        trackCart({ item: itemId, quantity: item.quantity });
+        trackCart({ item: itemId, quantity: item.quantity, type: "add" });
       }
       return data;
     },
@@ -37,9 +37,29 @@ export const useAddToCart = (itemId: number) => {
 };
 
 export const useChangeQuantity = () => {
-  return useFetchMutation(cartKey, changeQuantity);
+  const { trigger, ...rest } = useFetchMutation(cartKey, changeQuantity);
+  return {
+    ...rest,
+    trigger: async (item: { id: number; quantity: number }) => {
+      const data = await trigger(item);
+      if (data) {
+        trackCart({ item: item.id, quantity: item.quantity, type: "quantity" });
+      }
+      return data;
+    },
+  };
 };
 
 export const useRemoveFromCart = () => {
-  return useFetchMutation(cartKey, removeFromCart);
+  const { trigger, ...rest } = useFetchMutation(cartKey, removeFromCart);
+  return {
+    ...rest,
+    trigger: async (item: { id: number }) => {
+      const data = await trigger(item);
+      if (data) {
+        trackCart({ item: item.id, quantity: 0, type: "remove" });
+      }
+      return data;
+    },
+  };
 };
