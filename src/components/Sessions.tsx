@@ -261,6 +261,9 @@ const getDeviceFromUserAgent = (user_agent?: string) => {
   if (!user_agent) {
     return null;
   }
+  if (user_agent.includes("SM-")) {
+    return "Samsung";
+  }
   if (user_agent.includes("Android")) {
     return "Android";
   }
@@ -286,6 +289,9 @@ const getDeviceFromUserAgent = (user_agent?: string) => {
 const getBrowserFromUserAgent = (user_agent?: string) => {
   if (!user_agent) {
     return null;
+  }
+  if (user_agent.includes("SamsungBrowser")) {
+    return "Samsung Browser";
   }
   if (user_agent.includes("Chrome")) {
     return "Chrome";
