@@ -7,6 +7,7 @@ import {
   MemoryStick,
   Cpu,
   RefreshCw,
+  Lightbulb,
 } from "lucide-react";
 import { useDefaultMetricsQuery } from "../hooks/metricsHooks";
 
@@ -216,7 +217,7 @@ const CpuStats = () => {
 
 const UpsertsStats = () => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
-    `sum(slasktracking_processed_item_updates_total)`,
+    `sum(slaskfinder_index_updates_total)`,
     ({ data }) => ({
       label: "Total updates",
       data,
@@ -242,6 +243,34 @@ const UpsertsStats = () => {
   );
 };
 
+const SuggestStats = () => {
+  const { data, error, isLoading } = useDefaultMetricsQuery(
+    `sum(slaskfinder_suggest_total)`,
+    ({ data }) => ({
+      label: "Total suggestions",
+      data,
+    })
+  );
+
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const trend = previousValue
+    ? ((currentValue - previousValue) / previousValue) * 100
+    : 0;
+
+  return (
+    <StatCard
+      title="Total Suggestions"
+      value={currentValue.toLocaleString()}
+      error={error}
+      trend={trend}
+      icon={Lightbulb}
+      color="bg-gradient-to-br from-yellow-50 to-yellow-100"
+      isLoading={isLoading}
+    />
+  );
+};
+
 export const DashboardView = () => {
   return (
     <div className="container p-4 md:p-10">
@@ -253,6 +282,7 @@ export const DashboardView = () => {
         <MemoryStats />
         <CpuStats />
         <UpsertsStats />
+        <SuggestStats />
       </div>
     </div>
   );
