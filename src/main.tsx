@@ -29,7 +29,7 @@ import {
 import { RelationGroupEditor } from "./pages/admin/RelationGroupEditor.tsx";
 import { Checkout } from "./pages/Checkout.tsx";
 import { Confirmation } from "./pages/Confirmation.tsx";
-import { LocalStorageBuilder } from "./pages/builder/components/LocalStorageBuilder.tsx"
+import { LocalStorageBuilder } from "./pages/builder/components/LocalStorageBuilder.tsx";
 
 const router = createBrowserRouter([
   {
@@ -56,7 +56,7 @@ const router = createBrowserRouter([
       </PageContainer>
     ),
   },
-  
+
   {
     path: "edit",
     element: (
@@ -71,13 +71,9 @@ const router = createBrowserRouter([
       },
       { path: "bulk", element: <EditSearchView /> },
       {
-    path: "rules",
-    element: (
-    
-        <RuleBuilder />
-    
-    ),
-  },
+        path: "rules",
+        element: <RuleBuilder />,
+      },
       {
         path: "product/:id",
         loader: ({ params: { id } }) =>
@@ -182,5 +178,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </SWRConfig>
       </ImpressionProvider>
     </QueryProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

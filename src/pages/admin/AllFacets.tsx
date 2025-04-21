@@ -292,7 +292,7 @@ const FacetItem = ({ data }: { data: FacetListItem }) => {
         </div>
       </div>
       {open && (
-        <div className="border-t border-gray-200 p-4 space-y-4">
+        <div className="border-t bg-white border-gray-200 p-4 space-y-4">
           <FacetEditor data={data} />
           <FacetValues id={id} />
         </div>

@@ -1,151 +1,211 @@
-import { LoaderCircle } from "lucide-react";
-import { Chart, ChartOptions } from "react-charts";
+import { LoaderCircle, ArrowUp, ArrowDown } from "lucide-react";
 import { useDefaultMetricsQuery } from "../hooks/metricsHooks";
-import { atom, useAtom } from "jotai";
 
-const primaryCursorAtom = atom<Date | null>(null);
-// const secondaryCursorAtom = atom<number | null>(null);
-
-const useCursors = () => {
-  const [primary, setPrimary] = useAtom(primaryCursorAtom);
-
-  return {
-    primaryCursor: {
-      value: primary,
-      onChange: (value: Date) => {
-        setPrimary(value);
-      },
-    },
-  };
-};
-
-const SearchChart = () => {
-  const metricsData = useDefaultMetricsQuery(
-    `rate(slaskfinder_searches_total[1m])`,
-    ({ metric, data }) => ({
-      label: `Searches (${metric.instance})`,
-      data,
-    }),
-  );
-  return (
-    <ChartBox
-      title="Searches"
-      description="Here you can see the total number of searches"
-      {...metricsData}
-    />
-  );
-};
-
-const FacetSearchChart = () => {
-  const metricsData = useDefaultMetricsQuery(
-    `rate(slaskfinder_facets_total[1m])`,
-    ({ metric, data }) => ({
-      label: `Facet generations (${metric.instance})`,
-      data,
-    }),
-  );
-  return (
-    <ChartBox
-      title="Facet generations"
-      description="Here you can see the total number of facet generations"
-      {...metricsData}
-    />
-  );
-};
-
-export const TrackingEventsChart = () => {
-  const metricsData = useDefaultMetricsQuery(
-    `rate(slasktracking_processed_tracking_events_total[1m])`,
-    ({ metric, data }) => ({
-      label: `Processed tracking events (${metric.instance})`,
-      data,
-    }),
-  );
-  return (
-    <ChartBox
-      title="Tracking events"
-      description="Here you can see the total number of tracked events"
-      {...metricsData}
-    />
-  );
-};
-
-export const MemoryUsageChart = () => {
-  const metricsData = useDefaultMetricsQuery(
-    `avg (container_memory_working_set_bytes{container="slask-finder"}) by (container_name,pod)`,
-    ({ metric: { pod }, data }) => ({ label: `Memory usage (${pod})`, data }),
-  );
-  return (
-    <ChartBox
-      title="Memory usage"
-      description="Here you can see memory usage per pod"
-      {...metricsData}
-    />
-  );
-};
-
-type ChartBoxProps<T = unknown> = ChartOptions<T> & {
-  title: string;
-  description: string;
-  isEmpty: boolean;
-  isLoading: boolean;
-  error?: Error;
-};
-
-export function ChartBox<T>({
+const StatCard = ({
   title,
-  description,
-  isEmpty,
+  value,
   isLoading,
   error,
-  ...chartOptions
-}: ChartBoxProps<T>) {
-  const { primaryCursor } = useCursors();
-  if (isEmpty) {
-    return <div>Loading...</div>;
-  }
+  trend,
+}: {
+  title: string;
+  value: string | number;
+  isLoading: boolean;
+  error?: Error;
+  trend?: number;
+}) => {
+  const getTrendColor = (trend: number) => {
+    if (trend > 0) return "text-green-500";
+    if (trend < 0) return "text-red-500";
+    return "text-gray-500";
+  };
+
+  const getTrendIcon = (trend: number) => {
+    if (trend > 0) return <ArrowUp className="size-4" />;
+    if (trend < 0) return <ArrowDown className="size-4" />;
+    return null;
+  };
 
   return (
-    <div>
-      <h1 className="font-bold text-lg">
-        {title}{" "}
-        {isLoading && (
-          <LoaderCircle className="size-5 animate-spin inline-block ml-2" />
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h3 className="text-gray-500 text-sm font-medium">{title}</h3>
+      <div className="mt-2 flex items-baseline">
+        {isLoading ? (
+          <LoaderCircle className="size-5 animate-spin" />
+        ) : error ? (
+          <span className="text-red-500">Error loading data</span>
+        ) : (
+          <div className="flex items-center gap-2">
+            <p className="text-3xl font-semibold text-gray-900">{value}</p>
+            {trend !== undefined && (
+              <div className={`flex items-center ${getTrendColor(trend)}`}>
+                {getTrendIcon(trend)}
+                <span className="text-sm ml-1">
+                  {Math.abs(trend).toFixed(1)}%
+                </span>
+              </div>
+            )}
+          </div>
         )}
-      </h1>
-      <p>{description}</p>
-      <div className="w-full h-60 md:h-96">
-        <Chart options={{ ...chartOptions, primaryCursor }} />
       </div>
-      {error && <div>Error: {error.message}</div>}
     </div>
   );
-}
+};
 
-export const CpuUsageChart = () => {
-  const metricsData = useDefaultMetricsQuery(
-    `sum (rate (container_cpu_usage_seconds_total {container="slask-finder" } [1m])) by (pod)`,
-    ({ metric: { pod }, data }) => ({ label: `Cpu usage (${pod})`, data }),
+const SearchStats = () => {
+  const { data, isLoading, error } = useDefaultMetricsQuery(
+    `sum(slaskfinder_searches_total)`,
+    ({ data }) => ({
+      label: "Total searches",
+      data,
+    })
   );
+
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const trend = previousValue
+    ? ((currentValue - previousValue) / previousValue) * 100
+    : 0;
+
   return (
-    <ChartBox
-      title="CPU usage"
-      description="Here you can see CPU usage per pod"
-      {...metricsData}
+    <StatCard
+      title="Total Searches"
+      value={currentValue.toLocaleString()}
+      isLoading={isLoading}
+      error={error}
+      trend={trend}
     />
   );
 };
 
-export const UpsertsChart = () => {
-  const metricsData = useDefaultMetricsQuery(
-    `rate(slasktracking_processed_item_updates_total[1m])`,
-    ({ data }) => ({ label: `Updated items`, data }),
+const FacetStats = () => {
+  const { data, isLoading, error } = useDefaultMetricsQuery(
+    `sum(slaskfinder_facets_total)`,
+    ({ data }) => ({
+      label: "Total facets",
+      data,
+    })
   );
+
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const trend = previousValue
+    ? ((currentValue - previousValue) / previousValue) * 100
+    : 0;
+
   return (
-    <ChartBox
-      title="Updated items"
-      description="Rate of updated items per minute"
-      {...metricsData}
+    <StatCard
+      title="Total Facet Generations"
+      value={currentValue.toLocaleString()}
+      isLoading={isLoading}
+      error={error}
+      trend={trend}
+    />
+  );
+};
+
+const TrackingEventsStats = () => {
+  const { data, isLoading, error } = useDefaultMetricsQuery(
+    `sum(slasktracking_processed_tracking_events_total)`,
+    ({ data }) => ({
+      label: "Total tracking events",
+      data,
+    })
+  );
+
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const trend = previousValue
+    ? ((currentValue - previousValue) / previousValue) * 100
+    : 0;
+
+  return (
+    <StatCard
+      title="Total Tracking Events"
+      value={currentValue.toLocaleString()}
+      isLoading={isLoading}
+      error={error}
+      trend={trend}
+    />
+  );
+};
+
+const MemoryStats = () => {
+  const { data, isLoading, error } = useDefaultMetricsQuery(
+    `avg(container_memory_working_set_bytes{container="slask-finder"})`,
+    ({ data }) => ({
+      label: "Memory usage",
+      data,
+    })
+  );
+
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const trend = previousValue
+    ? ((currentValue - previousValue) / previousValue) * 100
+    : 0;
+  const memoryUsageGB = (currentValue / (1024 * 1024 * 1024)).toFixed(2);
+
+  return (
+    <StatCard
+      title="Average Memory Usage"
+      value={`${memoryUsageGB} GB`}
+      isLoading={isLoading}
+      error={error}
+      trend={trend}
+    />
+  );
+};
+
+const CpuStats = () => {
+  const { data, isLoading, error } = useDefaultMetricsQuery(
+    `sum(rate(container_cpu_usage_seconds_total{container="slask-finder"}[1m]))`,
+    ({ data }) => ({
+      label: "CPU usage",
+      data,
+    })
+  );
+
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const trend = previousValue
+    ? ((currentValue - previousValue) / previousValue) * 100
+    : 0;
+  const cpuUsagePercent = (currentValue * 100).toFixed(1);
+
+  return (
+    <StatCard
+      title="CPU Usage"
+      value={`${cpuUsagePercent}%`}
+      isLoading={isLoading}
+      error={error}
+      trend={trend}
+    />
+  );
+};
+
+const UpsertsStats = () => {
+  const { data, isLoading, error } = useDefaultMetricsQuery(
+    `sum(slasktracking_processed_item_updates_total)`,
+    ({ data }) => ({
+      label: "Total updates",
+      data,
+    })
+  );
+
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const trend = previousValue
+    ? ((currentValue - previousValue) / previousValue) * 100
+    : 0;
+
+  return (
+    <StatCard
+      title="Total Item Updates"
+      value={currentValue.toLocaleString()}
+      isLoading={isLoading}
+      error={error}
+      trend={trend}
     />
   );
 };
@@ -153,13 +213,14 @@ export const UpsertsChart = () => {
 export const DashboardView = () => {
   return (
     <div className="container p-4 md:p-10">
-      <div className="md:grid md:grid-cols-2">
-        <SearchChart />
-        <FacetSearchChart />
-        <CpuUsageChart />
-        <MemoryUsageChart />
-        <TrackingEventsChart />
-        <UpsertsChart />
+      <h1 className="text-2xl font-bold mb-6">System Statistics</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <SearchStats />
+        <FacetStats />
+        <TrackingEventsStats />
+        <MemoryStats />
+        <CpuStats />
+        <UpsertsStats />
       </div>
     </div>
   );
