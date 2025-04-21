@@ -89,6 +89,17 @@ export const useUpdateFacet = () => {
   return trigger;
 };
 
+export const useDeleteFacet = () => {
+  const { trigger } = useSWRMutation(
+    "/admin/facets",
+    (_: string, { arg }: { arg: { id: number } }) =>
+      fetch(`/admin/facets/${arg.id}`, {
+        method: "DELETE",
+      })
+  );
+  return trigger;
+};
+
 export const useRelationGroupsMutation = () => {
   const { trigger } = useSWRMutation(
     "admin-relationGroups",

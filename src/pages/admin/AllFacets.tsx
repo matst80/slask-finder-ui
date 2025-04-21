@@ -1,15 +1,22 @@
 import { useMemo, useState } from "react";
 import {
   useAdminFacets,
+  useDeleteFacet,
   useFieldValues,
   useUpdateFacet,
 } from "../../adminHooks";
 import fuzzysort from "fuzzysort";
 import { byPriority } from "../../utils";
 import { Button } from "../../components/ui/button";
-import { deleteFacet } from "../../lib/datalayer/api";
 import { Input } from "../../components/ui/input";
-import { FilterIcon, SearchIcon, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  FilterIcon,
+  SearchIcon,
+  ChevronDown,
+  ChevronUp,
+  XIcon,
+  EyeOffIcon,
+} from "lucide-react";
 import { useQuery } from "../../lib/hooks/useQuery";
 import { FacetListItem } from "../../lib/types";
 
@@ -106,9 +113,31 @@ const FacetValues = ({ id }: { id: number }) => {
   );
 };
 
+type ConfirmButtonProps = {
+  onConfirm: () => void;
+  title?: string;
+};
+
+const ConfirmButton = ({ onConfirm, title }: ConfirmButtonProps) => {
+  const [confirm, setConfirm] = useState(false);
+
+  if (!confirm)
+    return (
+      <Button variant="outline" onClick={() => setConfirm(true)}>
+        <XIcon className="size-5" />
+      </Button>
+    );
+  return (
+    <Button title={title} variant="outline" onClick={onConfirm}>
+      Confirm
+    </Button>
+  );
+};
+
 const FacetEditor = ({ data }: { data: FacetListItem }) => {
   const [value, setValue] = useState<FacetListItem>(data);
   const saveFacet = useUpdateFacet();
+  const deleteFacet = useDeleteFacet();
 
   return (
     <div className="p-4 rounded-md ">
@@ -219,8 +248,12 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
           </label>
         </div>
       </div>
-      <div className="mt-4 flex justify-end">
+      <div className="mt-4 flex justify-end gap-2">
         <Button onClick={() => saveFacet(value)}>Save Changes</Button>
+        <ConfirmButton
+          onConfirm={() => deleteFacet({ id: value.id })}
+          title="Delete facet"
+        />
       </div>
     </div>
   );
@@ -229,15 +262,11 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
 const FacetItem = ({ data }: { data: FacetListItem }) => {
   const { id, name, valueType, prio } = data;
   const [open, setOpen] = useState(false);
-  const removeFacet = (facetId: number) => {
-    if (confirm("Are you sure you want to remove this facet?")) {
-      deleteFacet(facetId);
-    }
-  };
+
   return (
-    <div key={id} className="bg-white rounded-lg shadow-sm">
+    <div key={id} className="bg-white rounded-sm shadow-sm hover:bg-gray-50">
       <div
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
+        className="flex items-center justify-between p-4 cursor-pointer "
         onClick={() => setOpen((prev) => !prev)}
       >
         <div className="flex flex-col">
@@ -253,16 +282,8 @@ const FacetItem = ({ data }: { data: FacetListItem }) => {
           <div className="text-sm text-gray-500 mt-1">Priority: {prio}</div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              removeFacet(id);
-            }}
-          >
-            Remove
-          </Button>
+          {data.searchable && <SearchIcon className="size-5 text-gray-500" />}
+          {data.hide && <EyeOffIcon className="size-5 text-gray-500" />}
           {open ? (
             <ChevronUp className="size-5 text-gray-500" />
           ) : (

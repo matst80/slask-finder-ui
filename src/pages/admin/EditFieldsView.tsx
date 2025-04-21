@@ -46,7 +46,7 @@ const getDataType = (type: number): string => {
     case 1:
       return "Number";
     case 2:
-      return "Number (decimal)";
+      return "Decimal";
     default:
       return "-Unknown-";
   }
@@ -142,14 +142,13 @@ const FilteredFieldView = ({
           >
             <div className="flex flex-col">
               <div>
-                <span title={field.key} className="text-sm font-bold">
+                <span
+                  title={`${field.key} (${getDataType(field.type ?? 0)})`}
+                  className="text-sm font-bold"
+                >
                   {field.name}
                 </span>
                 <span className="text-sm"> ({field.itemCount ?? "0"}st)</span>
-                <span className="font-bold text-xs underline hidden md:inline-flex">
-                  {" "}
-                  {getDataType(field.type ?? 0)}
-                </span>
               </div>
               <span className="text-sm">{field.description}</span>
             </div>
