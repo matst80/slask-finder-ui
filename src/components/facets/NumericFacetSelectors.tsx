@@ -207,7 +207,7 @@ export default function HistogramWithSelection({
 export const NumberFacetSelector = ({
   id,
   name,
-  result: { min, max, count, buckets },
+  result: { min, max, buckets },
   selected,
   valueType,
   defaultOpen,
