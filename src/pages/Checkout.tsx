@@ -9,7 +9,10 @@ export const Checkout = () => {
   useEffect(() => {
     if (!cart?.items) return;
     trackEnterCheckout({
-      items: cart.items.map((item) => ({ item: item.id, quantity: item.qty })),
+      items: cart.items.map((item) => ({
+        item: Number(item.sku),
+        quantity: item.qty,
+      })),
     });
   }, [cart]);
   useEffect(() => {

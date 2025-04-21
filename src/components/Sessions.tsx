@@ -9,6 +9,7 @@ import {
   ImpressionEvent,
   ActionEvent,
   SuggestionEvent,
+  CheckoutEvent,
 } from "../lib/types";
 import { cm, isDefined, makeImageUrl } from "../utils";
 import { useFacetList } from "../hooks/searchHooks";
@@ -73,9 +74,15 @@ const CartEventElement = (props: CartEvent) => {
   const [open, setOpen] = useState(false);
   return (
     <div className="font-bold" onClick={() => setOpen((p) => !p)}>
-      <ShoppingCart className="size-5 inline-block" />
-      Add to cart ({props.item} - {props.quantity})
-      {open && <ItemPreview id={props.item} />}
+      <ShoppingCart className="size-5 inline-block mr-2" />
+      {props.event == 15 ? (
+        <>Change quantity to {props.quantity}</>
+      ) : (
+        <>
+          Add to cart ({props.item} - {props.quantity})
+          {open && <ItemPreview id={props.item} />}
+        </>
+      )}
     </div>
   );
 };
@@ -135,6 +142,28 @@ const SuggestionEventElement = (props: SuggestionEvent) => {
   );
 };
 
+const CheckoutEventElement = (props: CheckoutEvent) => {
+  const { items } = props;
+  const [open, setOpen] = useState(false);
+  return (
+    <div onClick={() => setOpen((p) => !p)}>
+      <span className="font-bold">
+        <ShoppingCart className="size-4 inline-block" /> Checkout (
+        {items.length})
+      </span>
+      {open && (
+        <div className="p-4 rounded-lg bg-white">
+          <div className="flex gap-2 flex-wrap">
+            {props.items.map((item) => (
+              <ItemPreview key={item.item} id={item.item} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Event = (props: TrackedEvent) => {
   switch (props.event) {
     case 1:
@@ -143,6 +172,8 @@ const Event = (props: TrackedEvent) => {
       return <ClickEventElement {...props} />;
     case 3:
     case 4:
+    case 11:
+    case 15:
       return <CartEventElement {...props} />;
     case 5:
       return <ImpressionEventElement {...props} />;
@@ -150,6 +181,8 @@ const Event = (props: TrackedEvent) => {
       return <ActionEventElement {...props} />;
     case 7:
       return <SuggestionEventElement {...props} />;
+    case 14:
+      return <CheckoutEventElement {...props} />;
   }
 };
 
@@ -219,14 +252,18 @@ const EventList = ({ events }: { events: TrackedEvent[] }) => {
                   "bg-blue-50 text-blue-800 hover:bg-blue-100",
                 event.event === 2 &&
                   "bg-green-50 text-green-800 hover:bg-green-100",
-                (event.event === 3 || event.event === 4) &&
+                (event.event === 3 ||
+                  event.event === 4 ||
+                  event.event === 11 ||
+                  event.event === 14 ||
+                  event.event === 15) &&
                   "bg-purple-50 text-purple-800 hover:bg-purple-100",
                 event.event === 5 &&
                   "bg-yellow-50 text-yellow-800 hover:bg-yellow-100",
                 event.event === 6 &&
                   "bg-gray-50 text-gray-800 hover:bg-gray-100",
                 event.event === 7 &&
-                  "bg-pink-50 text-pink-800 hover:bg-pink-100"
+                  "bg-pink-50 text-pink-800 hover:bg-pink-100",
               )}
             >
               <Event {...event} />
@@ -388,6 +425,8 @@ export const SessionView = () => {
           break;
         case 3:
         case 4:
+        case 11:
+        case 15:
           summary.cartActions++;
           break;
         case 5:

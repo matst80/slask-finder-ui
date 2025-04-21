@@ -119,12 +119,12 @@ export type KeyFacet = BaseFacet & {
 export type Facet = NumberFacet | KeyFacet;
 
 export const isKeyResult = (
-  result: KeyResult | NumberResult
+  result: KeyResult | NumberResult,
 ): result is KeyResult =>
   result != null && (result as KeyResult).values != null;
 
 export const isNumberResult = (
-  result: KeyResult | NumberResult
+  result: KeyResult | NumberResult,
 ): result is NumberResult =>
   result != null && (result as NumberResult).max != null;
 
@@ -324,6 +324,7 @@ export type TrackedEvent =
   | ImpressionEvent
   | SearchEvent
   | ClickEvent
+  | CheckoutEvent
   | ActionEvent
   | SuggestionEvent;
 
@@ -334,9 +335,18 @@ export type ActionEvent = BaseEvent & {
 };
 
 export type CartEvent = BaseEvent & {
-  event: 3 | 4;
+  event: 3 | 4 | 11 | 15;
+  type?: string;
   item: number;
   quantity: number;
+};
+
+export type CheckoutEvent = BaseEvent & {
+  event: 14;
+  items: {
+    item: number;
+    quantity: number;
+  }[];
 };
 
 export type SearchEvent = BaseEvent & {
@@ -544,7 +554,7 @@ type StoreContentRecord = BaseContentRecord & {
 };
 
 export const isStoreContentRecord = (
-  record: ContentRecord
+  record: ContentRecord,
 ): record is StoreContentRecord => {
   return (
     (record as StoreContentRecord).lat != null ||
