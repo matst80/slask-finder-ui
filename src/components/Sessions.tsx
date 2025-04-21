@@ -17,7 +17,7 @@ import { Eye, Flashlight, Search, ShoppingCart, Sparkles } from "lucide-react";
 import { Link, useLoaderData } from "react-router-dom";
 import { TimeAgo } from "./TimeAgo";
 
-const SearchEventElement = ({ string }: SearchEvent) => {
+const SearchEventElement = ({ string, query }: SearchEvent) => {
   const { data } = useFacetList();
   const usedFacets = useMemo(() => {
     return (
@@ -25,7 +25,7 @@ const SearchEventElement = ({ string }: SearchEvent) => {
         ?.map((d) => {
           const facet = data?.find((f) => f.id === d.id);
           if (facet) {
-            return { name: facet.name, value: d.value };
+            return { name: facet.name, value: d.value, id: d.id };
           }
           return null;
         })
@@ -36,10 +36,11 @@ const SearchEventElement = ({ string }: SearchEvent) => {
     <div>
       <span className="font-bold">
         <Search className="size-4 inline-block" /> Search
+        {query != null && query.length > 0 ? ` (${query})` : ""}
       </span>
       <ul>
         {usedFacets.map((d) => (
-          <li>
+          <li key={d.id}>
             {d.name}: {Array.isArray(d.value) ? d.value.join(", ") : d.value}
           </li>
         ))}
