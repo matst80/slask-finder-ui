@@ -167,6 +167,20 @@ const formatDate = (timestamp: number) => {
 const EventList = ({ events }: { events: TrackedEvent[] }) => {
   let indent = 0;
   let currentDate = "";
+  /*   const { all } = useMemo(() => {
+    return events.reduce(
+      ({ all, lastEvent }, event) => {
+        if (lastEvent?.event === 7 && event.event === 7) {
+          all.pop();
+        }
+        return { all: [...all, event], lastEvent: event };
+      },
+      { all: [], lastEvent: undefined } as {
+        all: TrackedEvent[];
+        lastEvent: TrackedEvent | undefined;
+      }
+    );
+  }, [events]); */
 
   return (
     <div className="flex flex-col gap-4">
