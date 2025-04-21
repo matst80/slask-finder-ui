@@ -77,6 +77,7 @@ export const CustomDropdown = <T,>({
                 focus:border-blue-500
                 transition-colors duration-200
                 hover:border-gray-300
+                flex justify-between
                 disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={() => setIsOpen(!isOpen)}
       >
