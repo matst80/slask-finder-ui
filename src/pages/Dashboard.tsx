@@ -1,18 +1,30 @@
-import { LoaderCircle, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowDown,
+  Search,
+  Layers,
+  Activity,
+  MemoryStick,
+  Cpu,
+  RefreshCw,
+} from "lucide-react";
 import { useDefaultMetricsQuery } from "../hooks/metricsHooks";
 
 const StatCard = ({
   title,
   value,
-  isLoading,
   error,
   trend,
+  icon: Icon,
+  color,
 }: {
   title: string;
   value: string | number;
   isLoading: boolean;
   error?: Error;
   trend?: number;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
 }) => {
   const getTrendColor = (trend: number) => {
     if (trend > 0) return "text-green-500";
@@ -27,26 +39,34 @@ const StatCard = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-gray-500 text-sm font-medium">{title}</h3>
-      <div className="mt-2 flex items-baseline">
-        {isLoading ? (
-          <LoaderCircle className="size-5 animate-spin" />
-        ) : error ? (
-          <span className="text-red-500">Error loading data</span>
-        ) : (
-          <div className="flex items-center gap-2">
-            <p className="text-3xl font-semibold text-gray-900">{value}</p>
-            {trend !== undefined && (
-              <div className={`flex items-center ${getTrendColor(trend)}`}>
-                {getTrendIcon(trend)}
-                <span className="text-sm ml-1">
-                  {Math.abs(trend).toFixed(1)}%
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+    <div
+      className={`rounded-lg shadow-md p-6 relative overflow-hidden ${color}`}
+    >
+      <div className="absolute top-0 right-0 opacity-10">
+        <Icon className="size-24" />
+      </div>
+      <div className="relative z-10">
+        <div className="flex items-baseline gap-2 mb-2">
+          <Icon className="size-5" />
+          <h3 className="text-sm font-medium">{title}</h3>
+        </div>
+        <div className="flex items-baseline">
+          {error ? (
+            <span className="text-red-500">Error loading data</span>
+          ) : (
+            <div className="flex items-center gap-2">
+              <p className="text-3xl font-semibold">{value}</p>
+              {trend !== undefined && (
+                <div className={`flex items-center ${getTrendColor(trend)}`}>
+                  {getTrendIcon(trend)}
+                  <span className="text-sm ml-1">
+                    {Math.abs(trend).toFixed(1)}%
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -74,6 +94,8 @@ const SearchStats = () => {
       isLoading={isLoading}
       error={error}
       trend={trend}
+      icon={Search}
+      color="bg-gradient-to-br from-blue-50 to-blue-100"
     />
   );
 };
@@ -100,6 +122,8 @@ const FacetStats = () => {
       isLoading={isLoading}
       error={error}
       trend={trend}
+      icon={Layers}
+      color="bg-gradient-to-br from-purple-50 to-purple-100"
     />
   );
 };
@@ -126,6 +150,8 @@ const TrackingEventsStats = () => {
       isLoading={isLoading}
       error={error}
       trend={trend}
+      icon={Activity}
+      color="bg-gradient-to-br from-green-50 to-green-100"
     />
   );
 };
@@ -153,6 +179,8 @@ const MemoryStats = () => {
       isLoading={isLoading}
       error={error}
       trend={trend}
+      icon={MemoryStick}
+      color="bg-gradient-to-br from-orange-50 to-orange-100"
     />
   );
 };
@@ -180,6 +208,8 @@ const CpuStats = () => {
       isLoading={isLoading}
       error={error}
       trend={trend}
+      icon={Cpu}
+      color="bg-gradient-to-br from-red-50 to-red-100"
     />
   );
 };
@@ -206,6 +236,8 @@ const UpsertsStats = () => {
       isLoading={isLoading}
       error={error}
       trend={trend}
+      icon={RefreshCw}
+      color="bg-gradient-to-br from-cyan-50 to-cyan-100"
     />
   );
 };

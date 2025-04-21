@@ -1,14 +1,9 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { getPrometheusQueryUrl, getPrometheusData } from "../lib/datalayer/api";
 import type { MetricsData, MetricWithValues, Series } from "../lib/types";
-import type { AxisOptions } from "react-charts";
 
-export const useMetricsQuery = (
-  query: string,
-  formatter = (v: number) => v,
-  refresh = 5
-) => {
+export const useMetricsQuery = (query: string, refresh = 5) => {
   const [now, setNow] = useState(new Date());
 
   const start = new Date(now.getTime() - 600000);
@@ -38,24 +33,8 @@ export const useMetricsQuery = (
       ),
     { keepPreviousData: true }
   );
-  const primaryAxis = useMemo(
-    (): AxisOptions<MetricsData> => ({
-      getValue: ([date]) => date,
-    }),
-    []
-  );
 
-  const secondaryAxes = useMemo(
-    (): AxisOptions<MetricsData>[] => [
-      {
-        getValue: ([_, value]) => formatter(value ?? 0),
-        stacked: true,
-      },
-    ],
-    [formatter]
-  );
-
-  return { data, primaryAxis, secondaryAxes, error, isLoading };
+  return { data, error, isLoading };
 };
 
 export const useDefaultMetricsQuery = (
@@ -65,16 +44,14 @@ export const useDefaultMetricsQuery = (
   const {
     data: metrics,
     error,
-    primaryAxis,
-    secondaryAxes,
+
     isLoading,
   } = useMetricsQuery(query);
   const data = metrics?.map(toSeries) ?? [];
   return {
     data,
     error,
-    primaryAxis,
-    secondaryAxes,
+
     isLoading,
     isEmpty: metrics == null,
   };
