@@ -5,7 +5,7 @@ import {
   useRelatedItems,
   useRelationGroups,
 } from "../hooks/searchHooks";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { byPriority, cm, isDefined, makeImageUrl } from "../utils";
 import {
   ItemDetail,
@@ -16,7 +16,7 @@ import {
   RelationGroup,
   relationValueConverters,
 } from "../lib/types";
-import { stores } from "../lib/datalayer/stores";
+import { Store, stores } from "../lib/datalayer/stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Price, PriceValue } from "./Price";
@@ -29,37 +29,109 @@ import { useQuery } from "../lib/hooks/useQuery";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
-const StockList = ({ stock }: Pick<ItemDetail, "stock">) => {
-  const [open, setOpen] = useState(false);
+const useGeoLocation = () => {
+  const [location, setLocation] = useState<GeolocationPosition | null>(null);
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => setLocation(position),
+        (error) => console.error("Error getting location:", error)
+      );
+    }
+  }, []);
+
+  return location;
+};
+
+const calculateDistance = (
+  you: GeolocationPosition,
+  other: {
+    lat: number;
+    lng: number;
+  }
+) => {
+  const R = 6371e3; // metres
+  const φ1 = (you.coords.latitude * Math.PI) / 180; // φ, λ in radians
+  const φ2 = (other.lat * Math.PI) / 180;
+  const Δφ = ((other.lat - you.coords.latitude) * Math.PI) / 180;
+  const Δλ = ((other.lng - you.coords.longitude) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const d = R * c; // in metres
+  return d / 1000;
+};
+
+const StockLocation = ({ stock, distance, ...store }: StoreWithStock) => {
+  return (
+    <li
+      key={store.id}
+      className="flex items-center justify-between py-2 px-3 hover:bg-gray-50 rounded-md gap-2"
+    >
+      <div className="flex items-center gap-2">
+        <span className="font-medium">{store.name}</span>
+        <span className="text-gray-500">•</span>
+        <span className="text-green-600 font-medium">{stock} st</span>
+      </div>
+      {distance != null && (
+        <span className="text-gray-500 text-sm">{distance.toFixed(1)} km</span>
+      )}
+    </li>
+  );
+};
+
+type StoreWithStock = Store & {
+  stock: string;
+  distance: number | null;
+};
+
+const StockList = ({
+  stock,
+  stockLevel,
+}: Pick<ItemDetail, "stock" | "stockLevel">) => {
+  const location = useGeoLocation();
   const storesWithStock = useMemo(() => {
     return Object.entries(stock ?? {})
       .map(([id, value]) => {
         const store = stores.find((store) => store.id === id);
         if (!store) return null;
-        return { ...store, stock: value };
+        return {
+          ...store,
+          stock: value,
+          distance:
+            location != null
+              ? calculateDistance(location, store.address.location)
+              : null,
+        };
       })
       .filter(isDefined)
-      .sort((a, b) => a.displayName.localeCompare(b.displayName));
-  }, [stock]);
+      .sort((a, b) =>
+        location != null
+          ? a.distance! - b.distance!
+          : a.displayName.localeCompare(b.displayName)
+      );
+  }, [stock, location]);
   if (stock == null) return null;
   return (
-    <div
-      onClick={() => setOpen((p) => !p)}
-      className="py-2 px-4 border border-gray-500 rounded-md mt-4"
-    >
-      <h3 className="text-lg font-bold">Lager</h3>
-      <p>Finns i lager i {Object.keys(stock ?? {}).length} butiker</p>
-      {open && (
-        <ul className="max-h-screen overflow-y-auto">
-          {storesWithStock.map((s) => {
-            return (
-              <li key={s.id} className="line-clamp-1 overflow-ellipsis">
-                {s.name}: {s.stock}
-              </li>
-            );
-          })}
+    <div className="border border-gray-200 rounded-lg overflow-hidden">
+      <div className="p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+        <h3 className="text-lg font-semibold">Lagerstatus</h3>
+        {stockLevel != null && stockLevel !== "0" && (
+          <p className="text-gray-600 mt-1">I lager online: {stockLevel} st</p>
+        )}
+      </div>
+
+      <div className="overflow-y-auto max-h-48">
+        <ul className="border-t border-gray-200 divide-y divide-gray-200">
+          {storesWithStock.map((s) => (
+            <StockLocation key={s.id} {...s} />
+          ))}
         </ul>
-      )}
+      </div>
     </div>
   );
 };
@@ -248,7 +320,7 @@ type PossibleValue = string | string[] | number | undefined;
 
 const hasRequiredValue = (
   requiredValue: PossibleValue,
-  value: PossibleValue,
+  value: PossibleValue
 ) => {
   if (value == null) return false;
   if (requiredValue == null) return value != null;
@@ -257,7 +329,7 @@ const hasRequiredValue = (
     return requiredValue.some((part) =>
       Array.isArray(value)
         ? value.includes(part)
-        : String(part) === String(value),
+        : String(part) === String(value)
     );
   }
   return String(requiredValue) === String(value);
@@ -275,7 +347,7 @@ const isRangeFilter = (d: NumberField | KeyField): d is NumberField => {
 
 const makeQuery = (
   group: RelationGroup,
-  values: ItemDetail["values"],
+  values: ItemDetail["values"]
 ): ItemsQuery => {
   const globalFilters =
     group.additionalQueries?.map((query) => {
@@ -310,7 +382,7 @@ const makeQuery = (
       }
       return acc;
     },
-    [[], []] as [ItemsQuery["string"], ItemsQuery["range"]],
+    [[], []] as [ItemsQuery["string"], ItemsQuery["range"]]
   );
 
   return {
@@ -354,8 +426,8 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
     return (
       data?.filter((group) =>
         group.requiredForItem.every((requirement) =>
-          hasRequiredValue(requirement.value, values[requirement.facetId]),
-        ),
+          hasRequiredValue(requirement.value, values[requirement.facetId])
+        )
       ) ?? []
     );
   }, [values, data]);
@@ -382,8 +454,11 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
     const mp = Math.max(item.mp ?? 0, 0);
     const possibleDiscount = item.values[4] * (mp / 100);
     return (
-      <div className="bg-orange-300 p-4 mt-2 rounded-md">
-        <PriceValue value={item.values[4] - possibleDiscount} />
+      <div className="bg-orange-300 p-4 mt-2 rounded-lg flex gap-2 items-center justify-between">
+        <PriceValue
+          value={item.values[4] - possibleDiscount}
+          className="font-bold"
+        />
         <span>({mp}%)</span>
       </div>
     );
@@ -419,7 +494,7 @@ export const ItemDetails = (details: ItemDetail) => {
   } = details;
   return (
     <>
-      <div className="pb-6 flex flex-col gap-4">
+      <div className="pb-6 grid grid-cols-1 gap-4">
         <div className="px-6 py-6 bg-white rounded-xl items-center justify-center w-full flex">
           <img
             className={`max-w-full w-screen-sm h-auto object-contain`}
@@ -427,29 +502,37 @@ export const ItemDetails = (details: ItemDetail) => {
             alt={title}
           />
         </div>
-        <h2 className="text-xl font-bold">{title}</h2>
-        <span className="text-xl font-bold">
-          <Price values={values} disclaimer={disclaimer} />
-        </span>
+
         <div className="flex justify-between">
-          <ul>{bp?.split("\n").map((txt) => <li key={txt}>{txt}</li>)}</ul>
+          <div>
+            <h2 className="text-xl font-bold">{title}</h2>
+            <ul>
+              {bp?.split("\n").map((txt) => (
+                <li key={txt}>{txt}</li>
+              ))}
+            </ul>
+          </div>
           {(buyable || buyableInStore) && (
-            <div>
+            <div className="flex flex-col gap-4">
+              <span className="text-xl font-bold">
+                <Price values={values} disclaimer={disclaimer} />
+              </span>
+
               <button
                 className={cm(
                   "bg-blue-500 text-white px-4 py-2 transition-all rounded hover:bg-blue-600 flex",
-                  isMutating ? "animate-pulse" : "",
+                  isMutating ? "animate-pulse" : ""
                 )}
                 onClick={() => addToCart({ sku, quantity: 1 })}
               >
                 Lägg i kundvagn <ShoppingCart />
               </button>
-              <StockList stock={stock} />
+
+              <StockList stock={stock} stockLevel={stockLevel} />
               <PopulateAdminDetails id={id} />
             </div>
           )}
         </div>
-        {stockLevel != null && <p>I lager online: {stockLevel}</p>}
       </div>
 
       <RelationGroups values={values} />

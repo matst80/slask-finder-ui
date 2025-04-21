@@ -4284,6 +4284,34 @@ export const stores = [
   },
 ];
 
+export type Store = {
+  id: string;
+  name: string;
+  displayName: string;
+  url: string;
+  address: {
+    street: string;
+    nr: string;
+    zip: string;
+    city: string;
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+  shipToStore: boolean;
+  collectAtStore: {
+    prePaid: boolean;
+    leadTime: number;
+  } | null;
+  onlineId: string;
+  shipFromStore: {
+    post: boolean;
+    home: boolean;
+    leadTime: number;
+  } | null;
+};
+
 export const useStoreWithId = (id: string) => {
   return useMemo(() => {
     return stores.find((d) => d.id === id);
