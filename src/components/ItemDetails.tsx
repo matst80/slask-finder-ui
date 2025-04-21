@@ -243,11 +243,15 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
 const Properties = ({ values }: Pick<ItemDetail, "values">) => {
   const { setQuery } = useQuery();
   const { data } = useFacetMap();
+  const [isAdmin] = useAdmin();
   const fields = useMemo(() => {
     return Object.entries(values)
       .map(([id, value]) => {
         const facet = data?.[id];
         if (!facet || ignoreFaceIds.includes(facet.id)) {
+          return null;
+        }
+        if (!isAdmin && facet.hide) {
           return null;
         }
         return {
@@ -257,32 +261,41 @@ const Properties = ({ values }: Pick<ItemDetail, "values">) => {
       })
       .filter(isDefined)
       .sort(byPriority);
-  }, [values, data]);
+  }, [values, data, isAdmin]);
   return (
-    <>
-      <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
-        Egenskaper ({fields.length})
+    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+      <h3 className="text-2xl font-bold text-gray-900 mb-4">
+        Egenskaper
+        <span className="ml-2 text-gray-500 text-lg">({fields.length})</span>
       </h3>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
         {fields.map((field) => (
-          <div key={`prop-${field.id}-${field.valueType}`} className="mb-2">
-            <h3 className="flex gap-1 items-center">
-              <span className="text-lg font-bold">{field.name}</span>
-              <span className="hidden md:block text-sm text-gray-400">
-                ({field.id})
-              </span>
-            </h3>
-            <p className="text-gray-700">
-              <span>
+          <div
+            key={`prop-${field.id}-${field.valueType}`}
+            className="p-3 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <h4
+                className="text-lg font-semibold text-gray-900"
+                onClick={() => {
+                  navigator.clipboard.writeText(String(field.id));
+                }}
+              >
+                {field.name}
+              </h4>
+            </div>
+            <div className="flex flex-col gap-1">
+              <p className="text-gray-700">
                 {Array.isArray(field.value)
                   ? field.value.join(", ")
-                  : String(field.value)}{" "}
-              </span>{" "}
+                  : String(field.value)}
+              </p>
               {field.linkedId != null &&
+                isAdmin &&
                 field.linkedId > 0 &&
                 field.value != null && (
                   <Link
-                    className="text-blue-500 hover:underline"
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium inline-flex items-center gap-1"
                     to="/"
                     onClick={() => {
                       if (field.linkedId != null && field.value != null) {
@@ -298,21 +311,19 @@ const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                           ],
                         });
                       }
-                      // console.log(
-                      //   "change filter!",
-                      //   field.linkedId,
-                      //   field.value
-                      // );
                     }}
                   >
-                    Visa kompatibla ({field.linkedId})
+                    Visa kompatibla
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                      {field.linkedId}
+                    </span>
                   </Link>
                 )}
-            </p>
+            </div>
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 };
 
@@ -475,12 +486,49 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
   );
 };
 
+const CartAnimation = ({
+  isVisible,
+  onComplete,
+}: {
+  isVisible: boolean;
+  onComplete: () => void;
+}) => {
+  useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(() => {
+        onComplete();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, onComplete]);
+
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed inset-0 pointer-events-none">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="animate-[cartAdd_1s_ease-out]">
+          <div className="bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg">
+            <ShoppingCart className="w-6 h-6" />
+            <span className="font-medium">Tillagd i kundvagnen!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart, isMutating } = useAddToCart(details.id);
+  const [showAnimation, setShowAnimation] = useState(false);
+
+  const handleAddToCart = async () => {
+    await addToCart({ sku: details.sku, quantity: 1 });
+    setShowAnimation(true);
+  };
 
   if (!details) return null;
   const {
-    sku,
     title,
     img,
     bp,
@@ -494,58 +542,82 @@ export const ItemDetails = (details: ItemDetail) => {
   } = details;
   return (
     <>
-      <div className="pb-6 grid grid-cols-1 gap-4">
-        <div className="px-6 py-6 bg-white rounded-xl items-center justify-center w-full flex">
-          <img
-            className={`max-w-full w-screen-sm h-auto object-contain`}
-            src={makeImageUrl(img)}
-            alt={title}
-          />
+      <CartAnimation
+        isVisible={showAnimation}
+        onComplete={() => setShowAnimation(false)}
+      />
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-12">
+          {/* Image Section */}
+          <div className="flex items-center justify-center">
+            <img
+              className="max-w-full h-auto object-contain"
+              src={makeImageUrl(img)}
+              alt={title}
+            />
+          </div>
+
+          {/* Details Section */}
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">{title}</h2>
+              {bp && (
+                <ul className="space-y-3 text-gray-600">
+                  {bp.split("\n").map((txt) => (
+                    <li key={txt} className="flex items-start">
+                      <span className="text-blue-500 mr-2">•</span>
+                      {txt}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Price and Cart Section */}
+            {(buyable || buyableInStore) && (
+              <div className="space-y-8">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-gray-500 text-sm">Pris</span>
+                    <div className="text-4xl font-bold text-gray-900">
+                      <Price values={values} disclaimer={disclaimer} />
+                    </div>
+                  </div>
+                  <button
+                    className={cm(
+                      "bg-blue-600 text-white px-8 py-4 rounded-lg transition-all hover:bg-blue-700 flex items-center gap-3 text-lg",
+                      isMutating ? "animate-pulse" : ""
+                    )}
+                    onClick={handleAddToCart}
+                  >
+                    <ShoppingCart className="w-6 h-6" />
+                    <span>Lägg i kundvagn</span>
+                  </button>
+                </div>
+
+                <StockList stock={stock} stockLevel={stockLevel} />
+                <PopulateAdminDetails id={id} />
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="flex justify-between">
+        {/* Bottom Sections */}
+        <div className="mt-16 space-y-16">
+          <RelationGroups values={values} />
+
           <div>
-            <h2 className="text-xl font-bold">{title}</h2>
-            <ul>
-              {bp?.split("\n").map((txt) => (
-                <li key={txt}>{txt}</li>
-              ))}
-            </ul>
+            <Properties values={details.values} />
           </div>
-          {(buyable || buyableInStore) && (
-            <div className="flex flex-col gap-4">
-              <span className="text-xl font-bold">
-                <Price values={values} disclaimer={disclaimer} />
-              </span>
 
-              <button
-                className={cm(
-                  "bg-blue-500 text-white px-4 py-2 transition-all rounded hover:bg-blue-600 flex",
-                  isMutating ? "animate-pulse" : ""
-                )}
-                onClick={() => addToCart({ sku, quantity: 1 })}
-              >
-                Lägg i kundvagn <ShoppingCart />
-              </button>
-
-              <StockList stock={stock} stockLevel={stockLevel} />
-              <PopulateAdminDetails id={id} />
-            </div>
-          )}
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900 border-b border-gray-200 pb-6 mb-8">
+              Liknande produkter
+            </h3>
+            <RelatedItems id={details.id} />
+          </div>
         </div>
       </div>
-
-      <RelationGroups values={values} />
-      {/* <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
-        Kompatibla produkter
-      </h3>
-      <CompatibleItems id={details.id} /> */}
-
-      <Properties values={details.values} />
-      <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-2">
-        Liknande produkter
-      </h3>
-      <RelatedItems id={details.id} />
     </>
   );
 };

@@ -22,39 +22,56 @@ export const StockIndicator = ({
   const storesWithStock = Object.entries(stock ?? {}).length;
 
   return (
-    <span className="inline-flex items-center gap-1">
+    <div className="flex gap-1 justify-between">
       {locationId != null ? (
         <span
-          className={`text-sm ${
-            stockOnLocation != null ? "text-green-500" : "text-yellow-500"
+          className={`inline-flex items-center gap-1.5 text-sm font-medium ${
+            stockOnLocation != null ? "text-green-600" : "text-amber-600"
           }`}
         >
+          <span
+            className={`size-2 rounded-full ${
+              stockOnLocation != null ? "bg-green-500" : "bg-amber-500"
+            }`}
+          />
           {stockOnLocation != null
             ? `I din butik: ${stockOnLocation}`
             : "Slut i din butik"}
         </span>
       ) : (
-        <button
-          className={`text-sm relative line-clamp-1 ${
-            storesWithStock > 0 ? "text-green-500" : "text-yellow-500"
+        <span
+          className={`inline-flex items-center gap-1.5 text-sm font-medium relative line-clamp-1 ${
+            storesWithStock > 0 ? "text-green-600" : "text-amber-600"
           }`}
         >
+          <span
+            className={`size-2 rounded-full ${
+              storesWithStock > 0 ? "bg-green-500" : "bg-amber-500"
+            }`}
+          />
           Finns i {storesWithStock} butiker
-        </button>
+        </span>
       )}
 
       <span
-        className={`text-sm ${
+        className={`inline-flex items-center gap-1.5 text-sm font-medium ${
           stockLevel != null && stockLevel != "0"
-            ? "text-green-500"
-            : "text-yellow-500"
+            ? "text-green-600"
+            : "text-amber-600"
         }`}
       >
+        <span
+          className={`size-2 rounded-full ${
+            stockLevel != null && stockLevel != "0"
+              ? "bg-green-500"
+              : "bg-amber-500"
+          }`}
+        />
         {stockLevel != null && stockLevel != "0"
           ? `Online: ${stockLevel}`
           : "Inte i lager"}
       </span>
-    </span>
+    </div>
   );
 };
 
@@ -75,17 +92,17 @@ const ImageWithPlaceHolder = ({ img, title }: Pick<Item, "img" | "title">) => {
   const [loaded, setLoaded] = useState(false);
   if (img == null) {
     return (
-      <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-        <span className="text-gray-400">{title}</span>
+      <div className="w-full h-48 flex items-center justify-center">
+        <span className="text-gray-400 text-sm">{title}</span>
       </div>
     );
   }
   return (
-    <div className="relative w-full h-48 px-2">
+    <div className="relative w-full h-48 overflow-hidden">
       {img != null && (
         <img
-          className={`w-full h-48 transition-all object-contain top-0 left-0 ${
-            loaded ? "opacity-100" : "opacity-0"
+          className={`w-full h-full transition-all duration-300 object-contain ${
+            loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
           }`}
           src={makeImageUrl(img)}
           alt={title}
@@ -93,7 +110,9 @@ const ImageWithPlaceHolder = ({ img, title }: Pick<Item, "img" | "title">) => {
         />
       )}
       {!loaded && (
-        <div className="flex items-center justify-center w-full h-48 absolute top-0 left-0"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="size-8 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin" />
+        </div>
       )}
     </div>
   );
@@ -116,65 +135,80 @@ export const ResultItemInner = ({
   const soldBy = values["9"];
   return (
     <>
-      <div className="mt-2">
+      <div className="relative pt-4 px-4">
         <ImageWithPlaceHolder img={img} title={title} />
 
         {badgeUrl != null && (
           <img
             src={makeImageUrl(badgeUrl)}
             alt={title}
-            className="size-16 object-contain absolute top-4 right-4"
+            className="size-16 object-contain absolute top-4 right-4 drop-shadow-lg"
           />
         )}
         {values["10"] == "Outlet" && (
           <img
-            className="size-16 object-contain absolute top-4 left-4"
+            className="size-16 object-contain absolute top-4 left-4 drop-shadow-lg mix-blend-multiply"
             src="https://www.elgiganten.se/content/SE/outlet/outlet.svg"
           />
         )}
       </div>
-      <div className="p-4 pt-0">
-        <h2 className="text-lg font-semibold mb-2">{title}</h2>
-        {hasRating && (
-          <Stars
-            rating={Number(values["6"]) / 10}
-            numberOfRatings={Number(values["7"])}
-          />
-        )}
-        {lastUpdate != null && lastUpdate > 0 && (
-          <span className="text-xs bg-yellow-200 rounded-md px-2 py-1">
-            <TimeAgo ts={lastUpdate} />
-          </span>
-        )}
-        <div className="flex items-center gap-2 mt-2">
-          <StockIndicator stock={stock} stockLevel={stockLevel} />
-        </div>
-        <ul className="text-sm">
-          {bp
-            ?.split("\n")
-            .filter((d) => d?.length)
-            .map((bp, idx) => (
-              <li
-                key={`${bp}-${idx}`}
-                className="line-clamp-1 overflow-ellipsis"
-              >
-                {bp}
-              </li>
-            ))}
-        </ul>
+      <div className="p-4 space-y-1">
+        <h2 className="text-lg font-semibold leading-tight text-gray-900 hover:text-blue-600 transition-colors">
+          {title}
+        </h2>
 
-        <Price size="large" values={values} disclaimer={disclaimer} />
-        {children}
-        {/* <CompatibleButton values={values} /> */}
-        {advertisingText != null && (
-          <em className="italic text-xs">{advertisingText}</em>
+        <div className="flex flex-wrap gap-2">
+          {hasRating && (
+            <Stars
+              rating={Number(values["6"]) / 10}
+              numberOfRatings={Number(values["7"])}
+            />
+          )}
+          {lastUpdate != null && lastUpdate > 0 && (
+            <span className="inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-800 rounded-full px-2.5 py-1">
+              <TimeAgo ts={lastUpdate} />
+            </span>
+          )}
+        </div>
+
+        {bp && (
+          <ul className="text-sm text-gray-600 space-y-1">
+            {bp
+              .split("\n")
+              .filter((d) => d?.length)
+              .map((bp, idx) => (
+                <li
+                  key={`${bp}-${idx}`}
+                  className="line-clamp-1 overflow-ellipsis"
+                >
+                  {bp}
+                </li>
+              ))}
+          </ul>
         )}
+
+        <div className="pt-2">
+          <Price size="large" values={values} disclaimer={disclaimer} />
+          {advertisingText != null && (
+            <em className="block text-xs text-gray-500 italic">
+              {advertisingText}
+            </em>
+          )}
+        </div>
+
+        {children}
+
         {values["10"] == "Outlet" && values["20"] != null && (
-          <em className="italic text-xs">{values["20"]}</em>
+          <em className="block text-xs text-gray-500 italic">{values["20"]}</em>
         )}
         {soldBy != null && soldBy != "Elgiganten" && (
-          <em className="italic text-xs">Säljs av: {soldBy}</em>
+          <em className="block text-xs text-gray-500 italic">
+            Säljs av: {soldBy}
+          </em>
         )}
+      </div>
+      <div className="mb-0 mt-auto px-4 pb-3">
+        <StockIndicator stock={stock} stockLevel={stockLevel} />
       </div>
     </>
   );
@@ -222,7 +256,7 @@ export const DataView = ({ item }: { item: Item }) => {
 export const ResultItem = ({
   position,
   ...item
-}:  Item & {
+}: Item & {
   position: number;
 }) => {
   //return <DataView item={item} />;
@@ -236,7 +270,7 @@ export const ResultItem = ({
       ref={(r) => r != null && watch(r, { id: Number(item.id), position })}
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
-      className={`bg-white rounded-sm shadow overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item`}
+      className="group bg-white md:shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-gradient-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
       onClick={trackItem}
     >
       <ResultItemInner {...item} />

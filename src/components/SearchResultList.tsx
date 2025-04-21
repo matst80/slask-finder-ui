@@ -58,7 +58,7 @@ export const SearchResultList = () => {
   }
   return (
     <ImpressionProvider>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 -mx-4 md:-mx-0">
         {hits?.map((item, idx) => (
           <ResultItem key={item.id} {...item} position={start + idx} />
         ))}

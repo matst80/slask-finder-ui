@@ -245,9 +245,7 @@ export const NumberFacetSelector = ({
         className="font-medium bold mb-2 flex items-center justify-between w-full text-left"
         onClick={() => setOpen((p) => !p)}
       >
-        <span>
-          {name} <span className="text-gray-500 text-sm">({count})</span>
-        </span>
+        <span>{name}</span>
         {open ? (
           <ChevronUp className="size-4" />
         ) : (
@@ -257,15 +255,14 @@ export const NumberFacetSelector = ({
 
       {open && (
         <>
-          <div className="flex gap-2">
-            <Slider
-              min={toDisplayValue(selected?.min ?? min)}
-              max={toDisplayValue(selected?.max ?? max)}
-              absoluteMax={toDisplayValue(max)}
-              absoluteMin={toDisplayValue(min)}
-              onChange={sliderChanged}
-            />
-          </div>
+          <Slider
+            min={toDisplayValue(selected?.min ?? min)}
+            max={toDisplayValue(selected?.max ?? max)}
+            absoluteMax={toDisplayValue(max)}
+            absoluteMin={toDisplayValue(min)}
+            onChange={sliderChanged}
+          />
+
           {buckets != null && buckets.length > 1 && (
             <HistogramWithSelection
               bins={buckets}

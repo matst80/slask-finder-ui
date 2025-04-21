@@ -25,7 +25,11 @@ export const PriceValue = ({
     <span className={className}>{SEK.format(value / 100)}</span>
   );
 
-const sizes = { large: "text-2xl", medium: "text-xl", small: "text-lg" };
+const sizes = {
+  large: "text-3xl",
+  medium: "text-2xl",
+  small: "text-xl",
+};
 
 export const Price = ({
   values,
@@ -35,28 +39,32 @@ export const Price = ({
   const prc = getPrice(values);
   if (prc.isDiscounted) {
     return (
-      <div
-        className={cm(
-          "flex justify-between font-bold relative group",
-          sizes[size]
-        )}
-      >
-        <div className="flex flex-col flex-1">
-          <PriceValue value={prc.current} className="bold" />
-          <PriceValue value={prc.original} className="opacity-50 text-sm" />
-        </div>
+      <div className="group">
+        <div className={cm("flex flex-col gap-1")}>
+          <PriceValue
+            value={prc.current}
+            className={cm("text-red-600 font-bold", sizes[size])}
+          />
 
-        {disclaimer != null && (
-          <span className="hidden group-hover:block absolute p-3 right-5 top-15 z-10 bg-white border border-gray-300 rounded-md text-xs">
-            {disclaimer}
-          </span>
-        )}
+          {disclaimer != null && (
+            <div className="relative">
+              <div className="hidden group-hover:block absolute left-0 top-1 z-10">
+                <div className="bg-white p-3 rounded-md shadow-lg border border-gray-200 max-w-xs">
+                  <div className="absolute -top-1 left-4 w-3 h-3 bg-white border-l border-t border-gray-200 transform rotate-45"></div>
+                  <p className="text-xs font-normal text-gray-700">
+                    {disclaimer}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
   return (
-    <div className="font-bold">
-      <PriceValue value={prc.current} className="bold" />
+    <div className={cm("font-bold", sizes[size])}>
+      <PriceValue value={prc.current} className="text-primary-600" />
     </div>
   );
 };

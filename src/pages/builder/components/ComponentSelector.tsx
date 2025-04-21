@@ -1,28 +1,25 @@
 "use client";
-import {
-  useMemo,
-  useState,
-  
-} from "react";
+import { useMemo, useState } from "react";
 
 import { ListIcon, TableIcon } from "lucide-react";
 
-
-
-
 import { FacetToggle } from "./FacetToggle";
 import { ToggleResultItem } from "./ResultItem";
-import { ComponentSelectorProps, QuickFilter, SelectedAdditionalFilter } from "../builder-types"
-import { useBuilderContext } from "../useBuilderContext"
-import { cm, isDefined, makeImageUrl } from "../../../utils"
-import { FilteringQuery } from "../../../lib/types"
-import { isRangeFilter, isStringFilter } from "../builder-utils"
-import { QueryProvider } from "../../../lib/hooks/QueryProvider"
-import { QueryMerger } from "../../../components/QueryMerger"
-import { HitList, HitListFragment } from "../../../components/HitList"
-import { useFacetMap } from "../../../hooks/searchHooks"
-import { useQuery } from "../../../lib/hooks/useQuery"
-import { ComponentSelectorContext } from "./ComponentSelectorContext"
+import {
+  ComponentSelectorProps,
+  QuickFilter,
+  SelectedAdditionalFilter,
+} from "../builder-types";
+import { useBuilderContext } from "../useBuilderContext";
+import { cm, isDefined, makeImageUrl } from "../../../utils";
+import { FilteringQuery } from "../../../lib/types";
+import { isRangeFilter, isStringFilter } from "../builder-utils";
+import { QueryProvider } from "../../../lib/hooks/QueryProvider";
+import { QueryMerger } from "../../../components/QueryMerger";
+import { HitList, HitListFragment } from "../../../components/HitList";
+import { useFacetMap } from "../../../hooks/searchHooks";
+import { useQuery } from "../../../lib/hooks/useQuery";
+import { ComponentSelectorContext } from "./ComponentSelectorContext";
 
 const AppliedFilterView = ({
   filters,
@@ -32,11 +29,11 @@ const AppliedFilterView = ({
   const { selectedItems } = useBuilderContext();
   const affectedByItems = useMemo(() => {
     const fromIds = new Set(
-      filters.map((d) => d.from).filter((d) => d != null && d > 0),
+      filters.map((d) => d.from).filter((d) => d != null && d > 0)
     );
     return selectedItems.filter((d) => fromIds.has(d.componentId));
   }, [filters, selectedItems]);
-  
+
   if (filters.length === 0) {
     return null;
   }
@@ -60,8 +57,8 @@ const AppliedFilterView = ({
           ))}
         </div>
       </div>
-      
-        {/* <div className="flex flex-wrap gap-2 text-sm mt-4">
+
+      {/* <div className="flex flex-wrap gap-2 text-sm mt-4">
           {filters.map((filter) => {
             const facet = facets.find((f) => f.id === filter.id);
             if (facet == null || filter.value == null) {
@@ -83,7 +80,6 @@ const AppliedFilterView = ({
             );
           })}
         </div> */}
-      
     </div>
   );
 };
@@ -95,13 +91,7 @@ const matchesValue = (a: string | string[], b: string | string[]) => {
   return a === b;
 };
 
-export const QuickFilters = ({
-  filters,
-  
-}: {
-  filters?: QuickFilter[];
-  
-}) => {
+export const QuickFilters = ({ filters }: { filters?: QuickFilter[] }) => {
   const { facets, query, setQuery } = useQuery();
   if (filters == null || filters.length === 0) {
     return null;
@@ -126,8 +116,8 @@ export const QuickFilters = ({
                     query.string?.some(
                       (q) =>
                         q.id === f.id &&
-                        matchesValue(q.value, f.value as string | string[]),
-                    ) || query.range?.some((q) => q.id === f.id),
+                        matchesValue(q.value, f.value as string | string[])
+                    ) || query.range?.some((q) => q.id === f.id)
                 );
                 return (
                   <button
@@ -145,14 +135,16 @@ export const QuickFilters = ({
                           string: [
                             ...(prev.string?.filter((d) => !ids.has(d.id)) ??
                               []),
-                            ...option.filters.filter(isStringFilter).map(fixSingleArray),
+                            ...option.filters
+                              .filter(isStringFilter)
+                              .map(fixSingleArray),
                           ],
                         };
                       });
                     }}
                     className={cm(
                       "p-1 px-4 rounded-2xl",
-                      isSelected ? "bg-blue-900 text-white" : "bg-white",
+                      isSelected ? "bg-blue-900 text-white" : "bg-white"
                     )}
                   >
                     {option.title}
@@ -178,9 +170,7 @@ const fixSingleArray = ({
   id: number;
   value: string[];
 } => {
-  if (
-    Array.isArray(value) 
-  ) {
+  if (Array.isArray(value)) {
     return { id, value };
   }
   return { id, value: [value] };
@@ -197,7 +187,7 @@ export const ComponentSelector = ({
   onSelectedChange,
 }: ComponentSelectorProps) => {
   const { globalFilters } = useBuilderContext();
-  const {data} = useFacetMap();
+  const { data } = useFacetMap();
   //const isLarge = useBreakpoint(1280);
   // const [userFiler, setUserFilter] = useState<
   //   Pick<FilteringQuery, "range" | "string" | "query">
@@ -231,32 +221,36 @@ export const ComponentSelector = ({
   }, [filter, otherFilters, globalFilters]);
 
   const facets = useMemo(() => {
-    return importantFacets?.map((d) => {
-      return data?.[d]
-    }).filter(isDefined)??[];
-  }, [data,importantFacets]);
+    return (
+      importantFacets
+        ?.map((d) => {
+          return data?.[d];
+        })
+        .filter(isDefined) ?? []
+    );
+  }, [data, importantFacets]);
 
   // const facetResult = useFacets(baseQuery);
   // const { data: facets } = useFacetList();
   // const { data } = useItemsSearch({ ...baseQuery, sort, pageSize: 120 });
 
-  return (<QueryProvider initialQuery={baseQuery}>
-        <QueryMerger query={baseQuery} />
-    <ComponentSelectorContext.Provider
-      value={{
-        view,
-        setView,
-        selectedIds: selectedIds,
-        tableSort,
-        setTableSort,
-      }}
-    >
-      
+  return (
+    <QueryProvider initialQuery={baseQuery}>
+      <QueryMerger query={baseQuery} />
+      <ComponentSelectorContext.Provider
+        value={{
+          view,
+          setView,
+          selectedIds: selectedIds,
+          tableSort,
+          setTableSort,
+        }}
+      >
         <div className="">
           <div className="space-y-2">
             <AppliedFilterView filters={otherFilters}></AppliedFilterView>
 
-            <QuickFilters filters={quickFilters}  />
+            <QuickFilters filters={quickFilters} />
 
             <div className="flex gap-2">
               <FacetToggle topFilters={topFilters ?? []}></FacetToggle>
@@ -298,8 +292,9 @@ export const ComponentSelector = ({
               </select>
             </div> */}
             {view === "list" ? (
-              
-                <HitList className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">{({item})=>(<ToggleResultItem
+              <HitList className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {({ item }) => (
+                  <ToggleResultItem
                     key={item.id}
                     {...item}
                     tableFacets={importantFacets}
@@ -308,9 +303,9 @@ export const ComponentSelector = ({
                     onSelectedChange={(data) => {
                       onSelectedChange(data);
                     }}
-                  />)}</HitList>
-                
-              
+                  />
+                )}
+              </HitList>
             ) : (
               <table className="text-sm datatable">
                 <thead>
@@ -318,8 +313,6 @@ export const ComponentSelector = ({
                     <th></th>
                     <th></th>
                     {facets.map((d) => {
-                      
-
                       return <th key={d.id}>{d.name}</th>;
                     })}
                     <th>Pris</th>
@@ -328,44 +321,43 @@ export const ComponentSelector = ({
                 </thead>
                 <tbody>
                   <HitListFragment>
-                    {({item})=>(<tr key={item.id}>
-                      <td>
-                        <img
-                          src={makeImageUrl(item.img)}
-                          alt={item.title}
-                          width={80}
-                          height={80}
-                          className="aspect-square object-contain size-10"
-                        />
-                      </td>
-                      <td>{item.title}</td>
-                      {importantFacets?.map((d) => {
-                        return <td key={d}>{item.values[d] ?? ""}</td>;
-                      })}
-                      <td>{item.values[4] / 100}</td>
-                      <th>
-                        <button
-                          className="inverted-link"
-                          onClick={() =>
-                            onSelectedChange(
-                              selectedIds.includes(item.id) ? null : item,
-                            )
-                          }
-                        >
-                          Välj
-                        </button>
-                      </th>
-                    </tr>)}
+                    {({ item }) => (
+                      <tr key={item.id}>
+                        <td>
+                          <img
+                            src={makeImageUrl(item.img)}
+                            alt={item.title}
+                            width={80}
+                            height={80}
+                            className="aspect-square object-contain size-10"
+                          />
+                        </td>
+                        <td>{item.title}</td>
+                        {importantFacets?.map((d) => {
+                          return <td key={d}>{item.values[d] ?? ""}</td>;
+                        })}
+                        <td>{item.values[4] / 100}</td>
+                        <th>
+                          <button
+                            className="inverted-link"
+                            onClick={() =>
+                              onSelectedChange(
+                                selectedIds.includes(item.id) ? null : item
+                              )
+                            }
+                          >
+                            Välj
+                          </button>
+                        </th>
+                      </tr>
+                    )}
                   </HitListFragment>
-                  
                 </tbody>
               </table>
             )}
           </div>
         </div>
-    
-    </ComponentSelectorContext.Provider>
-  </QueryProvider>
-
+      </ComponentSelectorContext.Provider>
+    </QueryProvider>
   );
 };
