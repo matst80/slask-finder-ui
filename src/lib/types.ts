@@ -120,12 +120,12 @@ export type KeyFacet = BaseFacet & {
 export type Facet = NumberFacet | KeyFacet;
 
 export const isKeyResult = (
-  result: KeyResult | NumberResult,
+  result: KeyResult | NumberResult
 ): result is KeyResult =>
   result != null && (result as KeyResult).values != null;
 
 export const isNumberResult = (
-  result: KeyResult | NumberResult,
+  result: KeyResult | NumberResult
 ): result is NumberResult =>
   result != null && (result as NumberResult).max != null;
 
@@ -293,6 +293,8 @@ export type FacetListItem = {
   description?: string;
   searchable?: boolean;
   hide?: boolean;
+  isKey?: boolean;
+  groupId?: number;
 };
 
 export type Promotion = {
@@ -555,7 +557,7 @@ type StoreContentRecord = BaseContentRecord & {
 };
 
 export const isStoreContentRecord = (
-  record: ContentRecord,
+  record: ContentRecord
 ): record is StoreContentRecord => {
   return (
     (record as StoreContentRecord).lat != null ||

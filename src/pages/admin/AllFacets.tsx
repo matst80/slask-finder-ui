@@ -219,6 +219,23 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
             className="w-full"
           />
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Group id
+          </label>
+          <Input
+            value={value.groupId ?? "0"}
+            type="number"
+            onChange={(e) => {
+              const nr = Number(e.target.value);
+              if (!isNaN(nr)) {
+                setValue((prev) => ({ ...prev, groupId: nr }));
+              }
+            }}
+            placeholder="Category level"
+            className="w-full"
+          />
+        </div>
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2">
             <input
@@ -244,6 +261,19 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
             />
             <span className="text-sm font-medium text-gray-700">
               Hide facet
+            </span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={value.isKey}
+              onChange={(e) =>
+                setValue((prev) => ({ ...prev, isKey: e.target.checked }))
+              }
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm font-medium text-gray-700">
+              Key facet
             </span>
           </label>
         </div>

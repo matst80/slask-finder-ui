@@ -90,6 +90,7 @@ const FilteredFieldView = ({
       })
       .sort(byCount);
   }, [filter, data, selectedPurpose, facets]);
+  // console.log("filteredData", filteredData.map(d=>d.id));
   const addField = (fieldKey: string) => {
     createFacetFromField(fieldKey);
   };
