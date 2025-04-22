@@ -10,3 +10,11 @@ export const QueryMerger = ({ query }: { query: FilteringQuery }) => {
   }, [query, setQuery]);
   return null;
 };
+
+export const QueryUpdater = ({ query }: { query: FilteringQuery }) => {
+  const { setQuery } = useQuery();
+  useEffect(() => {
+    setQuery(query);
+  }, [query, setQuery]);
+  return null;
+};
