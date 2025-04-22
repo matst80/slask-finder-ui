@@ -382,12 +382,12 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
     const mp = Math.max(item.mp ?? 0, 0);
     const possibleDiscount = item.values[4] * (mp / 100);
     return (
-      <div className="bg-orange-300 p-4 mt-2 rounded-lg flex gap-2 items-center justify-between">
+      <div className="p-4 mt-2 flex gap-2 items-center justify-between bg-amber-100 text-amber-800 rounded-lg">
         <PriceValue
           value={item.values[4] - possibleDiscount}
           className="font-bold"
         />
-        <span>({mp}%)</span>
+        {mp>0 && <span>{mp}%</span>}
       </div>
     );
   }
