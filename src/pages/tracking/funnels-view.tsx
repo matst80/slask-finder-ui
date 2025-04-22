@@ -19,7 +19,7 @@ const useFunnelData = () => {
           events,
         })).sort(byEvents),
       }))
-    )
+    ),{refreshInterval: 5000,revalidateOnFocus: true}
   );
 };
 
