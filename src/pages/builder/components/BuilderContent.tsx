@@ -18,15 +18,14 @@ export const BuilderContent = () => {
     percentDone,
     order,
     setSelectedItems,
-    
     neededPsuWatt,
     setOrder,
     sum,
     appliedFilters,
   } = useBuilderContext();
+
   const onSelectedChange = (componentId: number) => (item: Item | null) => {
     const currentIdx = order.findIndex((id) => id === componentId);
-    //const nextId = order[currentIdx + 1];
     const selectedIds = new Set([
       ...selectedItems.map((d) => d.componentId),
       ...rules.filter((d) => d.disabled).map((d) => d.id),
@@ -61,14 +60,17 @@ export const BuilderContent = () => {
   }, [selectedComponentId]);
 
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-[250px,1fr]">
-        <div className="flex md:flex-col gap-6 p-4 min-w-0">
-          <SelectedItemsList />
-        </div>
+    <div className="flex flex-col min-h-screen">
+      {/* Header with selected items */}
+      <header className="sticky top-0 z-20 bg-white shadow-md shadow-white">
+        <SelectedItemsList />
+      </header>
 
-        <div className="relative md:py-4 md:pr-4 px-4 min-w-0" id="builder_top">
-          {openComponent?.type === "component" && (
+      {/* Main content area */}
+      <main className="flex flex-col md:flex-row gap-4 md:gap-8 m-6" id="builder_top">
+        {/* Show open component selector */}
+        {openComponent?.type === "component" && (
+          <div className="animate-fadeIn">
             <ComponentSelector
               key={openComponent.title}
               {...openComponent}
@@ -78,83 +80,97 @@ export const BuilderContent = () => {
                 .filter(isUniqueFilter)}
               onSelectedChange={onSelectedChange(openComponent.id)}
             />
-          )}
-          {openComponent?.type === "selection" && (
+          </div>
+        )}
+
+        {/* Show component selection selector */}
+        {openComponent?.type === "selection" && (
+          <div className="animate-fadeIn">
             <ComponentSelectionSelector
               data={openComponent}
               onSelectedChange={onSelectedChange}
             />
-          )}
-          {openComponent == null && selectedItems.length > 0 && (
-            <SelectionOverview items={selectedItems} />
-          )}
-          {openComponent == null && selectedItems.length === 0 && (
-            <>
-              <div className="text-[#242424] text-2xl font-normal">
-                Var vill du starta?
-              </div>
-              <div className="flex flex-col md:flex-row gap-6 mt-8">
-                {rules
-                  .filter((d) => d.type === "component")
-                  .filter((d) => d.startingText != null)
-                  .map((component, idx) => {
-                    return (
-                      <ComponentRule
-                        key={component.id}
-                        {...component}
-                        isRecommended={idx === 0}
-                        onClick={() => {
-                          if (component.order != null) {
-                            setOrder(component.order);
-                          }
-                          setSelectedComponentId(component.id);
-                        }}
-                      />
-                    );
-                  })}
-              </div>
-            </>
-          )}
-        </div>
+          </div>
+        )}
 
-        {selectedItems.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 z-10 space-y-4 border-t border-gray-200 bg-white p-4">
-            <div className="wrapper flex justify-between gap-2 items-center">
-              <div className="flex items-center gap-4 flex-grow">
+        {/* Show overview of selected items */}
+        {openComponent == null && selectedItems.length > 0 && (
+          <div className="animate-fadeIn">
+            <SelectionOverview items={selectedItems} />
+          </div>
+        )}
+
+        {/* Show starting options */}
+        {openComponent == null && selectedItems.length === 0 && (
+          <div className="animate-fadeIn space-y-8">
+            <h2 className="text-[#242424] text-2xl md:text-3xl font-medium">
+              Var vill du starta?
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {rules
+                .filter((d) => d.type === "component")
+                .filter((d) => d.startingText != null)
+                .map((component, idx) => (
+                  <ComponentRule
+                    key={component.id}
+                    {...component}
+                    isRecommended={idx === 0}
+                    onClick={() => {
+                      if (component.order != null) {
+                        setOrder(component.order);
+                      }
+                      setSelectedComponentId(component.id);
+                    }}
+                  />
+                ))}
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Bottom action bar */}
+      {selectedItems.length > 0 && (
+        <footer className="fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200 bg-white shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+            <div className="flex flex-col sm:flex-row justify-between gap-4 items-center">
+              {/* Price information */}
+              <div className="flex items-center gap-4 w-full sm:w-auto">
                 <div className="flex flex-col">
-                  <h2>Summa:</h2>
-                  <span className="text-xs">Min PSU: {neededPsuWatt}w</span>
+                  <h2 className="text-gray-700 font-medium">Summa:</h2>
+                  <span className="text-xs text-gray-500">Min PSU: {neededPsuWatt}w</span>
                 </div>
-                <span className="font-headline text-[2rem] leading-[2rem]">
-                  {sum}
-                  .-
+                <span className="font-headline text-2xl sm:text-3xl font-bold ml-auto sm:ml-0">
+                  {sum}.-
                 </span>
               </div>
-              <div className="hidden lg:block text-xl font-bold font-elkjop uppercase tracking-tight">
+              
+              {/* Build progress indicator */}
+              <div className="hidden lg:block text-lg font-bold font-elkjop uppercase tracking-tight">
                 <span className="text-black">Ditt bygge&nbsp;</span>
                 <span className="text-[#4a90e2]">{percentDone}% klart</span>
               </div>
 
-              <div className="flex gap-2">
+              {/* Action buttons */}
+              <div className="flex gap-3 w-full sm:w-auto">
                 <Button
                   variant="outline"
-                  className="w-full hidden lg:block"
+                  className="flex-1 sm:flex-none"
                   onClick={() => setSelectedItems([])}
                 >
                   Börja om
                 </Button>
                 <Button
                   variant="default"
-                  className="w-full"
-                  
+                  className="flex-1 sm:flex-none"
                 >
                   Lägg till i kundvagn
                 </Button>
               </div>
             </div>
           </div>
-        )}
-      </div>
-    </>
+        </footer>
+      )}
+    </div>
   );
 };

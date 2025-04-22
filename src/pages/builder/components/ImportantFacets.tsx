@@ -19,7 +19,7 @@ export const ImportantFacets = ({
         return (
           <div
             key={id}
-            className="px-2 py-1 bg-buybox-gray rounded-xl text-xs font-bold"
+            className="px-2 py-1 bg-gray-100 rounded-xl text-xs font-bold"
           >
             <span className="text-gray-500">
               {data?.[id]?.name}:&nbsp;

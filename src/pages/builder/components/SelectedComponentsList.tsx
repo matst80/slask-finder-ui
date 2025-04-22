@@ -26,7 +26,7 @@ export const SelectedItemsList = () => {
   return (
     <div
       ref={ref}
-      className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible"
+      className="flex flex-nowrap gap-2 overflow-x-auto"
     >
       {order
         .map((id) => rules.find((d) => d.id == id))
