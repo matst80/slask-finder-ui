@@ -30,6 +30,7 @@ import { RelationGroupEditor } from "./pages/admin/RelationGroupEditor.tsx";
 import { Checkout } from "./pages/Checkout.tsx";
 import { Confirmation } from "./pages/Confirmation.tsx";
 import { LocalStorageBuilder } from "./pages/builder/components/LocalStorageBuilder.tsx";
+import { FunnelsView } from "./pages/tracking/funnels-view.tsx"
 
 const router = createBrowserRouter([
   {
@@ -136,6 +137,10 @@ const router = createBrowserRouter([
       {
         path: "facets",
         element: <PopularFacetsView />,
+      },
+      {
+        path: "funnels",
+        element: <FunnelsView />,
       },
     ],
   },

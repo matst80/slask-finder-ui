@@ -12,6 +12,7 @@ export const Tracking = () => {
           <ButtonLink to="/stats/popular">Popular items</ButtonLink>
 
           <ButtonLink to="/stats/facets">Popular facets</ButtonLink>
+          <ButtonLink to="/stats/funnels">Funnels</ButtonLink>
         </div>
         <h3 className="font-bold">Sessions</h3>
         <div className="flex-1 overflow-y-auto">

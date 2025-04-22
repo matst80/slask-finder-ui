@@ -17,6 +17,7 @@ import {
   ContentRecord,
   KeyFacet,
   RelationGroup,
+  Funnel,
 } from "../types";
 
 export const baseUrl = "";
@@ -25,7 +26,7 @@ export const getPrometheusQueryUrl = (
   query: string,
   start: Date,
   end: Date,
-  step = 14,
+  step = 14
 ) => {
   const params = new URLSearchParams({
     query,
@@ -38,7 +39,7 @@ export const getPrometheusQueryUrl = (
 
 export const getPrometheusData = async (url: string) => {
   return fetch(url, { method: "GET" }).then((res) =>
-    toJson<PrometheusResponse>(res),
+    toJson<PrometheusResponse>(res)
   );
 };
 
@@ -62,7 +63,7 @@ export const setPopularityRules = (data: Rules) =>
   }).then((d) => toJson<Rules>(d));
 
 export const autoSuggestResponse = (
-  term: string,
+  term: string
 ): { promise: Promise<Response>; cancel: () => void } => {
   const cancellationToken = new AbortController();
 
@@ -147,12 +148,12 @@ export const handleSuggestResponse = (d: Response) => {
 
 export const getKeyFieldsValues = (id: string | number) =>
   fetch(`${baseUrl}/api/values/${id}`).then((d) =>
-    toJson<string[] | { min: number; max: number }[]>(d),
+    toJson<string[] | { min: number; max: number }[]>(d)
   );
 
 export const getContentResults = (q: string) =>
   fetch(`${baseUrl}/api/content?${new URLSearchParams({ q })}`).then((d) =>
-    readStreamed<ContentRecord>(d),
+    readStreamed<ContentRecord>(d)
   );
 
 export const facets = (query: string) =>
@@ -177,12 +178,12 @@ export const getCompatible = (id: number) =>
 
 export const getPopularQueries = (q: string) =>
   fetch(
-    `${baseUrl}/tracking/suggest?${new URLSearchParams({ q }).toString()}`,
+    `${baseUrl}/tracking/suggest?${new URLSearchParams({ q }).toString()}`
   ).then((d) => toJson<PopularQuery[]>(d));
 
 export const getRelations = () =>
   fetch(`${baseUrl}/api/relation-groups`).then((d) =>
-    toJson<RelationGroup[]>(d),
+    toJson<RelationGroup[]>(d)
   );
 
 export const clearCart = () =>
@@ -194,8 +195,12 @@ export const clearCart = () =>
 
 export const getAdminRelations = () =>
   fetch(`${baseUrl}/admin/relation-groups`).then((d) =>
-    toJson<RelationGroup[]>(d),
+    toJson<RelationGroup[]>(d)
   );
+
+export const getFunnelData = () => {
+  return fetch(`${baseUrl}/tracking/funnels`).then((d) => toJson<Funnel[]>(d));
+};
 
 export const updateRelations = (data: RelationGroup[]) =>
   fetch(`${baseUrl}/admin/relation-groups`, {
@@ -210,7 +215,7 @@ export const updateRelations = (data: RelationGroup[]) =>
 
 const readStreamed = <T>(
   d: Response,
-  afterSeparator?: (line: string) => void,
+  afterSeparator?: (line: string) => void
 ): Promise<T[]> => {
   if (!d.ok) {
     return Promise.reject(d);
@@ -255,7 +260,7 @@ const readStreamed = <T>(
 };
 
 export const streamItems = (
-  query: string,
+  query: string
   //onResults: (data: ItemResult) => void,
 ) =>
   fetch(`${baseUrl}/api/stream?${query}`, {
@@ -285,7 +290,7 @@ export async function toJson<T>(response: Response): Promise<T> {
 
 export const getRawData = (id: string) =>
   fetch(`${baseUrl}/api/get/${id}`).then((d) =>
-    d.ok ? (d.json() as Promise<ItemDetail>) : Promise.reject(d),
+    d.ok ? (d.json() as Promise<ItemDetail>) : Promise.reject(d)
   );
 
 export const getFacetList = () =>
@@ -300,12 +305,12 @@ export const getFacetMap = () =>
 
 export const getFieldList = () =>
   fetch(`${baseUrl}/admin/fields`).then((d) =>
-    toJson<Record<string, FieldListItem>>(d),
+    toJson<Record<string, FieldListItem>>(d)
   );
 
 export const getMissingFieldList = () =>
   fetch(`${baseUrl}/admin/missing-fields`).then((d) =>
-    toJson<FieldListItem[]>(d),
+    toJson<FieldListItem[]>(d)
   );
 
 export const cleanFields = () =>
@@ -327,17 +332,17 @@ export const getAdminItem = (id: number | string) =>
 
 export const getPopularity = () =>
   fetch(`${baseUrl}/admin/sort/popular`).then((d) =>
-    toJson<Record<string, number>>(d),
+    toJson<Record<string, number>>(d)
   );
 
 export const getFieldPopularity = () =>
   fetch(`${baseUrl}/admin/sort/fields`).then((d) =>
-    toJson<Record<string, number>>(d),
+    toJson<Record<string, number>>(d)
   );
 
 export const updateCategories = (
   ids: number[],
-  updates: { id: number; value: string }[],
+  updates: { id: number; value: string }[]
 ) =>
   fetch(`${baseUrl}/admin/key-values`, {
     method: "PUT",
@@ -357,7 +362,7 @@ export const getFacets = () =>
 
 export const getStaticPositions = () =>
   fetch(`${baseUrl}/admin/sort/static`).then((d) =>
-    toJson<Record<number, number>>(d),
+    toJson<Record<number, number>>(d)
   );
 
 export const setStaticPositions = (data: Record<number, number>) =>
@@ -404,12 +409,12 @@ export const removePromotion = (id: string) =>
 
 export const getTrackingPopularity = () =>
   fetch(`${baseUrl}/tracking/popularity`).then((d) =>
-    toJson<Record<string, number>>(d),
+    toJson<Record<string, number>>(d)
   );
 
 export const getTrackingQueries = () =>
   fetch(`${baseUrl}/tracking/queries`).then((d) =>
-    toJson<Record<string, number>>(d),
+    toJson<Record<string, number>>(d)
   );
 
 export const getTrackingSessions = () =>
@@ -417,7 +422,7 @@ export const getTrackingSessions = () =>
 
 export const getTrackingFieldPopularity = () =>
   fetch(`${baseUrl}/tracking/field-popularity`).then((d) =>
-    toJson<Record<number, number>>(d),
+    toJson<Record<number, number>>(d)
   );
 
 export const getTrackingUpdates = () =>

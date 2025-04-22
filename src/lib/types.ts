@@ -297,6 +297,29 @@ export type FacetListItem = {
   groupId?: number;
 };
 
+export type Funnel = {
+  name: string;
+  steps: Record<string, FunnelStep>;
+};
+
+export type FunnelStep = {
+  name: string;
+  events: FunnelEvent[];
+  filter: FunnelFilter[];
+};
+
+export type FunnelFilter = {
+  name: string;
+  event_type: string;
+  match_data: string;
+  matcher: string;
+};
+
+export type FunnelEvent = {
+  session_id: string;
+  ts: number;
+};
+
 export type Promotion = {
   id: number;
   name: string;
