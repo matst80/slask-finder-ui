@@ -1,4 +1,4 @@
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, UserIcon } from "lucide-react";
 import {
   useCompatibleItems,
   useFacetMap,
@@ -382,7 +382,7 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
     const mp = Math.max(item.mp ?? 0, 0);
     const possibleDiscount = item.values[4] * (mp / 100);
     return (
-      <div className="p-4 mt-2 flex gap-2 items-center justify-between bg-amber-100 text-amber-800 rounded-lg">
+      <div className="p-4 my-2 flex gap-2 items-center justify-between bg-amber-100 text-amber-800 rounded-lg">
         <PriceValue
           value={item.values[4] - possibleDiscount}
           className="font-bold"
@@ -395,7 +395,7 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
     <Button
       size="sm"
       variant="outline"
-      className="mt-2"
+      className="my-2"
       onClick={() => {
         trackAction({ action: "fetch_admin_details", reason: "admin_button" });
         getAdminItem(id).then(setItem);
@@ -513,9 +513,9 @@ export const ItemDetails = (details: ItemDetail) => {
                     Lägg i kundvagn
                   </button>
                 </div>
-
+                    <PopulateAdminDetails id={id} />
                 <StockList stock={stock} stockLevel={stockLevel} />
-                <PopulateAdminDetails id={id} />
+                
               </div>
             )}
           </div>
