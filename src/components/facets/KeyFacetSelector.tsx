@@ -16,8 +16,9 @@ export const KeyFacetSelector = ({
   name,
   id,
   result,
+  disabled,
   defaultOpen,
-}: KeyFacet & { defaultOpen: boolean }) => {
+}: KeyFacet & { defaultOpen: boolean; disabled?: boolean }) => {
   const { values } = result;
   const { filter: filterValue, addValue, removeValue } = useQueryKeyFacet(id);
   const [filter, setFilter] = useState("");
@@ -56,7 +57,7 @@ export const KeyFacetSelector = ({
         )}
       </button>
       {open && (
-        <div className="space-y-2">
+        <fieldset className="space-y-2" disabled={disabled}>
           {allSorted.length > 25 && (
             <input
               type="text"
@@ -100,7 +101,7 @@ export const KeyFacetSelector = ({
               {expanded ? "Show less" : "Show more"}
             </button>
           )}
-        </div>
+        </fieldset>
       )}
     </div>
   );

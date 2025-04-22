@@ -25,3 +25,20 @@ export const isStringFilter = (
     "value" in d && (Array.isArray(d.value) || typeof d.value === "string")
   );
 };
+
+export const fixSingleArray = ({
+  id,
+  value,
+}: {
+  id: number;
+  to: number;
+  value: string | string[];
+}): {
+  id: number;
+  value: string[];
+} => {
+  if (Array.isArray(value)) {
+    return { id, value };
+  }
+  return { id, value: [value] };
+};

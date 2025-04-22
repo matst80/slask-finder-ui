@@ -4,14 +4,15 @@ import { useMemo, useState } from "react";
 import { ListIcon, TableIcon } from "lucide-react";
 
 import { ToggleResultItem } from "./ResultItem";
-import {
-  ComponentSelectorProps,
-  QuickFilter,
-} from "../builder-types";
+import { ComponentSelectorProps, QuickFilter } from "../builder-types";
 import { useBuilderContext } from "../useBuilderContext";
 import { cm, isDefined, makeImageUrl } from "../../../utils";
 import { FilteringQuery } from "../../../lib/types";
-import { isRangeFilter, isStringFilter } from "../builder-utils";
+import {
+  fixSingleArray,
+  isRangeFilter,
+  isStringFilter,
+} from "../builder-utils";
 import { QueryProvider } from "../../../lib/hooks/QueryProvider";
 import { QueryMerger } from "../../../components/QueryMerger";
 import { HitList, HitListFragment } from "../../../components/HitList";
@@ -19,7 +20,7 @@ import { useFacetMap } from "../../../hooks/searchHooks";
 import { useQuery } from "../../../lib/hooks/useQuery";
 import { ComponentSelectorContext } from "./ComponentSelectorContext";
 import { FacetList } from "../../../components/Facets";
-import { Button } from "../../../components/ui/button"
+import { Button } from "../../../components/ui/button";
 
 // const AppliedFilterView = ({
 //   filters,
@@ -82,12 +83,23 @@ export const QuickFilters = ({ filters }: { filters?: QuickFilter[] }) => {
   return (
     <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-lg shadow-sm mb-6 hidden md:block border border-blue-200">
       <h2 className="text-blue-800 font-semibold mb-4 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 mr-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+          />
         </svg>
         Snabbfilter
       </h2>
-      
+
       <div className="space-y-5">
         {filters.map(({ name, options }) => {
           const validOptions = options.filter((option) => {
@@ -98,7 +110,10 @@ export const QuickFilters = ({ filters }: { filters?: QuickFilter[] }) => {
             return null;
           }
           return (
-            <div key={name} className="border-b border-blue-200 pb-4 last:border-0">
+            <div
+              key={name}
+              className="border-b border-blue-200 pb-4 last:border-0"
+            >
               <h3 className="mb-3 text-gray-700 font-medium">{name}</h3>
               <div className="flex flex-wrap gap-2">
                 {validOptions.map((option) => {
@@ -131,8 +146,8 @@ export const QuickFilters = ({ filters }: { filters?: QuickFilter[] }) => {
                       }}
                       className={cm(
                         "py-1.5 px-4 rounded-full text-sm transition-all duration-200 font-medium",
-                        isSelected 
-                          ? "bg-blue-600 text-white shadow-md hover:bg-blue-700" 
+                        isSelected
+                          ? "bg-blue-600 text-white shadow-md hover:bg-blue-700"
                           : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                       )}
                     >
@@ -149,25 +164,7 @@ export const QuickFilters = ({ filters }: { filters?: QuickFilter[] }) => {
   );
 };
 
-const fixSingleArray = ({
-  id,
-  value,
-}: {
-  id: number;
-  to: number;
-  value: string | string[];
-}): {
-  id: number;
-  value: string[];
-} => {
-  if (Array.isArray(value)) {
-    return { id, value };
-  }
-  return { id, value: [value] };
-};
-
 export const ComponentSelector = ({
-  
   filter,
   importantFacets,
   quickFilters,
@@ -239,7 +236,7 @@ export const ComponentSelector = ({
         <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-4">
           <div className="flex flex-col gap-2">
             {/* <FacetToggle topFilters={topFilters ?? []}></FacetToggle> */}
-            <FacetList facetsToHide={[10,11,12,13,14,31158]} />
+            <FacetList facetsToHide={[10, 11, 12, 13, 14, 31158]} />
             <div>
               <button
                 className="border border-line p-1"
@@ -303,21 +300,23 @@ export const ComponentSelector = ({
                     <tr className="bg-gray-100 text-left">
                       <th className="p-3 font-medium text-gray-700 w-24"></th>
                       <th className="p-3 font-medium text-gray-700">Produkt</th>
-                      
+
                       {facets.map((d) => (
-                        <th 
-                          key={d.id} 
+                        <th
+                          key={d.id}
                           className="p-3 font-medium text-gray-700"
-                          onClick={() => setTableSort(prev => 
-                            prev?.[0] === d.id 
-                              ? [d.id, prev[1] === 'asc' ? 'desc' : 'asc'] 
-                              : [d.id, 'asc']
-                          )}
+                          onClick={() =>
+                            setTableSort((prev) =>
+                              prev?.[0] === d.id
+                                ? [d.id, prev[1] === "asc" ? "desc" : "asc"]
+                                : [d.id, "asc"]
+                            )
+                          }
                         >
                           <div className="flex items-center gap-1 cursor-pointer hover:text-blue-600">
                             {d.name}
                             {tableSort?.[0] === d.id && (
-                              <span>{tableSort[1] === 'asc' ? '↑' : '↓'}</span>
+                              <span>{tableSort[1] === "asc" ? "↑" : "↓"}</span>
                             )}
                           </div>
                         </th>
@@ -329,10 +328,10 @@ export const ComponentSelector = ({
                   <tbody>
                     <HitListFragment>
                       {({ item }) => (
-                        <tr 
-                          key={item.id} 
+                        <tr
+                          key={item.id}
                           className={`border-b border-gray-200 hover:bg-gray-50 ${
-                            selectedIds.includes(item.id) ? 'bg-blue-50' : ''
+                            selectedIds.includes(item.id) ? "bg-blue-50" : ""
                           }`}
                         >
                           <td className="p-3">
@@ -347,25 +346,35 @@ export const ComponentSelector = ({
                             </div>
                           </td>
                           <td className="p-3 font-medium">{item.title}</td>
-                          
+
                           {importantFacets?.map((d) => (
-                            <td key={d} className="p-3">{item.values[d] ?? "-"}</td>
+                            <td key={d} className="p-3">
+                              {item.values[d] ?? "-"}
+                            </td>
                           ))}
-                          <td className="p-3 font-medium">{(item.values[4] / 100).toLocaleString()} kr</td>
+                          <td className="p-3 font-medium">
+                            {(item.values[4] / 100).toLocaleString()} kr
+                          </td>
                           <td className="p-3">
                             <Button
                               size="sm"
-                              variant={selectedIds.includes(item.id) ? "outline" : "default"}
-                              className={selectedIds.includes(item.id) 
-                                ? "bg-green-50 text-green-700 border-green-300 hover:bg-green-100" 
-                                : ""}
+                              variant={
+                                selectedIds.includes(item.id)
+                                  ? "outline"
+                                  : "default"
+                              }
+                              className={
+                                selectedIds.includes(item.id)
+                                  ? "bg-green-50 text-green-700 border-green-300 hover:bg-green-100"
+                                  : ""
+                              }
                               onClick={() =>
                                 onSelectedChange(
                                   selectedIds.includes(item.id) ? null : item
                                 )
                               }
                             >
-                              {selectedIds.includes(item.id) ? 'Vald' : 'Välj'}
+                              {selectedIds.includes(item.id) ? "Vald" : "Välj"}
                             </Button>
                           </td>
                         </tr>

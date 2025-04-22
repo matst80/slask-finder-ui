@@ -86,16 +86,20 @@ const CategoryResult = ({ categories }: { categories: KeyFacet[] }) => {
 
 type FacetListProps = {
   facetsToHide?: number[];
+  facetsToDisable?: number[];
 };
-export const FacetList = ({ facetsToHide }: FacetListProps) => {
+export const FacetList = ({
+  facetsToHide,
+  facetsToDisable = [],
+}: FacetListProps) => {
   const { facets } = useQuery();
   const allFacets = useMemo(
     () =>
-      facets.filter(
-        (d) => facetsToHide == null || !facetsToHide.includes(d.id)
-      ),
+      facets
+        .filter((d) => facetsToHide == null || !facetsToHide.includes(d.id))
+        .map((d) => ({ ...d, disabled: facetsToDisable.includes(d.id) })),
 
-    [facets, facetsToHide]
+    [facets, facetsToHide, facetsToDisable]
   );
   return (
     <>
@@ -129,7 +133,13 @@ export const FacetList = ({ facetsToHide }: FacetListProps) => {
   );
 };
 
-export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
+export const Facets = ({
+  facetsToHide,
+  facetsToDisable,
+  hideCategories = false,
+}: FacetListProps & {
+  hideCategories?: boolean;
+}) => {
   const { categoryFacets, isLoadingFacets: isLoading } = useQuery();
 
   if (isLoading) {
@@ -146,9 +156,12 @@ export const Facets = ({ facetsToHide }: { facetsToHide?: number[] }) => {
   return (
     <aside className="w-full md:w-72 border-b-2 border-gray-200 md:border-none">
       <h2 className="text-lg font-semibold mb-4">Filter</h2>
-      <CategoryResult categories={categoryFacets} />
+      {!hideCategories && <CategoryResult categories={categoryFacets} />}
       <div>
-        <FacetList facetsToHide={facetsToHide} />
+        <FacetList
+          facetsToHide={facetsToHide}
+          facetsToDisable={facetsToDisable}
+        />
       </div>
 
       <div className="mb-4">

@@ -30,7 +30,10 @@ import { RelationGroupEditor } from "./pages/admin/RelationGroupEditor.tsx";
 import { Checkout } from "./pages/Checkout.tsx";
 import { Confirmation } from "./pages/Confirmation.tsx";
 import { LocalStorageBuilder } from "./pages/builder/components/LocalStorageBuilder.tsx";
-import { FunnelsView } from "./pages/tracking/funnels-view.tsx"
+import { FunnelsView } from "./pages/tracking/funnels-view.tsx";
+import { BuilderMain } from "./pages/builder/BuilderMain.tsx";
+import { BuilderStartPage } from "./pages/builder/BuilderStartPage.tsx";
+import { BuilderComponentFilter } from "./pages/builder/BuilderComponentFilter.tsx";
 
 const router = createBrowserRouter([
   {
@@ -51,11 +54,22 @@ const router = createBrowserRouter([
   },
   {
     path: "builder",
-    element: (
-      <PageContainer>
-        <LocalStorageBuilder />
-      </PageContainer>
-    ),
+    element: <BuilderMain />,
+    children: [
+      {
+        index: true,
+        element: <BuilderStartPage />,
+      },
+      {
+        path: "component/:id",
+        loader: ({ params: { id } }) => Promise.resolve(id),
+        element: <BuilderComponentFilter />,
+      },
+      {
+        path: "overview",
+        element: <LocalStorageBuilder />,
+      },
+    ],
   },
 
   {

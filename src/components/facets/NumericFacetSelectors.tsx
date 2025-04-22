@@ -209,9 +209,11 @@ export const NumberFacetSelector = ({
   name,
   result: { min, max, buckets },
   selected,
+  disabled,
   valueType,
   defaultOpen,
 }: NumberFacet & {
+  disabled?: boolean;
   defaultOpen?: boolean;
 }) => {
   const [open, setOpen] = useState(defaultOpen);
@@ -240,7 +242,10 @@ export const NumberFacetSelector = ({
   );
   // console.log({ selected, limits: { min, max }, histogramValue });
   return (
-    <div className="mb-4 border-b border-gray-100 pb-2">
+    <fieldset
+      className="mb-4 border-b border-gray-100 pb-2"
+      disabled={disabled}
+    >
       <button
         className="font-medium bold mb-2 flex items-center justify-between w-full text-left"
         onClick={() => setOpen((p) => !p)}
@@ -279,6 +284,6 @@ export const NumberFacetSelector = ({
           )}
         </>
       )}
-    </div>
+    </fieldset>
   );
 };
