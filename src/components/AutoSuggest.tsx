@@ -144,19 +144,20 @@ const MatchingFacets = () => {
         <div key={f.id} className="flex gap-2 items-center">
           <Lightbulb className="size-5" />
           <span>{f.name}</span>
-
-          {f.values.map(({ value }) => (
-            <button
-              key={value}
-              className="border border-gray-200 bg-gray-100/50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
-              onClick={updateQuery(value, f.id)}
-            >
-              {value}
-              {/* <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
+          <div className="flex gap-2 flex-nowrap overflow-x-auto">
+            {f.values.map(({ value }) => (
+              <button
+                key={value}
+                className="flex-shrink-0 border line-clamp-1 overflow-ellipsis border-gray-200 bg-gray-100/50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
+                onClick={updateQuery(value, f.id)}
+              >
+                {value}
+                {/* <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
                   {hits}
                 </span> */}
-            </button>
-          ))}
+              </button>
+            ))}
+          </div>
         </div>
       ))}
     </SuggestionSection>
@@ -283,7 +284,7 @@ export const AutoSuggest = () => {
 
   useEffect(() => {
     requestAnimationFrame(() => {
-      setTerm(value);
+      setTerm(value==="*"?"":value);
       updatePosition();
     });
   }, [value, setTerm, updatePosition]);
@@ -359,7 +360,10 @@ export const AutoSuggest = () => {
           type="search"
           value={value ?? ""}
           placeholder="Search..."
-          onFocus={() => setOpen(true)}
+          onFocus={(e) => {
+            e.target.select();
+            setOpen(true)
+          }}
           onKeyUp={onKeyUp}
           onChange={(e) => setValue(e.target.value)}
         />
@@ -425,9 +429,9 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
                 setQuery((prev) => ({
                   ...prev,
                   query,
-                  string: fields.map(({ values, id }) => ({
+                  string: fields.slice(undefined, 1).map(({ values, id }) => ({
                     id,
-                    value: values.map((d) => d.value),
+                    value: values.slice(undefined, 1).map((d) => d.value),
                   })),
                 }));
               }}
@@ -435,14 +439,14 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
               <SearchIcon className="size-5" />
               <span>{query}</span>
               <div className="flex gap-2 text-xs">
-                {fields.map(({ values, id, name }) => (
+                {fields.slice(undefined, 1).map(({ values, id, name }) => (
                   <div
                     key={id}
                     className="px-2 py-1 rounded-full font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
                   >
                     <span key={id}>{name} </span>
                     <span className="font-bold">
-                      {values.map((d) => d.value).join(", ")}
+                      {values.slice(undefined, 1).map((d) => d.value).join(", ")}
                     </span>
                   </div>
                 ))}

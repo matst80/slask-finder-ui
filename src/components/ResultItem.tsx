@@ -25,7 +25,7 @@ export const StockIndicator = ({
     <div className="flex gap-1 justify-between">
       {locationId != null ? (
         <span
-          className={`inline-flex items-center gap-1.5 text-sm font-medium ${
+          className={`inline-flex items-center line-clamp-1 overflow-ellipsis  gap-1.5 text-sm font-medium ${
             stockOnLocation != null ? "text-green-600" : "text-amber-600"
           }`}
         >
@@ -40,7 +40,7 @@ export const StockIndicator = ({
         </span>
       ) : (
         <span
-          className={`inline-flex items-center gap-1.5 text-sm font-medium relative line-clamp-1 ${
+          className={`inline-flex line-clamp-1 overflow-ellipsis items-center gap-1.5 text-sm font-medium relative ${
             storesWithStock > 0 ? "text-green-600" : "text-amber-600"
           }`}
         >
@@ -49,7 +49,7 @@ export const StockIndicator = ({
               storesWithStock > 0 ? "bg-green-500" : "bg-amber-500"
             }`}
           />
-          Finns i {storesWithStock} butiker
+          {storesWithStock} butiker
         </span>
       )}
 

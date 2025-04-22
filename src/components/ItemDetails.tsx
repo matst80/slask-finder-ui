@@ -166,7 +166,7 @@ export const ResultCarousel = () => {
         {hits?.map((item, idx) => (
           <div
             key={item.id}
-            className="flex-shrink-0 w-[250px] flex snap-start"
+            className="flex-shrink-0 w-[300px] flex snap-start"
           >
             <ResultItem {...item} position={idx} />
           </div>
@@ -263,7 +263,7 @@ const Properties = ({ values }: Pick<ItemDetail, "values">) => {
       .sort(byPriority);
   }, [values, data, isAdmin]);
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+    <div className="md:bg-white md:rounded-lg md:shadow-sm md:border border-gray-100 md:p-4">
       <h3 className="text-2xl font-bold text-gray-900 mb-4">
         Egenskaper
         <span className="ml-2 text-gray-500 text-lg">({fields.length})</span>
@@ -272,7 +272,7 @@ const Properties = ({ values }: Pick<ItemDetail, "values">) => {
         {fields.map((field) => (
           <div
             key={`prop-${field.id}-${field.valueType}`}
-            className="p-3 rounded-lg hover:bg-gray-50 transition-colors"
+            className="md:p-3 md:rounded-lg md:hover:bg-gray-50 transition-colors"
           >
             <div className="flex items-center gap-2 mb-1">
               <h4
@@ -406,12 +406,14 @@ const makeQuery = (
 const RelationGroupCarousel = ({
   group,
   values,
+  defaultOpen = false,
 }: {
   group: RelationGroup;
   values: ItemValues;
+  defaultOpen?: boolean;
 }) => {
   const query = useMemo(() => makeQuery(group, values), [group, values]);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <div key={group.groupId} className="mb-2 border-b border-gray-200 pb-2">
       <button
@@ -444,12 +446,13 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
   }, [values, data]);
   return (
     <div>
-      {validGroups.map((group) => {
+      {validGroups.map((group, idx) => {
         return (
           <RelationGroupCarousel
             key={group.key}
             group={group}
             values={values}
+            defaultOpen={idx === 0}
           />
         );
       })}
@@ -576,7 +579,7 @@ export const ItemDetails = (details: ItemDetail) => {
             {/* Price and Cart Section */}
             {(buyable || buyableInStore) && (
               <div className="space-y-8">
-                <div className="flex items-center justify-between">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <span className="text-gray-500 text-sm">Pris</span>
                     <div className="text-4xl font-bold text-gray-900">
@@ -585,13 +588,13 @@ export const ItemDetails = (details: ItemDetail) => {
                   </div>
                   <button
                     className={cm(
-                      "bg-blue-600 text-white px-8 py-4 rounded-lg transition-all hover:bg-blue-700 flex items-center gap-3 text-lg",
+                      "bg-blue-600 text-white px-4 py-2 text-center rounded-lg transition-all hover:bg-blue-700 items-center gap-3 text-lg",
                       isMutating ? "animate-pulse" : ""
                     )}
                     onClick={handleAddToCart}
                   >
-                    <ShoppingCart className="w-6 h-6" />
-                    <span>Lägg i kundvagn</span>
+                    
+                    Lägg i kundvagn
                   </button>
                 </div>
 

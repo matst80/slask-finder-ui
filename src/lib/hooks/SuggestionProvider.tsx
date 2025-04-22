@@ -134,7 +134,7 @@ export const SuggestionProvider = ({
   }, [parts, facets]);
 
   useEffect(() => {
-    if (value == null || !includeContent) {
+    if (value==null || value.length<2 || !includeContent) {
       return;
     }
     getContentResults(value).then((d) => setContentResults(d.splice(0, 10)));
@@ -144,7 +144,7 @@ export const SuggestionProvider = ({
     if (value == null) {
       return;
     }
-    const { cancel, promise } = autoSuggestResponse(value);
+    const { cancel, promise } = autoSuggestResponse(value==="*"?"": value);
 
     promise.then(handleSuggestResponse).then((state) => {
       setData((prev) => {
