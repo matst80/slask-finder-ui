@@ -49,9 +49,15 @@ const FacetValues = ({ id }: { id: number }) => {
   }
 
   if (!isKeyValues) {
+    if (values== null) {
+      return <div>No values</div>;
+    }
     const numericValues = values as { min: number; max: number };
     return (
       <div className="bg-slate-100 p-4 rounded-md">
+        {values== null ? (
+          <div className="text-sm text-gray-500">No values</div>
+        ) : (
         <div className="grid grid-cols-2 gap-4">
           <div>
             <span className="font-bold">Min:</span> {numericValues.min ?? 0}
@@ -60,6 +66,7 @@ const FacetValues = ({ id }: { id: number }) => {
             <span className="font-bold">Max:</span> {numericValues.max ?? 0}
           </div>
         </div>
+        )}
       </div>
     );
   }
