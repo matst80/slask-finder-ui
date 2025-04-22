@@ -49,9 +49,7 @@ const FacetValues = ({ id }: { id: number }) => {
   }
 
   if (!isKeyValues) {
-    if (values== null) {
-      return <div>No values</div>;
-    }
+   
     const numericValues = values as { min: number; max: number };
     return (
       <div className="bg-slate-100 p-4 rounded-md">
