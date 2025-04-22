@@ -26,6 +26,7 @@ import { Link } from "react-router-dom";
 import { useAdmin } from "../hooks/appState";
 import { getAdminItem } from "../lib/datalayer/api";
 import { useQuery } from "../lib/hooks/useQuery";
+import { trackAction } from "../lib/datalayer/beacons";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -73,7 +74,9 @@ const StockLocation = ({ stock, distance, ...store }: StoreWithStock) => {
       className="flex items-center py-2 px-3 hover:bg-gray-50 gap-2"
     >
       <div className="flex items-center gap-2 flex-grow">
-        <span className="font-medium line-clamp-1 text-ellipsis">{store.name}</span>
+        <span className="font-medium line-clamp-1 text-ellipsis">
+          {store.name}
+        </span>
         <span className="text-gray-500">•</span>
         <span className="text-green-600 font-medium">{stock} st</span>
       </div>
@@ -482,7 +485,10 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
       size="sm"
       variant="outline"
       className="mt-2"
-      onClick={() => getAdminItem(id).then(setItem)}
+      onClick={() => {
+        trackAction({ action: "fetch_admin_details", reason: "admin_button" });
+        getAdminItem(id).then(setItem);
+      }}
     >
       Fetch details
     </Button>
@@ -593,7 +599,6 @@ export const ItemDetails = (details: ItemDetail) => {
                     )}
                     onClick={handleAddToCart}
                   >
-                    
                     Lägg i kundvagn
                   </button>
                 </div>
