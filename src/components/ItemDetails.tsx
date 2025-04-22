@@ -272,7 +272,7 @@ const Properties = ({ values }: Pick<ItemDetail, "values">) => {
         {fields.map((field) => (
           <div
             key={`prop-${field.id}-${field.valueType}`}
-            className="md:p-3 md:rounded-lg md:hover:bg-gray-50 transition-colors"
+            className="py-2 md:p-3 md:rounded-lg md:hover:bg-gray-50 transition-colors"
           >
             <div className="flex items-center gap-2 mb-1">
               <h4
