@@ -1,4 +1,4 @@
-import { ShoppingCart, UserIcon } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import {
   useCompatibleItems,
   useFacetMap,
