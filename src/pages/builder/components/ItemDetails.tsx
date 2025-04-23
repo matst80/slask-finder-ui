@@ -1,5 +1,3 @@
-
-
 import {
   createContext,
   Dispatch,
@@ -9,9 +7,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useFacetMap } from "../../../hooks/searchHooks"
-import { Item, ItemValues } from "../../../lib/types"
-import { cm } from "../../../utils"
+import { useFacetMap } from "../../../hooks/searchHooks";
+import { Item, ItemValues } from "../../../lib/types";
+import { cm } from "../../../utils";
 
 const groups = {
   "Water cooling specifications": [34650, 32177, 36312, 36308],
@@ -104,69 +102,60 @@ const useItemDetails = () => {
   return context;
 };
 
-const GroupRenderer = ({ values }: { values: ItemValues }) => {
+export const GroupRenderer = ({ values }: { values: ItemValues }) => {
   const { data } = useFacetMap();
-  
-  
+
   const grouped = useMemo(
     () =>
-      Object.entries(values).reduce(
-        (acc, [id, value]) => {
-          const group = Object.entries(groups).find(([, ids]) =>
-            ids.includes(Number(id)),
-          );
-          const facet = data?.[Number(id)];
-          if (
-            value != null &&
-            facet != null &&
-            !uselessIds.includes(Number(id))
-          ) {
-            const [groupName] = group ?? ["Other"];
-            if (!acc[groupName]) {
-              acc[groupName] = [];
-            }
-            acc[groupName].push({
-              name: facet.name,
-              id,
-              value: String(value),
-            });
+      Object.entries(values).reduce((acc, [id, value]) => {
+        const group = Object.entries(groups).find(([, ids]) =>
+          ids.includes(Number(id))
+        );
+        const facet = data?.[Number(id)];
+        if (
+          value != null &&
+          facet != null &&
+          !uselessIds.includes(Number(id))
+        ) {
+          const [groupName] = group ?? ["Other"];
+          if (!acc[groupName]) {
+            acc[groupName] = [];
           }
-          return acc;
-        },
-        {} as Record<string, { name: string; value: string; id: string }[]>,
-      ),
-    [data, values],
+          acc[groupName].push({
+            name: facet.name,
+            id,
+            value: String(value),
+          });
+        }
+        return acc;
+      }, {} as Record<string, { name: string; value: string; id: string }[]>),
+    [data, values]
   );
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 bg-white border-t border-gray-100 p-6">
+    <div className="md:columns-2">
       {Object.entries(grouped)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, values]) => {
-          
           return (
             <div key={key} className="mb-3 last:mb-0">
-              <h3 className="font-body text-xl">
-                {key}
-              </h3>
+              <h3 className="font-body text-xl text-left">{key}</h3>
               <div className="mt-4">
                 {values
                   ?.sort((a, b) => a.name.localeCompare(b.name))
                   .map(({ name, value, id }) => {
                     //console.log({ id, name, value });
                     return (
-                      <div key={name}>
+                      <div key={name} className="break-inside-avoid-column">
                         <dl className="grid grid-cols-2 py-1 gap-4">
                           <dt>
                             <span className="font-body text-sm lg:text-base break-words hyphens-auto align-top text-pretty">
                               {name}{" "}
-                              
-                                <span className="text-xs text-gray-600">
-                                  ({id})
-                                </span>
-                              
+                              <span className="text-xs text-gray-600">
+                                ({id})
+                              </span>
                             </span>
                           </dt>
-                          <dd className="font-body font-bold text-sm lg:text-base break-words align-top text-pretty">
+                          <dd className="font-body font-bold text-sm pl-4 lg:text-base break-words align-top text-pretty">
                             {Array.isArray(value) ? value.join(", ") : value}
                           </dd>
                         </dl>

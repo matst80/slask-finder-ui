@@ -1,11 +1,11 @@
 import { useLoaderData } from "react-router-dom";
 import { Facets } from "../../components/Facets";
 import { Paging } from "../../components/Paging";
-import { QueryMerger } from "../../components/QueryMerger";
+import { QueryUpdater } from "../../components/QueryMerger";
 import { ResultHeader } from "../../components/ResultHeader";
 import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { useBuilderQuery } from "./useBuilderQuery";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { ResultItemInner } from "../../components/ResultItem";
 import { useQuery } from "../../lib/hooks/useQuery";
@@ -15,6 +15,42 @@ import { trackClick } from "../../lib/datalayer/beacons";
 import { useBuilderContext } from "./useBuilderContext";
 import { cm } from "../../utils";
 import { ButtonLink } from "../../components/ui/button";
+
+import { GroupRenderer } from "./components/ItemDetails";
+import { X } from "lucide-react";
+
+const DetailsDialog = ({ item }: { item: Item }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button onClick={() => setOpen(true)}>show details</button>
+      {open && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-lg p-6 w-full max-w-screen-lg max-h-[80vh] animate-cart-open"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">{item.title}</h2>
+              <button
+                onClick={() => setOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="overflow-y-auto flex-1">
+              <GroupRenderer values={item.values} />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
 
 const ComponentResultList = ({ componentId }: { componentId: number }) => {
   const {
@@ -56,13 +92,15 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
             onClick={handleSelection(item, start + idx)}
             key={item.id}
             className={cm(
-              "group bg-white md:shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item bg-gradient-to-br border-b border-gray-200 md:border-b-0",
+              "group bg-white md:shadow-sm text-left hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item bg-gradient-to-br border-b border-gray-200 md:border-b-0",
               selectedId === item.id
                 ? "from-blue-100 hover:from-blue-200"
                 : "hover:from-white to-gray-50 hover:to-gray-10"
             )}
           >
-            <ResultItemInner key={item.id} {...item} />
+            <ResultItemInner key={item.id} {...item}>
+              <DetailsDialog item={item} />
+            </ResultItemInner>
           </button>
         ))}
       </div>
@@ -82,20 +120,7 @@ const NextComponentButton = ({ componentId }: { componentId: number }) => {
   );
   const nextComponent = useMemo(() => {
     const currentIdx = order.findIndex((id) => id === componentId);
-    // const allRuleComponents = rules
-    //   .flatMap((d) => {
-    //     if (d.type === "component") {
-    //       return [d];
-    //     }
-    //     if (d.type === "group") {
-    //       return d.components ?? [];
-    //     }
-    //     if (d.type === "selection") {
-    //       return d.options ?? [];
-    //     }
-    //     return [];
-    //   })
-    //   .filter((d) => d?.type === "component");
+
     const selectedIds = new Set([
       ...selectedItems.map((d) => d.componentId),
       ...rules
@@ -123,11 +148,9 @@ const NextComponentButton = ({ componentId }: { componentId: number }) => {
         setSelectedComponentId(nextComponent?.id);
       }}
     >
-      Nästa komponent
+      {nextComponent == null ? `Overview` : `Next (${nextComponent?.title})`}
     </ButtonLink>
-  ) : (
-    <div>hej</div>
-  );
+  ) : null;
 };
 
 export const BuilderComponentFilter = () => {
@@ -158,7 +181,7 @@ export const BuilderComponentFilter = () => {
   }
   return (
     <QueryProvider initialQuery={query} key={componentId}>
-      <QueryMerger query={query} />
+      <QueryUpdater query={query} />
       <div className="px-4 py-3 md:py-8 md:px-10 mb-24">
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           <Facets

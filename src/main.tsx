@@ -34,6 +34,8 @@ import { BuilderMain } from "./pages/builder/BuilderMain.tsx";
 import { BuilderStartPage } from "./pages/builder/BuilderStartPage.tsx";
 import { BuilderComponentFilter } from "./pages/builder/BuilderComponentFilter.tsx";
 import { BuilderOverview } from "./pages/builder/BuilderOverview.tsx";
+import { componentRules } from "./pages/builder/rules.ts";
+import { BuilderComponentSelector } from "./pages/builder/BuilderComponentSelector.tsx";
 
 const router = createBrowserRouter([
   {
@@ -64,6 +66,12 @@ const router = createBrowserRouter([
         path: "component/:id",
         loader: ({ params: { id } }) => Promise.resolve(id),
         element: <BuilderComponentFilter />,
+      },
+      {
+        path: "selection/:id",
+        loader: ({ params: { id } }) =>
+          Promise.resolve(componentRules.find((d) => d.id === Number(id))),
+        element: <BuilderComponentSelector />,
       },
       {
         path: "overview",
