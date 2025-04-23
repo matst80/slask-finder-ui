@@ -1,6 +1,9 @@
 import { Item, ItemsQuery, ItemValues } from "../../lib/types";
 
-export type ItemWithComponentId = Item & { componentId: number };
+export type ItemWithComponentId = Item & {
+  componentId: number;
+  quantity?: number;
+};
 
 export type ConverterResult = {
   id: number;

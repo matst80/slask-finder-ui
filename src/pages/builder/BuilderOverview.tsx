@@ -8,6 +8,7 @@ import { trackClick } from "../../lib/datalayer/beacons";
 import { ItemWithComponentId } from "./builder-types";
 import { PriceValue } from "../../components/Price";
 import { RefreshCw } from "lucide-react";
+import { BuilderFooterBar } from "./components/BuilderFooterBar";
 
 const SelectedItem = ({
   componentId,
@@ -47,22 +48,25 @@ const SelectedItem = ({
 export const BuilderOverview = () => {
   const { selectedItems, sum } = useBuilderContext();
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-2xl mb-6 font-bold">Builder Overview</h1>
-      <p>Welcome to the Builder Overview page!</p>
-      <p>This is where you can see an overview of your builder components.</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <ImpressionProvider>
-          {selectedItems.map((item, i) => (
-            <SelectedItem key={i} position={i} {...item} />
-          ))}
-        </ImpressionProvider>
+    <>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-2xl mb-6 font-bold">Builder Overview</h1>
+        <p>Welcome to the Builder Overview page!</p>
+        <p>This is where you can see an overview of your builder components.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <ImpressionProvider>
+            {selectedItems.map((item, i) => (
+              <SelectedItem key={i} position={i} {...item} />
+            ))}
+          </ImpressionProvider>
+        </div>
+        <div className="my-6">
+          <p className="font-bold text-lg">
+            Total price: <PriceValue value={sum * 100} />
+          </p>
+        </div>
       </div>
-      <div className="my-6">
-        <p className="font-bold text-lg">
-          Total price: <PriceValue value={sum * 100} />
-        </p>
-      </div>
-    </div>
+      <BuilderFooterBar />
+    </>
   );
 };

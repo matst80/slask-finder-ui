@@ -68,6 +68,7 @@ export type ItemDetail = ItemProps & {
 export type Stock = Record<string, string>;
 
 export type ItemProps = {
+  sku: string;
   created?: number;
   lastUpdate?: number;
   advertisingText: string;

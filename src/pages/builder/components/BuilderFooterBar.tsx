@@ -1,9 +1,10 @@
 import { PropsWithChildren } from "react";
 import { useBuilderContext } from "../useBuilderContext";
 import { Button } from "../../../components/ui/button";
+import { addToCart } from "../../../lib/datalayer/cart-api";
 
 export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
-  const { sum, neededPsuWatt, percentDone, setSelectedItems } =
+  const { sum, neededPsuWatt, percentDone, setSelectedItems, selectedItems } =
     useBuilderContext();
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200 bg-white shadow-lg">
@@ -38,7 +39,15 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
             >
               Börja om
             </Button>
-            <Button variant="default" className="flex-1 sm:flex-none">
+            <Button
+              variant="default"
+              className="flex-1 sm:flex-none"
+              onClick={async () => {
+                for (const { sku, quantity = 1 } of selectedItems) {
+                  await addToCart({ sku, quantity });
+                }
+              }}
+            >
               Lägg till i kundvagn
             </Button>
           </div>
