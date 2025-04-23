@@ -69,8 +69,31 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
   );
 };
 
+export const NextComponentButton = () => {
+  const { selectedItems, selectedComponentId } = useBuilderContext();
+  const hasSelection =
+    selectedItems.length > 0 &&
+    selectedComponentId != null &&
+    selectedItems.some((d) => d.componentId === selectedComponentId);
+  return !hasSelection ? null : (
+    <button
+      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+      onClick={() => {
+        if (hasSelection) {
+          window.location.href = `/builder/component/${
+            selectedComponentId + 1
+          }`;
+        }
+      }}
+    >
+      Nästa komponent
+    </button>
+  );
+};
+
 export const BuilderComponentFilter = () => {
   const componentId = useLoaderData() as string | null;
+
   const { component, query, selectionFilters } = useBuilderQuery(
     Number(componentId)
   );
@@ -112,7 +135,9 @@ export const BuilderComponentFilter = () => {
           </main>
         </div>
       </div>
-      <BuilderFooterBar />
+      <BuilderFooterBar>
+        <NextComponentButton />
+      </BuilderFooterBar>
     </QueryProvider>
   );
 };
