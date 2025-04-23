@@ -6,7 +6,7 @@ export const BuilderStartPage = () => {
   const { rules, setSelectedComponentId, setOrder } = useBuilderContext();
   const push = useNavigate();
   return (
-    <div className="animate-fadeIn space-y-8">
+    <div className="animate-fadeIn space-y-8 mx-auto max-w-5xl p-6">
       <h2 className="text-[#242424] text-2xl md:text-3xl font-medium">
         Var vill du starta?
       </h2>
