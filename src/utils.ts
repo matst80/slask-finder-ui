@@ -12,9 +12,14 @@ export const makeImageUrl = (pathOrUrl: string, size = "640") => {
   if (pathOrUrl.startsWith("http")) {
     return pathOrUrl;
   }
-  const blobId = pathOrUrl.split("/")[2];
-  const result = `/assets/image/${blobId}`;
-  const url = `https://media.elkjop.com${result}`;
+  const parts = pathOrUrl.split("/");
+
+  const [, section, blobId] = parts;
+  if (section == "content") {
+    return "https://elgiganten.se" + pathOrUrl;
+  }
+  console.log({ section, blobId });
+  const url = `https://media.elkjop.com/assets/${section}/${blobId}`;
   const params = new URLSearchParams({
     url,
     w: size,
