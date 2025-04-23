@@ -1,11 +1,19 @@
-
-import { PropsWithChildren, useState, useEffect, useMemo } from "react"
-import { isDefined } from "../../utils"
-import { BuilderContext } from "./builder-context"
-import { ItemWithComponentId, Rule } from "./builder-types"
-import { CPU, MOTHERBOARD, RAM, STORAGE, GPU, CASE, PSU, COOLER, wattIds } from "./rules"
-import { FilteringQuery } from "../../lib/types"
-
+import { PropsWithChildren, useState, useEffect, useMemo } from "react";
+import { isDefined } from "../../utils";
+import { BuilderContext } from "./builder-context";
+import { ItemWithComponentId, Rule } from "./builder-types";
+import {
+  CPU,
+  MOTHERBOARD,
+  RAM,
+  STORAGE,
+  GPU,
+  CASE,
+  PSU,
+  COOLER,
+  wattIds,
+} from "./rules";
+import { FilteringQuery } from "../../lib/types";
 
 type BuilderProps = {
   initialItems?: ItemWithComponentId[];
@@ -47,7 +55,7 @@ export const BuilderProvider = ({
   >();
 
   const [selectedItems, setSelectedItems] = useState<ItemWithComponentId[]>(
-    initialItems ?? [],
+    initialItems ?? []
   );
 
   const reset = () => {
@@ -65,9 +73,9 @@ export const BuilderProvider = ({
     () =>
       selectedItems.reduce(
         (sum, d) => sum + (d.values[4] ? Number(d.values[4]) : 0),
-        0,
+        0
       ) / 100,
-    [selectedItems],
+    [selectedItems]
   );
   const neededPsuWatt = useMemo(() => {
     let gpuRecommendedWatt = 0;
@@ -90,7 +98,7 @@ export const BuilderProvider = ({
   const percentDone = useMemo(() => {
     return Math.min(
       Math.round((selectedItems.length / (rules.length - 1)) * 100),
-      100,
+      100
     );
   }, [selectedItems, rules]);
   const appliedFilters = useMemo(() => {
@@ -109,25 +117,27 @@ export const BuilderProvider = ({
       ...wattQueries,
       ...selectedItems
         .flatMap((item) =>
-          
-            rules.filter(d=>d.type==="component").find((c) => c.id === item.componentId)?.filtersToApply.flatMap((f) => {
-            if (f.converter) {
-              const converted = f.converter(item.values);
+          rules
+            .filter((d) => d.type === "component")
+            .find((c) => c.id === item.componentId)
+            ?.filtersToApply.flatMap((f) => {
+              if (f.converter) {
+                const converted = f.converter(item.values);
 
-              return converted !== undefined
-                ? converted.map((d) => ({
-                    ...d,
-                    to: f.to,
-                    from: item.componentId,
-                  }))
+                return converted !== undefined
+                  ? converted.map((d) => ({
+                      ...d,
+                      to: f.to,
+                      from: item.componentId,
+                    }))
+                  : null;
+              }
+              const value = item.values?.[f.id];
+
+              return typeof value === "string"
+                ? { id: f.id, to: f.to, value, from: item.componentId }
                 : null;
-            }
-            const value = item.values?.[f.id];
-
-            return typeof value === "string"
-              ? { id: f.id, to: f.to, value, from: item.componentId }
-              : null;
-          }),
+            })
         )
         .flat()
         .filter(isDefined),

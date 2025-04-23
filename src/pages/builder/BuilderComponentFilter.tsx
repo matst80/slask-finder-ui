@@ -14,6 +14,7 @@ import { Item } from "../../lib/types";
 import { trackClick } from "../../lib/datalayer/beacons";
 import { useBuilderContext } from "./useBuilderContext";
 import { cm } from "../../utils";
+import { ButtonLink } from "../../components/ui/button";
 
 const ComponentResultList = ({ componentId }: { componentId: number }) => {
   const {
@@ -69,25 +70,61 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
   );
 };
 
-export const NextComponentButton = () => {
-  const { selectedItems, selectedComponentId } = useBuilderContext();
-  const hasSelection =
-    selectedItems.length > 0 &&
-    selectedComponentId != null &&
-    selectedItems.some((d) => d.componentId === selectedComponentId);
-  return !hasSelection ? null : (
-    <button
-      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+const NextComponentButton = ({ componentId }: { componentId: number }) => {
+  const { selectedItems, order, rules, setSelectedComponentId } =
+    useBuilderContext();
+  const hasSelection = useMemo(
+    () =>
+      selectedItems.length > 0 &&
+      componentId != null &&
+      selectedItems.some((d) => d.componentId === componentId),
+    [selectedItems, componentId]
+  );
+  const nextComponent = useMemo(() => {
+    const currentIdx = order.findIndex((id) => id === componentId);
+    // const allRuleComponents = rules
+    //   .flatMap((d) => {
+    //     if (d.type === "component") {
+    //       return [d];
+    //     }
+    //     if (d.type === "group") {
+    //       return d.components ?? [];
+    //     }
+    //     if (d.type === "selection") {
+    //       return d.options ?? [];
+    //     }
+    //     return [];
+    //   })
+    //   .filter((d) => d?.type === "component");
+    const selectedIds = new Set([
+      ...selectedItems.map((d) => d.componentId),
+      ...rules.filter((d) => d.disabled).map((d) => d.id),
+    ]);
+
+    return rules.find(
+      (d) =>
+        d.id ==
+        order.find(
+          (id, idx) =>
+            id !== componentId && !selectedIds.has(id) && idx > currentIdx
+        )
+    );
+  }, [order, componentId, selectedItems, rules]);
+  return hasSelection ? (
+    <ButtonLink
+      to={
+        nextComponent
+          ? `/builder/${nextComponent.type}/${nextComponent.id}`
+          : "/builder/overview"
+      }
       onClick={() => {
-        if (hasSelection) {
-          window.location.href = `/builder/component/${
-            selectedComponentId + 1
-          }`;
-        }
+        setSelectedComponentId(nextComponent?.id);
       }}
     >
       Nästa komponent
-    </button>
+    </ButtonLink>
+  ) : (
+    <div>hej</div>
   );
 };
 
@@ -118,7 +155,7 @@ export const BuilderComponentFilter = () => {
     return <div>Loading</div>;
   }
   return (
-    <QueryProvider initialQuery={query}>
+    <QueryProvider initialQuery={query} key={componentId}>
       <QueryMerger query={query} />
       <div className="px-4 py-3 md:py-8 md:px-10 mb-24">
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
@@ -136,7 +173,7 @@ export const BuilderComponentFilter = () => {
         </div>
       </div>
       <BuilderFooterBar>
-        <NextComponentButton />
+        <NextComponentButton componentId={Number(componentId)} />
       </BuilderFooterBar>
     </QueryProvider>
   );
