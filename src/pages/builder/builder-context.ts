@@ -1,5 +1,4 @@
 import { createContext } from "react";
-import { FilteringQuery } from "../../lib/types";
 import {
   ItemWithComponentId,
   Rule,
@@ -15,7 +14,7 @@ export const BuilderContext = createContext<{
   sum: number;
   order: number[];
   setOrder: React.Dispatch<React.SetStateAction<number[]>>;
-  globalFilters: FilteringQuery;
+  //  globalFilters: FilteringQuery;
   rules: Rule[];
   neededPsuWatt: number;
   setSelectedItems: React.Dispatch<React.SetStateAction<ItemWithComponentId[]>>;

@@ -29,6 +29,23 @@ const disabledIfPsuIncluded = (selectedItems: ItemWithComponentId[]) => {
   return selectedItems.some((d) => d.values[32183] === "Ja");
 };
 
+const asArray = (value: unknown) => {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  if (typeof value === "string") {
+    return [value];
+  }
+  return [];
+};
+
+const fixPrefix = (prefix: string) => (value: string) => {
+  if (value.startsWith(prefix)) {
+    return value;
+  }
+  return prefix + value;
+};
+
 export const componentRules: Rule[] = [
   {
     type: "component",
@@ -59,10 +76,13 @@ export const componentRules: Rule[] = [
         id: 36202,
         to: MOTHERBOARD,
         converter: (values) => {
-          //const socket = values[32103];
+          const socket = asArray(values[32103]);
+          const isAmd = socket.some(
+            (s) => s.includes("AM5") || s.includes("AM4")
+          );
 
           const chipsetValue = values[36202];
-          if (!isKey(chipsetValue)) return [];
+
           // if (chipsetValue === "AMD X870E" || chipsetValue === "AMD X670E") {
           //   return [
           //     {
@@ -83,11 +103,21 @@ export const componentRules: Rule[] = [
             return [
               {
                 id: 30276,
-                value: chipsetValue.split(";").map((v) => v.trim()),
+                value: chipsetValue
+                  .split(";")
+                  .map((v) => v.trim())
+                  .map(fixPrefix(isAmd ? "AMD " : "")),
               },
             ];
-
-          return [{ id: 30276, value: chipsetValue }];
+          if (Array.isArray(chipsetValue)) {
+            return [
+              {
+                id: 30276,
+                value: chipsetValue?.map(fixPrefix(isAmd ? "AMD " : "")),
+              },
+            ];
+          }
+          return [];
         },
       },
       {

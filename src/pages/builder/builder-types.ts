@@ -2,6 +2,7 @@ import { Item, ItemsQuery, ItemValues } from "../../lib/types";
 
 export type ItemWithComponentId = Item & {
   componentId: number;
+  parentId?: number;
   quantity?: number;
 };
 

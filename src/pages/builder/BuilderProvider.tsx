@@ -13,12 +13,12 @@ import {
   COOLER,
   wattIds,
 } from "./rules";
-import { FilteringQuery } from "../../lib/types";
+//import { FilteringQuery } from "../../lib/types";
 
 type BuilderProps = {
   initialItems?: ItemWithComponentId[];
   initialRules: Rule[];
-  globalFilters?: FilteringQuery;
+  //globalFilters?: FilteringQuery;
   onSelectionChange?: (items: ItemWithComponentId[]) => void;
   //onAddToCart?: (items: CartArticle[]) => Promise<unknown>;
 };
@@ -33,7 +33,7 @@ const asNumber = (value: string | number) => {
 export const BuilderProvider = ({
   initialItems,
   initialRules,
-  globalFilters,
+  //globalFilters,
   children,
   //onAddToCart,
   onSelectionChange,
@@ -155,7 +155,7 @@ export const BuilderProvider = ({
         selectedComponentId,
         selectedItems,
         neededPsuWatt,
-        globalFilters: globalFilters ?? { string: [], range: [], stock: [] },
+        //globalFilters: globalFilters ?? { string: [], range: [], stock: [] },
         order,
         setOrder,
         updateRules,

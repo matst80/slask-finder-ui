@@ -1,15 +1,6 @@
-import {
-  createContext,
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { useMemo } from "react";
 import { useFacetMap } from "../../../hooks/searchHooks";
-import { Item, ItemValues } from "../../../lib/types";
-import { cm } from "../../../utils";
+import { ItemValues } from "../../../lib/types";
 
 const groups = {
   "Water cooling specifications": [34650, 32177, 36312, 36308],
@@ -89,18 +80,18 @@ const uselessIds = [
   21, 24, 35, 23, 36, 32188, 30879,
 ];
 
-const ItemDetailsContext = createContext<{
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-} | null>(null);
+// const ItemDetailsContext = createContext<{
+//   open: boolean;
+//   setOpen: Dispatch<SetStateAction<boolean>>;
+// } | null>(null);
 
-const useItemDetails = () => {
-  const context = useContext(ItemDetailsContext);
-  if (!context) {
-    throw new Error("useItemDetails must be used within a ItemDetailsProvider");
-  }
-  return context;
-};
+// const useItemDetails = () => {
+//   const context = useContext(ItemDetailsContext);
+//   if (!context) {
+//     throw new Error("useItemDetails must be used within a ItemDetailsProvider");
+//   }
+//   return context;
+// };
 
 export const GroupRenderer = ({ values }: { values: ItemValues }) => {
   const { data } = useFacetMap();
@@ -170,50 +161,50 @@ export const GroupRenderer = ({ values }: { values: ItemValues }) => {
   );
 };
 
-export const ItemDetails = ({
-  onClick,
-  children,
-  item,
-  className,
-}: PropsWithChildren<{
-  item: Item;
-  onClick?: React.MouseEventHandler<HTMLDivElement>;
-  className?: string;
-}>) => {
-  const [open, setOpen] = useState(false);
-  return (
-    <ItemDetailsContext.Provider value={{ open, setOpen }}>
-      <div onClick={onClick} className={cm(className, "relative")}>
-        {children}
+// export const ItemDetails = ({
+//   onClick,
+//   children,
+//   item,
+//   className,
+// }: PropsWithChildren<{
+//   item: Item;
+//   onClick?: React.MouseEventHandler<HTMLDivElement>;
+//   className?: string;
+// }>) => {
+//   const [open, setOpen] = useState(false);
+//   return (
+//     <ItemDetailsContext.Provider value={{ open, setOpen }}>
+//       <div onClick={onClick} className={cm(className, "relative")}>
+//         {children}
 
-        {open && <GroupRenderer values={item.values} />}
-        {/* <div className="bg-white border-t border-gray-100 p-6">
-            <ul className="md:columns-2">
-              {Object.entries(item.values)
-                .filter(([key]) => !uselessIds.includes(Number(key)))
-                .map(([key, value], i) => (
-                  <li key={`prp-${i}`}>
-                    {data?.find((f) => f.id === Number(key))?.name}:{" "}
-                    <b className="font-bold" title={key}>
-                      {value}
-                    </b>{" "}
-                  </li>
-                ))}
-            </ul>
-          </div>)} */}
-      </div>
-    </ItemDetailsContext.Provider>
-  );
-};
+//         {open && <GroupRenderer values={item.values} />}
+//         {/* <div className="bg-white border-t border-gray-100 p-6">
+//             <ul className="md:columns-2">
+//               {Object.entries(item.values)
+//                 .filter(([key]) => !uselessIds.includes(Number(key)))
+//                 .map(([key, value], i) => (
+//                   <li key={`prp-${i}`}>
+//                     {data?.find((f) => f.id === Number(key))?.name}:{" "}
+//                     <b className="font-bold" title={key}>
+//                       {value}
+//                     </b>{" "}
+//                   </li>
+//                 ))}
+//             </ul>
+//           </div>)} */}
+//       </div>
+//     </ItemDetailsContext.Provider>
+//   );
+// };
 
-export const ItemDetailsToggleButton = () => {
-  const { setOpen } = useItemDetails();
-  return (
-    <button
-      className="font-bold mt-4 inverted-link"
-      onClick={() => setOpen((o) => !o)}
-    >
-      Visa mer detaljer
-    </button>
-  );
-};
+// export const ItemDetailsToggleButton = () => {
+//   const { setOpen } = useItemDetails();
+//   return (
+//     <button
+//       className="font-bold mt-4 inverted-link"
+//       onClick={() => setOpen((o) => !o)}
+//     >
+//       Visa mer detaljer
+//     </button>
+//   );
+// };

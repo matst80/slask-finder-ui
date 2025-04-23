@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import { useBuilderContext } from "../useBuilderContext";
-import { Button } from "../../../components/ui/button";
+import { Button, ButtonLink } from "../../../components/ui/button";
 import { addToCart } from "../../../lib/datalayer/cart-api";
 
 export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
@@ -18,7 +18,7 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
                 Min PSU: {neededPsuWatt}w
               </span>
             </div>
-            <span className="font-headline text-2xl sm:text-3xl font-bold ml-auto sm:ml-0">
+            <span className="text-2xl sm:text-3xl font-bold ml-auto sm:ml-0">
               {sum}.-
             </span>
           </div>
@@ -32,13 +32,14 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
           {/* Action buttons */}
           <div className="flex gap-3 w-full sm:w-auto">
             {children}
-            <Button
+            <ButtonLink
               variant="outline"
+              to={"/builder"}
               className="flex-1 sm:flex-none"
               onClick={() => setSelectedItems([])}
             >
               Börja om
-            </Button>
+            </ButtonLink>
             <Button
               variant="default"
               className="flex-1 sm:flex-none"

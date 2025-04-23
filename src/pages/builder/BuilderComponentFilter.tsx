@@ -1,19 +1,18 @@
-import { useLoaderData } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import { Facets } from "../../components/Facets";
 import { Paging } from "../../components/Paging";
-import { QueryUpdater } from "../../components/QueryMerger";
 import { ResultHeader } from "../../components/ResultHeader";
 import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { useBuilderQuery } from "./useBuilderQuery";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { ResultItemInner } from "../../components/ResultItem";
 import { useQuery } from "../../lib/hooks/useQuery";
 import { ImpressionProvider } from "../../lib/hooks/ImpressionProvider";
-import { Item } from "../../lib/types";
+import { FilteringQuery, Item } from "../../lib/types";
 import { trackClick } from "../../lib/datalayer/beacons";
 import { useBuilderContext } from "./useBuilderContext";
-import { cm } from "../../utils";
+import { cm, isDefined } from "../../utils";
 import { ButtonLink } from "../../components/ui/button";
 
 import { GroupRenderer } from "./components/ItemDetails";
@@ -21,13 +20,20 @@ import { X } from "lucide-react";
 
 const DetailsDialog = ({ item }: { item: Item }) => {
   const [open, setOpen] = useState(false);
+  const close: React.MouseEventHandler<HTMLDivElement | HTMLButtonElement> = (
+    e
+  ) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setOpen(false);
+  };
   return (
     <>
       <button onClick={() => setOpen(true)}>show details</button>
       {open && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          onClick={() => setOpen(false)}
+          onClick={close}
         >
           <div
             className="bg-white rounded-lg shadow-lg p-6 w-full max-w-screen-lg max-h-[80vh] animate-cart-open"
@@ -36,7 +42,7 @@ const DetailsDialog = ({ item }: { item: Item }) => {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">{item.title}</h2>
               <button
-                onClick={() => setOpen(false)}
+                onClick={close}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X size={24} />
@@ -65,21 +71,37 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
     return <div>Loading...</div>;
   }
 
+  const parentId = new URLSearchParams(globalThis.location.search).get(
+    "parentId"
+  );
+
   const selectedId = selectedItems.find(
     (i) => i.componentId === componentId
   )?.id;
 
-  const handleSelection = (item: Item, idx: number) => () => {
-    const { id } = item;
-    trackClick(id, idx);
-    setSelectedItems((p) => {
-      const newItems = p.filter((i) => i.componentId !== componentId);
-      if (item) {
-        return [...newItems, { ...item, componentId }];
-      }
-      return newItems;
-    });
-  };
+  const handleSelection =
+    (item: Item, idx: number): React.MouseEventHandler<HTMLAnchorElement> =>
+    (e) => {
+      e.preventDefault();
+      const { id } = item;
+      trackClick(id, idx);
+
+      setSelectedItems((p) => {
+        const isSelected = p.some((i) => i.id === id);
+        const newItems = p.filter((i) => i.componentId !== componentId);
+        if (item && !isSelected) {
+          return [
+            ...newItems,
+            {
+              ...item,
+              componentId,
+              parentId: parentId != null ? Number(parentId) : undefined,
+            },
+          ];
+        }
+        return newItems;
+      });
+    };
 
   if (!hits.length && (hits == null || hits.length < 1)) {
     return <div>No matching components</div>;
@@ -88,7 +110,8 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
     <ImpressionProvider>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 -mx-4 md:-mx-0">
         {hits?.map((item, idx) => (
-          <button
+          <Link
+            to={`/product/${item.id}`}
             onClick={handleSelection(item, start + idx)}
             key={item.id}
             className={cm(
@@ -101,11 +124,31 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
             <ResultItemInner key={item.id} {...item}>
               <DetailsDialog item={item} />
             </ResultItemInner>
-          </button>
+          </Link>
         ))}
       </div>
     </ImpressionProvider>
   );
+};
+
+const BuilderQueryMerger = ({
+  query,
+  componentId,
+}: {
+  query: FilteringQuery;
+  componentId: string | number | null;
+}) => {
+  const { setQuery } = useQuery();
+  const keyRef = useRef<string | number | null>(componentId);
+  useEffect(() => {
+    if (keyRef.current === componentId) {
+      return;
+    }
+    console.log("updating query", componentId, query);
+    keyRef.current = componentId;
+    setQuery(query);
+  }, [query, setQuery, componentId]);
+  return null;
 };
 
 const NextComponentButton = ({ componentId }: { componentId: number }) => {
@@ -118,45 +161,79 @@ const NextComponentButton = ({ componentId }: { componentId: number }) => {
       selectedItems.some((d) => d.componentId === componentId),
     [selectedItems, componentId]
   );
-  const nextComponent = useMemo(() => {
+  const [unselectedComponents, nextComponent] = useMemo(() => {
     const currentIdx = order.findIndex((id) => id === componentId);
 
     const selectedIds = new Set([
-      ...selectedItems.map((d) => d.componentId),
+      ...selectedItems.flatMap((d) =>
+        [d.componentId, d.parentId].filter(isDefined)
+      ),
       ...rules
         .filter((d) => d.disabled != null && d.disabled(selectedItems))
         .map((d) => d.id),
     ]);
 
-    return rules.find(
-      (d) =>
-        d.id ==
-        order.find(
-          (id, idx) =>
-            id !== componentId && !selectedIds.has(id) && idx > currentIdx
-        )
-    );
+    const unselected = order
+      .filter((id) => {
+        return !selectedIds.has(id);
+      })
+      .map((id) => {
+        const rule = rules.find((d) => d.id === id);
+        return rule != null &&
+          (rule.disabled == null || !rule.disabled(selectedItems))
+          ? rule
+          : null;
+      })
+      .filter(isDefined);
+
+    return [
+      unselected,
+      rules.find(
+        (d) =>
+          d.id ==
+          order.find(
+            (id, idx) =>
+              id !== componentId && !selectedIds.has(id) && idx > currentIdx
+          )
+      ) ?? unselected[0],
+    ];
   }, [order, componentId, selectedItems, rules]);
-  return hasSelection ? (
-    <ButtonLink
-      to={
-        nextComponent
-          ? `/builder/${nextComponent.type}/${nextComponent.id}`
-          : "/builder/overview"
-      }
-      onClick={() => {
-        setSelectedComponentId(nextComponent?.id);
-      }}
-    >
-      {nextComponent == null ? `Overview` : `Next (${nextComponent?.title})`}
-    </ButtonLink>
-  ) : null;
+  return (
+    <div className="group flex">
+      <ButtonLink
+        to={
+          nextComponent
+            ? `/builder/${nextComponent.type}/${nextComponent.id}`
+            : "/builder/overview"
+        }
+        variant={hasSelection ? "default" : "secondary"}
+        onClick={() => {
+          setSelectedComponentId(nextComponent?.id);
+        }}
+      >
+        {nextComponent == null ? `Overview` : `Next (${nextComponent?.title})`}
+      </ButtonLink>
+      <div className="absolute -top-8 bg-white p-1 rounded-md shadow-lg flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        {unselectedComponents
+          .filter((d) => d.id !== nextComponent.id)
+          .map((d) => (
+            <Link
+              to={`/builder/${d.type}/${d.id}`}
+              className="px-2 py-1 rounded-md bg-gray-50 hover:bg-gray-200 text-gray-900"
+              key={d.id}
+            >
+              {d.title}
+            </Link>
+          ))}
+      </div>
+    </div>
+  );
 };
 
 export const BuilderComponentFilter = () => {
   const componentId = useLoaderData() as string | null;
 
-  const { component, query, selectionFilters } = useBuilderQuery(
+  const { component, requiredQuery, selectionFilters } = useBuilderQuery(
     Number(componentId)
   );
   const [facetsToHide, facetsToDisable] = useMemo(() => {
@@ -176,12 +253,12 @@ export const BuilderComponentFilter = () => {
     ];
   }, [component, selectionFilters]);
 
-  if (!query) {
+  if (!requiredQuery) {
     return <div>Loading</div>;
   }
   return (
-    <QueryProvider initialQuery={query} key={componentId}>
-      <QueryUpdater query={query} />
+    <QueryProvider initialQuery={requiredQuery}>
+      <BuilderQueryMerger query={requiredQuery} componentId={componentId} />
       <div className="px-4 py-3 md:py-8 md:px-10 mb-24">
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           <Facets

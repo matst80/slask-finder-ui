@@ -8,10 +8,14 @@ export const BuilderComponentSelector = () => {
     return <div>not correct!</div>;
   }
   return (
-    <div>
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-6">
       {component.options.map((option) => {
         return (
-          <ButtonLink size="lg" to={`/builder/component/${option.id}`}>
+          <ButtonLink
+            size="lg"
+            to={`/builder/component/${option.id}?parentId=${component.id}`}
+            key={option.id}
+          >
             {option.title}
           </ButtonLink>
         );
