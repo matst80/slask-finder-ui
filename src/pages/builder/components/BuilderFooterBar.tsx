@@ -38,7 +38,7 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
           <div className="flex gap-3 w-full sm:w-auto">
             {children}
             <ButtonLink
-              variant="outline"
+              variant="danger"
               to={"/builder"}
               className="flex-1 sm:flex-none"
               onClick={() => setSelectedItems([])}

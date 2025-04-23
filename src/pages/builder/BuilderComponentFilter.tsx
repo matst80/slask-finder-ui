@@ -230,7 +230,7 @@ const NextComponentButton = ({ componentId }: { componentId: number }) => {
             ? `/builder/${nextComponent.type}/${nextComponent.id}`
             : "/builder/overview"
         }
-        variant={hasSelection ? "default" : "secondary"}
+        variant={hasSelection ? "default" : "outline"}
         onClick={() => {
           setSelectedComponentId(nextComponent?.id);
         }}
