@@ -26,7 +26,7 @@ import { useAdmin } from "../hooks/appState";
 import { getAdminItem } from "../lib/datalayer/api";
 import { useQuery } from "../lib/hooks/useQuery";
 import { trackAction } from "../lib/datalayer/beacons";
-import { Properties } from "./Properties"
+import { Properties } from "./Properties";
 
 const useGeoLocation = () => {
   const [location, setLocation] = useState<GeolocationPosition | null>(null);
@@ -387,7 +387,7 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
           value={item.values[4] - possibleDiscount}
           className="font-bold"
         />
-        {mp>0 && <span>{mp}%</span>}
+        {mp > 0 && <span>{mp}%</span>}
       </div>
     );
   }
@@ -438,6 +438,27 @@ const CartAnimation = ({
   );
 };
 
+const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
+  const parts = useMemo(() => {
+    return [values[10], values[11], values[12], values[13]].filter(
+      (d) => d != null && typeof d === "string" && d.length > 0
+    );
+  }, [values]);
+  return (
+    <div className="flex items-center mb-4">
+      {parts.map((part, idx) => (
+        <span
+          key={idx}
+          className="text-sm text-gray-500 hover:text-blue-600 cursor-pointer"
+        >
+          {part}
+          {idx < parts.length - 1 && <span className="mx-2">/</span>}
+        </span>
+      ))}
+    </div>
+  );
+};
+
 export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart, isMutating } = useAddToCart(details.id);
   const [showAnimation, setShowAnimation] = useState(false);
@@ -469,6 +490,7 @@ export const ItemDetails = (details: ItemDetail) => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-12">
           {/* Image Section */}
+
           <div className="flex items-center justify-center">
             <img
               className="max-w-full h-auto object-contain"
@@ -513,9 +535,8 @@ export const ItemDetails = (details: ItemDetail) => {
                     Lägg i kundvagn
                   </button>
                 </div>
-                    <PopulateAdminDetails id={id} />
+                <PopulateAdminDetails id={id} />
                 <StockList stock={stock} stockLevel={stockLevel} />
-                
               </div>
             )}
           </div>
@@ -523,6 +544,7 @@ export const ItemDetails = (details: ItemDetail) => {
 
         {/* Bottom Sections */}
         <div className="mt-16 space-y-16">
+          <BreadCrumbs values={values} />
           <RelationGroups values={values} />
 
           <div>
