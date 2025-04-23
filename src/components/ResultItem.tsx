@@ -109,7 +109,7 @@ const ImageWithPlaceHolder = ({ img, title }: Pick<Item, "img" | "title">) => {
     <div className="relative w-full h-48 overflow-hidden">
       {img != null && (
         <img
-          className={`w-full h-full transition-all duration-300 object-contain ${
+          className={`w-full h-full transition-all duration-300 object-contain mix-blend-multiply ${
             loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
           }`}
           src={makeImageUrl(img)}
@@ -155,7 +155,7 @@ export const ResultItemInner = ({
         )}
         {values["10"] == "Outlet" && (
           <img
-            className="size-16 object-contain absolute top-4 left-4 drop-shadow-lg mix-blend-multiply"
+            className="size-16 object-contain absolute top-4 left-4 drop-shadow-lg"
             src="https://www.elgiganten.se/content/SE/outlet/outlet.svg"
           />
         )}
