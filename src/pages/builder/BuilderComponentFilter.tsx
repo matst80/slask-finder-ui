@@ -199,7 +199,31 @@ const NextComponentButton = ({ componentId }: { componentId: number }) => {
     ];
   }, [order, componentId, selectedItems, rules]);
   return (
-    <div className="group flex">
+    <div className="group flex relative">
+      <div className="absolute -bottom-0 mb-11 bg-white p-4 rounded-lg shadow-xl flex flex-col gap-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 w-72 z-10 border border-gray-100">
+        <div className="text-sm font-medium text-gray-500 border-b pb-2 mb-1">
+          Other Components
+        </div>
+        <div className="max-h-[300px] overflow-y-auto flex flex-col gap-1.5">
+          {unselectedComponents
+            .filter((d) => d.id !== nextComponent?.id)
+            .map((d) => (
+              <Link
+                to={`/builder/${d.type}/${d.id}`}
+                className="px-3 py-2 rounded-md bg-gray-50 hover:bg-blue-50 hover:text-blue-700 text-gray-800 transition-colors duration-200 flex items-center"
+                key={d.id}
+                onClick={() => setSelectedComponentId(d.id)}
+              >
+                <span className="truncate">{d.title}</span>
+              </Link>
+            ))}
+        </div>
+        {unselectedComponents.length <= 1 && (
+          <div className="text-xs text-gray-400 italic">
+            No other components available
+          </div>
+        )}
+      </div>
       <ButtonLink
         to={
           nextComponent
@@ -213,19 +237,6 @@ const NextComponentButton = ({ componentId }: { componentId: number }) => {
       >
         {nextComponent == null ? `Overview` : `Next (${nextComponent?.title})`}
       </ButtonLink>
-      <div className="absolute -top-8 bg-white p-1 rounded-md shadow-lg flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        {unselectedComponents
-          .filter((d) => d.id !== nextComponent.id)
-          .map((d) => (
-            <Link
-              to={`/builder/${d.type}/${d.id}`}
-              className="px-2 py-1 rounded-md bg-gray-50 hover:bg-gray-200 text-gray-900"
-              key={d.id}
-            >
-              {d.title}
-            </Link>
-          ))}
-      </div>
     </div>
   );
 };

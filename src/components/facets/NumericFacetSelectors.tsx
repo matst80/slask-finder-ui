@@ -240,6 +240,13 @@ export const NumberFacetSelector = ({
     },
     [fromDisplayValue, updateValue]
   );
+  const invalid = useMemo(() => {
+    if (selected == null) return false;
+    if (selected.min < max || selected.max < min) {
+      return "range invalid";
+    }
+    return false;
+  }, [selected, min, max]);
   // console.log({ selected, limits: { min, max }, histogramValue });
   return (
     <fieldset
@@ -257,7 +264,7 @@ export const NumberFacetSelector = ({
           <ChevronDown className="size-4" />
         )}
       </button>
-
+      {invalid && <span className="text-red-600">{invalid}</span>}
       {open && (
         <>
           <Slider

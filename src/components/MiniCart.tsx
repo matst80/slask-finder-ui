@@ -134,7 +134,7 @@ export const MiniCart = () => {
     () =>
       isLoading
         ? "~"
-        : cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0,
+        : cart?.items?.reduce((acc, item) => acc + (item.qty ?? 1), 0) ?? 0,
     [cart, isLoading]
   );
 

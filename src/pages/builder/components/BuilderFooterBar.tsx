@@ -1,11 +1,13 @@
 import { PropsWithChildren } from "react";
 import { useBuilderContext } from "../useBuilderContext";
 import { Button, ButtonLink } from "../../../components/ui/button";
-import { addToCart } from "../../../lib/datalayer/cart-api";
+import { useAddMultipleToCart } from "../../../hooks/cartHooks";
+import { Link } from "react-router-dom";
 
 export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
   const { sum, neededPsuWatt, percentDone, setSelectedItems, selectedItems } =
     useBuilderContext();
+  const { trigger: addToCart, isMutating } = useAddMultipleToCart();
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200 bg-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
@@ -24,10 +26,13 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
           </div>
 
           {/* Build progress indicator */}
-          <div className="hidden lg:block text-lg font-bold font-elkjop uppercase tracking-tight">
+          <Link
+            to="/builder/overview"
+            className="hidden lg:block text-lg font-bold font-elkjop uppercase tracking-tight"
+          >
             <span className="text-black">Ditt bygge&nbsp;</span>
             <span className="text-[#4a90e2]">{percentDone}% klart</span>
-          </div>
+          </Link>
 
           {/* Action buttons */}
           <div className="flex gap-3 w-full sm:w-auto">
@@ -42,11 +47,10 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
             </ButtonLink>
             <Button
               variant="default"
+              disabled={isMutating}
               className="flex-1 sm:flex-none"
               onClick={async () => {
-                for (const { sku, quantity = 1 } of selectedItems) {
-                  await addToCart({ sku, quantity });
-                }
+                addToCart(selectedItems);
               }}
             >
               Lägg till i kundvagn

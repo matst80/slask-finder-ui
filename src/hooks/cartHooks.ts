@@ -8,6 +8,7 @@ import {
 } from "../lib/datalayer/cart-api";
 import { useFetchMutation } from "../utils";
 import { trackCart } from "../lib/datalayer/beacons";
+import { Item } from "../lib/types";
 
 const cartKey = "/cart";
 
@@ -20,6 +21,24 @@ export const useCart = () => {
 
 export const useResetCart = () => {
   return useFetchMutation(cartKey, () => clearCart().then(() => getCart()));
+};
+
+export const useAddMultipleToCart = () => {
+  return useFetchMutation(cartKey, (items: (Item & { quantity?: number })[]) =>
+    Promise.all(
+      items.map((item) => {
+        return addToCart({ sku: item.sku, quantity: item.quantity ?? 1 }).then(
+          () => {
+            trackCart({
+              item: item.id,
+              quantity: item.quantity ?? 1,
+              type: "add",
+            });
+          }
+        );
+      })
+    )
+  );
 };
 
 export const useAddToCart = (itemId: number) => {
