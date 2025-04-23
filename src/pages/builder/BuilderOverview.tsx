@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ResultItemInner } from "../../components/ResultItem";
-import { Button, ButtonLink } from "../../components/ui/button";
+import { ButtonLink } from "../../components/ui/button";
 import { ImpressionProvider } from "../../lib/hooks/ImpressionProvider";
 import { useBuilderContext } from "./useBuilderContext";
 import { useImpression } from "../../lib/hooks/useImpression";
