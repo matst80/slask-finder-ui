@@ -18,7 +18,7 @@ export const makeImageUrl = (pathOrUrl: string, size = "640") => {
   if (section == "content") {
     return "https://elgiganten.se" + pathOrUrl;
   }
-  console.log({ section, blobId });
+
   const url = `https://media.elkjop.com/assets/${section}/${blobId}`;
   const params = new URLSearchParams({
     url,
