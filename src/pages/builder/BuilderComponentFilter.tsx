@@ -7,13 +7,15 @@ import { SearchResultList } from "../../components/SearchResultList";
 import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { useBuilderQuery } from "./useBuilderQuery";
 import { useMemo } from "react";
+import { BuilderFooterBar } from "./components/BuilderFooterBar";
 
 export const BuilderComponentFilter = () => {
   const componentId = useLoaderData() as string | null;
-  const { componentFilters, query, selectionFilters } = useBuilderQuery(
+  const { component, query, selectionFilters } = useBuilderQuery(
     Number(componentId)
   );
   const [facetsToHide, facetsToDisable] = useMemo(() => {
+    const { filter } = component ?? {};
     return [
       Array.from(
         new Set([
@@ -21,13 +23,13 @@ export const BuilderComponentFilter = () => {
           11,
           12,
           13,
-          ...(componentFilters?.string ?? []).map((d) => d.id),
-          ...(componentFilters?.range ?? []).map((d) => d.id),
+          ...(filter?.string ?? []).map((d) => d.id),
+          ...(filter?.range ?? []).map((d) => d.id),
         ])
       ),
       selectionFilters?.map((d) => d.id) ?? [],
     ];
-  }, [componentFilters, selectionFilters]);
+  }, [component, selectionFilters]);
 
   if (!query) {
     return <div>Loading</div>;
@@ -35,7 +37,7 @@ export const BuilderComponentFilter = () => {
   return (
     <QueryProvider initialQuery={query}>
       <QueryMerger query={query} />
-      <div className="px-4 py-3 md:py-8 md:px-10">
+      <div className="px-4 py-3 md:py-8 md:px-10 mb-24">
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           <Facets
             facetsToHide={facetsToHide}
@@ -50,6 +52,7 @@ export const BuilderComponentFilter = () => {
           </main>
         </div>
       </div>
+      <BuilderFooterBar />
     </QueryProvider>
   );
 };

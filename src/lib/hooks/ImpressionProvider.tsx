@@ -1,28 +1,29 @@
-import {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-} from "react";
+import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 import { Impression, trackImpression } from "../datalayer/beacons";
-
-type ImpressionContextProps = {
-  watch: (ref: HTMLElement, data: Impression) => void;
-};
-const ImpressionContext = createContext<ImpressionContextProps | null>(null);
+import { ImpressionContext } from "./ImpressionContext";
 
 export const ImpressionProvider = ({ children }: PropsWithChildren) => {
   const observer = useRef<IntersectionObserver | null>(null);
 
   const watch = useCallback(
-    (ref: HTMLElement, data: Impression) => {
+    (data: Impression) => (ref: HTMLElement | null) => {
       if (ref != null && observer.current) {
         requestAnimationFrame(() => {
           observer.current?.observe(ref);
           ref.dataset.id = String(data.id);
           ref.dataset.position = String(data.position);
+        });
+      }
+    },
+    [observer]
+  );
+  const unwatch = useCallback(
+    (ref: HTMLElement) => {
+      if (ref != null && observer.current) {
+        requestAnimationFrame(() => {
+          observer.current?.unobserve(ref);
+          delete ref.dataset.id;
+          delete ref.dataset.position;
         });
       }
     },
@@ -46,29 +47,27 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
               }
             }
           });
-        if (toPush.length) {
-          trackImpression(toPush);
-          toPush = [];
-        }
       },
       { threshold: 1 }
     );
+    const pushImpressions = () => {
+      if (toPush.length) {
+        trackImpression(toPush);
+        toPush = [];
+      }
+    };
+    const interval = setInterval(pushImpressions, 1000);
     observer.current = observerInstance;
     return () => {
+      clearInterval(interval);
       observerInstance.disconnect();
     };
   }, []);
   return (
-    <ImpressionContext.Provider value={{ watch }}>
+    <ImpressionContext.Provider
+      value={{ watch, unwatch, observer: observer.current }}
+    >
       {children}
     </ImpressionContext.Provider>
   );
-};
-
-export const useImpression = () => {
-  const context = useContext(ImpressionContext);
-  if (context == null) {
-    throw new Error("useImpression must be used within an ImpressionProvider");
-  }
-  return context;
 };

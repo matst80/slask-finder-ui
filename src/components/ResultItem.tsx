@@ -7,26 +7,38 @@ import { PropsWithChildren, useState } from "react";
 import { trackClick } from "../lib/datalayer/beacons";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
-import { useImpression } from "../lib/hooks/ImpressionProvider";
+import { useImpression } from "../lib/hooks/useImpression";
 import { TimeAgo } from "./TimeAgo";
+
+const hasStock = (value?: string | null) => {
+  return value != null && value != "0";
+};
 
 export const StockIndicator = ({
   stock,
   stockLevel,
-}: Pick<Item, "stock" | "stockLevel">) => {
+  showOnlyInstock = false,
+}: Pick<Item, "stock" | "stockLevel"> & { showOnlyInstock?: boolean }) => {
   const {
     query: { stock: stockQuery },
   } = useQuery();
   const locationId = stockQuery?.[0];
   const stockOnLocation = locationId != null ? stock?.[locationId] : null;
   const storesWithStock = Object.entries(stock ?? {}).length;
+  const hasStoreStock =
+    stockOnLocation != null ? hasStock(stockOnLocation) : storesWithStock > 0;
+  const hasOnlineStock = hasStock(stockLevel);
+
+  if (showOnlyInstock && !hasOnlineStock && !hasStoreStock) {
+    return null;
+  }
 
   return (
     <div className="flex gap-1 justify-between">
       {locationId != null ? (
         <span
           className={`inline-flex items-center line-clamp-1 overflow-ellipsis  gap-1.5 text-sm font-medium ${
-            stockOnLocation != null ? "text-green-600" : "text-amber-600"
+            hasStoreStock ? "text-green-600" : "text-amber-600"
           }`}
         >
           <span
@@ -41,36 +53,32 @@ export const StockIndicator = ({
       ) : (
         <span
           className={`inline-flex line-clamp-1 overflow-ellipsis items-center gap-1.5 text-sm font-medium relative ${
-            storesWithStock > 0 ? "text-green-600" : "text-amber-600"
+            hasStoreStock ? "text-green-600" : "text-amber-600"
           }`}
         >
           <span
             className={`size-2 rounded-full ${
-              storesWithStock > 0 ? "bg-green-500" : "bg-amber-500"
+              hasStoreStock ? "bg-green-500" : "bg-amber-500"
             }`}
           />
           {storesWithStock} butiker
         </span>
       )}
 
-      <span
-        className={`inline-flex items-center gap-1.5 text-sm font-medium ${
-          stockLevel != null && stockLevel != "0"
-            ? "text-green-600"
-            : "text-amber-600"
-        }`}
-      >
+      {showOnlyInstock && !hasOnlineStock ? null : (
         <span
-          className={`size-2 rounded-full ${
-            stockLevel != null && stockLevel != "0"
-              ? "bg-green-500"
-              : "bg-amber-500"
+          className={`inline-flex items-center gap-1.5 text-sm font-medium ${
+            hasOnlineStock ? "text-green-600" : "text-amber-600"
           }`}
-        />
-        {stockLevel != null && stockLevel != "0"
-          ? `Online: ${stockLevel}`
-          : "Inte i lager"}
-      </span>
+        >
+          <span
+            className={`size-2 rounded-full ${
+              hasOnlineStock ? "bg-green-500" : "bg-amber-500"
+            }`}
+          />
+          {hasOnlineStock ? `Online: ${stockLevel}` : "Inte i lager"}
+        </span>
+      )}
     </div>
   );
 };
@@ -261,13 +269,11 @@ export const ResultItem = ({
 }) => {
   //return <DataView item={item} />;
   const { watch } = useImpression();
-  const trackItem = () => {
-    trackClick(item.id, position);
-  };
+  const trackItem = () => trackClick(item.id, position);
 
   return (
     <Link
-      ref={(r) => r != null && watch(r, { id: Number(item.id), position })}
+      ref={watch({ id: Number(item.id), position })}
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
       className="group bg-white md:shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-gradient-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"

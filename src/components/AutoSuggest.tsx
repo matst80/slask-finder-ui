@@ -284,7 +284,7 @@ export const AutoSuggest = () => {
 
   useEffect(() => {
     requestAnimationFrame(() => {
-      setTerm(value==="*"?"":value);
+      setTerm(value === "*" ? "" : value);
       updatePosition();
     });
   }, [value, setTerm, updatePosition]);
@@ -362,7 +362,7 @@ export const AutoSuggest = () => {
           placeholder="Search..."
           onFocus={(e) => {
             e.target.select();
-            setOpen(true)
+            setOpen(true);
           }}
           onKeyUp={onKeyUp}
           onChange={(e) => setValue(e.target.value)}
@@ -446,7 +446,10 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
                   >
                     <span key={id}>{name} </span>
                     <span className="font-bold">
-                      {values.slice(undefined, 1).map((d) => d.value).join(", ")}
+                      {values
+                        .slice(undefined, 1)
+                        .map((d) => d.value)
+                        .join(", ")}
                     </span>
                   </div>
                 ))}
@@ -473,8 +476,22 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
                 />
                 <div className="flex flex-col flex-1">
                   <span>{i.title}</span>
-                  <StockIndicator stock={i.stock} stockLevel={i.stockLevel} />
+                  {i.values["10"] == "Outlet" && i.values["20"] != null && (
+                    <em className="block text-xs text-gray-500 italic">
+                      {i.values["20"]}
+                    </em>
+                  )}
+                  {i.values["9"] != null && i.values["9"] != "Elgiganten" && (
+                    <em className="block text-xs text-gray-500 italic">
+                      Säljs av: {i.values["9"]}
+                    </em>
+                  )}
                 </div>
+                <StockIndicator
+                  stock={i.stock}
+                  stockLevel={i.stockLevel}
+                  showOnlyInstock
+                />
                 <span className="font-bold text-lg justify-end">
                   <PriceValue value={i.values[4]} />
                 </span>

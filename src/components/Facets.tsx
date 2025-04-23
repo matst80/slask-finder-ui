@@ -108,7 +108,7 @@ export const FacetList = ({
           return (
             <NumberFacetSelector
               {...facet}
-              defaultOpen={facet.selected != null}
+              defaultOpen={!facet.disabled && facet.selected != null}
               key={`fld-${facet.id}-${facet.name}`}
             />
           );
@@ -125,7 +125,7 @@ export const FacetList = ({
           <KeyFacetSelector
             {...facet}
             key={`fld-${facet.id}-${facet.name}`}
-            defaultOpen={facet.selected != null}
+            defaultOpen={!facet.disabled && facet.selected != null}
           />
         );
       })}

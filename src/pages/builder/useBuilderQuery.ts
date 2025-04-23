@@ -36,7 +36,7 @@ export const useBuilderQuery = (selectedComponentId: number) => {
       .find((d) => d.id === selectedComponentId);
     return {
       selectionFilters,
-      componentFilters: selectedComponent?.filter,
+      component: selectedComponent,
       query: {
         ...selectedComponent?.filter,
         ...globalFilters,

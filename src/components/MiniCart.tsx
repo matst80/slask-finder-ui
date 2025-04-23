@@ -22,7 +22,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md max-h-screen overflow-y-auto"
+        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md max-h-screen overflow-y-auto animate-cart-open"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
@@ -134,8 +134,8 @@ export const MiniCart = () => {
     () =>
       isLoading
         ? "~"
-        : (cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0),
-    [cart, isLoading],
+        : cart?.items.reduce((acc, item) => acc + item.qty, 0) ?? 0,
+    [cart, isLoading]
   );
 
   useEffect(() => {

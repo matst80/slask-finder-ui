@@ -2,6 +2,7 @@ import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { KeyFacet } from "../../lib/types";
 import { useQueryKeyFacet } from "../../lib/hooks/useQueryKeyFacet";
+import { cm } from "../../utils";
 
 const toSorted = (values: Record<string, number>, selected: Set<string>) =>
   Object.entries(values)
@@ -41,7 +42,12 @@ export const KeyFacetSelector = ({
   const toShow = expanded ? filtered : filtered.slice(0, 10);
 
   return (
-    <div className="mb-4 border-b border-gray-100 pb-2">
+    <div
+      className={cm(
+        "mb-4 border-b border-gray-100 pb-2",
+        disabled && "opacity-50"
+      )}
+    >
       <button
         className="font-medium bold mb-2 flex items-center justify-between w-full text-left"
         onClick={() => setOpen((p) => !p)}

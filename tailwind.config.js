@@ -21,6 +21,7 @@ export default {
       },
       animation: {
         cartAdd: "cartAdd 1s ease-out",
+        "cart-open": "cartAdd 0.5s ease-out",
       },
     },
   },
