@@ -98,7 +98,9 @@ const NextComponentButton = ({ componentId }: { componentId: number }) => {
     //   .filter((d) => d?.type === "component");
     const selectedIds = new Set([
       ...selectedItems.map((d) => d.componentId),
-      ...rules.filter((d) => d.disabled).map((d) => d.id),
+      ...rules
+        .filter((d) => d.disabled != null && d.disabled(selectedItems))
+        .map((d) => d.id),
     ]);
 
     return rules.find(
