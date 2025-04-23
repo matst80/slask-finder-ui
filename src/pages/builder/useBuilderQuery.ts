@@ -16,7 +16,7 @@ export const useBuilderQuery = (selectedComponentId: number) => {
   const { appliedFilters, rules, globalFilters } = ctx;
   return useMemo(() => {
     const selectionFilters = appliedFilters
-      .filter((d) => d.to === selectedComponentId)
+      ?.filter((d) => d?.to === selectedComponentId)
       .filter(isUniqueFilter);
 
     const selectedComponent = rules

@@ -7,6 +7,7 @@ import { useImpression } from "../../lib/hooks/useImpression";
 import { trackClick } from "../../lib/datalayer/beacons";
 import { ItemWithComponentId } from "./builder-types";
 import { PriceValue } from "../../components/Price";
+import { RefreshCw } from "lucide-react";
 
 const SelectedItem = ({
   componentId,
@@ -28,15 +29,15 @@ const SelectedItem = ({
       <ResultItemInner {...item}>
         <ButtonLink
           to={`/builder/component/${componentId}`}
-          variant="outline"
-          size="sm"
+          variant="secondary"
+          size="icon"
           className="absolute top-3 right-3"
           onClick={(e) => {
             e.stopPropagation();
             setSelectedComponentId(componentId);
           }}
         >
-          Change
+          <RefreshCw className="size-5" />
         </ButtonLink>
       </ResultItemInner>
     </Link>
