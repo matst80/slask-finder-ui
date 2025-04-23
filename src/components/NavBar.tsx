@@ -12,7 +12,7 @@ const UserButton = () => {
   const [, setIsAdmin] = useAdmin();
   const loggedIn = data?.role != null;
   useEffect(() => {
-    console.log("user changed", data);
+    // console.log("user changed", data);
     if (data != null) {
       setIsAdmin(data?.role != null);
     }

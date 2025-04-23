@@ -62,7 +62,7 @@ export const componentRules: Rule[] = [
         to: LIQUID_COOLER,
         converter: (values) => {
           const tdp = values[35990];
-          console.log("should have cooler that handles", tdp);
+          //console.log("should have cooler that handles", tdp);
           // return [];
           return [
             {
@@ -83,22 +83,6 @@ export const componentRules: Rule[] = [
 
           const chipsetValue = values[36202];
 
-          // if (chipsetValue === "AMD X870E" || chipsetValue === "AMD X670E") {
-          //   return [
-          //     {
-          //       id: 30276,
-          //       value: [
-          //         "AMD A620",
-          //         "AMD X670E",
-          //         "AMD X670",
-          //         "AMD B650E",
-          //         "AMD B650",
-          //         "AMD X870E",
-          //         "AMD X870",
-          //       ],
-          //     },
-          //   ];
-          // }
           if (typeof chipsetValue === "string" && chipsetValue.includes(";"))
             return [
               {
@@ -297,10 +281,9 @@ export const componentRules: Rule[] = [
         converter: (values) => {
           const gpuSize = Number(values[30376]);
           if (isNaN(gpuSize)) {
-            console.log("Invalid gpu size", values[30376]);
             return [];
           }
-          console.log("GPU size", gpuSize);
+
           return [
             {
               id: 32062,
@@ -451,10 +434,9 @@ export const componentRules: Rule[] = [
         converter: (values) => {
           const maxGpuSize = Number(values[32062]);
           if (isNaN(maxGpuSize)) {
-            console.log("Invalid gpu size", values[32062]);
             return [];
           }
-          console.log("MAX GPU size", maxGpuSize);
+
           return [
             {
               id: 30376,
@@ -480,7 +462,7 @@ export const componentRules: Rule[] = [
             console.log("Invalid cpu height", values[32061]);
             return [];
           }
-          console.log("CPU height", cpuHeightInMM);
+
           return [{ id: 30648, value: { min: 0, max: cpuHeightInMM / 10 } }];
         },
       },
@@ -488,7 +470,6 @@ export const componentRules: Rule[] = [
         id: 36294,
         to: LIQUID_COOLER,
         converter: (values) => {
-          console.log("HÄR");
           const ret = [];
           const maxSize = Math.max(
             ...[values[36296], values[36298], values[36299], values[36300]]
@@ -498,7 +479,7 @@ export const componentRules: Rule[] = [
               })
               .filter((v) => !isNaN(v))
           );
-          console.log("MAX RADIATOR SIZE", maxSize);
+          //console.log("MAX RADIATOR SIZE", maxSize);
           const radiatorSizes = [120, 240, 280, 360];
 
           ret.push({
@@ -514,7 +495,6 @@ export const componentRules: Rule[] = [
         id: 32056,
         to: MOTHERBOARD,
         converter: (values) => {
-          console.log(values);
           const formFactor = values[32056];
           const allowed = [];
           if (typeof formFactor === "string") {
