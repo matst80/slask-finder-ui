@@ -11,21 +11,21 @@ import {
   CASE,
   PSU,
   COOLER,
-  wattIds,
 } from "./rules";
 //import { FilteringQuery } from "../../lib/types";
 
 type BuilderProps = {
   initialItems?: ItemWithComponentId[];
   initialRules: Rule[];
-  //globalFilters?: FilteringQuery;
   onSelectionChange?: (items: ItemWithComponentId[]) => void;
-  //onAddToCart?: (items: CartArticle[]) => Promise<unknown>;
 };
 
-const asNumber = (value: string | number) => {
+const asNumber = (value: string[] | string | number) => {
   if (typeof value === "string") {
     return parseInt(value, 10);
+  }
+  if (Array.isArray(value)) {
+    return parseInt(value[0], 10);
   }
   return value;
 };
@@ -33,9 +33,7 @@ const asNumber = (value: string | number) => {
 export const BuilderProvider = ({
   initialItems,
   initialRules,
-  //globalFilters,
   children,
-  //onAddToCart,
   onSelectionChange,
 }: PropsWithChildren<BuilderProps>) => {
   const [order, setOrder] = useState<number[]>([
@@ -69,38 +67,30 @@ export const BuilderProvider = ({
     });
   }, [selectedItems, onSelectionChange]);
 
-  const sum = useMemo(
-    () =>
-      selectedItems.reduce(
-        (sum, d) => sum + (d.values[4] ? Number(d.values[4]) : 0),
-        0
-      ) / 100,
-    [selectedItems]
-  );
   const neededPsuWatt = useMemo(() => {
     let gpuRecommendedWatt = 0;
     const allSum = selectedItems
       .map((item) => {
-        if (item.componentId === GPU && typeof item.values[32186] == "string") {
+        if (item.componentId === GPU && item.values[32186] != null) {
           gpuRecommendedWatt = asNumber(item.values[32186]);
         }
-        return wattIds.reduce((acc, id) => {
+        return [35990, 32186, 35990].reduce((acc, id) => {
           const value = item.values[id];
-          if (value != null && typeof value === "string") {
-            return asNumber(value);
+          if (value != null) {
+            const nr = asNumber(value);
+            if (!isNaN(nr) && nr > acc) {
+              return nr;
+            }
           }
           return acc;
         }, 0);
       })
       .reduce((sum, d) => sum + d, 0);
-    return gpuRecommendedWatt > 0 ? gpuRecommendedWatt : allSum;
+    return !isNaN(gpuRecommendedWatt) && gpuRecommendedWatt > 0
+      ? gpuRecommendedWatt
+      : allSum;
   }, [selectedItems]);
-  const percentDone = useMemo(() => {
-    return Math.min(
-      Math.round((selectedItems.length / (rules.length - 1)) * 100),
-      100
-    );
-  }, [selectedItems, rules]);
+
   const appliedFilters = useMemo(() => {
     const wattQueries =
       neededPsuWatt > 500
@@ -155,17 +145,17 @@ export const BuilderProvider = ({
         selectedComponentId,
         selectedItems,
         neededPsuWatt,
-        //globalFilters: globalFilters ?? { string: [], range: [], stock: [] },
+
         order,
         setOrder,
         updateRules,
         appliedFilters,
         setSelectedItems,
-        //addBuildToCart,
+
         setSelectedComponentId,
-        sum,
+
         rules,
-        percentDone,
+
         reset,
       }}
     >

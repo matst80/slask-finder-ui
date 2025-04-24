@@ -12,89 +12,11 @@ import { ImpressionProvider } from "../../lib/hooks/ImpressionProvider";
 import { FilteringQuery, Item, ItemValues } from "../../lib/types";
 import { trackAction, trackClick } from "../../lib/datalayer/beacons";
 import { useBuilderContext } from "./useBuilderContext";
-import { cm, isDefined } from "../../utils";
+import { cm } from "../../utils";
 import { Button, ButtonLink } from "../../components/ui/button";
 import { Issue } from "./builder-types";
-import { useFacetMap } from "../../hooks/searchHooks";
-
-// import { GroupRenderer } from "./components/ItemDetails";
-// import { X } from "lucide-react";
-
-// const DetailsDialog = ({ item }: { item: Item }) => {
-//   const [open, setOpen] = useState(false);
-//   const close: React.MouseEventHandler<HTMLDivElement | HTMLButtonElement> = (
-//     e
-//   ) => {
-//     e.stopPropagation();
-//     e.preventDefault();
-//     setOpen(false);
-//   };
-//   return (
-//     <>
-//       <button onClick={() => setOpen(true)}>show details</button>
-//       {open && (
-//         <div
-//           className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
-//           onClick={close}
-//         >
-//           <div
-//             className="bg-white rounded-lg shadow-lg p-6 w-full max-w-(--breakpoint-lg) max-h-[80vh] animate-cart-open"
-//             onClick={(e) => e.stopPropagation()}
-//           >
-//             <div className="flex justify-between items-center mb-4">
-//               <h2 className="text-xl font-bold">{item.title}</h2>
-//               <button
-//                 onClick={close}
-//                 className="text-gray-500 hover:text-gray-700"
-//               >
-//                 <X size={24} />
-//               </button>
-//             </div>
-//             <div className="overflow-y-auto flex-1">
-//               <GroupRenderer values={item.values} />
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </>
-//   );
-// };
-
-const IssueList = ({ issues }: { issues: Issue[] }) => {
-  const { data } = useFacetMap();
-  const toShow = useMemo(
-    () =>
-      issues?.map((issue) => {
-        const facet = data?.[issue.facetId];
-        return {
-          ...issue,
-          name: facet?.name ?? "...",
-        };
-      }) ?? [],
-    [issues, data]
-  );
-  if (issues.length < 1 || data == null) {
-    return null;
-  }
-  return (
-    <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center gap-1 p-3">
-      {toShow.map((issue, idx) => (
-        <span
-          key={idx}
-          title={String(issue.facetId)}
-          className={cm(
-            "text-xs overflow-hidden text-ellipsis line-clamp-1 px-2 py-1 rounded-full shadow-md shadow-white",
-            issue.type === "error"
-              ? "bg-red-100 text-red-800"
-              : "bg-amber-100 text-amber-800"
-          )}
-        >
-          {issue.message} in "{issue.name}"
-        </span>
-      ))}
-    </div>
-  );
-};
+import { useBuilderStep } from "./useBuilderStep";
+import { IssueList } from "./IssueList";
 
 const ComponentResultList = ({
   componentId,
@@ -116,10 +38,6 @@ const ComponentResultList = ({
     return <div>Loading...</div>;
   }
 
-  const parentId = new URLSearchParams(globalThis.location.search).get(
-    "parentId"
-  );
-
   const selectedId = selectedItems.find(
     (i) => i.componentId === componentId
   )?.id;
@@ -134,6 +52,9 @@ const ComponentResultList = ({
         return;
       }
       e.preventDefault();
+      const parentId = new URLSearchParams(globalThis.location.search).get(
+        "parentId"
+      );
 
       setSelectedItems((p) => {
         const isSelected = p.some((i) => i.id === id);
@@ -233,7 +154,7 @@ const BuilderQueryMerger = ({
     if (keyRef.current === componentId) {
       return;
     }
-    // console.log("updating query", componentId, query);
+
     keyRef.current = componentId;
     setQuery(query);
   }, [query, setQuery, componentId]);
@@ -241,8 +162,7 @@ const BuilderQueryMerger = ({
 };
 
 const NextComponentButton = ({ componentId }: { componentId: number }) => {
-  const { selectedItems, order, rules, setSelectedComponentId } =
-    useBuilderContext();
+  const { selectedItems, setSelectedComponentId } = useBuilderContext();
   const hasSelection = useMemo(
     () =>
       selectedItems.length > 0 &&
@@ -250,43 +170,7 @@ const NextComponentButton = ({ componentId }: { componentId: number }) => {
       selectedItems.some((d) => d.componentId === componentId),
     [selectedItems, componentId]
   );
-  const [unselectedComponents, nextComponent] = useMemo(() => {
-    const currentIdx = order.findIndex((id) => id === componentId);
-
-    const selectedIds = new Set([
-      ...selectedItems.flatMap((d) =>
-        [d.componentId, d.parentId].filter(isDefined)
-      ),
-      ...rules
-        .filter((d) => d.disabled != null && d.disabled(selectedItems))
-        .map((d) => d.id),
-    ]);
-
-    const unselected = order
-      .filter((id) => {
-        return !selectedIds.has(id);
-      })
-      .map((id) => {
-        const rule = rules.find((d) => d.id === id);
-        return rule != null &&
-          (rule.disabled == null || !rule.disabled(selectedItems))
-          ? rule
-          : null;
-      })
-      .filter(isDefined);
-
-    return [
-      unselected,
-      rules.find(
-        (d) =>
-          d.id ==
-          order.find(
-            (id, idx) =>
-              id !== componentId && !selectedIds.has(id) && idx > currentIdx
-          )
-      ) ?? unselected[0],
-    ];
-  }, [order, componentId, selectedItems, rules]);
+  const [unselectedComponents, nextComponent] = useBuilderStep(componentId);
   return (
     <div className="group flex relative">
       <div className="absolute -bottom-0 mb-11 bg-white p-4 rounded-lg shadow-xl flex flex-col gap-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 w-72 z-10 border border-gray-100">

@@ -6,12 +6,12 @@ import { useBuilderContext } from "./useBuilderContext";
 import { useImpression } from "../../lib/hooks/useImpression";
 import { trackClick } from "../../lib/datalayer/beacons";
 import { ItemWithComponentId } from "./builder-types";
-import { PriceValue } from "../../components/Price";
 import { Plus, RefreshCw } from "lucide-react";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { useFacetMap } from "../../hooks/searchHooks";
 import { useMemo } from "react";
 import { isDefined } from "../../utils";
+import { flattenComponents } from "./builder-utils";
 
 const SelectedItem = ({
   componentId,
@@ -53,8 +53,10 @@ const SpecificationSummary = () => {
   const { data } = useFacetMap();
   const specifications = useMemo(() => {
     return selectedItems.flatMap((item) => {
-      const rule = rules.find((rule) => rule.id === item.componentId);
-      if (rule == null || rule.type !== "component") {
+      const rule = rules
+        .flatMap(flattenComponents)
+        .find((rule) => rule.id === item.componentId);
+      if (rule == null) {
         return [];
       }
       return (
@@ -84,29 +86,32 @@ const SpecificationSummary = () => {
   return (
     <div className="flex flex-col gap-2">
       <h2 className="text-lg font-bold">Specifications</h2>
-      {specifications.map(
-        ({ componentId, id, name, value, componentTitle }) => (
-          <div
-            key={`${componentId}-${id}`}
-            className="flex items-center justify-between gap-4 border-b border-blue-200"
-          >
-            <span className="text-sm font-semibold">{name}</span>
-            <span className="text-sm flex-1">{value}</span>
-            <span className="text-sm hidden md:inline-flex">
-              {componentTitle}
-            </span>
-          </div>
-        )
-      )}
+      <div className="flex flex-col gap-1">
+        {specifications.map(
+          ({ componentId, id, name, value, componentTitle }) => (
+            <div
+              key={`${componentId}-${id}`}
+              className="flex items-center justify-between gap-4 border-b border-blue-200"
+            >
+              <span className="text-sm font-semibold">{name}</span>
+              <span className="text-sm flex-1">{value}</span>
+              <span className="text-sm hidden md:inline-flex">
+                {componentTitle}
+              </span>
+            </div>
+          )
+        )}
+      </div>
     </div>
   );
 };
 
 export const BuilderOverview = () => {
-  const { selectedItems, sum, rules } = useBuilderContext();
+  const { selectedItems, rules } = useBuilderContext();
+  //const sum = useBuilderSum();
   return (
     <>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-20">
         <h1 className="text-2xl mb-6 font-bold">Builder Overview</h1>
         <p>Welcome to the Builder Overview page!</p>
         <p>This is where you can see an overview of your builder components.</p>
@@ -117,9 +122,7 @@ export const BuilderOverview = () => {
             ))}
           </ImpressionProvider>
         </div>
-        <p className="bg-blue-50 p-4 rounded-lg my-6">
-          <SpecificationSummary />
-        </p>
+
         <div>
           {rules
             .filter((d) => d.type === "group")
@@ -135,12 +138,18 @@ export const BuilderOverview = () => {
                     return (
                       <div
                         key={j}
-                        className="flex items-center justify-between border-b border-gray-200"
+                        className="flex items-center justify-between border-b border-gray-200 py-2"
                       >
-                        <span className="text-sm font-semibold">
-                          {item.title}{" "}
-                          {selected != null && `(${selected.title})`}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-semibold">
+                            {item.title}
+                          </span>
+                          {selected != null && (
+                            <div className="flex items-center gap-2">
+                              <span>{selected.title}</span>
+                            </div>
+                          )}
+                        </div>
                         <ButtonLink
                           to={`/builder/${item.type}/${item.id}`}
                           variant="outline"
@@ -160,11 +169,14 @@ export const BuilderOverview = () => {
               </div>
             ))}
         </div>
-        <div className="mt-6 mb-20">
+        <p className="bg-blue-50 p-4 rounded-lg my-6">
+          <SpecificationSummary />
+        </p>
+        {/* <div className="mt-6 mb-20">
           <p className="font-bold text-lg">
             Total price: <PriceValue value={sum * 100} />
           </p>
-        </div>
+        </div> */}
       </div>
       <BuilderFooterBar />
     </>

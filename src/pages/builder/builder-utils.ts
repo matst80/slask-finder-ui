@@ -1,4 +1,4 @@
-import { SelectedAdditionalFilter } from "./builder-types";
+import { Component, Rule, SelectedAdditionalFilter } from "./builder-types";
 
 export const isUniqueFilter = (
   value: SelectedAdditionalFilter,
@@ -41,4 +41,18 @@ export const fixSingleArray = ({
     return { id, value };
   }
   return { id, value: [value] };
+};
+
+export const flattenComponents = (rule: Rule): Component[] => {
+  if (rule.type === "group") {
+    return rule.components
+      .flatMap(flattenComponents)
+      .filter((d) => d.type === "component");
+  }
+  if (rule.type === "selection") {
+    return rule.options
+      .flatMap(flattenComponents)
+      .filter((d) => d.type === "component");
+  }
+  return [rule];
 };

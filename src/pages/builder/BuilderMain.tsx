@@ -24,8 +24,6 @@ export const BuilderMain = () => {
     <BuilderProvider
       initialRules={componentRules}
       initialItems={initialItems}
-      //globalFilters={{ stock: ["2001"] }}
-
       onSelectionChange={saveBuild}
     >
       <PageContainer>

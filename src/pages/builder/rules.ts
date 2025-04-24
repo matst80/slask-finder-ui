@@ -2,8 +2,6 @@ import { ItemValues } from "../../lib/types";
 import { isDefined } from "../../utils";
 import { Issue, ItemWithComponentId, Rule } from "./builder-types";
 
-export const wattIds = [35990, 32186];
-
 export const GPU = 5;
 export const CPU = 1;
 export const MOTHERBOARD = 2;
@@ -102,6 +100,19 @@ const stringContain = (
       message: "Missing value: " + mustHave,
       facetId: id,
     };
+};
+
+const arrayMatch = (
+  values: ItemValues,
+  id: number,
+  type: "error" | "warning"
+): Issue | undefined => {
+  const value = values?.[id];
+  if (value == null) return { type, message: "Missing value", facetId: id };
+  if (!Array.isArray(value))
+    return { type, message: "Not an array", facetId: id };
+  if (value.length < 1) return { type, message: "Empty array", facetId: id };
+  return undefined;
 };
 
 export const componentRules: Rule[] = [
@@ -629,7 +640,12 @@ export const componentRules: Rule[] = [
         disabled: disabledIfCoolerIncluded,
         //ignoreIfComponentSelected: 9,
         topFilters: [32093, 32177, 36317, 32133, 34650, 36306],
-
+        validator: (values) => {
+          return [
+            arrayMatch(values, 32077, "error"),
+            numberMatch(values, 36307, { min: 10, max: 9999 }, "warning"),
+          ].filter(isDefined);
+        },
         //importantFacets: [32093, 36310, 32097, 32177, 36311, 36306], //, 32077
         importantFacets: [36310, 36307, 32133],
         filter: {
@@ -657,6 +673,12 @@ export const componentRules: Rule[] = [
         topFilters: [32093, 32177],
         //importantFacets: [32093, 36310, 32097, 32177, 36311, 36306], //, 32077
         importantFacets: [36310, 36307, 32133],
+        validator: (values) => {
+          return [
+            arrayMatch(values, 32077, "error"),
+            numberMatch(values, 36307, { min: 10, max: 9999 }, "warning"),
+          ].filter(isDefined);
+        },
         filter: {
           range: [],
           sort: "popular",
@@ -814,7 +836,7 @@ export const componentRules: Rule[] = [
         topFilters: [
           2, 32023, 30636, 31376, 30407, 33433, 32226, 31265, 30924, 30924,
         ],
-        importantFacets: [32023, 30924, 32226, 31239, 30636, 30584],
+        importantFacets: [36341, 32023, 30924, 32226, 31239, 30636, 30584],
         filter: {
           range: [],
           sort: "popular",

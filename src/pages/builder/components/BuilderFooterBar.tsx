@@ -4,10 +4,12 @@ import { Button, ButtonLink } from "../../../components/ui/button";
 import { useAddMultipleToCart } from "../../../hooks/cartHooks";
 import { Link } from "react-router-dom";
 import { RotateCcw, ShoppingBasketIcon } from "lucide-react";
+import { useBuilderSum } from "../useBuilderSum";
 
 export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
-  const { sum, neededPsuWatt, percentDone, setSelectedItems, selectedItems } =
+  const { neededPsuWatt, setSelectedItems, selectedItems } =
     useBuilderContext();
+  const sum = useBuilderSum();
   const { trigger: addToCart, isMutating } = useAddMultipleToCart();
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200 bg-white shadow-lg">
@@ -31,8 +33,7 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
             to="/builder/overview"
             className="hidden lg:block text-lg font-bold font-elkjop uppercase tracking-tight"
           >
-            <span className="text-black">Ditt bygge&nbsp;</span>
-            <span className="text-[#4a90e2]">{percentDone}% klart</span>
+            Antal valda: {selectedItems.length}
           </Link>
 
           {/* Action buttons */}

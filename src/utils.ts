@@ -8,6 +8,7 @@ export function remove<T>(key: string | number) {
     return rest;
   };
 }
+
 export const makeImageUrl = (pathOrUrl: string, size = "640") => {
   if (pathOrUrl.startsWith("http")) {
     return pathOrUrl;
@@ -28,8 +29,6 @@ export const makeImageUrl = (pathOrUrl: string, size = "640") => {
 
   return "https://www.elgiganten.se/_next/image?" + params.toString();
 };
-
-//https://www.elgiganten.se/_next/image?url=https%3A%2F%2Fmedia.elkjop.com%2Fassets%2Fimage%2Fdv_web_D1800013061942&w=256&q=75
 
 export const useFetchMutation = <T, U>(
   key: string,
