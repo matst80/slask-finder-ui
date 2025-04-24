@@ -58,7 +58,7 @@ export const ButtonLink: React.FC<ButtonLinkProps> = ({
 };
 
 const baseStyles =
-  "font-medium rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:cursor-not-allowed";
+  "font-medium rounded-sm focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:cursor-not-allowed";
 const variantStyles = {
   default: "bg-blue-600 text-white hover:bg-blue-700",
   secondary: "bg-gray-200 text-gray-700 hover:bg-gray-300",

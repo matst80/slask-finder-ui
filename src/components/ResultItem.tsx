@@ -37,7 +37,7 @@ export const StockIndicator = ({
     <div className="flex gap-1 justify-between">
       {locationId != null ? (
         <span
-          className={`inline-flex items-center line-clamp-1 overflow-ellipsis  gap-1.5 text-sm font-medium ${
+          className={`inline-flex items-center line-clamp-1 text-ellipsis  gap-1.5 text-sm font-medium ${
             hasStoreStock ? "text-green-600" : "text-amber-600"
           }`}
         >
@@ -52,7 +52,7 @@ export const StockIndicator = ({
         </span>
       ) : (
         <span
-          className={`inline-flex line-clamp-1 overflow-ellipsis items-center gap-1.5 text-sm font-medium relative ${
+          className={`inline-flex line-clamp-1 text-ellipsis items-center gap-1.5 text-sm font-medium relative ${
             hasStoreStock ? "text-green-600" : "text-amber-600"
           }`}
         >
@@ -187,7 +187,7 @@ export const ResultItemInner = ({
               .map((bp, idx) => (
                 <li
                   key={`${bp}-${idx}`}
-                  className="line-clamp-1 overflow-ellipsis"
+                  className="line-clamp-1 text-ellipsis"
                 >
                   {bp}
                 </li>
@@ -276,7 +276,7 @@ export const ResultItem = ({
       ref={watch({ id: Number(item.id), position })}
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
-      className="group bg-white md:shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-gradient-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
+      className="group bg-white md:shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
       onClick={trackItem}
     >
       <ResultItemInner {...item} />

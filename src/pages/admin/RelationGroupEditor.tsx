@@ -51,7 +51,7 @@ const FacetValueInput = ({
       />
       <select
         multiple={true}
-        className="hidden group-hover:flex absolute w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg overflow-auto flex-col z-10 max-h-60"
+        className="hidden group-hover:flex absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex-col z-10 max-h-60"
         onChange={(e) => {
           const selected = Array.from(e.target.selectedOptions).map(
             (option) => option.value
@@ -111,7 +111,7 @@ const FacetInput = ({
           className="w-full"
         />
         {filteredData.length > 0 && (
-          <div className="absolute w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg overflow-auto flex flex-col z-10 max-h-60">
+          <div className="absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex flex-col z-10 max-h-60">
             {filteredData.map((facet) => (
               <button
                 key={facet.obj.id}
@@ -135,7 +135,7 @@ const RelationMatchEditor = ({
   const { facetId, value: toMatch } = value;
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-white rounded-sm border border-gray-200">
+    <div className="flex flex-col gap-4 p-4 bg-white rounded-xs border border-gray-200">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FacetInput
           id={facetId}
@@ -182,7 +182,7 @@ const RelationEditor = ({
   const { fromId, toId } = relation;
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-white rounded-sm border border-gray-200">
+    <div className="flex flex-col gap-4 p-4 bg-white rounded-xs border border-gray-200">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <FacetInput
           id={fromId}
@@ -214,7 +214,7 @@ const RelationEditor = ({
                 converter: e.target.value as Relation["converter"],
               });
             }}
-            className="w-full px-3 py-2 border border-gray-200 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-200 rounded-xs text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
           >
             <option value="none">None</option>
             <option value="valueToMin">ValueToMin</option>
@@ -229,7 +229,7 @@ const RelationEditor = ({
 const DeleteButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <button
-      className="absolute -top-2 -right-2 bg-white p-1.5 rounded-full border border-gray-200 shadow-sm hover:bg-gray-50"
+      className="absolute -top-2 -right-2 bg-white p-1.5 rounded-full border border-gray-200 shadow-xs hover:bg-gray-50"
       onClick={onClick}
     >
       <TrashIcon className="size-4 text-gray-500" />
@@ -240,7 +240,7 @@ const DeleteButton = ({ onClick }: { onClick: () => void }) => {
 const AddButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <button
-      className="relative bg-white p-4 border border-gray-200 rounded-sm flex justify-center items-center hover:bg-gray-50 transition-colors"
+      className="relative bg-white p-4 border border-gray-200 rounded-xs flex justify-center items-center hover:bg-gray-50 transition-colors"
       onClick={onClick}
     >
       <PlusIcon className="size-5 text-gray-500" />
@@ -272,7 +272,7 @@ const GroupEditor = ({
     };
 
   return (
-    <div className="border border-gray-200 rounded-sm bg-gray-50">
+    <div className="border border-gray-200 rounded-xs bg-gray-50">
       <div className="p-4 flex items-center justify-between border-b border-gray-200">
         <div className="flex-1">
           <h2 className="text-lg font-medium text-gray-900">{value.name}</h2>

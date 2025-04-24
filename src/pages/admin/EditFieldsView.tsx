@@ -120,7 +120,7 @@ const FilteredFieldView = ({
                 }
               }}
               className={cm(
-                "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-blue-800 cursor-pointer flex-shrink-0",
+                "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-blue-800 cursor-pointer shrink-0",
                 selectedPurpose === str ? "bg-white" : "bg-blue-100"
               )}
             >

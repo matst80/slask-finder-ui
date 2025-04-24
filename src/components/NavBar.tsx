@@ -50,7 +50,7 @@ export function Navbar() {
       <div className="mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <span className="text-2xl font-bold text-blue-600">
                 slask-finder
               </span>

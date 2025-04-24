@@ -35,7 +35,7 @@ export const PopularFacetsView = () => {
         {popularFacets.map((facet, i) => (
           <div
             key={i}
-            className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow duration-200"
+            className="bg-white rounded-lg shadow-xs p-4 hover:shadow-md transition-shadow duration-200"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-700">

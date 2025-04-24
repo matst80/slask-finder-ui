@@ -15,7 +15,7 @@ export const ComponentRule = ({
     <button
       className="flex-1 bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 
                  border border-gray-300 flex flex-col items-center justify-center p-6 gap-3 
-                 relative transform hover:-translate-y-1 focus:outline-none focus:ring-2 
+                 relative transform hover:-translate-y-1 focus:outline-hidden focus:ring-2 
                  focus:ring-blue focus:border-transparent"
       onClick={onClick}
       aria-label={`Start with ${title}`}

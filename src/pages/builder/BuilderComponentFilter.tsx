@@ -36,7 +36,7 @@ const DetailsDialog = ({ item }: { item: Item }) => {
           onClick={close}
         >
           <div
-            className="bg-white rounded-lg shadow-lg p-6 w-full max-w-screen-lg max-h-[80vh] animate-cart-open"
+            className="bg-white rounded-lg shadow-lg p-6 w-full max-w-(--breakpoint-lg) max-h-[80vh] animate-cart-open"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
@@ -115,7 +115,7 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
             onClick={handleSelection(item, start + idx)}
             key={item.id}
             className={cm(
-              "group bg-white md:shadow-sm text-left hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item bg-gradient-to-br border-b border-gray-200 md:border-b-0",
+              "group bg-white md:shadow-xs text-left hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item bg-linear-to-br border-b border-gray-200 md:border-b-0",
               selectedId === item.id
                 ? "from-blue-100 hover:from-blue-200"
                 : "hover:from-white to-gray-50 hover:to-gray-10"

@@ -12,7 +12,7 @@ export const Input: React.FC<InputProps> = ({ className = "", ...props }) => {
         rounded-sm
         text-sm text-gray-900
         placeholder:text-gray-400
-        focus:outline-none
+        focus:outline-hidden
         focus:ring-2 focus:ring-blue-500/20
         focus:border-blue-500
         transition-colors duration-200

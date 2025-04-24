@@ -41,7 +41,7 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
             <ButtonLink
               variant="danger"
               to={"/builder"}
-              className="line-clamp-1 overflow-ellipsis flex items-center justify-center"
+              className="line-clamp-1 text-ellipsis flex items-center justify-center"
               onClick={() => setSelectedItems([])}
             >
               <RotateCcw className="size-5 md:hidden" />
@@ -50,7 +50,7 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
             <Button
               variant="default"
               disabled={isMutating}
-              className="line-clamp-1 overflow-ellipsis flex items-center justify-center"
+              className="line-clamp-1 text-ellipsis flex items-center justify-center"
               onClick={async () => {
                 addToCart(selectedItems);
               }}

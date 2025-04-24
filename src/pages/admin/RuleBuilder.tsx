@@ -225,7 +225,7 @@ const NumberLimitRuleEditor = ({
           <select
             value={rule.comparator || ">"}
             onChange={(e) => onChange({ ...rule, comparator: e.target.value as NumberComparitor })}
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
           >
             <option value=">">Greater than (&gt;)</option>
             <option value="<">Less than (&lt;)</option>
@@ -336,7 +336,7 @@ const MatchRuleEditor = ({ onChange, ...rule }: EditorProps<MatchRule>) => {
           type="checkbox"
           checked={rule.invert ?? false}
           onChange={(e) => onChange({ ...rule, invert: e.target.checked })}
-          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-sm"
         />
         <label htmlFor="invert" className="ml-2 block text-sm text-gray-900">
           Invert match (apply value when NOT matching)
@@ -477,7 +477,7 @@ const RuleComponent = (props: EditorProps<Rule>) => {
 
 const RuleEditor = (rule: Rule & { onChange: (data: Rule) => void }) => {
   return (
-    <div className="border rounded-lg shadow-sm bg-white overflow-hidden">
+    <div className="border rounded-lg shadow-xs bg-white overflow-hidden">
       <div className="px-6 py-4">
         <RuleComponent {...rule} />
       </div>
@@ -490,7 +490,7 @@ const RuleEditor = (rule: Rule & { onChange: (data: Rule) => void }) => {
           <select
             value={rule.$type}
             onChange={(e) => rule.onChange({ $type: e.target.value } as Rule)}
-            className="mt-1 block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+            className="mt-1 block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
           >
             {ruleTypes.map((type) => (
               <option key={type} value={type}>
@@ -563,7 +563,7 @@ export const RuleBuilder = () => {
           <button
             type="button"
             onClick={addNewRule}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-xs text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <svg
               className="-ml-1 mr-2 h-5 w-5"

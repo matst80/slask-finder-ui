@@ -13,7 +13,7 @@ export const Sorting = () => {
       <select
         value={sort}
         onChange={(e) => setSort(e.target.value as Sort)}
-        className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       >
         <option value="popular">Popularitet</option>
         <option value="price">Pris</option>

@@ -67,7 +67,7 @@ export const KeyFacetSelector = ({
           {allSorted.length > 25 && (
             <input
               type="text"
-              className="w-full px-2 py-1 border border-gray-200 rounded text-sm"
+              className="w-full px-2 py-1 border border-gray-200 rounded-sm text-sm"
               placeholder={`Sök ${name}`}
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
@@ -76,7 +76,7 @@ export const KeyFacetSelector = ({
           {toShow.map(({ value, count }) => (
             <label
               key={value}
-              className="flex items-center line-clamp-1 overflow-ellipsis justify-between p-1 text-sm rounded-md hover:bg-gray-100"
+              className="flex items-center line-clamp-1 text-ellipsis justify-between p-1 text-sm rounded-md hover:bg-gray-100"
             >
               <div>
                 <input

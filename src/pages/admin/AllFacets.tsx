@@ -249,7 +249,7 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
               onChange={(e) =>
                 setValue((prev) => ({ ...prev, searchable: e.target.checked }))
               }
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm font-medium text-gray-700">
               Searchable
@@ -262,7 +262,7 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
               onChange={(e) =>
                 setValue((prev) => ({ ...prev, hide: e.target.checked }))
               }
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm font-medium text-gray-700">
               Hide facet
@@ -275,7 +275,7 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
               onChange={(e) =>
                 setValue((prev) => ({ ...prev, isKey: e.target.checked }))
               }
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm font-medium text-gray-700">
               Key facet
@@ -299,7 +299,7 @@ const FacetItem = ({ data }: { data: FacetListItem }) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div key={id} className="bg-white rounded-sm shadow-sm hover:bg-gray-50">
+    <div key={id} className="bg-white rounded-xs shadow-xs hover:bg-gray-50">
       <div
         className="flex items-center justify-between p-4 cursor-pointer "
         onClick={() => setOpen((prev) => !prev)}
@@ -309,7 +309,7 @@ const FacetItem = ({ data }: { data: FacetListItem }) => {
             <span className="font-medium text-gray-900">{name}</span>
             <span className="text-sm text-gray-500">(ID: {id})</span>
             {valueType != null && (
-              <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
+              <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-sm">
                 {valueType}
               </span>
             )}

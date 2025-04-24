@@ -352,7 +352,7 @@ const Session = (props: SessionData) => {
   return (
     <Link
       to={`/stats/session/${id}`}
-      className="min-w-fit flex flex-col p-4 bg-white rounded-sm shadow-sm hover:shadow-md transition-shadow"
+      className="min-w-fit flex flex-col p-4 bg-white rounded-xs shadow-xs hover:shadow-md transition-shadow"
     >
       <div className="text-lg font-medium mb-2" title={user_agent}>
         {trimLanguage(language)}, {getDeviceFromUserAgent(user_agent)}{" "}
@@ -450,7 +450,7 @@ export const SessionView = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <div className="bg-white rounded-lg shadow-xs p-6 mb-6">
         <h1 className="text-2xl font-bold mb-4">Session Details</h1>
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
@@ -522,7 +522,7 @@ export const SessionView = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg shadow-xs p-6">
         <h2 className="text-xl font-semibold mb-4">Event Timeline</h2>
         <EventList events={data.events} />
       </div>

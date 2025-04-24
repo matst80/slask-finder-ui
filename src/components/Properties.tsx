@@ -69,7 +69,7 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
       .sort(byPriority);
   }, [values, data, isAdmin]);
   return (
-    <div className="md:bg-white md:rounded-lg md:shadow-sm md:border border-gray-100 md:p-4 relative">
+    <div className="md:bg-white md:rounded-lg md:shadow-xs md:border border-gray-100 md:p-4 relative">
       <h3 className="text-2xl font-bold text-gray-900 mb-4">
         Egenskaper
         <span className="ml-2 text-gray-500 text-lg">({fields.length})</span>

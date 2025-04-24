@@ -13,7 +13,7 @@ export const QueriesView = () => {
           .map(([query, value], i) => (
             <div
               key={i}
-              className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
+              className="bg-white rounded-lg shadow-xs p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-center">
                 <span className="text-gray-800 font-medium">{query}</span>

@@ -520,7 +520,7 @@ const ComponentSelector = ({
           <span>{open ? "▲" : "▼"}</span>
         </button>
         {open && (
-          <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6">
             <div className="hidden md:block">
               <Facets
                 facetsToHide={[
@@ -543,7 +543,7 @@ const ComponentSelector = ({
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value as Sort)}
-                  className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm leading-5 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="popular">Popularitet</option>
                   <option value="price">Pris</option>
@@ -706,7 +706,7 @@ export const Builder = () => {
   }, [selectedItems, data]);
   console.log(appliedFilters);
   return (
-    <div className="p-2 lg:p-10 grid grid-cols-1 xl:grid-cols-[7fr,3fr] gap-6">
+    <div className="p-2 lg:p-10 grid grid-cols-1 xl:grid-cols-[7fr_3fr] gap-6">
       <div>
         {components.map((component) => (
           <ComponentSelector

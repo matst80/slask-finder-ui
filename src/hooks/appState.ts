@@ -29,11 +29,11 @@ export const useFocusTracking = () => {
     const onExit = () => {
       trackAction({ action: "exit", reason: "navigation" });
     };
-    window.addEventListener("blur", onBlur);
+    window.addEventListener("blur-sm", onBlur);
     window.addEventListener("focus", onFocus);
     window.addEventListener("beforeunload", onExit);
     return () => {
-      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("blur-sm", onBlur);
       window.removeEventListener("focus", onFocus);
     };
   }, []);

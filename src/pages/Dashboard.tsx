@@ -96,7 +96,7 @@ const SearchStats = () => {
       error={error}
       trend={trend}
       icon={Search}
-      color="bg-gradient-to-br from-blue-50 to-blue-100"
+      color="bg-linear-to-br from-blue-50 to-blue-100"
     />
   );
 };
@@ -124,7 +124,7 @@ const FacetStats = () => {
       error={error}
       trend={trend}
       icon={Layers}
-      color="bg-gradient-to-br from-purple-50 to-purple-100"
+      color="bg-linear-to-br from-purple-50 to-purple-100"
     />
   );
 };
@@ -152,7 +152,7 @@ const TrackingEventsStats = () => {
       error={error}
       trend={trend}
       icon={Activity}
-      color="bg-gradient-to-br from-green-50 to-green-100"
+      color="bg-linear-to-br from-green-50 to-green-100"
     />
   );
 };
@@ -181,7 +181,7 @@ const MemoryStats = () => {
       error={error}
       trend={trend}
       icon={MemoryStick}
-      color="bg-gradient-to-br from-orange-50 to-orange-100"
+      color="bg-linear-to-br from-orange-50 to-orange-100"
     />
   );
 };
@@ -210,7 +210,7 @@ const CpuStats = () => {
       error={error}
       trend={trend}
       icon={Cpu}
-      color="bg-gradient-to-br from-red-50 to-red-100"
+      color="bg-linear-to-br from-red-50 to-red-100"
     />
   );
 };
@@ -238,7 +238,7 @@ const UpsertsStats = () => {
       error={error}
       trend={trend}
       icon={RefreshCw}
-      color="bg-gradient-to-br from-cyan-50 to-cyan-100"
+      color="bg-linear-to-br from-cyan-50 to-cyan-100"
     />
   );
 };
@@ -265,7 +265,7 @@ const SuggestStats = () => {
       error={error}
       trend={trend}
       icon={Lightbulb}
-      color="bg-gradient-to-br from-yellow-50 to-yellow-100"
+      color="bg-linear-to-br from-yellow-50 to-yellow-100"
       isLoading={isLoading}
     />
   );

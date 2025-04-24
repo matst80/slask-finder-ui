@@ -6,10 +6,10 @@ import { makeImageUrl } from "../../utils";
 const PopularItem = ({ itemId, value }: { itemId: number; value: number }) => {
   const { data } = useItemData(itemId);
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 aspect-square rounded-2xl relative flex flex-col items-center justify-center gap-4 p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200">
+    <div className="bg-linear-to-br from-gray-50 to-gray-100 text-gray-800 aspect-square rounded-2xl relative flex flex-col items-center justify-center gap-4 p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200">
       <div className="w-full flex justify-center">
         {data != null && (
-          <div className="p-3 bg-white rounded-xl shadow-sm">
+          <div className="p-3 bg-white rounded-xl shadow-xs">
             <div className="relative">
               <img
                 src={makeImageUrl(data?.img)}
@@ -24,7 +24,7 @@ const PopularItem = ({ itemId, value }: { itemId: number; value: number }) => {
         {data?.title}
       </span>
 
-      <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+      <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-xs px-3 py-1 rounded-full shadow-xs">
         <h2 className="text-2xl font-bold text-gray-800">{value.toFixed(2)}</h2>
       </div>
     </div>

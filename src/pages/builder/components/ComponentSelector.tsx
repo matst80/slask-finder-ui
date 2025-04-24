@@ -39,7 +39,7 @@
 //     return null;
 //   }
 //   return (
-//     <div className="bg-gradient-to-r from-blue-50 to-gray-50 p-5 rounded-lg shadow-sm mb-4 border border-gray-100">
+//     <div className="bg-linear-to-r from-blue-50 to-gray-50 p-5 rounded-lg shadow-xs mb-4 border border-gray-100">
 //       <div className="flex flex-col md:flex-row justify-between gap-4">
 //         <h3 className="font-semibold text-gray-800 flex items-center">
 //           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,7 +50,7 @@
 //         <div className="flex flex-wrap gap-3 items-center">
 //           {affectedByItems.map((item) => (
 //             <div key={item.id} className="flex flex-col items-center group relative">
-//               <div className="bg-white p-2 rounded-lg shadow-sm border border-gray-200 transform transition-transform group-hover:scale-105">
+//               <div className="bg-white p-2 rounded-lg shadow-xs border border-gray-200 transform transition-transform group-hover:scale-105">
 //                 <img
 //                   src={makeImageUrl(item.img)}
 //                   alt={item.title}
@@ -81,7 +81,7 @@
 //     return null;
 //   }
 //   return (
-//     <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-lg shadow-sm mb-6 hidden md:block border border-blue-200">
+//     <div className="bg-linear-to-br from-blue-50 to-blue-100 p-5 rounded-lg shadow-xs mb-6 hidden md:block border border-blue-200">
 //       <h2 className="text-blue-800 font-semibold mb-4 flex items-center">
 //         <svg
 //           xmlns="http://www.w3.org/2000/svg"
@@ -265,7 +265,7 @@
 //               <select
 //                 value={sort}
 //                 onChange={(e) => setSort(e.target.value as Sort)}
-//                 className="appearance-none bg-white border border-line py-2 pl-3 pr-10 leading-5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+//                 className="appearance-none bg-white border border-line py-2 pl-3 pr-10 leading-5 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
 //               >
 //                 <option value="popular">Popularitet</option>
 //                 <option value="price">Pris</option>
@@ -294,7 +294,7 @@
 //                 )}
 //               </HitList>
 //             ) : (
-//               <div className="overflow-x-auto rounded-md shadow">
+//               <div className="overflow-x-auto rounded-md shadow-sm">
 //                 <table className="w-full border-collapse text-sm">
 //                   <thead>
 //                     <tr className="bg-gray-100 text-left">

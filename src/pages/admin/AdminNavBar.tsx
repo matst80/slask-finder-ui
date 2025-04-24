@@ -9,38 +9,38 @@ export const AdminNavBar = () => {
             <div className="flex items-center gap-2 md:gap-4 flex-nowrap">
               <Link
                 to="/edit/facets"
-                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium flex-shrink-0"
+                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium shrink-0"
               >
                 Facets
               </Link>
               <Link
                 to="/edit/fields"
-                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium flex-shrink-0"
+                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium shrink-0"
               >
                 Fields
               </Link>
               <Link
                 to="/edit/missing-fields"
-                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium flex-shrink-0"
+                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium shrink-0"
               >
                 Missing facets
               </Link>
               <Link
                 to="/edit/bulk"
-                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium flex-shrink-0"
+                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium shrink-0"
               >
                 Overview
               </Link>
 
               <Link
                 to="/edit/rules"
-                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium flex-shrink-0"
+                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium shrink-0"
               >
                 Rules
               </Link>
               <Link
                 to="/edit/relations"
-                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium flex-shrink-0"
+                className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium shrink-0"
               >
                 Relationer
               </Link>

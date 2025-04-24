@@ -71,7 +71,7 @@ const StockLocation = ({ stock, distance, ...store }: StoreWithStock) => {
       key={store.id}
       className="flex items-center py-2 px-3 hover:bg-gray-50 gap-2"
     >
-      <div className="flex items-center gap-2 flex-grow">
+      <div className="flex items-center gap-2 grow">
         <span className="font-medium line-clamp-1 text-ellipsis">
           {store.name}
         </span>
@@ -147,7 +147,7 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
         {data?.map((item, idx) => (
           <div
             key={item.id}
-            className="flex-shrink-0 w-[250px] flex snap-start"
+            className="shrink-0 w-[250px] flex snap-start"
           >
             <ResultItem {...item} position={idx} />
           </div>
@@ -167,7 +167,7 @@ export const ResultCarousel = () => {
         {hits?.map((item, idx) => (
           <div
             key={item.id}
-            className="flex-shrink-0 w-[300px] flex snap-start"
+            className="shrink-0 w-[300px] flex snap-start"
           >
             <ResultItem {...item} position={idx} />
           </div>
@@ -187,7 +187,7 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
         {data?.map((item, idx) => (
           <div
             key={item.id}
-            className="flex-shrink-0 w-[250px] flex snap-start"
+            className="shrink-0 w-[250px] flex snap-start"
           >
             <ResultItem {...item} position={idx} />
           </div>
@@ -488,7 +488,7 @@ export const ItemDetails = (details: ItemDetail) => {
         onComplete={() => setShowAnimation(false)}
       />
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
           {/* Image Section */}
 
           <div className="flex items-center justify-center">

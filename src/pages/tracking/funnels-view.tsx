@@ -37,7 +37,7 @@ export const FunnelsView = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <header className="mb-8 text-center">
-        <h1 className="text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+        <h1 className="text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-linear-to-r from-indigo-600 to-purple-600">
           Conversion Funnels
         </h1>
         <p className="mt-2 text-lg text-gray-600">Track user journeys and optimize conversions</p>
@@ -55,10 +55,10 @@ export const FunnelsView = () => {
               key={funnel.name}
               className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-100"
             >
-              <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-4 border-b border-indigo-100">
+              <div className="bg-linear-to-r from-indigo-50 to-indigo-100 p-4 border-b border-indigo-100">
                 <div className="flex justify-between items-center">
                   <h2 className="text-xl font-bold text-gray-800">{funnel.name}</h2>
-                  <div className="flex items-center bg-white px-3 py-1 rounded-full shadow-sm">
+                  <div className="flex items-center bg-white px-3 py-1 rounded-full shadow-xs">
                     <span className="text-sm font-medium text-gray-500">Conversion:</span>
                     <span className={`ml-2 font-bold ${
                       conversionRate >= 50 ? 'text-emerald-600' : 
@@ -98,7 +98,7 @@ export const FunnelsView = () => {
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                             <div 
-                              className="bg-gradient-to-r from-indigo-600 to-indigo-400 h-2 rounded-full transition-all duration-500" 
+                              className="bg-linear-to-r from-indigo-600 to-indigo-400 h-2 rounded-full transition-all duration-500" 
                               style={{ width: `${stepPercentage}%` }}
                             ></div>
                           </div>
@@ -114,7 +114,7 @@ export const FunnelsView = () => {
       </div>
       
       {(!data || data.length === 0) && (
-        <div className="text-center p-12 bg-white rounded-lg shadow">
+        <div className="text-center p-12 bg-white rounded-lg shadow-sm">
           <h3 className="text-lg font-medium text-gray-900">No funnel data available</h3>
           <p className="mt-2 text-gray-500">Create your first funnel to start tracking conversions.</p>
         </div>
