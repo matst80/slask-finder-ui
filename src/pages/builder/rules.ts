@@ -51,35 +51,35 @@ const fixPrefix = (prefix: string) => (value: string) => {
 const numberMatch = (
   values: ItemValues,
   id: number,
-  { min, max }: { min: number; max: number }
+  { min, max }: { min: number; max: number },
+  type: "error" | "warning" = "error"
 ): Issue | undefined => {
-  const value = values[id];
-  if (value == null)
-    return { type: "error", message: "Missing value", facetId: id };
+  const value = values?.[id];
+  if (value == null) return { type, message: "Missing value", facetId: id };
   if (isNaN(Number(value)))
-    return { type: "error", message: "Not a number", facetId: id };
+    return { type, message: "Not a number", facetId: id };
   if (Number(value) < min)
-    return { type: "error", message: "Value too low", facetId: id };
+    return { type, message: "Value too low", facetId: id };
   if (Number(value) > max)
-    return { type: "error", message: "Value too high", facetId: id };
+    return { type, message: "Value too high", facetId: id };
   return undefined;
 };
 
 const stringMatch = (
   values: ItemValues,
   id: number,
+  type: "error" | "warning",
   incorrectValue?: string
 ): Issue | undefined => {
-  const value = values[id];
-  if (value == null)
-    return { type: "error", message: "Missing value", facetId: id };
+  const value = values?.[id];
+  if (value == null) return { type, message: "Missing value", facetId: id };
 
   if (!(typeof value === "string" || Array.isArray(value)))
-    return { type: "error", message: "Not a string", facetId: id };
+    return { type, message: "Not a string", facetId: id };
 
   if (incorrectValue && value === incorrectValue)
     return {
-      type: "error",
+      type,
       message: "Incorrect value: " + incorrectValue,
       facetId: id,
     };
@@ -229,8 +229,8 @@ export const componentRules: Rule[] = [
     importantFacets: [32103, 32198, 36206],
     validator: (values: ItemValues) => {
       return [
-        stringMatch(values, 32103),
-        numberMatch(values, 35980, { min: 500, max: 29999 }),
+        stringMatch(values, 32103, "error"),
+        numberMatch(values, 35980, { min: 500, max: 29999 }, "warning"),
       ].filter(isDefined);
       // if (!isKey(values[32103])) return false;
       // if (!Array.isArray(values[36202])) return false;
@@ -365,9 +365,9 @@ export const componentRules: Rule[] = [
     id: MOTHERBOARD,
     validator: (values) => {
       return [
-        stringMatch(values, 32103),
-        stringMatch(values, 35921, "X"),
-        stringMatch(values, 30857, "X"),
+        stringMatch(values, 32103, "error"),
+        stringMatch(values, 35921, "error", "X"),
+        stringMatch(values, 30857, "error", "X"),
       ].filter(isDefined);
       // return (
       //   values[32103] != null &&
@@ -483,6 +483,13 @@ export const componentRules: Rule[] = [
       2, 32062, 32056, 36284, 32056, 36284, 32061, 36287, 32183, 36294, 36280,
     ],
     //importantFacets: [36293, 32062, 36284, 32061, 36295, 36286, 36280],
+    validator: (values) => {
+      return [
+        numberMatch(values, 32062, { min: 100, max: 500 }, "warning"),
+        stringMatch(values, 36284, "error"),
+        numberMatch(values, 32061, { min: 1, max: 500 }, "warning"),
+      ].filter(isDefined);
+    },
     importantFacets: [36280, 32056, 32183],
     filtersToApply: [
       {
@@ -602,7 +609,7 @@ export const componentRules: Rule[] = [
         disabled: disabledIfCoolerIncluded,
         //ignoreIfComponentSelected: 9,
         topFilters: [32093, 32177, 36317, 32133, 34650, 36306],
-        nextComponentId: 3,
+
         //importantFacets: [32093, 36310, 32097, 32177, 36311, 36306], //, 32077
         importantFacets: [36310, 36307, 32133],
         filter: {
@@ -662,9 +669,9 @@ export const componentRules: Rule[] = [
     importantFacets: [36267, 36268, 36271],
     validator: (values) => {
       return [
-        stringMatch(values, 30857),
-        stringMatch(values, 35921),
-        //numberMatch(values, 31191, { min: 1, max: 128 }),
+        stringMatch(values, 30857, "error", "X"),
+        stringMatch(values, 35921, "error", "X"),
+        numberMatch(values, 36268, { min: 1, max: 16 }, "warning"),
       ].filter(isDefined);
       // return (
       //   values[35921] != null &&
@@ -740,6 +747,9 @@ export const componentRules: Rule[] = [
         },
       },
     ],
+    validator: (values) => {
+      return [stringMatch(values, 36252, "error")].filter(isDefined);
+    },
     disabled: disabledIfPsuIncluded,
     filter: {
       range: [],

@@ -183,7 +183,7 @@ export const cm = (...arg: (string | string[] | false | undefined)[]) =>
     .flatMap((d) => d.split(" "))
     .join(" ");
 
-export const isDefined = <T>(d: T): d is NonNullable<T> => d !== null;
+export const isDefined = <T>(d: T): d is NonNullable<T> => d != null;
 
 export const textSize = (level: number) => {
   switch (level) {
