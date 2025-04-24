@@ -4,59 +4,59 @@ import { Paging } from "../../components/Paging";
 import { ResultHeader } from "../../components/ResultHeader";
 import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { useBuilderQuery } from "./useBuilderQuery";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { ResultItemInner } from "../../components/ResultItem";
 import { useQuery } from "../../lib/hooks/useQuery";
 import { ImpressionProvider } from "../../lib/hooks/ImpressionProvider";
 import { FilteringQuery, Item } from "../../lib/types";
-import { trackClick } from "../../lib/datalayer/beacons";
+import { trackAction, trackClick } from "../../lib/datalayer/beacons";
 import { useBuilderContext } from "./useBuilderContext";
 import { cm, isDefined } from "../../utils";
 import { ButtonLink } from "../../components/ui/button";
 
-import { GroupRenderer } from "./components/ItemDetails";
-import { X } from "lucide-react";
+// import { GroupRenderer } from "./components/ItemDetails";
+// import { X } from "lucide-react";
 
-const DetailsDialog = ({ item }: { item: Item }) => {
-  const [open, setOpen] = useState(false);
-  const close: React.MouseEventHandler<HTMLDivElement | HTMLButtonElement> = (
-    e
-  ) => {
-    e.stopPropagation();
-    e.preventDefault();
-    setOpen(false);
-  };
-  return (
-    <>
-      <button onClick={() => setOpen(true)}>show details</button>
-      {open && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          onClick={close}
-        >
-          <div
-            className="bg-white rounded-lg shadow-lg p-6 w-full max-w-(--breakpoint-lg) max-h-[80vh] animate-cart-open"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">{item.title}</h2>
-              <button
-                onClick={close}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <div className="overflow-y-auto flex-1">
-              <GroupRenderer values={item.values} />
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
+// const DetailsDialog = ({ item }: { item: Item }) => {
+//   const [open, setOpen] = useState(false);
+//   const close: React.MouseEventHandler<HTMLDivElement | HTMLButtonElement> = (
+//     e
+//   ) => {
+//     e.stopPropagation();
+//     e.preventDefault();
+//     setOpen(false);
+//   };
+//   return (
+//     <>
+//       <button onClick={() => setOpen(true)}>show details</button>
+//       {open && (
+//         <div
+//           className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+//           onClick={close}
+//         >
+//           <div
+//             className="bg-white rounded-lg shadow-lg p-6 w-full max-w-(--breakpoint-lg) max-h-[80vh] animate-cart-open"
+//             onClick={(e) => e.stopPropagation()}
+//           >
+//             <div className="flex justify-between items-center mb-4">
+//               <h2 className="text-xl font-bold">{item.title}</h2>
+//               <button
+//                 onClick={close}
+//                 className="text-gray-500 hover:text-gray-700"
+//               >
+//                 <X size={24} />
+//               </button>
+//             </div>
+//             <div className="overflow-y-auto flex-1">
+//               <GroupRenderer values={item.values} />
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   );
+// };
 
 const ComponentResultList = ({ componentId }: { componentId: number }) => {
   const {
@@ -101,6 +101,13 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
         }
         return newItems;
       });
+      requestAnimationFrame(() => {
+        trackAction({
+          item: id,
+          action: "select_component",
+          reason: `builder_component_${componentId}`,
+        });
+      });
     };
 
   if (!hits.length && (hits == null || hits.length < 1)) {
@@ -122,7 +129,15 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
             )}
           >
             <ResultItemInner key={item.id} {...item}>
-              <DetailsDialog item={item} />
+              {/* <DetailsDialog item={item} /> */}
+              <ButtonLink
+                variant="outline"
+                size="sm"
+                to={`/product/${item.id}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                Show details
+              </ButtonLink>
             </ResultItemInner>
           </Link>
         ))}

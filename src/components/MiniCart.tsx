@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { makeImageUrl } from "../utils";
 import { useCart, useChangeQuantity } from "../hooks/cartHooks";
-import { Button, ButtonLink } from "./ui/button";
+import { ButtonLink } from "./ui/button";
 import { Link } from "react-router-dom";
 
 type CartDialogProps = {
@@ -18,7 +18,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div
@@ -154,21 +154,19 @@ export const MiniCart = () => {
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
+      <button
         onClick={() => setIsCartOpen(true)}
-        className="relative p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+        className="relative bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors size-10 flex items-center justify-center"
       >
         <ShoppingCartIcon className="size-5" />
 
         <span
           ref={ref}
-          className="absolute transition-all -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+          className="absolute transition-all -top-1 -right-1 bg-blue-800 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
         >
           {totalItems}
         </span>
-      </Button>
+      </button>
       {isCartOpen && <CartDialog onClose={() => setIsCartOpen(false)} />}
     </>
   );

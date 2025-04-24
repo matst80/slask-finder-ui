@@ -6,11 +6,14 @@ export type Impression = { id: number; position: number };
 export const trackImpression = (impressions: Impression[]) =>
   globalThis.navigator.sendBeacon(
     `/track/impressions`,
-    JSON.stringify([...impressions]),
+    JSON.stringify([...impressions])
   );
 
-export const trackAction = (payload: { action: string; reason: string }) =>
-  globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload));
+export const trackAction = (payload: {
+  item?: number;
+  action: string;
+  reason: string;
+}) => globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload));
 
 export const trackSuggest = (payload: {
   value: string;
@@ -30,5 +33,5 @@ export const trackEnterCheckout = (data: {
 }) =>
   globalThis.navigator.sendBeacon(
     `/track/enter-checkout`,
-    JSON.stringify(data),
+    JSON.stringify(data)
   );

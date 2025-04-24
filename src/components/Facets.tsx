@@ -159,7 +159,7 @@ export const Facets = ({
   return (
     <aside className="w-full md:w-72 border-b-2 border-gray-200 md:border-none">
       <button
-        className="text-lg font-semibold md:mb-4"
+        className="text-lg font-semibold mb-2 md:mb-4"
         onClick={() => setOpen((p) => !p)}
       >
         Filter ({facets.length})
