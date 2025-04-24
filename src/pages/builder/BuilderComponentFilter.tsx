@@ -105,7 +105,7 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
         trackAction({
           item: id,
           action: "select_component",
-          reason: `builder_component_${componentId}`,
+          reason: `builder_${componentId}`,
         });
       });
     };
@@ -134,7 +134,14 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
                 variant="outline"
                 size="sm"
                 to={`/product/${item.id}`}
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  trackAction({
+                    item: item.id,
+                    action: "details",
+                    reason: `builder_${componentId}`,
+                  });
+                }}
               >
                 Show details
               </ButtonLink>
