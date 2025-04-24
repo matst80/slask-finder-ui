@@ -60,13 +60,7 @@ import { useFacetMap } from "../../hooks/searchHooks";
 //   );
 // };
 
-const IssueList = ({
-  issues,
-  values,
-}: {
-  issues: Issue[];
-  values: ItemValues;
-}) => {
+const IssueList = ({ issues }: { issues: Issue[] }) => {
   const { data } = useFacetMap();
   const toShow = useMemo(
     () =>
@@ -217,7 +211,7 @@ const ComponentResultList = ({
                   </Button>
                 </ResultItemInner>
               </div>
-              <IssueList issues={issues} values={item.values} />
+              <IssueList issues={issues} />
             </Link>
           );
         })}
