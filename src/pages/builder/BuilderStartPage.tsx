@@ -44,7 +44,7 @@ export const ComponentSelectorBox = ({
 };
 
 export const BuilderStartPage = () => {
-  const { rules, setSelectedComponentId, setOrder } = useBuilderContext();
+  const { rules, setOrder } = useBuilderContext();
   const push = useNavigate();
 
   return (
@@ -67,7 +67,6 @@ export const BuilderStartPage = () => {
                 if (component.order != null) {
                   setOrder(component.order);
                 }
-                setSelectedComponentId(component.id);
                 push("/builder/component/" + component.id);
               }}
             />

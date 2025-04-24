@@ -3,6 +3,8 @@ import { BuilderProvider } from "./BuilderProvider";
 import { componentRules } from "./rules";
 import { ItemWithComponentId } from "./builder-types";
 import { PageContainer } from "../../PageContainer";
+import { useBuilderContext } from "./useBuilderContext";
+import { useEffect } from "react";
 
 const saveBuildToLocalStorage = (data: ItemWithComponentId[]) => {
   globalThis.localStorage?.setItem("build", JSON.stringify(data));
@@ -13,20 +15,23 @@ const loadBuildFromLocalStorage = (): ItemWithComponentId[] => {
   return data ? JSON.parse(data) : [];
 };
 
-export const BuilderMain = () => {
-  const saveBuild = (items: ItemWithComponentId[]) => {
-    saveBuildToLocalStorage(items);
-  };
+const SaveBuild = () => {
+  const { selectedItems } = useBuilderContext();
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      saveBuildToLocalStorage(selectedItems);
+    });
+  }, [selectedItems]);
+  return null;
+};
 
+export const BuilderMain = () => {
   const initialItems = loadBuildFromLocalStorage();
 
   return (
-    <BuilderProvider
-      initialRules={componentRules}
-      initialItems={initialItems}
-      onSelectionChange={saveBuild}
-    >
+    <BuilderProvider initialRules={componentRules} initialItems={initialItems}>
       <PageContainer>
+        <SaveBuild />
         <Outlet />
       </PageContainer>
     </BuilderProvider>

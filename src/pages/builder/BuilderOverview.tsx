@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ResultItemInner } from "../../components/ResultItem";
-import { ButtonLink } from "../../components/ui/button";
+import { Button, ButtonLink } from "../../components/ui/button";
 import { ImpressionProvider } from "../../lib/hooks/ImpressionProvider";
 import { useBuilderContext } from "./useBuilderContext";
 import { useImpression } from "../../lib/hooks/useImpression";
@@ -12,14 +12,18 @@ import { useFacetMap } from "../../hooks/searchHooks";
 import { useMemo } from "react";
 import { isDefined } from "../../utils";
 import { flattenComponents } from "./builder-utils";
+import { useBuilderStep } from "./useBuilderStep";
 
 const SelectedItem = ({
   componentId,
   position,
+  quantity = 1,
+  maxQuantity,
   ...item
-}: ItemWithComponentId & { position: number }) => {
+}: ItemWithComponentId & { position: number; maxQuantity: number }) => {
+  const { setSelectedItems } = useBuilderContext();
   const { watch } = useImpression();
-  const { setSelectedComponentId } = useBuilderContext();
+
   const trackItem = () => trackClick(item.id, position);
 
   return (
@@ -31,6 +35,29 @@ const SelectedItem = ({
       onClick={trackItem}
     >
       <ResultItemInner {...item}>
+        {quantity < maxQuantity && (
+          <Button
+            variant="default"
+            size="icon"
+            className="absolute bottom-3 right-3"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedItems((prev) => {
+                const newItems = [...prev];
+                const index = newItems.findIndex(
+                  (i) => i.componentId === componentId
+                );
+                if (index !== -1) {
+                  newItems[index].quantity = quantity + 1;
+                }
+                return newItems;
+              });
+            }}
+          >
+            <Plus className="size-5" />
+          </Button>
+        )}
+        <span className="text-lg absolute top-3 left-3">x{quantity}</span>
         <ButtonLink
           to={`/builder/component/${componentId}`}
           variant="secondary"
@@ -38,7 +65,6 @@ const SelectedItem = ({
           className="absolute top-3 right-3"
           onClick={(e) => {
             e.stopPropagation();
-            setSelectedComponentId(componentId);
           }}
         >
           <RefreshCw className="size-5" />
@@ -107,8 +133,9 @@ const SpecificationSummary = () => {
 };
 
 export const BuilderOverview = () => {
-  const { selectedItems, rules } = useBuilderContext();
-  //const sum = useBuilderSum();
+  const { selectedItems, rules, components } = useBuilderContext();
+  const [unselectedComponents] = useBuilderStep(0);
+
   return (
     <>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-20">
@@ -117,9 +144,21 @@ export const BuilderOverview = () => {
         <p>This is where you can see an overview of your builder components.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <ImpressionProvider>
-            {selectedItems.map((item, i) => (
-              <SelectedItem key={i} position={i} {...item} />
-            ))}
+            {selectedItems.map((item, i) => {
+              const component = components[item.componentId];
+              const maxQuantity =
+                component?.maxQuantity != null
+                  ? component.maxQuantity(selectedItems)
+                  : 1;
+              return (
+                <SelectedItem
+                  key={i}
+                  position={i}
+                  {...item}
+                  maxQuantity={maxQuantity}
+                />
+              );
+            })}
           </ImpressionProvider>
         </div>
 
@@ -131,27 +170,26 @@ export const BuilderOverview = () => {
                 <h2 className="text-lg font-bold">{rule.title}</h2>
                 {rule.description != null && <p>{rule.description}</p>}
                 <div>
-                  {rule.components.map((item, j) => {
-                    const selected = selectedItems.find(
-                      (selectedItem) => selectedItem.componentId === item.id
+                  {rule.components.map((component, j) => {
+                    const selected = selectedItems.some(
+                      (selectedItem) =>
+                        selectedItem.componentId === component.id
                     );
+                    if (selected) {
+                      return null;
+                    }
+
                     return (
                       <div
                         key={j}
                         className="flex items-center justify-between border-b border-gray-200 py-2"
                       >
-                        <div className="flex flex-col">
-                          <span className="text-sm font-semibold">
-                            {item.title}
-                          </span>
-                          {selected != null && (
-                            <div className="flex items-center gap-2">
-                              <span>{selected.title}</span>
-                            </div>
-                          )}
-                        </div>
+                        <span className="text-sm font-semibold">
+                          {component.title}
+                        </span>
+
                         <ButtonLink
-                          to={`/builder/${item.type}/${item.id}`}
+                          to={`/builder/${component.type}/${component.id}`}
                           variant="outline"
                           size="icon"
                           className="ml-2"
@@ -169,9 +207,29 @@ export const BuilderOverview = () => {
               </div>
             ))}
         </div>
-        <p className="bg-blue-50 p-4 rounded-lg my-6">
-          <SpecificationSummary />
-        </p>
+        {unselectedComponents.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-lg font-bold">Forgotten?</h2>
+            <div className="flex flex-col md:flex-row gap-2 mt-2">
+              {unselectedComponents.map((item, i) => (
+                <ButtonLink
+                  to={`/builder/${item.type}/${item.id}`}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  key={i}
+                >
+                  {item.title}
+                  <Plus className="size-5" />
+                </ButtonLink>
+              ))}
+            </div>
+          </div>
+        )}
+        {selectedItems.length > 0 && (
+          <p className="bg-blue-50 p-4 rounded-lg my-6">
+            <SpecificationSummary />
+          </p>
+        )}
         {/* <div className="mt-6 mb-20">
           <p className="font-bold text-lg">
             Total price: <PriceValue value={sum * 100} />

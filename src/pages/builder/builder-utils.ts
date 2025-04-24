@@ -26,6 +26,16 @@ export const isStringFilter = (
   );
 };
 
+export const asNumber = (value: string[] | string | number) => {
+  if (typeof value === "string") {
+    return parseInt(value, 10);
+  }
+  if (Array.isArray(value)) {
+    return parseInt(value[0], 10);
+  }
+  return value;
+};
+
 export const fixSingleArray = ({
   id,
   value,

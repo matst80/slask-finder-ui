@@ -708,6 +708,22 @@ export const componentRules: Rule[] = [
       { id: 30857, to: MOTHERBOARD },
       { id: 35921, to: MOTHERBOARD },
     ],
+    maxQuantity: (selectedItems) => {
+      const motherboard = selectedItems.find(
+        (d) => d.componentId === MOTHERBOARD
+      );
+      const ram = selectedItems.find((d) => d.componentId === RAM);
+      if (motherboard == null || ram == null) return 1;
+      const maxSlots = motherboard?.values[31190];
+      const modules = ram?.values[36268];
+      if (maxSlots == null || modules == null) return 1;
+      if (isNaN(Number(maxSlots)) || isNaN(Number(modules))) return 1;
+      const maxSlotsNum = Number(maxSlots);
+      const modulesNum = Number(modules);
+      if (maxSlotsNum < 1 || modulesNum < 1) return 1;
+      if (maxSlotsNum > modulesNum) return Math.floor(maxSlotsNum / modulesNum);
+      return 1;
+    },
     requires: [2],
     topFilters: [36272, 36258, 36268, 36272, 36267, 36271],
     //importantFacets: [36268, 31191, 36271],

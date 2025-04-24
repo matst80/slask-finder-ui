@@ -45,6 +45,7 @@ export type Component = {
   filtersToApply: AdditionalFilter[];
   filter: ItemsQuery;
   disabled?: (selectedItems: ItemWithComponentId[]) => boolean;
+  maxQuantity?: (selectedItems: ItemWithComponentId[]) => number;
   topFilters?: number[];
   importantFacets?: number[];
 };

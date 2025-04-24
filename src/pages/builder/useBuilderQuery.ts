@@ -1,42 +1,19 @@
 import { useContext, useMemo } from "react";
 import { BuilderContext } from "./builder-context";
-import {
-  fixSingleArray,
-  isRangeFilter,
-  isStringFilter,
-  isUniqueFilter,
-} from "./builder-utils";
+import { fixSingleArray, isRangeFilter, isStringFilter } from "./builder-utils";
 import { FilteringQuery } from "../../lib/types";
+import { useComponentFilters } from "./useComponentFilters";
 
 export const useBuilderQuery = (selectedComponentId: number) => {
   const ctx = useContext(BuilderContext);
   if (!ctx) {
     throw new Error("useBuilderQuery must be used within a BuilderProvider");
   }
-  const { appliedFilters, rules } = ctx;
-  const selectionFilters = useMemo(
-    () =>
-      appliedFilters
-        ?.filter((d) => d?.to === selectedComponentId)
-        .filter(isUniqueFilter),
-    [appliedFilters, selectedComponentId]
-  );
+  const { components } = ctx;
+  const selectionFilters = useComponentFilters(selectedComponentId);
+
   return useMemo(() => {
-    const selectedComponent = rules
-      .flatMap((d) => {
-        if (d.type === "component") {
-          return [d];
-        }
-        if (d.type === "group") {
-          return d.components ?? [];
-        }
-        if (d.type === "selection") {
-          return d.options ?? [];
-        }
-        return [];
-      })
-      .filter((d) => d?.type === "component")
-      .find((d) => d.id === selectedComponentId);
+    const selectedComponent = components[selectedComponentId];
 
     return {
       selectionFilters,
@@ -54,5 +31,5 @@ export const useBuilderQuery = (selectedComponentId: number) => {
         ],
       } satisfies Pick<FilteringQuery, "string" | "range">,
     };
-  }, [selectionFilters, rules, selectedComponentId]);
+  }, [selectionFilters, components, selectedComponentId]);
 };

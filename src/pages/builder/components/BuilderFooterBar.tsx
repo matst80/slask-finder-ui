@@ -5,10 +5,11 @@ import { useAddMultipleToCart } from "../../../hooks/cartHooks";
 import { Link } from "react-router-dom";
 import { RotateCcw, ShoppingBasketIcon } from "lucide-react";
 import { useBuilderSum } from "../useBuilderSum";
+import { useRecommendedWatt } from "../useComponentFilters";
 
 export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
-  const { neededPsuWatt, setSelectedItems, selectedItems } =
-    useBuilderContext();
+  const { setSelectedItems, selectedItems } = useBuilderContext();
+  const neededPsuWatt = useRecommendedWatt();
   const sum = useBuilderSum();
   const { trigger: addToCart, isMutating } = useAddMultipleToCart();
   return (

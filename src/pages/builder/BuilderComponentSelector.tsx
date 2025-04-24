@@ -6,7 +6,7 @@ import { ComponentSelectorBox } from "./BuilderStartPage";
 export const BuilderComponentSelector = () => {
   const component = useLoaderData() as Rule;
   const push = useNavigate();
-  const { selectedItems, setSelectedComponentId } = useBuilderContext();
+  const { selectedItems } = useBuilderContext();
   if (!component || component.type !== "selection") {
     return <div>not correct!</div>;
   }
@@ -20,16 +20,15 @@ export const BuilderComponentSelector = () => {
               d.startingText != null &&
               (d.disabled == null || !d.disabled(selectedItems))
           )
-          .map((component, idx) => (
+          .map((option, idx) => (
             <ComponentSelectorBox
-              key={component.id}
-              {...component}
+              key={option.id}
+              {...option}
               headerText="Choose"
               isRecommended={idx === 0}
               onClick={() => {
-                setSelectedComponentId(component.id);
                 push(
-                  `/builder/component/${component.id}?parentId=${component.id}`
+                  `/builder/component/${option.id}?parentId=${component.id}`
                 );
               }}
             />

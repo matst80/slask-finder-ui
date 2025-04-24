@@ -1,7 +1,7 @@
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { NumberFacet } from "../../lib/types";
-import { converters } from "../../utils";
+import { cm, converters } from "../../utils";
 import { Slider } from "./Slider";
 import { useQueryRangeFacet } from "../../lib/hooks/useQueryRangeFacet";
 
@@ -242,19 +242,19 @@ export const NumberFacetSelector = ({
   );
   const invalid = useMemo(() => {
     if (selected == null) return false;
-    if (selected.max > min) {
+
+    if (selected.min > max) {
       return "Search range is invalid (min)";
     }
-    if (selected.min > max) {
-      return "Search range is invalid (max)";
-    }
     return false;
-  }, [selected, min, max]);
+  }, [selected, max]);
   // console.log({ selected, limits: { min, max }, histogramValue });
   return (
-    <fieldset
-      className="mb-4 border-b border-gray-100 pb-2"
-      disabled={disabled}
+    <div
+      className={cm(
+        "mb-4 border-b border-gray-100 pb-2",
+        disabled && "opacity-50"
+      )}
     >
       <button
         className="font-medium bold mb-2 flex items-center justify-between w-full text-left"
@@ -273,7 +273,7 @@ export const NumberFacetSelector = ({
         </span>
       )}
       {open && (
-        <>
+        <fieldset disabled={disabled}>
           <Slider
             min={toDisplayValue(selected?.min ?? min)}
             max={toDisplayValue(selected?.max ?? max)}
@@ -296,8 +296,8 @@ export const NumberFacetSelector = ({
               }}
             />
           )}
-        </>
+        </fieldset>
       )}
-    </fieldset>
+    </div>
   );
 };
