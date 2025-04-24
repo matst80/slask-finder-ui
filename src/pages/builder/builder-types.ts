@@ -54,6 +54,7 @@ export type ComponentSelection = {
 export type ComponentGroup = {
   type: "group";
   title: string;
+  description?: string;
   id: number;
   disabled?: (selectedItems: ItemWithComponentId[]) => boolean;
   components: Component[];

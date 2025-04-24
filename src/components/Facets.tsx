@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { isNumberFacet, KeyFacet } from "../lib/types";
 import { LoaderCircle } from "lucide-react";
 
@@ -8,6 +8,7 @@ import { KeyFacetSelector } from "./facets/KeyFacetSelector";
 import { ColorFacetSelector } from "./facets/ColorFacet";
 import { NumberFacetSelector } from "./facets/NumericFacetSelectors";
 import { cm } from "../utils";
+import { useScreenWidth } from "../lib/hooks/useScreenWidth";
 
 const CategoryLevel = ({
   id,
@@ -141,6 +142,8 @@ export const Facets = ({
   hideCategories?: boolean;
 }) => {
   const { categoryFacets, isLoadingFacets: isLoading } = useQuery();
+  const [open, setOpen] = useState(false);
+  const isDesktop = useScreenWidth(768);
 
   if (isLoading) {
     return (
@@ -155,19 +158,28 @@ export const Facets = ({
 
   return (
     <aside className="w-full md:w-72 border-b-2 border-gray-200 md:border-none">
-      <h2 className="text-lg font-semibold mb-4">Filter</h2>
-      {!hideCategories && <CategoryResult categories={categoryFacets} />}
-      <div>
-        <FacetList
-          facetsToHide={facetsToHide}
-          facetsToDisable={facetsToDisable}
-        />
-      </div>
+      <h2
+        className="text-lg font-semibold mb-4"
+        onClick={() => setOpen((p) => !p)}
+      >
+        Filter
+      </h2>
+      {(isDesktop || open) && (
+        <>
+          {!hideCategories && <CategoryResult categories={categoryFacets} />}
+          <div>
+            <FacetList
+              facetsToHide={facetsToHide}
+              facetsToDisable={facetsToDisable}
+            />
+          </div>
 
-      <div className="mb-4">
-        <h3 className="font-medium mb-2">Select Store</h3>
-        <StoreSelector />
-      </div>
+          <div className="mb-4">
+            <h3 className="font-medium mb-2">Select Store</h3>
+            <StoreSelector />
+          </div>
+        </>
+      )}
     </aside>
   );
 };

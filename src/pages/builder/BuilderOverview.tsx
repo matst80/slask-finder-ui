@@ -7,8 +7,11 @@ import { useImpression } from "../../lib/hooks/useImpression";
 import { trackClick } from "../../lib/datalayer/beacons";
 import { ItemWithComponentId } from "./builder-types";
 import { PriceValue } from "../../components/Price";
-import { RefreshCw } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
+import { useFacetMap } from "../../hooks/searchHooks";
+import { useMemo } from "react";
+import { isDefined } from "../../utils";
 
 const SelectedItem = ({
   componentId,
@@ -45,8 +48,62 @@ const SelectedItem = ({
   );
 };
 
+const SpecificationSummary = () => {
+  const { selectedItems, rules } = useBuilderContext();
+  const { data } = useFacetMap();
+  const specifications = useMemo(() => {
+    return selectedItems.flatMap((item) => {
+      const rule = rules.find((rule) => rule.id === item.componentId);
+      if (rule == null || rule.type !== "component") {
+        return [];
+      }
+      return (
+        Array.from(
+          new Set([...(rule.topFilters ?? []), ...(rule.importantFacets ?? [])])
+        )
+          ?.map((facetId) => {
+            const spec = data?.[facetId];
+            const value = item.values[facetId];
+            if (spec == null || value == null) {
+              return null;
+            }
+
+            return {
+              componentId: item.componentId,
+              componentTitle: rule.title,
+              id: facetId,
+              name: spec.name,
+              value: Array.isArray(value) ? value.join(", ") : String(value),
+            };
+          })
+          .filter(isDefined) ?? []
+      );
+    });
+  }, [rules, selectedItems, data]);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <h2 className="text-lg font-bold">Specifications</h2>
+      {specifications.map(
+        ({ componentId, id, name, value, componentTitle }) => (
+          <div
+            key={`${componentId}-${id}`}
+            className="flex items-center justify-between gap-4 border-b border-blue-200"
+          >
+            <span className="text-sm font-semibold">{name}</span>
+            <span className="text-sm flex-1">{value}</span>
+            <span className="text-sm hidden md:inline-flex">
+              {componentTitle}
+            </span>
+          </div>
+        )
+      )}
+    </div>
+  );
+};
+
 export const BuilderOverview = () => {
-  const { selectedItems, sum } = useBuilderContext();
+  const { selectedItems, sum, rules } = useBuilderContext();
   return (
     <>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -60,7 +117,50 @@ export const BuilderOverview = () => {
             ))}
           </ImpressionProvider>
         </div>
-        <div className="my-6">
+        <p className="bg-blue-50 p-4 rounded-lg my-6">
+          <SpecificationSummary />
+        </p>
+        <div>
+          {rules
+            .filter((d) => d.type === "group")
+            .map((rule, i) => (
+              <div key={i} className="my-4">
+                <h2 className="text-lg font-bold">{rule.title}</h2>
+                {rule.description != null && <p>{rule.description}</p>}
+                <div>
+                  {rule.components.map((item, j) => {
+                    const selected = selectedItems.find(
+                      (selectedItem) => selectedItem.componentId === item.id
+                    );
+                    return (
+                      <div
+                        key={j}
+                        className="flex items-center justify-between border-b border-gray-200"
+                      >
+                        <span className="text-sm font-semibold">
+                          {item.title}{" "}
+                          {selected != null && `(${selected.title})`}
+                        </span>
+                        <ButtonLink
+                          to={`/builder/${item.type}/${item.id}`}
+                          variant="outline"
+                          size="icon"
+                          className="ml-2"
+                        >
+                          {selected ? (
+                            <RefreshCw className="size-5" />
+                          ) : (
+                            <Plus className="size-5" />
+                          )}
+                        </ButtonLink>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+        </div>
+        <div className="mt-6 mb-20">
           <p className="font-bold text-lg">
             Total price: <PriceValue value={sum * 100} />
           </p>

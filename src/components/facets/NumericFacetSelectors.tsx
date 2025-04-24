@@ -207,7 +207,7 @@ export default function HistogramWithSelection({
 export const NumberFacetSelector = ({
   id,
   name,
-  result: { min, max, buckets },
+  result: { min, max, buckets, count },
   selected,
   disabled,
   valueType,
@@ -242,11 +242,11 @@ export const NumberFacetSelector = ({
   );
   const invalid = useMemo(() => {
     if (selected == null) return false;
-    if (selected.min < max || selected.max < min) {
-      return "range invalid";
+    if (count < 1) {
+      return JSON.stringify({ selected, limits: { min, max } }, null, 2);
     }
     return false;
-  }, [selected, min, max]);
+  }, [selected, min, max, count]);
   // console.log({ selected, limits: { min, max }, histogramValue });
   return (
     <fieldset
@@ -264,7 +264,7 @@ export const NumberFacetSelector = ({
           <ChevronDown className="size-4" />
         )}
       </button>
-      {invalid && <span className="text-red-600">{invalid}</span>}
+      {invalid && <pre className="text-red-600 text-xs">{invalid}</pre>}
       {open && (
         <>
           <Slider

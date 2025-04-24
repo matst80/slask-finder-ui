@@ -774,7 +774,7 @@ export const componentRules: Rule[] = [
       {
         type: "component",
         title: "Tangentbord",
-        id: 10,
+        id: 13,
         filter: {
           range: [],
           sort: "popular",
@@ -793,7 +793,7 @@ export const componentRules: Rule[] = [
       {
         type: "component",
         title: "Mus",
-        id: 11,
+        id: 14,
         filter: {
           range: [],
           sort: "popular",

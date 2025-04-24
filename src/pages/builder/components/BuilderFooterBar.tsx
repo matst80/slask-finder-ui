@@ -3,6 +3,7 @@ import { useBuilderContext } from "../useBuilderContext";
 import { Button, ButtonLink } from "../../../components/ui/button";
 import { useAddMultipleToCart } from "../../../hooks/cartHooks";
 import { Link } from "react-router-dom";
+import { RotateCcw, ShoppingBasketIcon } from "lucide-react";
 
 export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
   const { sum, neededPsuWatt, percentDone, setSelectedItems, selectedItems } =
@@ -35,25 +36,29 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
           </Link>
 
           {/* Action buttons */}
-          <div className="flex gap-3 w-full sm:w-auto">
+          <div className="flex gap-3 w-full justify-end sm:w-auto">
             {children}
             <ButtonLink
               variant="danger"
               to={"/builder"}
-              className="flex-1 sm:flex-none"
+              className="line-clamp-1 overflow-ellipsis flex items-center justify-center"
               onClick={() => setSelectedItems([])}
             >
-              Börja om
+              <RotateCcw className="size-5 md:hidden" />
+              <span className="hidden md:inline-flex">Börja om</span>
             </ButtonLink>
             <Button
               variant="default"
               disabled={isMutating}
-              className="flex-1 sm:flex-none"
+              className="line-clamp-1 overflow-ellipsis flex items-center justify-center"
               onClick={async () => {
                 addToCart(selectedItems);
               }}
             >
-              Lägg till i kundvagn
+              <ShoppingBasketIcon className="size-5 md:hidden" />
+              <span className="hidden md:inline-flex">
+                Lägg till i kundvagn
+              </span>
             </Button>
           </div>
         </div>
