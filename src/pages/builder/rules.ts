@@ -634,42 +634,12 @@ export const componentRules: Rule[] = [
     options: [
       {
         type: "component",
-        title: "Vattenkylning",
-        requires: [7, 1],
-        id: LIQUID_COOLER,
-        disabled: disabledIfCoolerIncluded,
-        //ignoreIfComponentSelected: 9,
-        topFilters: [32093, 32177, 36317, 32133, 34650, 36306],
-        validator: (values) => {
-          return [
-            arrayMatch(values, 32077, "error"),
-            numberMatch(values, 36307, { min: 10, max: 9999 }, "warning"),
-          ].filter(isDefined);
-        },
-        //importantFacets: [32093, 36310, 32097, 32177, 36311, 36306], //, 32077
-        importantFacets: [36310, 36307, 32133],
-        filter: {
-          range: [],
-          sort: "popular",
-          page: 0,
-          pageSize: 120,
-          stock: [],
-          string: [
-            {
-              id: 31158,
-              value: ["Vattenkylning"],
-            },
-          ],
-        },
-        filtersToApply: [],
-      },
-      {
-        type: "component",
-        title: "CPU luftkylare",
+        title: "Luftkylare",
         requires: [7, 1],
         id: AIR_COOLER,
         disabled: disabledIfCoolerIncluded,
         //ignoreIfComponentSelected: 8,
+        startingText: "Luftkylning är tryggt sätt att kyla din cpu.",
         topFilters: [32093, 32177],
         //importantFacets: [32093, 36310, 32097, 32177, 36311, 36306], //, 32077
         importantFacets: [36310, 36307, 32133],
@@ -689,6 +659,39 @@ export const componentRules: Rule[] = [
             {
               id: 31158,
               value: ["CPU luftkylning"],
+            },
+          ],
+        },
+        filtersToApply: [],
+      },
+      {
+        type: "component",
+        title: "Vattenkylning",
+        requires: [7, 1],
+        id: LIQUID_COOLER,
+        disabled: disabledIfCoolerIncluded,
+        //ignoreIfComponentSelected: 9,
+        topFilters: [32093, 32177, 36317, 32133, 34650, 36306],
+        validator: (values) => {
+          return [
+            arrayMatch(values, 32077, "error"),
+            numberMatch(values, 36307, { min: 10, max: 9999 }, "warning"),
+          ].filter(isDefined);
+        },
+        startingText:
+          "Vattenkylning är ett bra val för att kyla din CPU. kan vara mer effektivt än luftkylning.",
+        //importantFacets: [32093, 36310, 32097, 32177, 36311, 36306], //, 32077
+        importantFacets: [36310, 36307, 32133],
+        filter: {
+          range: [],
+          sort: "popular",
+          page: 0,
+          pageSize: 120,
+          stock: [],
+          string: [
+            {
+              id: 31158,
+              value: ["Vattenkylning"],
             },
           ],
         },

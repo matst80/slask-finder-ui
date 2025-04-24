@@ -2,13 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { useBuilderContext } from "./useBuilderContext";
 import { Component } from "./builder-types";
 
-export const ComponentRule = ({
+export const ComponentSelectorBox = ({
   title,
   startingText,
+  headerText,
   onClick,
   isRecommended,
 }: Pick<Component, "title" | "startingText"> & {
   onClick: () => void;
+  headerText?: string;
   isRecommended: boolean;
 }) => {
   return (
@@ -23,13 +25,15 @@ export const ComponentRule = ({
       {isRecommended && (
         <div className="absolute -top-3 w-full flex justify-center">
           <span className="bg-amber-600 text-white px-4 py-1 text-sm rounded-full font-medium">
-            Anbefalt
+            Recommended
           </span>
         </div>
       )}
-      <div className="text-gray-500 text-xs uppercase tracking-wider">
-        Start with
-      </div>
+      {headerText && (
+        <div className="text-gray-500 text-xs uppercase tracking-wider">
+          {headerText}
+        </div>
+      )}
       <div className="text-black text-[40px] font-bold">{title}</div>
       <div className="w-24 h-[1px] bg-gray-400 my-2"></div>
       <div className="text-center text-gray-600 text-sm max-w-xs">
@@ -45,21 +49,19 @@ export const BuilderStartPage = () => {
 
   return (
     <div className="animate-fadeIn space-y-10 mx-auto max-w-6xl p-8">
-      <h2
-        className="text-[#242424] text-2xl md:text-4xl font-medium relative pb-3 after:content-[''] 
-                     after:absolute after:bottom-0 after:left-0 after:w-24 after:h-1 after:bg-blue"
-      >
-        Var vill du starta?
+      <h2 className="text-[#242424] text-2xl md:text-4xl font-medium pb-3 text-center w-full">
+        Where do you want to start?
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-8 justify-center flex-wrap">
         {rules
           .filter((d) => d.type === "component")
           .filter((d) => d.startingText != null)
           .map((component, idx) => (
-            <ComponentRule
+            <ComponentSelectorBox
               key={component.id}
               {...component}
+              headerText="Start with"
               isRecommended={idx === 0}
               onClick={() => {
                 if (component.order != null) {
