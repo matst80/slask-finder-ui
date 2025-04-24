@@ -57,11 +57,11 @@ const numberMatch = (
   const value = values?.[id];
   if (value == null) return { type, message: "Missing value", facetId: id };
   if (isNaN(Number(value)))
-    return { type, message: "Not a number", facetId: id };
+    return { type, message: `(${value}) is not a number`, facetId: id };
   if (Number(value) < min)
-    return { type, message: "Value too low", facetId: id };
+    return { type, message: `${value} too low`, facetId: id };
   if (Number(value) > max)
-    return { type, message: "Value too high", facetId: id };
+    return { type, message: `${value} too high`, facetId: id };
   return undefined;
 };
 
@@ -80,7 +80,7 @@ const stringMatch = (
   if (incorrectValue && value === incorrectValue)
     return {
       type,
-      message: "Incorrect value: " + incorrectValue,
+      message: "Incorrect: " + incorrectValue,
       facetId: id,
     };
   return undefined;
@@ -340,9 +340,10 @@ export const componentRules: Rule[] = [
     //importantFacets: [33986, 36303, 35994, 30634, 31620, 30857, 32186],
     importantFacets: [30877, 31620, 36260],
     validator: (values) => {
-      return [numberMatch(values, 30376, { min: 5, max: 49 })].filter(
-        isDefined
-      );
+      return [
+        numberMatch(values, 30376, { min: 5, max: 49 }),
+        numberMatch(values, 32186, { min: 0, max: 1050 }, "warning"),
+      ].filter(isDefined);
     },
     filtersToApply: [
       {
@@ -741,7 +742,6 @@ export const componentRules: Rule[] = [
           stringContain(values, 30714, "error", "SATA"),
         ].filter(isDefined);
       }
-      return [];
     },
     //nextComponentId: 12,
     topFilters: [31508, 32120, 32194, 32195, 36274, 36279],
