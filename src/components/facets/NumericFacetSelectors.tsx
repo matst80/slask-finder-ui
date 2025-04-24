@@ -207,7 +207,7 @@ export default function HistogramWithSelection({
 export const NumberFacetSelector = ({
   id,
   name,
-  result: { min, max, buckets, count },
+  result: { min, max, buckets },
   selected,
   disabled,
   valueType,
@@ -267,7 +267,9 @@ export const NumberFacetSelector = ({
           <ChevronDown className="size-4" />
         )}
       </button>
-      {invalid && <pre className="text-red-600 text-xs">{invalid}</pre>}
+      {invalid && (
+        <pre className="bg-amber-300 p-2 text-amber-600 text-xs">{invalid}</pre>
+      )}
       {open && (
         <>
           <Slider
