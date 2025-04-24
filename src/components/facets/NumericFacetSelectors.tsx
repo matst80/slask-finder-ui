@@ -242,11 +242,14 @@ export const NumberFacetSelector = ({
   );
   const invalid = useMemo(() => {
     if (selected == null) return false;
-    if (count < 1) {
-      return JSON.stringify({ selected, limits: { min, max } }, null, 2);
+    if (selected.max > min) {
+      return "Search range is invalid (min)";
+    }
+    if (selected.min > max) {
+      return "Search range is invalid (max)";
     }
     return false;
-  }, [selected, min, max, count]);
+  }, [selected, min, max]);
   // console.log({ selected, limits: { min, max }, histogramValue });
   return (
     <fieldset

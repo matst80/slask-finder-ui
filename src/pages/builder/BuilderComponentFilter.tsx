@@ -167,7 +167,7 @@ const BuilderQueryMerger = ({
     if (keyRef.current === componentId) {
       return;
     }
-    console.log("updating query", componentId, query);
+    // console.log("updating query", componentId, query);
     keyRef.current = componentId;
     setQuery(query);
   }, [query, setQuery, componentId]);
