@@ -83,7 +83,7 @@ const IssueList = ({
     return null;
   }
   return (
-    <div className="absolute bottom-0 left-0 w-full h-full flex flex-col items-center justify-center gap-1">
+    <div className="absolute bottom-0 left-0 w-full h-full flex flex-col items-center justify-center gap-1 p-3">
       {toShow.map((issue, idx) => (
         <span
           key={idx}
@@ -136,7 +136,7 @@ const ComponentResultList = ({
       const { id } = item;
 
       const issues = validator?.(item.values) ?? [];
-      if (issues.length > 0) {
+      if (issues.filter((d) => d.type === "error").length > 0) {
         return;
       }
       e.preventDefault();
@@ -174,7 +174,7 @@ const ComponentResultList = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 -mx-4 md:-mx-0">
         {hits?.map((item, idx) => {
           const issues = validator?.(item.values) ?? [];
-
+          const hasError = issues.some((d) => d.type === "error");
           const isValid = issues.length === 0;
           return (
             <Link
@@ -188,7 +188,15 @@ const ComponentResultList = ({
                   : "hover:from-white to-gray-50 hover:to-gray-10"
               )}
             >
-              <div className={isValid ? "opacity-100" : "opacity-50"}>
+              <div
+                className={
+                  isValid
+                    ? "opacity-100"
+                    : hasError
+                    ? "opacity-50"
+                    : "opacity-75"
+                }
+              >
                 <ResultItemInner key={item.id} {...item}>
                   {/* <DetailsDialog item={item} /> */}
                   <Button

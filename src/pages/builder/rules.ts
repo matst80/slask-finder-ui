@@ -86,6 +86,24 @@ const stringMatch = (
   return undefined;
 };
 
+const stringContain = (
+  values: ItemValues,
+  id: number,
+  type: "error" | "warning",
+  mustHave: string
+) => {
+  const value = values?.[id];
+  if (value == null) return { type, message: "Missing value", facetId: id };
+  if (typeof value !== "string" && !Array.isArray(value))
+    return { type, message: "Not a string", facetId: id };
+  if (typeof value === "string" && !value.includes(mustHave))
+    return {
+      type,
+      message: "Missing value: " + mustHave,
+      facetId: id,
+    };
+};
+
 export const componentRules: Rule[] = [
   {
     type: "component",
@@ -365,6 +383,7 @@ export const componentRules: Rule[] = [
     id: MOTHERBOARD,
     validator: (values) => {
       return [
+        numberMatch(values, 31190, { min: 2, max: 16 }, "warning"),
         stringMatch(values, 32103, "error"),
         stringMatch(values, 35921, "error", "X"),
         stringMatch(values, 30857, "error", "X"),
@@ -708,6 +727,22 @@ export const componentRules: Rule[] = [
     //   30714, 31508, 32194, 32195, 32120, 36274, 31396, 36273, 36275, 32091,
     // ],
     importantFacets: [36279, 36338, 36274],
+    validator: (values) => {
+      const iface = String(values[30714]);
+      if (iface.includes("PCIe")) {
+        return [
+          //stringMatch(values, 36274, "error"),
+          numberMatch(values, 36338, { min: 200, max: 4000 }, "warning"),
+          numberMatch(values, 36249, { min: 1, max: 10 }, "warning"),
+        ].filter(isDefined);
+      } else {
+        return [
+          stringMatch(values, 30714, "error"),
+          stringContain(values, 30714, "error", "SATA"),
+        ].filter(isDefined);
+      }
+      return [];
+    },
     //nextComponentId: 12,
     topFilters: [31508, 32120, 32194, 32195, 36274, 36279],
     //topFilters: [31508, 32194, 32195],
