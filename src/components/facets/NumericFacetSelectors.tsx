@@ -268,7 +268,9 @@ export const NumberFacetSelector = ({
         )}
       </button>
       {invalid && (
-        <pre className="bg-amber-300 p-2 text-amber-600 text-xs">{invalid}</pre>
+        <span className="bg-amber-100 text-amber-800 rounded-md px-2.5 py-1 text-xs">
+          {invalid}
+        </span>
       )}
       {open && (
         <>
