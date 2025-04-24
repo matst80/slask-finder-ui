@@ -141,7 +141,7 @@ export const Facets = ({
 }: FacetListProps & {
   hideCategories?: boolean;
 }) => {
-  const { categoryFacets, isLoadingFacets: isLoading } = useQuery();
+  const { facets, categoryFacets, isLoadingFacets: isLoading } = useQuery();
   const [open, setOpen] = useState(false);
   const isDesktop = useScreenWidth(768);
 
@@ -158,12 +158,12 @@ export const Facets = ({
 
   return (
     <aside className="w-full md:w-72 border-b-2 border-gray-200 md:border-none">
-      <h2
-        className="text-lg font-semibold mb-4"
+      <button
+        className="text-lg font-semibold md:mb-4"
         onClick={() => setOpen((p) => !p)}
       >
-        Filter
-      </h2>
+        Filter ({facets.length})
+      </button>
       {(isDesktop || open) && (
         <>
           {!hideCategories && <CategoryResult categories={categoryFacets} />}
