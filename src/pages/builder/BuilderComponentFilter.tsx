@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "react-router-dom";
+import { Link, useLoaderData, useNavigate } from "react-router-dom";
 import { Facets } from "../../components/Facets";
 import { Paging } from "../../components/Paging";
 import { ResultHeader } from "../../components/ResultHeader";
@@ -13,7 +13,7 @@ import { FilteringQuery, Item } from "../../lib/types";
 import { trackAction, trackClick } from "../../lib/datalayer/beacons";
 import { useBuilderContext } from "./useBuilderContext";
 import { cm, isDefined } from "../../utils";
-import { ButtonLink } from "../../components/ui/button";
+import { Button, ButtonLink } from "../../components/ui/button";
 
 // import { GroupRenderer } from "./components/ItemDetails";
 // import { X } from "lucide-react";
@@ -65,6 +65,7 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
     query: { page, pageSize },
   } = useQuery();
   const { setSelectedItems, selectedItems } = useBuilderContext();
+  const navigate = useNavigate();
 
   const start = (page ?? 0) * (pageSize ?? 40);
   if (isLoading && hits.length < 1) {
@@ -130,12 +131,12 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
           >
             <ResultItemInner key={item.id} {...item}>
               {/* <DetailsDialog item={item} /> */}
-              <ButtonLink
+              <Button
                 variant="outline"
                 size="sm"
-                to={`/product/${item.id}`}
                 onClick={(e) => {
                   e.stopPropagation();
+                  navigate(`/product/${item.id}`, { viewTransition: true });
                   trackAction({
                     item: item.id,
                     action: "details",
@@ -144,7 +145,7 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
                 }}
               >
                 Show details
-              </ButtonLink>
+              </Button>
             </ResultItemInner>
           </Link>
         ))}
