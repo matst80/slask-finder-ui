@@ -184,7 +184,7 @@ const measureSize = (element: HTMLElement, text: string): number => {
 };
 
 const useCursorPosition = (
-  ref: React.RefObject<HTMLInputElement>,
+  ref: React.RefObject<HTMLInputElement | null>,
   { useCursorPosition = true }: { useCursorPosition?: boolean } = {}
 ) => {
   const [left, setLeft] = useState(0);

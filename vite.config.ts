@@ -1,12 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { analyzer } from "vite-bundle-analyzer";
+//import { analyzer } from "vite-bundle-analyzer";
 const target = "https://slask-finder.tornberg.me/";
 //const cartTarget = "https://slask-finder.knatofs.se/";
 // const localTarget = "http://localhost:8080/";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    "process.env.NODE_ENV": JSON.stringify("production"),
+  },
   server: {
     proxy: {
       "/api": {
@@ -31,5 +34,19 @@ export default defineConfig({
       },
     },
   },
-  plugins: [react(), analyzer()],
+  plugins: [react()], //, analyzer()
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            return "vendor"; // Split vendor libraries
+          }
+          if (id.includes("src/components/")) {
+            return "components"; // Split components into their own chunk
+          }
+        },
+      },
+    },
+  },
 });
