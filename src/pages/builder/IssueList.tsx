@@ -26,10 +26,10 @@ export const IssueList = ({ issues }: { issues: Issue[] }) => {
           key={idx}
           title={String(issue.facetId)}
           className={cm(
-            "text-xs overflow-hidden text-ellipsis line-clamp-1 px-2 py-1 rounded-full shadow-md shadow-white",
+            "text-xs overflow-hidden text-ellipsis line-clamp-1 px-2 py-1 rounded-md",
             issue.type === "error"
               ? "bg-red-100 text-red-800"
-              : "bg-amber-100 text-amber-800"
+              : "bg-indigo-100 text-indigo-800"
           )}
         >
           {issue.message} in "{issue.name}"
