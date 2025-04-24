@@ -9,11 +9,13 @@ import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { ResultItemInner } from "../../components/ResultItem";
 import { useQuery } from "../../lib/hooks/useQuery";
 import { ImpressionProvider } from "../../lib/hooks/ImpressionProvider";
-import { FilteringQuery, Item } from "../../lib/types";
+import { FilteringQuery, Item, ItemValues } from "../../lib/types";
 import { trackAction, trackClick } from "../../lib/datalayer/beacons";
 import { useBuilderContext } from "./useBuilderContext";
 import { cm, isDefined } from "../../utils";
 import { Button, ButtonLink } from "../../components/ui/button";
+import { Issue } from "./builder-types";
+import { useFacetMap } from "../../hooks/searchHooks";
 
 // import { GroupRenderer } from "./components/ItemDetails";
 // import { X } from "lucide-react";
@@ -58,7 +60,53 @@ import { Button, ButtonLink } from "../../components/ui/button";
 //   );
 // };
 
-const ComponentResultList = ({ componentId }: { componentId: number }) => {
+const IssueList = ({ issues }: { issues: Issue[] }) => {
+  const { data } = useFacetMap();
+  const toShow = useMemo(() => {
+    if (!issues || issues.length < 1) {
+      return [];
+    }
+    return issues.map((issue) => {
+      const facet = data?.[issue.facetId];
+
+      return {
+        ...issue,
+        name: facet?.name ?? "...",
+      };
+    });
+  }, [issues, data]);
+  if (issues.length < 1 || data == null) {
+    return null;
+  }
+  return (
+    <div className="absolute top-0 left-0 w-full h-full bg-white opacity-90 flex items-center justify-center">
+      <div className="flex flex-col gap-2 p-4">
+        {toShow.map((issue, idx) => (
+          <div
+            key={idx}
+            className={cm(
+              "text-sm font-medium text-gray-800",
+              issue.type === "error" ? "text-red-500" : "text-yellow-500"
+            )}
+          >
+            <span>
+              {issue.name} ({issue.facetId})
+            </span>
+            <span>{issue.message ?? `Issue ${idx + 1}`}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const ComponentResultList = ({
+  componentId,
+  validator,
+}: {
+  componentId: number;
+  validator?: (values: ItemValues) => Issue[];
+}) => {
   const {
     isLoading,
     hits,
@@ -86,6 +134,10 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
       e.preventDefault();
       const { id } = item;
       trackClick(id, idx);
+      const issues = validator?.(item.values) ?? [];
+      if (issues.length > 0) {
+        return;
+      }
 
       setSelectedItems((p) => {
         const isSelected = p.some((i) => i.id === id);
@@ -117,38 +169,45 @@ const ComponentResultList = ({ componentId }: { componentId: number }) => {
   return (
     <ImpressionProvider>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 -mx-4 md:-mx-0">
-        {hits?.map((item, idx) => (
-          <Link
-            to={`/product/${item.id}`}
-            onClick={handleSelection(item, start + idx)}
-            key={item.id}
-            className={cm(
-              "group bg-white md:shadow-xs text-left hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item bg-linear-to-br border-b border-gray-200 md:border-b-0",
-              selectedId === item.id
-                ? "from-blue-100 hover:from-blue-200"
-                : "hover:from-white to-gray-50 hover:to-gray-10"
-            )}
-          >
-            <ResultItemInner key={item.id} {...item}>
-              {/* <DetailsDialog item={item} /> */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/product/${item.id}`, { viewTransition: true });
-                  trackAction({
-                    item: item.id,
-                    action: "details",
-                    reason: `builder_${componentId}`,
-                  });
-                }}
-              >
-                Show details
-              </Button>
-            </ResultItemInner>
-          </Link>
-        ))}
+        {hits?.map((item, idx) => {
+          const issues = validator?.(item.values) ?? [];
+          const isValid = issues.length === 0;
+          return (
+            <Link
+              to={`/product/${item.id}`}
+              onClick={handleSelection(item, start + idx)}
+              key={item.id}
+              className={cm(
+                "group bg-white md:shadow-xs text-left hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item bg-linear-to-br border-b border-gray-200 md:border-b-0",
+                selectedId === item.id
+                  ? "from-blue-100 hover:from-blue-200"
+                  : "hover:from-white to-gray-50 hover:to-gray-10",
+                isValid ? "opacity-100" : "opacity-50"
+              )}
+            >
+              <IssueList issues={issues} />
+              <ResultItemInner key={item.id} {...item}>
+                {/* <DetailsDialog item={item} /> */}
+                <Button
+                  variant={isValid ? "outline" : "danger"}
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    navigate(`/product/${item.id}`, { viewTransition: true });
+                    trackAction({
+                      item: item.id,
+                      action: "details",
+                      reason: `builder_${componentId}`,
+                    });
+                  }}
+                >
+                  Show details
+                </Button>
+              </ResultItemInner>
+            </Link>
+          );
+        })}
       </div>
     </ImpressionProvider>
   );
@@ -303,7 +362,10 @@ export const BuilderComponentFilter = () => {
 
           <main className="flex-1 container">
             <ResultHeader />
-            <ComponentResultList componentId={Number(componentId)} />
+            <ComponentResultList
+              componentId={Number(componentId)}
+              validator={component?.validator}
+            />
             <Paging />
           </main>
         </div>

@@ -1,4 +1,6 @@
-import { ItemWithComponentId, Rule } from "./builder-types";
+import { ItemValues } from "../../lib/types";
+import { isDefined } from "../../utils";
+import { Issue, ItemWithComponentId, Rule } from "./builder-types";
 
 export const wattIds = [35990, 32186];
 
@@ -29,7 +31,7 @@ const disabledIfPsuIncluded = (selectedItems: ItemWithComponentId[]) => {
   return selectedItems.some((d) => d.values[32183] === "Ja");
 };
 
-const asArray = (value: unknown) => {
+const asArray = (value: unknown): string[] => {
   if (Array.isArray(value)) {
     return value;
   }
@@ -46,6 +48,44 @@ const fixPrefix = (prefix: string) => (value: string) => {
   return prefix + value;
 };
 
+const numberMatch = (
+  values: ItemValues,
+  id: number,
+  { min, max }: { min: number; max: number }
+): Issue | undefined => {
+  const value = values[id];
+  if (value == null)
+    return { type: "error", message: "Missing value", facetId: id };
+  if (isNaN(Number(value)))
+    return { type: "error", message: "Not a number", facetId: id };
+  if (Number(value) < min)
+    return { type: "error", message: "Value too low", facetId: id };
+  if (Number(value) > max)
+    return { type: "error", message: "Value too high", facetId: id };
+  return undefined;
+};
+
+const stringMatch = (
+  values: ItemValues,
+  id: number,
+  incorrectValue?: string
+): Issue | undefined => {
+  const value = values[id];
+  if (value == null)
+    return { type: "error", message: "Missing value", facetId: id };
+
+  if (!(typeof value === "string" || Array.isArray(value)))
+    return { type: "error", message: "Not a string", facetId: id };
+
+  if (incorrectValue && value === incorrectValue)
+    return {
+      type: "error",
+      message: "Incorrect value: " + incorrectValue,
+      facetId: id,
+    };
+  return undefined;
+};
+
 export const componentRules: Rule[] = [
   {
     type: "component",
@@ -54,6 +94,7 @@ export const componentRules: Rule[] = [
     startingText:
       "Your selected CPU determines motherboard and ram speed, and power requirements of the PSU and your recommended CPU cooling options.",
     order: [CPU, MOTHERBOARD, RAM, STORAGE, GPU, CASE, PSU, COOLER],
+
     filtersToApply: [
       { id: 32103, to: MOTHERBOARD },
       // add chipset, when we get all chipsets!
@@ -186,9 +227,15 @@ export const componentRules: Rule[] = [
     ],
     topFilters: [32152, 36201, 31586, 35990, 36203, 36206],
     importantFacets: [32103, 32198, 36206],
-    validator: () => {
-      //if (isNaN(Number(values[35980]))) return false;
-      return true; //values[32103] != null;
+    validator: (values: ItemValues) => {
+      return [
+        stringMatch(values, 32103),
+        numberMatch(values, 35980, { min: 500, max: 29999 }),
+      ].filter(isDefined);
+      // if (!isKey(values[32103])) return false;
+      // if (!Array.isArray(values[36202])) return false;
+      // //if (isNaN(Number(values[35980]))) return false;
+      // return true; //values[32103] != null;
     },
     filter: {
       range: [],
@@ -274,6 +321,11 @@ export const componentRules: Rule[] = [
     ],
     //importantFacets: [33986, 36303, 35994, 30634, 31620, 30857, 32186],
     importantFacets: [30877, 31620, 36260],
+    validator: (values) => {
+      return [numberMatch(values, 30376, { min: 5, max: 49 })].filter(
+        isDefined
+      );
+    },
     filtersToApply: [
       {
         id: 30376,
@@ -312,13 +364,18 @@ export const componentRules: Rule[] = [
     title: "Moderkort",
     id: MOTHERBOARD,
     validator: (values) => {
-      return (
-        values[32103] != null &&
-        values[35921] != null &&
-        values[30857] != null &&
-        values[30857] != "X" &&
-        values[35921] != "X"
-      );
+      return [
+        stringMatch(values, 32103),
+        stringMatch(values, 35921, "X"),
+        stringMatch(values, 30857, "X"),
+      ].filter(isDefined);
+      // return (
+      //   values[32103] != null &&
+      //   values[35921] != null &&
+      //   values[30857] != null &&
+      //   values[30857] != "X" &&
+      //   values[35921] != "X"
+      // );
     },
     requires: [1],
     topFilters: [
@@ -604,12 +661,17 @@ export const componentRules: Rule[] = [
     //importantFacets: [36268, 31191, 36271],
     importantFacets: [36267, 36268, 36271],
     validator: (values) => {
-      return (
-        values[35921] != null &&
-        values[35921] != "X" &&
-        values[30857] != null &&
-        values[30857] != "X"
-      );
+      return [
+        stringMatch(values, 30857),
+        stringMatch(values, 35921),
+        //numberMatch(values, 31191, { min: 1, max: 128 }),
+      ].filter(isDefined);
+      // return (
+      //   values[35921] != null &&
+      //   values[35921] != "X" &&
+      //   values[30857] != null &&
+      //   values[30857] != "X"
+      // );
     },
     filter: {
       range: [],

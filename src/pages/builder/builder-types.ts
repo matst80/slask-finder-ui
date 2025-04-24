@@ -25,6 +25,12 @@ export type QuickFilter = {
   }[];
 };
 
+export type Issue = {
+  type: "error" | "warning";
+  message?: string;
+  facetId: number;
+};
+
 export type Component = {
   type: "component";
   title: string;
@@ -35,7 +41,7 @@ export type Component = {
   order?: number[];
   nextComponentId?: number;
   quickFilters?: QuickFilter[];
-  validator?: (values: ItemValues) => boolean;
+  validator?: (values: ItemValues) => Issue[];
   filtersToApply: AdditionalFilter[];
   filter: ItemsQuery;
   disabled?: (selectedItems: ItemWithComponentId[]) => boolean;
