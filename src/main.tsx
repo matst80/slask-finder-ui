@@ -39,6 +39,7 @@ import { componentRules } from "./pages/builder/rules.ts";
 import { BuilderComponentSelector } from "./pages/builder/BuilderComponentSelector.tsx";
 import { BuilderKit } from "./pages/builder/BuilderKit.tsx";
 import { BuilderProductPage } from "./pages/builder/BuilderProductPage.tsx";
+import { NotificationsProvider } from "./components/ui-notifications/notifications-provider.tsx";
 
 const router = createBrowserRouter([
   {
@@ -217,11 +218,13 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryProvider>
-      <ImpressionProvider>
-        <SWRConfig value={{}}>
-          <RouterProvider router={router} />
-        </SWRConfig>
-      </ImpressionProvider>
+      <NotificationsProvider>
+        <ImpressionProvider>
+          <SWRConfig value={{}}>
+            <RouterProvider router={router} />
+          </SWRConfig>
+        </ImpressionProvider>
+      </NotificationsProvider>
     </QueryProvider>
   </React.StrictMode>
 );

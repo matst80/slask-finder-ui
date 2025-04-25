@@ -20,6 +20,7 @@ import {
 import { useQuery } from "../../lib/hooks/useQuery";
 import { FacetListItem } from "../../lib/types";
 import { getPossibleRelations } from "../../lib/datalayer/api";
+import { useNotifications } from "../../components/ui-notifications/useNotifications";
 
 type KeyValues =
   | [true, Fuzzysort.Results]
@@ -29,6 +30,7 @@ const FacetValues = ({ id }: { id: number }) => {
   const { setQuery } = useQuery();
   const { data } = useFieldValues(id);
   const [filter, setFilter] = useState<string>("");
+  const { showNotification } = useNotifications();
 
   const [isKeyValues, values] = useMemo<KeyValues>(() => {
     if (!data) return [false, { min: 0, max: 0 }];
@@ -92,7 +94,10 @@ const FacetValues = ({ id }: { id: number }) => {
                 className="hover:bg-slate-200"
                 onClick={() => {
                   getPossibleRelations({ id, value }).then((relations) => {
-                    alert(JSON.stringify(relations, null, 2));
+                    showNotification({
+                      title: "Possible relations",
+                      message: JSON.stringify(relations, null, 2),
+                    });
                   });
                 }}
               >
