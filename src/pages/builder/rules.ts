@@ -590,6 +590,10 @@ export const componentRules: Rule[] = [
         id: 32056,
         to: MOTHERBOARD,
         converter: (values) => {
+          const supportedFormFactors = values[32057];
+          if (isKey(supportedFormFactors)) {
+            return [{ id: 30552, value: supportedFormFactors }];
+          }
           const formFactor = values[32056];
           const allowed = [];
           if (typeof formFactor === "string") {
