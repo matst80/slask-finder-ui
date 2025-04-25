@@ -68,13 +68,18 @@ const splitCategoryFacets = (facets: Facet[]): [KeyFacet[], Facet[]] => {
 export const QueryProvider = ({
   initialQuery,
   children,
+  ignoreFacets: initialIgnoredFacets,
   loadFacets = true,
   ref,
 }: PropsWithChildren<{
   initialQuery?: ItemsQuery;
+  ignoreFacets?: number[];
   loadFacets?: boolean;
   ref?: React.Ref<QueryProviderRef>;
 }>) => {
+  const [ignoreFacets, setIgnoreFacets] = useState<number[] | undefined>(
+    initialIgnoredFacets
+  );
   const [queryHistory, setQueryHistory] = useState<HistoryQuery[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingFacets, setIsLoadingFacets] = useState(false);
@@ -177,15 +182,15 @@ export const QueryProvider = ({
       return;
     }
     if (facetCache.has(facetsKey)) {
-      const cached = facetCache.get(facetsKey) ?? []
-      
+      const cached = facetCache.get(facetsKey) ?? [];
+
       const [cat, other] = splitCategoryFacets(cached);
       setFacets(other);
       setCategoryFacets(cat);
     }
 
     setIsLoadingFacets(true);
-    api.facets(toQuery(query)).then((data) => {
+    api.facets(toQuery(query, ignoreFacets)).then((data) => {
       facetCache.set(facetsKey, data);
       const [cat, other] = data.reduce(
         ([c, all], facet) => {
@@ -239,6 +244,7 @@ export const QueryProvider = ({
         setPageSize,
         setSort,
         setStock,
+        setIgnoreFacets,
         queryHistory,
         categoryFacets,
         setTerm,

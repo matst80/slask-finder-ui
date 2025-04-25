@@ -24,9 +24,16 @@ export const IssueList = ({ issues }: { issues: Issue[] }) => {
       {toShow.map((issue, idx) => (
         <span
           key={idx}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            globalThis.navigator.clipboard.writeText(
+              `${issue.facetId} ${issue.message} in "${issue.name}"`
+            );
+          }}
           title={String(issue.facetId)}
           className={cm(
-            "text-xs overflow-hidden text-ellipsis line-clamp-1 px-2 py-1 rounded-md",
+            "text-xs overflow-hidden text-ellipsis line-clamp-1 px-2 py-1 rounded-md cursor-copy",
             issue.type === "error"
               ? "bg-red-100 text-red-800"
               : "bg-indigo-100 text-indigo-800"

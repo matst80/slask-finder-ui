@@ -235,12 +235,12 @@ export const BuilderComponentFilter = () => {
     return <div>Loading</div>;
   }
   return (
-    <QueryProvider initialQuery={requiredQuery}>
+    <QueryProvider initialQuery={requiredQuery} ignoreFacets={facetsToHide}>
       <BuilderQueryMerger query={requiredQuery} componentId={componentId} />
       <div className="px-4 py-3 md:py-8 md:px-10 mb-24">
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           <Facets
-            facetsToHide={facetsToHide}
+            //facetsToHide={facetsToHide}
             hideCategories
             facetsToDisable={facetsToDisable}
           />

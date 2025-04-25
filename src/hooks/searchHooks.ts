@@ -148,7 +148,7 @@ const itemsKey = (data: ItemsQuery) => `items-` + queryToHash(data);
 
 const facetsKey = (data: FacetQuery) => "facets-" + facetQueryToHash(data);
 
-export const toQuery = (data: ItemsQuery): string => {
+export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
   const { range, sort, page, pageSize, query, stock, string } = data;
 
   const result = new URLSearchParams({
@@ -160,6 +160,10 @@ export const toQuery = (data: ItemsQuery): string => {
   range?.forEach(({ id, min, max }) => {
     result.append("rng", `${id}:${min}-${max}`);
   });
+
+  // if (ignoredFacets != null && ignoredFacets.length > 0) {
+  //   result.append("sf", ignoredFacets.map((value) => String(value)).join("|"));
+  // }
 
   string
     ?.filter(({ value }) => Array.isArray(value) && value.length > 0)
