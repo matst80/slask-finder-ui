@@ -1,6 +1,6 @@
 import { Plus, RefreshCw } from "lucide-react";
 import { ResultItemInner } from "../../components/ResultItem";
-import { Button, ButtonLink } from "../../components/ui/button";
+import { Button } from "../../components/ui/button";
 import { trackClick } from "../../lib/datalayer/beacons";
 import { useImpression } from "../../lib/hooks/useImpression";
 import { ItemWithComponentId } from "./builder-types";
