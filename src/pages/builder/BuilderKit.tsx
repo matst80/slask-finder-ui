@@ -9,8 +9,11 @@ import { ImpressionProvider } from "../../lib/hooks/ImpressionProvider";
 import { SelectedComponentItem } from "./SelectedComponentItem";
 
 const itemIds = [
-  853526, 788565, 876765, 853847, 841461, 841470, 854280, 853858,
+  841468, 883821, 861201, 842510, 842804, 854270, 519763, 855844,
 ];
+// [
+//   853526, 788565, 876765, 853847, 841461, 841470, 854280, 853858,
+// ];
 
 const matchValue = (
   itemValue: string[] | string | number | undefined,

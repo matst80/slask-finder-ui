@@ -12,7 +12,7 @@ export const useRecommendedWatt = () => {
         if (item.componentId === GPU && item.values[32186] != null) {
           gpuRecommendedWatt = asNumber(item.values[32186]);
         }
-        return [35990, 32186, 35990].reduce((acc, id) => {
+        return [35990, 32186].reduce((acc, id) => {
           const value = item.values[id];
           if (value != null) {
             const nr = asNumber(value);

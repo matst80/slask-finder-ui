@@ -1,6 +1,12 @@
 import { ItemValues } from "../../lib/types";
 import { isDefined } from "../../utils";
-import { Issue, ItemWithComponentId, Rule } from "./builder-types";
+import {
+  ConverterResult,
+  Issue,
+  ItemWithComponentId,
+  Rule,
+} from "./builder-types";
+import { asNumber } from "./builder-utils";
 
 export const GPU = 5;
 export const CPU = 1;
@@ -102,6 +108,20 @@ const stringContain = (
     };
 };
 
+const handleMotherBoardFormFactor = (formFactor: string | string[]) => {
+  const allowed = [];
+
+  if (formFactor.includes("Mini") || formFactor.includes("mATX")) {
+    allowed.push("Mini-ITX");
+  } else {
+    allowed.push("ATX");
+    if (formFactor.includes("eATX")) {
+      allowed.push("eATX");
+    }
+  }
+  return [{ id: 30552, value: allowed }];
+};
+
 const arrayMatch = (
   values: ItemValues,
   id: number,
@@ -113,6 +133,16 @@ const arrayMatch = (
     return { type, message: "Not an array", facetId: id };
   if (value.length < 1) return { type, message: "Empty array", facetId: id };
   return undefined;
+};
+
+const toMinFilter = (
+  value: string | number | string[] | undefined,
+  { id, max = 99999 }: { id: number; max?: number }
+): ConverterResult[] => {
+  if (value == null) return [];
+  const number = asNumber(value);
+  if (isNaN(number)) return [];
+  return [{ id, value: { min: number, max } }];
 };
 
 export const componentRules: Rule[] = [
@@ -131,15 +161,7 @@ export const componentRules: Rule[] = [
         id: 36307,
         to: LIQUID_COOLER,
         converter: (values) => {
-          const tdp = values[35990];
-          //console.log("should have cooler that handles", tdp);
-          // return [];
-          return [
-            {
-              id: 36307,
-              value: { min: Number(tdp), max: 9999 },
-            },
-          ];
+          return toMinFilter(values[35990], { id: 36307 });
         },
       },
       {
@@ -260,6 +282,7 @@ export const componentRules: Rule[] = [
       return [
         stringMatch(values, 32103, "error"),
         numberMatch(values, 35980, { min: 500, max: 29999 }, "warning"),
+        numberMatch(values, 35990, { min: 5, max: 500 }, "warning"),
       ].filter(isDefined);
       // if (!isKey(values[32103])) return false;
       // if (!Array.isArray(values[36202])) return false;
@@ -516,6 +539,7 @@ export const componentRules: Rule[] = [
     //importantFacets: [36293, 32062, 36284, 32061, 36295, 36286, 36280],
     validator: (values) => {
       return [
+        arrayMatch(values, 32057, "warning"),
         numberMatch(values, 32062, { min: 100, max: 500 }, "warning"),
         stringMatch(values, 36284, "error"),
         numberMatch(values, 32061, { min: 1, max: 500 }, "warning"),
@@ -591,21 +615,14 @@ export const componentRules: Rule[] = [
         to: MOTHERBOARD,
         converter: (values) => {
           const supportedFormFactors = values[32057];
-          if (isKey(supportedFormFactors)) {
-            return [{ id: 30552, value: supportedFormFactors }];
-          }
           const formFactor = values[32056];
-          const allowed = [];
-          if (typeof formFactor === "string") {
-            if (formFactor.includes("Mini") || formFactor.includes("mATX")) {
-              allowed.push("Mini-ITX");
-            } else {
-              allowed.push("ATX");
-              if (formFactor.includes("eATX")) {
-                allowed.push("eATX");
-              }
-            }
-            return [{ id: 30552, value: formFactor }];
+
+          if (isKey(supportedFormFactors)) {
+            return handleMotherBoardFormFactor(supportedFormFactors);
+          }
+
+          if (isKey(formFactor)) {
+            return handleMotherBoardFormFactor(formFactor);
           }
           return [];
         },
