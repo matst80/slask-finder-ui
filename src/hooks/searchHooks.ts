@@ -161,9 +161,9 @@ export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
     result.append("rng", `${id}:${min}-${max}`);
   });
 
-  // if (ignoredFacets != null && ignoredFacets.length > 0) {
-  //   result.append("sf", ignoredFacets.map((value) => String(value)).join("|"));
-  // }
+  if (ignoredFacets != null && ignoredFacets.length > 0) {
+    ignoredFacets.forEach((value) => result.append("ignore", String(value)));
+  }
 
   string
     ?.filter(({ value }) => Array.isArray(value) && value.length > 0)
