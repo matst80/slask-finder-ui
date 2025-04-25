@@ -1,0 +1,120 @@
+import { useLoaderData } from "react-router-dom";
+import { Price } from "../../components/Price";
+import { Properties } from "../../components/Properties";
+import { makeImageUrl } from "../../utils";
+import { StockList } from "../../components/StockList";
+import { Button } from "../../components/ui/button";
+import { useBuilderContext } from "./useBuilderContext";
+import { ItemWithComponentId } from "./builder-types";
+import { trackAction, trackClick } from "../../lib/datalayer/beacons";
+import { BuilderFooterBar } from "./components/BuilderFooterBar";
+import { NextComponentButton } from "./NextComponentButton";
+
+export const ComponentDetails = (details: ItemWithComponentId) => {
+  const { setSelectedItems, selectedItems } = useBuilderContext();
+  if (!details) return null;
+  const {
+    title,
+    id,
+    componentId,
+    img,
+    bp,
+    stockLevel,
+    stock,
+    buyable,
+    buyableInStore,
+    values,
+    disclaimer,
+  } = details;
+  const isSelected = selectedItems.some((d) => d.id === id);
+  return (
+    <>
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
+          {/* Image Section */}
+
+          <div className="flex items-center justify-center">
+            <img
+              className="max-w-full h-auto object-contain"
+              src={makeImageUrl(img)}
+              alt={title}
+            />
+          </div>
+
+          {/* Details Section */}
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">{title}</h2>
+              {bp && (
+                <ul className="space-y-3 text-gray-600">
+                  {bp.split("\n").map((txt) => (
+                    <li key={txt} className="flex items-start">
+                      <span className="text-blue-500 mr-2">•</span>
+                      {txt}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Price and Cart Section */}
+            {(buyable || buyableInStore) && (
+              <div className="space-y-8">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-gray-500 text-sm">Pris</span>
+                    <div className="text-4xl font-bold text-gray-900">
+                      <Price values={values} disclaimer={disclaimer} />
+                    </div>
+                  </div>
+                  <Button
+                    variant={isSelected ? "danger" : "default"}
+                    onClick={() => {
+                      setSelectedItems((prev) => [
+                        ...prev.filter((d) => d.componentId != componentId),
+                        ...(isSelected ? [] : [details]),
+                      ]);
+                      requestAnimationFrame(() => {
+                        trackClick(id, 1);
+                        trackAction({
+                          item: id,
+                          action: "select_component",
+                          reason: `builder_${componentId}`,
+                        });
+                      });
+                    }}
+                  >
+                    {isSelected ? "Remove component" : "Select component"}
+                  </Button>
+                </div>
+
+                <StockList stock={stock} stockLevel={stockLevel} />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom Sections */}
+        <div className="mt-16 space-y-16">
+          <div>
+            <Properties values={details.values} />
+          </div>
+        </div>
+      </div>
+      <BuilderFooterBar>
+        <NextComponentButton componentId={componentId} />
+      </BuilderFooterBar>
+    </>
+  );
+};
+
+export const BuilderProductPage = () => {
+  const details = useLoaderData() as ItemWithComponentId | null;
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-4">Komponent detailjer</h1>
+      {details ? <ComponentDetails {...details} /> : <p>Laddar...</p>}
+    </div>
+  );
+};

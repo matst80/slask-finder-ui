@@ -16,7 +16,7 @@ import {
   RelationGroup,
   relationValueConverters,
 } from "../lib/types";
-import { Store, stores } from "../lib/datalayer/stores";
+import { Store } from "../lib/datalayer/stores";
 import { ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Price, PriceValue } from "./Price";
@@ -27,114 +27,11 @@ import { getAdminItem } from "../lib/datalayer/api";
 import { useQuery } from "../lib/hooks/useQuery";
 import { trackAction } from "../lib/datalayer/beacons";
 import { Properties } from "./Properties";
+import { StockList } from "./StockList";
 
-const useGeoLocation = () => {
-  const [location, setLocation] = useState<GeolocationPosition | null>(null);
-
-  useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => setLocation(position),
-        (error) => console.error("Error getting location:", error)
-      );
-    }
-  }, []);
-
-  return location;
-};
-
-const calculateDistance = (
-  you: GeolocationPosition,
-  other: {
-    lat: number;
-    lng: number;
-  }
-) => {
-  const R = 6371e3; // metres
-  const φ1 = (you.coords.latitude * Math.PI) / 180; // φ, λ in radians
-  const φ2 = (other.lat * Math.PI) / 180;
-  const Δφ = ((other.lat - you.coords.latitude) * Math.PI) / 180;
-  const Δλ = ((other.lng - you.coords.longitude) * Math.PI) / 180;
-
-  const a =
-    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  const d = R * c; // in metres
-  return d / 1000;
-};
-
-const StockLocation = ({ stock, distance, ...store }: StoreWithStock) => {
-  return (
-    <li
-      key={store.id}
-      className="flex items-center py-2 px-3 hover:bg-gray-50 gap-2"
-    >
-      <div className="flex items-center gap-2 grow">
-        <span className="font-medium line-clamp-1 text-ellipsis">
-          {store.name}
-        </span>
-        <span className="text-gray-500">•</span>
-        <span className="text-green-600 font-medium">{stock} st</span>
-      </div>
-      {distance != null && (
-        <span className="text-gray-500 text-sm">{distance.toFixed(0)} km</span>
-      )}
-    </li>
-  );
-};
-
-type StoreWithStock = Store & {
+export type StoreWithStock = Store & {
   stock: string;
   distance: number | null;
-};
-
-const StockList = ({
-  stock,
-  stockLevel,
-}: Pick<ItemDetail, "stock" | "stockLevel">) => {
-  const location = useGeoLocation();
-  const storesWithStock = useMemo(() => {
-    return Object.entries(stock ?? {})
-      .map(([id, value]) => {
-        const store = stores.find((store) => store.id === id);
-        if (!store) return null;
-        return {
-          ...store,
-          stock: value,
-          distance:
-            location != null
-              ? calculateDistance(location, store.address.location)
-              : null,
-        };
-      })
-      .filter(isDefined)
-      .sort((a, b) =>
-        location != null
-          ? a.distance! - b.distance!
-          : a.displayName.localeCompare(b.displayName)
-      );
-  }, [stock, location]);
-  if (stock == null) return null;
-  return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden">
-      <div className="p-4 cursor-pointer hover:bg-gray-50 transition-colors">
-        <h3 className="text-lg font-semibold">Lagerstatus</h3>
-        {stockLevel != null && stockLevel !== "0" && (
-          <p className="text-gray-600 mt-1">I lager online: {stockLevel} st</p>
-        )}
-      </div>
-
-      <div className="overflow-y-auto max-h-48">
-        <ul className="border-t border-gray-200 divide-y divide-gray-200">
-          {storesWithStock.map((s) => (
-            <StockLocation key={s.id} {...s} />
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
 };
 
 export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
@@ -145,10 +42,7 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
       <div className="flex w-fit">
         {isLoading && <p>Laddar...</p>}
         {data?.map((item, idx) => (
-          <div
-            key={item.id}
-            className="shrink-0 w-[250px] flex snap-start"
-          >
+          <div key={item.id} className="shrink-0 w-[250px] flex snap-start">
             <ResultItem {...item} position={idx} />
           </div>
         ))}
@@ -165,10 +59,7 @@ export const ResultCarousel = () => {
       <div className="flex w-fit">
         {isLoading && <p>Laddar...</p>}
         {hits?.map((item, idx) => (
-          <div
-            key={item.id}
-            className="shrink-0 w-[300px] flex snap-start"
-          >
+          <div key={item.id} className="shrink-0 w-[300px] flex snap-start">
             <ResultItem {...item} position={idx} />
           </div>
         ))}
@@ -185,10 +76,7 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
       <div className="flex w-fit">
         {isLoading && <p>Laddar...</p>}
         {data?.map((item, idx) => (
-          <div
-            key={item.id}
-            className="shrink-0 w-[250px] flex snap-start"
-          >
+          <div key={item.id} className="shrink-0 w-[250px] flex snap-start">
             <ResultItem {...item} position={idx} />
           </div>
         ))}

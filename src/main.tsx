@@ -38,6 +38,7 @@ import { BuilderOverview } from "./pages/builder/BuilderOverview.tsx";
 import { componentRules } from "./pages/builder/rules.ts";
 import { BuilderComponentSelector } from "./pages/builder/BuilderComponentSelector.tsx";
 import { BuilderKit } from "./pages/builder/BuilderKit.tsx";
+import { BuilderProductPage } from "./pages/builder/BuilderProductPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,17 @@ const router = createBrowserRouter([
         path: "component/:id",
         loader: ({ params: { id } }) => Promise.resolve(id),
         element: <BuilderComponentFilter />,
+      },
+      {
+        path: "product/:componentId/:id",
+        loader: ({ params: { id, componentId } }) =>
+          id != null
+            ? getRawData(id).then((d) => ({
+                ...d,
+                componentId: Number(componentId),
+              }))
+            : Promise.resolve(null),
+        element: <BuilderProductPage />,
       },
       {
         path: "selection/:id",
