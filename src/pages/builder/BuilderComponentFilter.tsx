@@ -175,7 +175,7 @@ const NextComponentButton = ({ componentId }: { componentId: number }) => {
   return (
     <div className="group flex relative">
       {unselectedComponents.length > 1 && (
-        <div className="absolute -bottom-0 mb-11 bg-white p-4 rounded-lg shadow-xl flex flex-col gap-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 w-72 z-10 border border-gray-100">
+        <div className="absolute -bottom-0 mb-11 bg-white p-4 rounded-lg shadow-xl flex flex-col gap-2 opacity-0 group-hover:animate-pop-fast group-hover:opacity-100 transition-all duration-200 w-72 z-10 border border-gray-100">
           <div className="text-sm font-medium text-gray-500 border-b pb-2 mb-1">
             Other Components
           </div>

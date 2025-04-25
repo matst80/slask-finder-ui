@@ -92,7 +92,7 @@ const FacetValues = ({ id }: { id: number }) => {
                 className="hover:bg-slate-200"
                 onClick={() => {
                   getPossibleRelations({ id, value }).then((relations) => {
-                    console.log(relations);
+                    alert(JSON.stringify(relations, null, 2));
                   });
                 }}
               >
@@ -346,7 +346,7 @@ export const AllFacets = () => {
 
   const filteredData = useMemo(() => {
     return fuzzysort.go(filter, data?.sort(byPriority) ?? [], {
-      keys: ["name", "valueType"],
+      keys: ["name", "valueType", "id"],
       all: filter.length == 0,
       limit: 50,
     });
