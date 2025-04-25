@@ -3,6 +3,7 @@ import { getTrackingFieldPopularity } from "../../lib/datalayer/api";
 import { useFacetMap } from "../../hooks/searchHooks";
 import { useMemo } from "react";
 import { isDefined } from "../../utils";
+import { FacetCard } from "../../components/FacetCard";
 
 export const PopularFacetsView = () => {
   const { data } = useSWR("/api/facets", getTrackingFieldPopularity);
@@ -15,6 +16,7 @@ export const PopularFacetsView = () => {
         if (!facet) return null;
         return {
           ...facet,
+          id: parseInt(facetId),
           count,
         };
       })
@@ -33,19 +35,7 @@ export const PopularFacetsView = () => {
 
       <div className="grid gap-4">
         {popularFacets.map((facet, i) => (
-          <div
-            key={i}
-            className="bg-white rounded-lg shadow-xs p-4 hover:shadow-md transition-shadow duration-200"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-700">
-                {facet.name}
-              </h2>
-              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                {facet.count.toFixed(2)}
-              </span>
-            </div>
-          </div>
+          <FacetCard key={i} facet={facet} />
         ))}
       </div>
     </div>
