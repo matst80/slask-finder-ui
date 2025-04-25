@@ -162,7 +162,7 @@ export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
   });
 
   if (ignoredFacets != null && ignoredFacets.length > 0) {
-    ignoredFacets.forEach((value) => result.append("ignore", String(value)));
+    ignoredFacets.forEach((value) => result.append("sf", String(value)));
   }
 
   string

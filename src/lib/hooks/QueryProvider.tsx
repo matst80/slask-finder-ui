@@ -68,7 +68,7 @@ const splitCategoryFacets = (facets: Facet[]): [KeyFacet[], Facet[]] => {
 export const QueryProvider = ({
   initialQuery,
   children,
-  ignoreFacets: initialIgnoredFacets,
+  ignoreFacets,
   loadFacets = true,
   ref,
 }: PropsWithChildren<{
@@ -77,9 +77,6 @@ export const QueryProvider = ({
   loadFacets?: boolean;
   ref?: React.Ref<QueryProviderRef>;
 }>) => {
-  const [ignoreFacets, setIgnoreFacets] = useState<number[] | undefined>(
-    initialIgnoredFacets
-  );
   const [queryHistory, setQueryHistory] = useState<HistoryQuery[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingFacets, setIsLoadingFacets] = useState(false);
@@ -244,7 +241,7 @@ export const QueryProvider = ({
         setPageSize,
         setSort,
         setStock,
-        setIgnoreFacets,
+
         queryHistory,
         categoryFacets,
         setTerm,

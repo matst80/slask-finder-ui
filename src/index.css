@@ -3,19 +3,39 @@
 @theme {
   --animate-cart-add: cartAdd 1s ease-out;
   --animate-cart-open: cartAdd 0.5s ease-out;
+  --animate-pop: pop 0.3s ease-out;
 
   @keyframes cartAdd {
     0% {
       transform: scale(0.8);
       opacity: 0;
     }
+
     20% {
       transform: scale(1.1);
       opacity: 1;
     }
+
     100% {
       transform: scale(1);
       opacity: 1;
+    }
+  }
+
+  @keyframes pop {
+    0% {
+      opacity: 0;
+      transform: scale(0.8, 0.8) translate(0, 50%);
+    }
+
+    80% {
+      opacity: 1;
+      transform: scale(1.1, 1.1) translate(0, -10%);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale(1, 1) translate(0, 0);
     }
   }
 }
@@ -29,6 +49,7 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
+
   *,
   ::after,
   ::before,
@@ -39,25 +60,25 @@
 }
 
 :root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
 
-    color: #242424;
-    background-color: #fefefe;
+  color: #242424;
+  background-color: #fefefe;
 
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 input[type="number"] {
-    -moz-appearance: textfield;
+  -moz-appearance: textfield;
 }

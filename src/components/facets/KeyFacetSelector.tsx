@@ -1,8 +1,9 @@
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp, ChevronDown, Star } from "lucide-react";
 import { useState, useMemo } from "react";
 import { KeyFacet } from "../../lib/types";
 import { useQueryKeyFacet } from "../../lib/hooks/useQueryKeyFacet";
 import { cm } from "../../utils";
+import { useKeyFacetValuePopularity } from "../../hooks/popularityHooks";
 
 const toSorted = (values: Record<string, number>, selected: Set<string>) =>
   Object.entries(values)
@@ -22,6 +23,7 @@ export const KeyFacetSelector = ({
 }: KeyFacet & { defaultOpen: boolean; disabled?: boolean }) => {
   const { values } = result;
   const { filter: filterValue, addValue, removeValue } = useQueryKeyFacet(id);
+
   const [filter, setFilter] = useState("");
   const allSorted = useMemo(
     () => toSorted(values, filterValue),
@@ -38,7 +40,9 @@ export const KeyFacetSelector = ({
   }, [allSorted, filter, filterValue]);
   const [open, setOpen] = useState(defaultOpen);
   const [expanded, setExpanded] = useState(false);
-
+  const { data: popularValues } = useKeyFacetValuePopularity(
+    open ? id : undefined
+  );
   const toShow = expanded ? filtered : filtered.slice(0, 10);
 
   return (
@@ -73,31 +77,43 @@ export const KeyFacetSelector = ({
               onChange={(e) => setFilter(e.target.value)}
             />
           )}
-          {toShow.map(({ value, count }) => (
-            <label
-              key={value}
-              className="flex items-center line-clamp-1 text-ellipsis justify-between p-1 text-sm rounded-md hover:bg-gray-100"
-            >
-              <div>
-                <input
-                  type="checkbox"
-                  id={value}
-                  value={value}
-                  checked={filterValue.has(value)}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    if (checked) {
-                      addValue(value);
-                    } else {
-                      removeValue(value);
-                    }
-                  }}
-                />
-                <span className="ml-2 text-gray-700">{value}</span>
-              </div>
-              <em className="text-xs text-gray-600">({count})</em>
-            </label>
-          ))}
+          {toShow.map(({ value, count }) => {
+            const popularityIndex =
+              popularValues?.findIndex((d) => d.value === value) ?? -1;
+            return (
+              <label
+                key={value}
+                className="flex items-center relative line-clamp-1 overflow-y-visible text-ellipsis justify-between p-1 text-sm rounded-md hover:bg-gray-100"
+              >
+                <div>
+                  <input
+                    type="checkbox"
+                    id={value}
+                    value={value}
+                    checked={filterValue.has(value)}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      if (checked) {
+                        addValue(value);
+                      } else {
+                        removeValue(value);
+                      }
+                    }}
+                  />
+                  <span className="ml-2 text-gray-700">{value}</span>
+                </div>
+                <em className="text-xs text-gray-600">
+                  {popularityIndex != -1 && popularityIndex < 4 && (
+                    <Star
+                      // fill="yellow"
+                      className="size-4 text-xs inline-flex mr-2 text-amber-300 animate-pop"
+                    />
+                  )}
+                  <span>({count})</span>
+                </em>
+              </label>
+            );
+          })}
 
           {allSorted.length > 9 && (
             <button

@@ -15,19 +15,26 @@ export const makeImageUrl = (pathOrUrl: string, size = "640") => {
   }
   const parts = pathOrUrl.split("/");
 
-  const [, section, blobId] = parts;
+  const [, section] = parts;
   if (section == "content") {
     return "https://elgiganten.se" + pathOrUrl;
   }
 
-  const url = `https://media.elkjop.com/assets/${section}/${blobId}`;
   const params = new URLSearchParams({
-    url,
     w: size,
     q: "75",
   });
 
-  return "https://www.elgiganten.se/_next/image?" + params.toString();
+  return `https://next-media.elkjop.com${pathOrUrl}?${params.toString()}`;
+
+  // const url = `https://media.elkjop.com/assets/${section}/${blobId}`;
+  // const params = new URLSearchParams({
+  //   url,
+  //   w: size,
+  //   q: "75",
+  // });
+
+  // return "https://www.elgiganten.se/_next/image?" + params.toString();
 };
 
 export const useFetchMutation = <T, U>(

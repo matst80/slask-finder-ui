@@ -198,9 +198,29 @@ export const getAdminRelations = () =>
     toJson<RelationGroup[]>(d)
   );
 
-export const getFunnelData = () => {
-  return fetch(`${baseUrl}/tracking/funnels`).then((d) => toJson<Funnel[]>(d));
+export const getFunnelData = () =>
+  fetch(`${baseUrl}/tracking/funnels`).then((d) => toJson<Funnel[]>(d));
+
+type FindRelated = {
+  id: number;
+  value: string;
 };
+
+type ValueScore = {
+  value: string;
+  score: number;
+};
+
+export const getKeyFacetPopularValues = (id: number | string) =>
+  fetch(`${baseUrl}/tracking/field-popularity/${id}`).then((d) =>
+    toJson<ValueScore[]>(d)
+  );
+
+export const getPossibleRelations = (data: FindRelated) =>
+  fetch(`${baseUrl}/api/find-related`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  }).then((d) => toJson<Record<number, number>>(d));
 
 export const updateRelations = (data: RelationGroup[]) =>
   fetch(`${baseUrl}/admin/relation-groups`, {
@@ -288,7 +308,7 @@ export async function toJson<T>(response: Response): Promise<T> {
   return response.json();
 }
 
-export const getRawData = (id: string) =>
+export const getRawData = (id: string | number) =>
   fetch(`${baseUrl}/api/get/${id}`).then((d) =>
     d.ok ? (d.json() as Promise<ItemDetail>) : Promise.reject(d)
   );

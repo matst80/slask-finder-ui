@@ -7,7 +7,7 @@ import {
 } from "../../adminHooks";
 import fuzzysort from "fuzzysort";
 import { byPriority } from "../../utils";
-import { Button } from "../../components/ui/button";
+import { Button, ButtonLink } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import {
   FilterIcon,
@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useQuery } from "../../lib/hooks/useQuery";
 import { FacetListItem } from "../../lib/types";
+import { getPossibleRelations } from "../../lib/datalayer/api";
 
 type KeyValues =
   | [true, Fuzzysort.Results]
@@ -49,21 +50,20 @@ const FacetValues = ({ id }: { id: number }) => {
   }
 
   if (!isKeyValues) {
-   
     const numericValues = values as { min: number; max: number };
     return (
       <div className="bg-slate-100 p-4 rounded-md">
-        {values== null ? (
+        {values == null ? (
           <div className="text-sm text-gray-500">No values</div>
         ) : (
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <span className="font-bold">Min:</span> {numericValues.min ?? 0}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <span className="font-bold">Min:</span> {numericValues.min ?? 0}
+            </div>
+            <div>
+              <span className="font-bold">Max:</span> {numericValues.max ?? 0}
+            </div>
           </div>
-          <div>
-            <span className="font-bold">Max:</span> {numericValues.max ?? 0}
-          </div>
-        </div>
         )}
       </div>
     );
@@ -90,11 +90,17 @@ const FacetValues = ({ id }: { id: number }) => {
                 variant="ghost"
                 size="icon"
                 className="hover:bg-slate-200"
+                onClick={() => {
+                  getPossibleRelations({ id, value }).then((relations) => {
+                    console.log(relations);
+                  });
+                }}
               >
                 <FilterIcon className="size-4" />
               </Button>
-              <Button
+              <ButtonLink
                 variant="ghost"
+                to={`/`}
                 size="icon"
                 className="hover:bg-slate-200"
                 onClick={() => {
@@ -106,7 +112,7 @@ const FacetValues = ({ id }: { id: number }) => {
                 }}
               >
                 <SearchIcon className="size-4" />
-              </Button>
+              </ButtonLink>
             </div>
           </li>
         ))}
@@ -277,9 +283,7 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
               }
               className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-sm font-medium text-gray-700">
-              Key facet
-            </span>
+            <span className="text-sm font-medium text-gray-700">Key facet</span>
           </label>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { useAddMultipleToCart } from "../../../hooks/cartHooks";
 import { Link } from "react-router-dom";
 import { RotateCcw, ShoppingBasketIcon } from "lucide-react";
 import { useBuilderSum } from "../useBuilderSum";
-import { useRecommendedWatt } from "../useComponentFilters";
+import { useRecommendedWatt } from "../useRecommendedWatt";
 
 export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
   const { setSelectedItems, selectedItems } = useBuilderContext();

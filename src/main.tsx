@@ -37,6 +37,7 @@ import { BuilderComponentFilter } from "./pages/builder/BuilderComponentFilter.t
 import { BuilderOverview } from "./pages/builder/BuilderOverview.tsx";
 import { componentRules } from "./pages/builder/rules.ts";
 import { BuilderComponentSelector } from "./pages/builder/BuilderComponentSelector.tsx";
+import { BuilderKit } from "./pages/builder/BuilderKit.tsx";
 
 const router = createBrowserRouter([
   {
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
       {
         path: "overview",
         element: <BuilderOverview />,
+      },
+      {
+        path: "kit",
+        element: <BuilderKit />,
       },
     ],
   },

@@ -12,7 +12,6 @@ type QueryContextType = {
   query: ItemsQuery;
   facets: Facet[];
   categoryFacets: KeyFacet[];
-  setIgnoreFacets: React.Dispatch<React.SetStateAction<number[] | undefined>>;
   hits: Item[];
   totalHits: number;
   isLoading: boolean;

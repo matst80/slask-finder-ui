@@ -11,6 +11,7 @@ import { cm } from "../../utils";
 import { FieldListItem } from "../../lib/types";
 import { TimeAgo } from "../../components/TimeAgo";
 import { LoaderCircle } from "lucide-react";
+import { Input } from "../../components/ui/input";
 
 const byCount = (a: FieldListItem, b: FieldListItem) => {
   return (b.itemCount ?? 0) - (a.itemCount ?? 0);
@@ -129,10 +130,9 @@ const FilteredFieldView = ({
           ))}
         </span>
       </div>
-      <input
+      <Input
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        className="border border-gray-300 rounded-md p-2"
         placeholder="Search fields..."
       />
       <ul>
