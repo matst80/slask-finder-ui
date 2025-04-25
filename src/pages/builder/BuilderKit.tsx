@@ -40,13 +40,15 @@ const matchComponent = (
   item: Item,
   allComponents: Component[]
 ): ItemWithComponentId | undefined => {
-  for (const { filter, id } of allComponents) {
+  for (const { filter, id, parentId } of allComponents) {
     const matchesStrings = filter.string?.every(({ id, value }) =>
       matchValue(item.values[id], value)
     );
     if (matchesStrings) {
-      console.log("matchesStrings", matchesStrings, item.id, id);
-      return { ...item, componentId: id };
+      return { ...item, componentId: id, parentId };
+    }
+    if (filter.range != null && filter.range.length > 0) {
+      console.warn("has range, and it's not handled yet", filter.range);
     }
   }
   return undefined;

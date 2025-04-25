@@ -36,6 +36,7 @@ export type Component = {
   title: string;
   id: number;
   requires?: number[];
+  parentId?: number;
   ignoreIfComponentSelected?: number;
   startingText?: string;
   order?: number[];

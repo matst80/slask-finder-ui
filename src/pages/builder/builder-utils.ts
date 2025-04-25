@@ -62,7 +62,8 @@ export const flattenComponents = (rule: Rule): Component[] => {
   if (rule.type === "selection") {
     return rule.options
       .flatMap(flattenComponents)
-      .filter((d) => d.type === "component");
+      .filter((d) => d.type === "component")
+      .map((d) => ({ ...d, parentId: rule.id }));
   }
   return [rule];
 };
