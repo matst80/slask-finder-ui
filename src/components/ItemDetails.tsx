@@ -28,6 +28,7 @@ import { useQuery } from "../lib/hooks/useQuery";
 import { trackAction } from "../lib/datalayer/beacons";
 import { Properties } from "./Properties";
 import { StockList } from "./StockList";
+import { Link } from "react-router-dom";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -327,21 +328,37 @@ const CartAnimation = ({
 };
 
 const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
+  const { setQuery } = useQuery();
   const parts = useMemo(() => {
-    return [values[10], values[11], values[12], values[13]].filter(
-      (d) => d != null && typeof d === "string" && d.length > 0
-    );
+    return [10, 11, 12, 13]
+      .map((id) => ({ id, value: values[id] }))
+      .filter(
+        (d) =>
+          d.value != null && typeof d.value === "string" && d.value.length > 0
+      );
   }, [values]);
   return (
     <div className="flex items-center mb-4">
-      {parts.map((part, idx) => (
-        <span
+      {parts.map(({ id, value }, idx) => (
+        <Link
+          to="/"
           key={idx}
+          onClick={() => {
+            setQuery({
+              page: 0,
+              string: [
+                {
+                  id,
+                  value: [String(value)],
+                },
+              ],
+            });
+          }}
           className="text-sm text-gray-500 hover:text-blue-600 cursor-pointer"
         >
-          {part}
+          {value}
           {idx < parts.length - 1 && <span className="mx-2">/</span>}
-        </span>
+        </Link>
       ))}
     </div>
   );
