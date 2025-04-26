@@ -164,8 +164,9 @@ export const BuilderOverview = () => {
         )}
         <Button
           variant="default"
+          size="lg"
           disabled={isMutating}
-          className="line-clamp-1 text-ellipsis flex items-center justify-center"
+          className="line-clamp-1 text-ellipsis flex items-center justify-center my-6"
           onClick={async () => {
             addToCart(selectedItems);
           }}

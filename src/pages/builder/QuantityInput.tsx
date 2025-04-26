@@ -62,7 +62,7 @@ export const QuantityInput = ({
       <Button
         type="button"
         variant="ghost"
-        size="sm"
+        size="small-icon"
         className="p-1 border-r aspect-square rounded-none hover:bg-gray-100 disabled:opacity-50"
         onClick={decrement}
         disabled={quantity <= minQuantity}
@@ -75,7 +75,7 @@ export const QuantityInput = ({
         type="text"
         value={quantity}
         onChange={handleInputChange}
-        className="w-12 text-center focus:outline-none py-1"
+        className="w-8 text-center text-sm focus:outline-none py-0.5"
         min={minQuantity}
         max={maxQuantity}
         aria-label="Quantity"
@@ -84,7 +84,7 @@ export const QuantityInput = ({
       <Button
         type="button"
         variant="ghost"
-        size="sm"
+        size="small-icon"
         className="p-1 border-l aspect-square rounded-none hover:bg-gray-100 disabled:opacity-50"
         onClick={increment}
         disabled={quantity >= maxQuantity}

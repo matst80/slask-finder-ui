@@ -71,4 +71,5 @@ const sizeStyles = {
   sm: "px-3 py-1 text-sm",
   lg: "px-6 py-3 text-lg",
   icon: "size-10 flex items-center justify-center",
+  "small-icon": "size-8 flex items-center justify-center",
 };
