@@ -104,7 +104,7 @@
   }
 
   @media(prefers-reduced-motion: no-preference) {
-    @supports (animation-timeline: scroll()) {
+    @supports (animation-timeline: view()) {
       .animating-element {
         animation: animate-in ease-in forwards,
           animate-out ease-out forwards;
