@@ -139,8 +139,8 @@ export const ResultItemInner = ({
   disclaimer,
   advertisingText,
 }: PropsWithChildren<Item>) => {
-  const hasRating = values["6"] != null && values["7"] != null;
-  const soldBy = values["9"];
+  const hasRating = values?.["6"] != null && values?.["7"] != null;
+  const soldBy = values?.["9"];
   return (
     <>
       <div className="relative pt-4 px-4">
@@ -153,7 +153,7 @@ export const ResultItemInner = ({
             className="size-16 object-contain absolute top-4 right-4 drop-shadow-lg"
           />
         )}
-        {values["10"] == "Outlet" && (
+        {values?.["10"] == "Outlet" && (
           <img
             className="size-16 object-contain absolute top-4 left-4 drop-shadow-lg"
             src="https://www.elgiganten.se/content/SE/outlet/outlet.svg"
@@ -165,11 +165,11 @@ export const ResultItemInner = ({
           {title}
         </h2>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap justify-between gap-2">
           {hasRating && (
             <Stars
-              rating={Number(values["6"]) / 10}
-              numberOfRatings={Number(values["7"])}
+              rating={Number(values?.["6"]) / 10}
+              numberOfRatings={Number(values?.["7"])}
             />
           )}
           {lastUpdate != null && lastUpdate > 0 && (
@@ -185,10 +185,7 @@ export const ResultItemInner = ({
               .split("\n")
               .filter((d) => d?.length)
               .map((bp, idx) => (
-                <li
-                  key={`${bp}-${idx}`}
-                  className="line-clamp-1 text-ellipsis"
-                >
+                <li key={`${bp}-${idx}`} className="line-clamp-1 text-ellipsis">
                   {bp}
                 </li>
               ))}

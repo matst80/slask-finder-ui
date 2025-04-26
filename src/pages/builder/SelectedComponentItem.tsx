@@ -1,4 +1,4 @@
-import { Plus, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { ResultItemInner } from "../../components/ResultItem";
 import { Button } from "../../components/ui/button";
 import { trackClick } from "../../lib/datalayer/beacons";
@@ -6,6 +6,7 @@ import { useImpression } from "../../lib/hooks/useImpression";
 import { ItemWithComponentId } from "./builder-types";
 import { useBuilderContext } from "./useBuilderContext";
 import { Link, useNavigate } from "react-router-dom";
+import { QuantityInput } from "./QuantityInput";
 
 export const SelectedComponentItem = ({
   componentId,
@@ -19,6 +20,24 @@ export const SelectedComponentItem = ({
   const navigate = useNavigate();
   const trackItem = () => trackClick(item.id, position);
 
+  const setQuantity = (value: number) => {
+    setSelectedItems((prev) =>
+      prev.flatMap((i) => {
+        if (i.id === item.id) {
+          return value > 0
+            ? [
+                {
+                  ...i,
+                  quantity: value,
+                },
+              ]
+            : [];
+        }
+        return [i];
+      })
+    );
+  };
+
   return (
     <Link
       ref={watch({ id: Number(item.id), position })}
@@ -28,29 +47,13 @@ export const SelectedComponentItem = ({
       onClick={trackItem}
     >
       <ResultItemInner {...item}>
-        {quantity < maxQuantity && (
-          <Button
-            variant="default"
-            size="icon"
-            className="absolute bottom-3 right-3"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedItems((prev) => {
-                const newItems = [...prev];
-                const index = newItems.findIndex(
-                  (i) => i.componentId === componentId
-                );
-                if (index !== -1) {
-                  newItems[index].quantity = quantity + 1;
-                }
-                return newItems;
-              });
-            }}
-          >
-            <Plus className="size-5" />
-          </Button>
-        )}
-        <span className="text-lg absolute top-3 left-3">x{quantity}</span>
+        <QuantityInput
+          value={quantity}
+          onChange={setQuantity}
+          maxQuantity={maxQuantity}
+          className="top-3 left-3 absolute"
+        />
+
         <Button
           variant="secondary"
           size="icon"

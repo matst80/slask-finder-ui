@@ -1,9 +1,8 @@
 import { PropsWithChildren } from "react";
 import { useBuilderContext } from "../useBuilderContext";
-import { Button, ButtonLink } from "../../../components/ui/button";
-import { useAddMultipleToCart } from "../../../hooks/cartHooks";
+import { ButtonLink } from "../../../components/ui/button";
 import { Link } from "react-router-dom";
-import { RotateCcw, ShoppingBasketIcon } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useBuilderSum } from "../useBuilderSum";
 import { useRecommendedWatt } from "../useRecommendedWatt";
 
@@ -11,7 +10,7 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
   const { setSelectedItems, selectedItems } = useBuilderContext();
   const neededPsuWatt = useRecommendedWatt();
   const sum = useBuilderSum();
-  const { trigger: addToCart, isMutating } = useAddMultipleToCart();
+
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200 bg-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
@@ -49,19 +48,6 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
               <RotateCcw className="size-5 md:hidden" />
               <span className="hidden md:inline-flex">Börja om</span>
             </ButtonLink>
-            <Button
-              variant="default"
-              disabled={isMutating}
-              className="line-clamp-1 text-ellipsis flex items-center justify-center"
-              onClick={async () => {
-                addToCart(selectedItems);
-              }}
-            >
-              <ShoppingBasketIcon className="size-5 md:hidden" />
-              <span className="hidden md:inline-flex">
-                Lägg till i kundvagn
-              </span>
-            </Button>
           </div>
         </div>
       </div>

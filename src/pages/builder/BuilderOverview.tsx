@@ -1,7 +1,7 @@
-import { ButtonLink } from "../../components/ui/button";
+import { Button, ButtonLink } from "../../components/ui/button";
 import { ImpressionProvider } from "../../lib/hooks/ImpressionProvider";
 import { useBuilderContext } from "./useBuilderContext";
-import { Plus, RefreshCw } from "lucide-react";
+import { Plus, RefreshCw, ShoppingBasketIcon } from "lucide-react";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { useFacetMap } from "../../hooks/searchHooks";
 import { useMemo } from "react";
@@ -9,6 +9,7 @@ import { isDefined } from "../../utils";
 import { flattenComponents } from "./builder-utils";
 import { useBuilderStep } from "./useBuilderStep";
 import { SelectedComponentItem } from "./SelectedComponentItem";
+import { useAddMultipleToCart } from "../../hooks/cartHooks";
 
 const SpecificationSummary = () => {
   const { selectedItems, rules } = useBuilderContext();
@@ -71,7 +72,7 @@ const SpecificationSummary = () => {
 export const BuilderOverview = () => {
   const { selectedItems, rules, components } = useBuilderContext();
   const [unselectedComponents] = useBuilderStep(0);
-
+  const { trigger: addToCart, isMutating } = useAddMultipleToCart();
   return (
     <>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-20">
@@ -161,6 +162,17 @@ export const BuilderOverview = () => {
             </div>
           </div>
         )}
+        <Button
+          variant="default"
+          disabled={isMutating}
+          className="line-clamp-1 text-ellipsis flex items-center justify-center"
+          onClick={async () => {
+            addToCart(selectedItems);
+          }}
+        >
+          <ShoppingBasketIcon className="size-5 md:hidden" />
+          <span className="hidden md:inline-flex">Lägg till i kundvagn</span>
+        </Button>
         {selectedItems.length > 0 && (
           <p className="bg-blue-50 p-4 rounded-lg my-6">
             <SpecificationSummary />

@@ -3,9 +3,11 @@ import { Star } from "lucide-react";
 export const Stars = ({
   rating,
   numberOfRatings,
+  showText = false,
 }: {
   rating: number;
   numberOfRatings: number;
+  showText?: boolean;
 }) => {
   return (
     <div className="flex items-center">
@@ -17,9 +19,11 @@ export const Stars = ({
           }`}
         />
       ))}
-      <span className="ml-2 text-sm text-gray-600">
-        {rating.toFixed(1)} ({numberOfRatings})
-      </span>
+      {showText && (
+        <span className="ml-2 text-sm text-gray-600">
+          {rating.toFixed(1)} ({numberOfRatings})
+        </span>
+      )}
     </div>
   );
 };
