@@ -71,7 +71,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                     </div>
                   </div>
                   <Button
-                    variant={isSelected ? "danger" : "default"}
+                    variant={isSelected ? "outline" : "default"}
                     onClick={() => {
                       setSelectedItems((prev) => [
                         ...prev.filter((d) => d.componentId != componentId),
