@@ -3,15 +3,19 @@ import { Price } from "../../components/Price";
 import { Properties } from "../../components/Properties";
 import { makeImageUrl } from "../../utils";
 import { StockList } from "../../components/StockList";
-import { Button } from "../../components/ui/button";
+import { Button, ButtonLink } from "../../components/ui/button";
 import { useBuilderContext } from "./useBuilderContext";
 import { ItemWithComponentId } from "./builder-types";
 import { trackAction, trackClick } from "../../lib/datalayer/beacons";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { NextComponentButton } from "./NextComponentButton";
+import { useBuilderStep } from "./useBuilderStep";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
   const { setSelectedItems, selectedItems } = useBuilderContext();
+  const [unselectedComponents, nextComponent] = useBuilderStep(
+    details.componentId
+  );
   if (!details) return null;
   const {
     title,
@@ -87,7 +91,28 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                     {isSelected ? "Remove component" : "Select component"}
                   </Button>
                 </div>
-
+                {unselectedComponents.length > 0 && isSelected && (
+                  <div className="mt-6 animate-pop">
+                    <div className="flex flex-col flex-wrap w-full md:flex-row gap-2 mt-2">
+                      {unselectedComponents
+                        .filter((d) => d.id != componentId)
+                        .map((item, i) => (
+                          <ButtonLink
+                            to={`/builder/${item.type}/${item.id}`}
+                            variant={
+                              item.id === nextComponent?.id
+                                ? "default"
+                                : "outline"
+                            }
+                            className="flex items-center gap-2"
+                            key={i}
+                          >
+                            {item.title}
+                          </ButtonLink>
+                        ))}
+                    </div>
+                  </div>
+                )}
                 <StockList stock={stock} stockLevel={stockLevel} />
               </div>
             )}
@@ -101,9 +126,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
           </div>
         </div>
       </div>
-      <BuilderFooterBar>
-        <NextComponentButton componentId={componentId} />
-      </BuilderFooterBar>
+      <BuilderFooterBar />
     </>
   );
 };

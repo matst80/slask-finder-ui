@@ -22,7 +22,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md max-h-screen overflow-y-auto animate-cart-open"
+        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md animate-cart-open"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
@@ -41,7 +41,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
             {isLoading ? (
               <div>Loading...</div>
             ) : (
-              <ul className="divide-y divide-gray-200">
+              <ul className="divide-y divide-gray-200 overflow-y-auto max-h-screen md:max-h-[60vh]">
                 {items.map((item) => (
                   <li
                     key={item.id + item.sku}

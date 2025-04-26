@@ -6,7 +6,8 @@ export const useBuilderSum = () => {
   return useMemo(
     () =>
       selectedItems.reduce(
-        (sum, d) => sum + (d.values[4] ? Number(d.values[4]) : 0),
+        (sum, d) =>
+          sum + (d.values[4] ? Number(d.values[4]) : 0) * (d.quantity ?? 1),
         0
       ) / 100,
     [selectedItems]

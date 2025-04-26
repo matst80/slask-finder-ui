@@ -31,9 +31,9 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
           {/* Build progress indicator */}
           <Link
             to="/builder/overview"
-            className="hidden lg:block text-lg font-bold font-elkjop uppercase tracking-tight"
+            className="hidden lg:block text-lg font-bold tracking-tight"
           >
-            Antal valda: {selectedItems.length}
+            Show overview: {selectedItems.length} items
           </Link>
 
           {/* Action buttons */}
