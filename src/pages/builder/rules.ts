@@ -805,6 +805,15 @@ export const componentRules: Rule[] = [
         ].filter(isDefined);
       }
     },
+    maxQuantity: (selectedItems) => {
+      const motherboardSlots = selectedItems.find(
+        (d) => d.componentId === MOTHERBOARD
+      )?.values[36245];
+      if (motherboardSlots == null) return 0;
+      const m2Slots = asNumber(motherboardSlots);
+      if (isNaN(m2Slots)) return 0;
+      return m2Slots;
+    },
     //nextComponentId: 12,
     topFilters: [31508, 32120, 32194, 32195, 36274, 36279],
     //topFilters: [31508, 32194, 32195],
