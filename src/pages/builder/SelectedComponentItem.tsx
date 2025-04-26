@@ -58,6 +58,7 @@ export const SelectedComponentItem = ({
         <Button
           variant="secondary"
           size="icon"
+          title="Change component"
           className="absolute top-3 right-3"
           onClick={(e) => {
             e.stopPropagation();
