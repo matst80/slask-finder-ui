@@ -70,25 +70,27 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                       <Price values={values} disclaimer={disclaimer} />
                     </div>
                   </div>
-                  <Button
-                    variant={isSelected ? "outline" : "default"}
-                    onClick={() => {
-                      setSelectedItems((prev) => [
-                        ...prev.filter((d) => d.componentId != componentId),
-                        ...(isSelected ? [] : [details]),
-                      ]);
-                      requestAnimationFrame(() => {
-                        trackClick(id, 1);
-                        trackAction({
-                          item: id,
-                          action: "select_component",
-                          reason: `builder_${componentId}`,
+                  <div className="flex items-end justify-end">
+                    <Button
+                      variant={isSelected ? "outline" : "default"}
+                      onClick={() => {
+                        setSelectedItems((prev) => [
+                          ...prev.filter((d) => d.componentId != componentId),
+                          ...(isSelected ? [] : [details]),
+                        ]);
+                        requestAnimationFrame(() => {
+                          trackClick(id, 1);
+                          trackAction({
+                            item: id,
+                            action: "select_component",
+                            reason: `builder_${componentId}`,
+                          });
                         });
-                      });
-                    }}
-                  >
-                    {isSelected ? "Remove component" : "Select component"}
-                  </Button>
+                      }}
+                    >
+                      {isSelected ? "Remove component" : "Select component"}
+                    </Button>
+                  </div>
                 </div>
                 {unselectedComponents.length > 0 && isSelected && (
                   <div className="mt-6 animate-pop">
