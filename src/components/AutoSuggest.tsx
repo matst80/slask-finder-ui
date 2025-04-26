@@ -418,24 +418,30 @@ const ContentHit = ({ name, description, picture, url }: SuggestedContent) => {
     </div>
   );
 };
-const Refinement = ({ facet, type }: QueryRefinement) => {
+const Refinement = ({
+  values,
+  facetName,
+  facetId,
+  flat,
+  query,
+}: QueryRefinement) => {
   const { value } = useSuggestions();
   const { setQuery } = useQuery();
   const updateQuery = (value: string) => () => {
-    // setQuery((prev) => ({
-    //   ...prev,
-    //   string: [{ id: facet.id, value: facet.values[0]!.value }],
-    //   query: undefined,
-    //   stock: [],
-    //   page: 0,
-    // }));
+    setQuery({
+      string: [{ id: facetId, value: [value] }],
+      query: flat ? undefined : query,
+      stock: [],
+      page: 0,
+    });
   };
   return (
     <div className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full">
       <Lightbulb className="size-5" />
       <span>{value}</span>
       <div className="flex gap-2 flex-nowrap overflow-x-auto">
-        {facet.values.map(({ value, hits }) => (
+        {facetName}:
+        {values.map(({ value, hits }) => (
           <button
             key={value}
             className="shrink-0 border line-clamp-1 text-ellipsis border-gray-200 bg-gray-100/50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"

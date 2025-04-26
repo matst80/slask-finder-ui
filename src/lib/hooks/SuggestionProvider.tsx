@@ -188,7 +188,8 @@ export const SuggestionProvider = ({
   useEffect(() => {
     const { items, facets } = data;
     const result: SuggestResultItem[] = [];
-    for (const { type, maxAmount } of config) {
+    for (const typeConfig of config) {
+      const { type, maxAmount } = typeConfig;
       switch (type) {
         case "product":
           if (items.length > 0) {
@@ -216,14 +217,40 @@ export const SuggestionProvider = ({
           break;
         case "refinement":
           if (facets.length > 0) {
-            const refinements = facets.slice(0, maxAmount).map(
-              (item) =>
-                ({
-                  //query: value ?? "",
-                  facet: item,
-                  type: "refinement",
-                } satisfies SuggestResultItem)
-            );
+            const refinements = facets.slice(0, maxAmount).flatMap((item) => {
+              const { flat, maxHits } = typeConfig.facetConfig[item.id] ?? {
+                flat: false,
+                maxHits: 2,
+              };
+              if (flat) {
+                const result = fuzzysort.go(value ?? "", item.values, {
+                  limit: maxHits,
+                  keys: ["value"],
+                  threshold: 0.6,
+                });
+                console.log("result", result);
+                if (result.length > 0) {
+                  const values = result.map((d) => d.obj);
+                  return {
+                    facetId: item.id,
+                    facetName: item.name,
+                    values,
+                    query: value ?? "",
+                    flat: true,
+                    type: "refinement",
+                  } satisfies SuggestResultItem;
+                }
+                return [];
+              }
+              return {
+                //query: value ?? "",
+                facetId: item.id,
+                facetName: item.name,
+                values: item.values,
+                flat: false,
+                type: "refinement",
+              } satisfies SuggestResultItem;
+            });
             result.push(...refinements);
           }
           break;

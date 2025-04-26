@@ -35,11 +35,25 @@ export type ResultItemType = SuggestResultItem["type"];
 
 export type QueryRefinement = {
   type: "refinement";
-  facet: ConvertedFacet;
+  facetId: number;
+  facetName: string;
+  values: {
+    value: string;
+    hits: number;
+  }[];
+  flat: boolean;
   query?: string;
 };
 
-export type SuggestionConfig = { type: ResultItemType; maxAmount: number }[];
+type BaseConfig = { type: "product" | "query" | "content"; maxAmount: number };
+
+type RefinementConfig = {
+  type: "refinement";
+  maxAmount: number;
+  facetConfig: Record<number, { flat: boolean; maxHits: number }>;
+};
+
+export type SuggestionConfig = (BaseConfig | RefinementConfig)[];
 
 export type SuggestedContent = ContentRecord & { type: "content" };
 

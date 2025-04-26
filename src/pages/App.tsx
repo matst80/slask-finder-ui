@@ -13,7 +13,16 @@ function App() {
     <SuggestionProvider
       config={[
         { type: "query", maxAmount: 5 },
-        { type: "refinement", maxAmount: 5 },
+        {
+          type: "refinement",
+          maxAmount: 10,
+          facetConfig: {
+            2: { flat: true, maxHits: 2 },
+            31158: { flat: false, maxHits: 3 },
+            10: { flat: true, maxHits: 2 },
+            11: { flat: true, maxHits: 1 },
+          },
+        },
         { type: "product", maxAmount: 20 },
         { type: "content", maxAmount: 5 },
       ]}
