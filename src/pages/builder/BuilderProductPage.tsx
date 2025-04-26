@@ -8,7 +8,6 @@ import { useBuilderContext } from "./useBuilderContext";
 import { ItemWithComponentId } from "./builder-types";
 import { trackAction, trackClick } from "../../lib/datalayer/beacons";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
-import { NextComponentButton } from "./NextComponentButton";
 import { useBuilderStep } from "./useBuilderStep";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
