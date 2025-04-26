@@ -54,7 +54,7 @@ export const InfiniteHitList = ({
         </Fragment>
       ))}
 
-      <div ref={endRef} className="col-span-full h-20"></div>
+      <div ref={endRef}></div>
     </>
   );
 };

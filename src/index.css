@@ -109,6 +109,7 @@
         animation: animate-in ease-in forwards,
           animate-out ease-out forwards;
         animation-timeline: view();
+        animation-duration: 0.5s, 0.5s;
         animation-range: entry, exit;
       }
     }
