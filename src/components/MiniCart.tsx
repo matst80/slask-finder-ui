@@ -1,10 +1,11 @@
-import { Minus, Plus, ShoppingCartIcon, X } from "lucide-react";
+import { ShoppingCartIcon, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { makeImageUrl } from "../utils";
 import { useCart, useChangeQuantity } from "../hooks/cartHooks";
 import { ButtonLink } from "./ui/button";
 import { Link } from "react-router-dom";
+import { QuantityInput } from "../pages/builder/QuantityInput";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -22,7 +23,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md animate-cart-open"
+        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-[80vw] md:max-w-[60vw] lg:max-w-[40vw] animate-cart-open"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
@@ -72,31 +73,17 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                         )}
                       </p>
                     </div>
-                    <div className="flex items-center">
-                      <button
-                        onClick={() => {
-                          changeQuantity({
-                            id: item.id,
-                            quantity: item.qty - 1,
-                          });
-                        }}
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        <Minus size={16} />
-                      </button>
-                      <span className="mx-2 text-gray-700">{item.qty}</span>
-                      <button
-                        onClick={() => {
-                          changeQuantity({
-                            id: item.id,
-                            quantity: item.qty + 1,
-                          });
-                        }}
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        <Plus size={16} />
-                      </button>
-                    </div>
+                    <QuantityInput
+                      value={item.qty}
+                      onChange={(value) => {
+                        changeQuantity({
+                          id: item.id,
+                          quantity: value,
+                        });
+                      }}
+                      minQuantity={0}
+                      maxQuantity={99}
+                    />
                   </li>
                 ))}
               </ul>
