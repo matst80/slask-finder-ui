@@ -218,7 +218,10 @@ const RelationGroupCarousel = ({
   const query = useMemo(() => makeQuery(group, values), [group, values]);
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div key={group.groupId} className="mb-2 border-b border-gray-200 pb-2">
+    <div
+      key={group.groupId}
+      className="mb-2 border-b border-gray-200 pb-2 animating-element"
+    >
       <button
         onClick={() => setOpen((p) => !p)}
         className={cm("text-xl font-bold transition-all", open ? "" : "")}
@@ -452,11 +455,11 @@ export const ItemDetails = (details: ItemDetail) => {
           <BreadCrumbs values={values} />
           <RelationGroups values={values} />
 
-          <div>
+          <div className="animating-element">
             <Properties values={details.values} />
           </div>
 
-          <div>
+          <div className="animating-element">
             <h3 className="text-2xl font-bold text-gray-900 border-b border-gray-200 pb-6 mb-8">
               Liknande produkter
             </h3>

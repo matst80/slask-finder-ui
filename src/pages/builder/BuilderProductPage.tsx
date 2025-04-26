@@ -121,10 +121,8 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
         </div>
 
         {/* Bottom Sections */}
-        <div className="mt-16 space-y-16 mb-20">
-          <div>
-            <Properties values={details.values} />
-          </div>
+        <div className="mt-16 space-y-16 mb-20 animating-element">
+          <Properties values={details.values} />
         </div>
       </div>
       <BuilderFooterBar />
