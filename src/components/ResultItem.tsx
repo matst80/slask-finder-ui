@@ -301,7 +301,7 @@ export const ResultItem = ({
       ref={watch({ id: Number(item.id), position })}
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
-      className="group bg-white md:shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
+      className="group bg-white md:shadow-xs hover:shadow-md transition-all duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
       onClick={trackItem}
     >
       <ResultItemInner {...item} />
