@@ -75,7 +75,7 @@
       transform: translateY(15%) scale(0.9);
     }
 
-    40% {
+    30% {
       opacity: 1;
       transform: translateY(0) scale(1);
     }

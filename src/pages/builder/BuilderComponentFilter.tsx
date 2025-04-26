@@ -40,7 +40,7 @@ const ComponentItem = (
       key={item.id}
       onClick={trackItem}
       className={cm(
-        "group bg-white md:shadow-xs text-left hover:shadow-md transition-all duration-300 relative snap-start flex-1 min-w-64 flex flex-col result-item bg-linear-to-br border-b border-gray-200 md:border-b-0",
+        "group bg-white md:shadow-xs text-left hover:shadow-md transition-all duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item bg-linear-to-br border-b border-gray-200 md:border-b-0",
         isSelected
           ? "from-blue-100 hover:from-blue-200"
           : "hover:from-white to-gray-50 hover:to-gray-10"
