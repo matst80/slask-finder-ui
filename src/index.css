@@ -72,7 +72,7 @@
   @keyframes animate-in {
     0% {
       opacity: 0;
-      transform: translateY(15%) scale(0.9);
+      transform: translateY(40px) scale(0.95);
     }
 
     30% {
@@ -99,7 +99,7 @@
 
     100% {
       opacity: 0;
-      transform: translateY(-15%) scale(0.9);
+      transform: translateY(-40px) scale(0.95);
     }
   }
 
