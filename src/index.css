@@ -106,11 +106,10 @@
   @media(prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: view()) {
       .animating-element {
-        animation: animate-in ease-in forwards,
-          animate-out ease-out forwards;
+        animation: animate-in ease-in forwards;
         animation-timeline: view();
-        animation-duration: auto auto;
-        animation-range: entry, exit;
+        animation-duration: auto;
+        animation-range: entry;
       }
     }
   }
