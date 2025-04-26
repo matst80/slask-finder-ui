@@ -16,7 +16,7 @@ export const FilterQuery = ({ show }: Props) => {
   return (
     <div
       className={cm(
-        "relative flex-1 mb-4 transition-all overflow-hidden",
+        "hidden md:block relative flex-1 mb-4 transition-all overflow-hidden",
         doShow ? "h-11 opacity-100" : "h-0 opacity-0"
       )}
     >
