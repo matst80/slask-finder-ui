@@ -14,11 +14,26 @@ const hasStock = (value?: string | null) => {
   return value != null && value != "0";
 };
 
+export const StockBalloon = ({
+  stock,
+  stockLevel,
+}: Pick<Item, "stock" | "stockLevel">) => {
+  const hasStoreStock = Object.entries(stock ?? {}).length > 0;
+  const hasOnlineStock = hasStock(stockLevel);
+  return (
+    <span
+      className={`size-2 rounded-full ${
+        hasStoreStock || hasOnlineStock ? "bg-green-500" : "bg-amber-500"
+      }`}
+    />
+  );
+};
+
 export const StockIndicator = ({
   stock,
   stockLevel,
-  showOnlyInstock = false,
-}: Pick<Item, "stock" | "stockLevel"> & { showOnlyInstock?: boolean }) => {
+  showOnlyInStock = false,
+}: Pick<Item, "stock" | "stockLevel"> & { showOnlyInStock?: boolean }) => {
   const {
     query: { stock: stockQuery },
   } = useQuery();
@@ -29,12 +44,12 @@ export const StockIndicator = ({
     stockOnLocation != null ? hasStock(stockOnLocation) : storesWithStock > 0;
   const hasOnlineStock = hasStock(stockLevel);
 
-  if (showOnlyInstock && !hasOnlineStock && !hasStoreStock) {
+  if (showOnlyInStock && !hasOnlineStock && !hasStoreStock) {
     return null;
   }
 
   return (
-    <div className="flex gap-1 justify-between">
+    <>
       {locationId != null ? (
         <span
           className={`inline-flex items-center line-clamp-1 text-ellipsis  gap-1.5 text-sm font-medium ${
@@ -51,21 +66,23 @@ export const StockIndicator = ({
             : "Slut i din butik"}
         </span>
       ) : (
-        <span
-          className={`inline-flex line-clamp-1 text-ellipsis items-center gap-1.5 text-sm font-medium relative ${
-            hasStoreStock ? "text-green-600" : "text-amber-600"
-          }`}
-        >
+        (!showOnlyInStock || hasStoreStock) && (
           <span
-            className={`size-2 rounded-full ${
-              hasStoreStock ? "bg-green-500" : "bg-amber-500"
+            className={`inline-flex line-clamp-1 text-ellipsis items-center gap-1.5 text-sm font-medium relative ${
+              hasStoreStock ? "text-green-600" : "text-amber-600"
             }`}
-          />
-          {storesWithStock} butiker
-        </span>
+          >
+            <span
+              className={`size-2 rounded-full ${
+                hasStoreStock ? "bg-green-500" : "bg-amber-500"
+              }`}
+            />
+            {storesWithStock} butiker
+          </span>
+        )
       )}
 
-      {showOnlyInstock && !hasOnlineStock ? null : (
+      {showOnlyInStock && !hasOnlineStock ? null : (
         <span
           className={`inline-flex items-center gap-1.5 text-sm font-medium ${
             hasOnlineStock ? "text-green-600" : "text-amber-600"
@@ -79,7 +96,7 @@ export const StockIndicator = ({
           {hasOnlineStock ? `Online: ${stockLevel}` : "Inte i lager"}
         </span>
       )}
-    </div>
+    </>
   );
 };
 
@@ -203,7 +220,7 @@ export const ResultItemInner = ({
 
         {children}
 
-        {values["10"] == "Outlet" && values["20"] != null && (
+        {values?.["10"] == "Outlet" && values?.["20"] != null && (
           <em className="block text-xs text-gray-500 italic">{values["20"]}</em>
         )}
         {soldBy != null && soldBy != "Elgiganten" && (
@@ -212,7 +229,7 @@ export const ResultItemInner = ({
           </em>
         )}
       </div>
-      <div className="mb-0 mt-auto px-4 pb-3">
+      <div className="mb-0 mt-auto px-4 pb-3 flex gap-1 justify-between">
         <StockIndicator stock={stock} stockLevel={stockLevel} />
       </div>
     </>
@@ -258,6 +275,17 @@ export const DataView = ({ item }: { item: Item }) => {
   return <Value value={item} />;
 };
 
+export const PlaceholderItem = () => {
+  return (
+    <Link
+      to={`#`}
+      className="group bg-white md:shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
+    >
+      <div className="min-h-[465px]"></div>
+    </Link>
+  );
+};
+
 export const ResultItem = ({
   position,
   ...item
@@ -273,7 +301,7 @@ export const ResultItem = ({
       ref={watch({ id: Number(item.id), position })}
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
-      className="group bg-white md:shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
+      className="group bg-white md:shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
       onClick={trackItem}
     >
       <ResultItemInner {...item} />

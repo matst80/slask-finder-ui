@@ -8,6 +8,12 @@ import {
   KeyFacet,
 } from "../types";
 
+export type AddPageResult = {
+  currentPage: number;
+  hasMorePages: boolean;
+  totalPages: number;
+};
+
 type QueryContextType = {
   query: ItemsQuery;
   facets: Facet[];
@@ -18,6 +24,7 @@ type QueryContextType = {
   isLoadingFacets: boolean;
   queryHistory: HistoryQuery[];
   setQuery: React.Dispatch<React.SetStateAction<ItemsQuery>>;
+  addPage: () => Promise<AddPageResult>;
   setPage: (page: number) => void;
   setPageSize: (pageSize: number) => void;
   setSort: (sort: string) => void;

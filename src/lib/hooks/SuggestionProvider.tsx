@@ -228,14 +228,14 @@ export const SuggestionProvider = ({
                   keys: ["value"],
                   threshold: 0.6,
                 });
-                console.log("result", result);
+
                 if (result.length > 0) {
                   const values = result.map((d) => d.obj);
                   return {
                     facetId: item.id,
                     facetName: item.name,
                     values,
-                    query: value ?? "",
+                    query: value ?? undefined,
                     flat: true,
                     type: "refinement",
                   } satisfies SuggestResultItem;
@@ -243,7 +243,7 @@ export const SuggestionProvider = ({
                 return [];
               }
               return {
-                //query: value ?? "",
+                query: value ?? undefined,
                 facetId: item.id,
                 facetName: item.name,
                 values: item.values,
@@ -269,6 +269,7 @@ export const SuggestionProvider = ({
       }
       setItems(result);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, config, facets, suggestions, popularQueries, contentResults]);
 
   return (

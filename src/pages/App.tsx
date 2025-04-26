@@ -1,7 +1,6 @@
 import { useFocusTracking } from "../hooks/appState";
 import { AutoSuggest } from "../components/AutoSuggest";
 import { CurrentFilters } from "../components/CurrentFilters";
-import { Paging } from "../components/Paging";
 import { ResultHeader } from "../components/ResultHeader";
 import { SearchResultList } from "../components/SearchResultList";
 import { Facets } from "../components/Facets";
@@ -24,10 +23,10 @@ function App() {
           },
         },
         { type: "product", maxAmount: 20 },
-        { type: "content", maxAmount: 5 },
+        //{ type: "content", maxAmount: 5 },
       ]}
     >
-      <div className="px-4 py-3 md:py-8 md:px-10">
+      <div className="px-4 py-3 md:py-8 md:px-10 max-w-[1920px] mx-auto">
         <div className="flex gap-2 items-center md:mb-6 sticky top-0 z-10 bg-white py-2 rounded-b-md">
           <AutoSuggest />
         </div>
@@ -39,7 +38,7 @@ function App() {
             <CurrentFilters />
             <ResultHeader />
             <SearchResultList />
-            <Paging />
+            {/* <Paging /> */}
           </main>
         </div>
       </div>

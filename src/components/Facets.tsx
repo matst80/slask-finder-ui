@@ -145,7 +145,7 @@ export const Facets = ({
   const [open, setOpen] = useState(false);
   const isDesktop = useScreenWidth(768);
 
-  if (isLoading) {
+  if (isLoading && facets.length === 0) {
     return (
       <aside className="w-full md:w-72 animate-pulse">
         <h2 className="text-lg font-semibold mb-4">Filter</h2>
@@ -206,7 +206,7 @@ const StoreSelector = () => {
       <option value="">Ingen butik</option>
       {sortedStores.map((store) => (
         <option key={store.id} value={store.id}>
-          {store.displayName.replace("Elgiganten ", "")}
+          {store.displayName}
         </option>
       ))}
     </select>

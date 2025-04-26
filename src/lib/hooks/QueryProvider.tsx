@@ -23,7 +23,7 @@ import {
   toQuery,
 } from "../../hooks/searchHooks";
 import { mergeFilters } from "./queryUtils";
-import { QueryContext } from "./queryContext";
+import { AddPageResult, QueryContext } from "./queryContext";
 
 const facetCache = new Map<string, Facet[]>();
 const itemsCache = new Map<string, Item[]>();
@@ -77,6 +77,7 @@ export const QueryProvider = ({
   loadFacets?: boolean;
   ref?: React.Ref<QueryProviderRef>;
 }>) => {
+  const [virtualPage, setVirtualPage] = useState(0);
   const [queryHistory, setQueryHistory] = useState<HistoryQuery[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingFacets, setIsLoadingFacets] = useState(false);
@@ -167,7 +168,7 @@ export const QueryProvider = ({
     const t = setTimeout(() => {
       setFacetsKey(facetQueryToHash(query));
     }, 50);
-
+    setVirtualPage(query.page ?? 0);
     setItemsKey(queryToHash(query));
     return () => {
       clearTimeout(t);
@@ -209,6 +210,33 @@ export const QueryProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [facetsKey, loadFacets]);
 
+  const addPage = useCallback(() => {
+    const virtualQuery = { ...query, page: virtualPage + 1 };
+
+    const virtualKey = queryToHash(virtualQuery);
+    return api
+      .streamItems(toQuery(virtualQuery))
+      .then((data): AddPageResult => {
+        if (data?.items == null) {
+          return {
+            currentPage: virtualPage,
+            hasMorePages: false,
+            totalPages: virtualPage,
+          };
+        }
+
+        itemsCache.set(virtualKey, data.items);
+        setVirtualPage(data.page);
+        setHits((prev) => [...prev, ...data.items]);
+        return {
+          currentPage: data.page,
+          hasMorePages:
+            data.page < (data.totalHits ?? 0) / (data.pageSize ?? 20),
+          totalPages: Math.ceil((data.totalHits ?? 0) / (data.pageSize ?? 20)),
+        };
+      });
+  }, [query, virtualPage]);
+
   useEffect(() => {
     if (itemsKey == null) {
       return;
@@ -241,7 +269,7 @@ export const QueryProvider = ({
         setPageSize,
         setSort,
         setStock,
-
+        addPage,
         queryHistory,
         categoryFacets,
         setTerm,
