@@ -16,25 +16,33 @@ import {
   FlatFacetValue,
   SuggestQuery,
 } from "./suggestionUtils";
-import { SuggestionContext } from "./suggestionContext";
+import {
+  SuggestionConfig,
+  SuggestionContext,
+  SuggestResultItem,
+} from "./suggestionContext";
 
 export const MIN_FUZZY_SCORE = 0.85;
 
 type Options = {
-  includeContent?: boolean;
+  config: SuggestionConfig;
 };
 
 export const SuggestionProvider = ({
   children,
-  includeContent,
+  config,
 }: PropsWithChildren<Options>) => {
   const { data: facetData } = useFacetMap();
+  const [items, setItems] = useState<SuggestResultItem[]>([]);
   const [contentResults, setContentResults] = useState<
     ContentRecord[] | undefined
   >(undefined);
   const [value, setValue] = useState<string | null>(null);
   const [popularQueries, setPopularQueries] = useState<SuggestQuery[]>([]);
-
+  const includeContent = useMemo(
+    () => config.some((d) => d.type === "content" && d.maxAmount > 0),
+    [config]
+  );
   const [data, setData] = useState<SuggestionResponse>({
     facets: [],
     items: [],
@@ -49,7 +57,7 @@ export const SuggestionProvider = ({
     | null
   >(null);
 
-  const { suggestions, items, facets } = data;
+  const { suggestions, facets } = data;
 
   useEffect(() => {
     if (facetData == null) {
@@ -134,7 +142,7 @@ export const SuggestionProvider = ({
   }, [parts, facets]);
 
   useEffect(() => {
-    if (value==null || value.length<2 || !includeContent) {
+    if (value == null || value.length < 2 || !includeContent) {
       return;
     }
     getContentResults(value).then((d) => setContentResults(d.splice(0, 10)));
@@ -144,7 +152,7 @@ export const SuggestionProvider = ({
     if (value == null) {
       return;
     }
-    const { cancel, promise } = autoSuggestResponse(value==="*"?"": value);
+    const { cancel, promise } = autoSuggestResponse(value === "*" ? "" : value);
 
     promise.then(handleSuggestResponse).then((state) => {
       setData((prev) => {
@@ -167,26 +175,85 @@ export const SuggestionProvider = ({
     return cancel;
   }, [value]);
 
-  const hasSuggestions = useMemo(
-    () =>
-      items.length > 0 ||
-      facets.length > 0 ||
-      suggestions.length > 0 ||
-      (contentResults != null && contentResults.length > 0) ||
-      (popularQueries != null && Object.keys(popularQueries).length > 0),
-    [items, facets, suggestions, popularQueries, contentResults]
-  );
+  // const hasSuggestions = useMemo(
+  //   () =>
+  //     items.length > 0 ||
+  //     facets.length > 0 ||
+  //     suggestions.length > 0 ||
+  //     (contentResults != null && contentResults.length > 0) ||
+  //     (popularQueries != null && Object.keys(popularQueries).length > 0),
+  //   [items, facets, suggestions, popularQueries, contentResults]
+  // );
+
+  useEffect(() => {
+    const { items, facets } = data;
+    const result: SuggestResultItem[] = [];
+    for (const { type, maxAmount } of config) {
+      switch (type) {
+        case "product":
+          if (items.length > 0) {
+            const products = items.slice(0, maxAmount).map(
+              (item) =>
+                ({
+                  ...item,
+                  type: "product",
+                } satisfies SuggestResultItem)
+            );
+            result.push(...products);
+          }
+          break;
+        case "query":
+          if (popularQueries.length > 0) {
+            const queries = popularQueries.slice(0, maxAmount).map(
+              (item) =>
+                ({
+                  ...item,
+                  type: "query",
+                } satisfies SuggestResultItem)
+            );
+            result.push(...queries);
+          }
+          break;
+        case "refinement":
+          if (facets.length > 0) {
+            const refinements = facets.slice(0, maxAmount).map(
+              (item) =>
+                ({
+                  //query: value ?? "",
+                  facet: item,
+                  type: "refinement",
+                } satisfies SuggestResultItem)
+            );
+            result.push(...refinements);
+          }
+          break;
+        case "content":
+          if (contentResults != null && contentResults.length > 0) {
+            const contents = contentResults.slice(0, maxAmount).map(
+              (item) =>
+                ({
+                  ...item,
+                  type: "content",
+                } satisfies SuggestResultItem)
+            );
+            result.push(...contents);
+          }
+          break;
+      }
+      setItems(result);
+    }
+  }, [data, config, facets, suggestions, popularQueries, contentResults]);
 
   return (
     <SuggestionContext.Provider
       value={{
         suggestions,
         items,
-        facets,
-        content: contentResults,
+        //facets,
+        //content: contentResults,
         setValue,
-        popularQueries,
-        hasSuggestions,
+        //popularQueries,
+        //hasSuggestions,
         value,
         possibleTriggers,
         smartQuery,

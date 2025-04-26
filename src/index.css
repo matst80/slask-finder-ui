@@ -5,6 +5,7 @@
   --animate-cart-open: cartAdd 0.5s ease-out;
   --animate-pop: pop 0.3s ease-out;
   --animate-pop-fast: pop 0.15s ease-in;
+  --animate-suggestbox: suggestbox 0.3s ease-in-out;
 
   @keyframes cartAdd {
     0% {
@@ -20,6 +21,18 @@
     100% {
       transform: scale(1);
       opacity: 1;
+    }
+  }
+
+  @keyframes suggestbox {
+    0% {
+      opacity: 0;
+      transform: scale(1, 0.8) translate(0, -10%);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale(1, 1) translate(0, 0);
     }
   }
 
