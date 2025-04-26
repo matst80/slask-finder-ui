@@ -247,8 +247,8 @@ const readStreamed = <T>(
   const decoder = new TextDecoder();
   let items: T[] = [];
   let buffer = "";
+  let isAfterSeparator = false;
   const pump = async (): Promise<T[]> => {
-    let isAfterSeparator = false;
     return reader?.read().then(async ({ done, value }): Promise<T[]> => {
       if (done) {
         return items;

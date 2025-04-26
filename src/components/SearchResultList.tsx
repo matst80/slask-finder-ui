@@ -1,81 +1,40 @@
-import { ResultItem } from "./ResultItem";
+import { PlaceholderItem, ResultItem } from "./ResultItem";
 import { useQuery } from "../lib/hooks/useQuery";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
-
-// const searchList = [
-//   {
-//     title: "I lager i falun",
-//     href: "#stock=2299&page=0",
-//   },
-//   {
-//     title: "Alla produkter",
-//     href: "#i=4%3D0-169999999",
-//   },
-//   {
-//     title: "Rabatterade produkter",
-//     href: "#i=5%3D0-169999999",
-//   },
-// ];
+import { InfiniteHitList } from "./InfiniteHitList";
 
 const NoResults = () => {
   return <div>No results</div>;
-  // const { data } = useCategories();
-  // return (
-  //   <div>
-  //     <ul className="mt-2">
-  //       {data?.sort(byName).map((category, idx) => (
-  //         <CategoryItem
-  //           key={category.value}
-  //           {...category}
-  //           level={1}
-  //           defaultOpen={idx < 3}
-  //         />
-  //       ))}
-  //     </ul>
-  //     <div className="flex gap-4 mt-6">
-  //       {searchList.map(({ title, href }) => (
-  //         <ButtonLink href={href}>{title}</ButtonLink>
-  //       ))}
-  //     </div>
-  //   </div>
-  // );
 };
 
 export const SearchResultList = () => {
   const {
     isLoading,
     hits,
-    query: { page, pageSize },
+    query: { pageSize },
   } = useQuery();
 
-  const start = (page ?? 0) * (pageSize ?? 40);
   if (isLoading && hits.length < 1) {
-    return <div>Loading...</div>;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0">
+        {new Array(pageSize)?.map((_, idx) => (
+          <PlaceholderItem key={`p-${idx}`} />
+        ))}
+      </div>
+    );
   }
 
   if (!hits.length && (hits == null || hits.length < 1)) {
     return <NoResults />;
   }
+
   return (
     <ImpressionProvider>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 -mx-4 md:-mx-0">
-        {hits?.map((item, idx) => (
-          <ResultItem key={item.id} {...item} position={start + idx} />
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0">
+        <InfiniteHitList>
+          {(item) => <ResultItem key={item.id} {...item} />}
+        </InfiniteHitList>
       </div>
     </ImpressionProvider>
   );
 };
-
-// export const CategoryList = () => {
-//   const { data } = useCategories();
-//   return (
-//     <div>
-//       <ul>
-//         {data?.sort(byName).map((category) => (
-//           <CategoryItem key={category.value} {...category} level={1} />
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// };

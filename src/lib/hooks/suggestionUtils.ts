@@ -17,6 +17,7 @@ export type SuggestField = {
   popularity: number;
 };
 export type SuggestQuery = {
+  type: "query";
   fields: SuggestField[];
   popularity: number;
   query: string;
@@ -45,6 +46,7 @@ export const convertFacets = (facets: KeyFacet[]): ConvertedFacet[] => {
           (d.categoryLevel != null && d.categoryLevel > 0)
       )
       .sort(byPriority)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .map(({ result: { values }, selected: _, ...rest }) => ({
         ...rest,
         values: Object.entries(values ?? {})
@@ -83,7 +85,12 @@ export const convertPopularQueries =
           .filter(isDefined)
           .sort(byPopularity);
 
-        return { fields, popularity: score, query };
+        return {
+          fields,
+          popularity: score,
+          query,
+          type: "query",
+        } satisfies SuggestQuery;
       })
       .sort(byPopularity);
   };

@@ -1,222 +1,21 @@
-import {
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { Crosshair, Lightbulb, Search, SearchIcon } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Lightbulb, Search, SearchIcon } from "lucide-react";
 import { cm, makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
-import { StockIndicator } from "./ResultItem";
+import { StockBalloon } from "./ResultItem";
 import { useSuggestions } from "../lib/hooks/useSuggestions";
-import { trackClick } from "../lib/datalayer/beacons";
 import { CmsPicture } from "../lib/types";
-import { PriceValue } from "./Price";
 import { MIN_FUZZY_SCORE } from "../lib/hooks/SuggestionProvider";
-import fuzzysort from "fuzzysort";
-import { ConvertedFacet } from "../lib/hooks/suggestionUtils";
-
-const byCategoryLevel = (
-  a: { categoryLevel?: number },
-  b: { categoryLevel?: number }
-) => {
-  if (a.categoryLevel == null || b.categoryLevel == null) {
-    return 0;
-  }
-  return b.categoryLevel - a.categoryLevel;
-};
-
-// const byMatch =
-//   (query?: string | null) =>
-//   (a: { value: string; hits: number }, b: { value: string; hits: number }) => {
-//     if (query == null) {
-//       return b.hits - a.hits;
-//     }
-//     const aMatch = a.value.toLowerCase().includes(query.toLowerCase());
-//     const bMatch = b.value.toLowerCase().includes(query.toLowerCase());
-
-//     if (aMatch && !bMatch) {
-//       return -1;
-//     } else if (!aMatch && bMatch) {
-//       return 1;
-//     }
-//     return b.hits - a.hits;
-//   };
-
-const byBestHits = (a: ConvertedFacet, b: ConvertedFacet) => {
-  return b.values[0].hits - a.values[0].hits;
-};
-
-const flatFacetIds = [2];
-
-const MatchingFacets = () => {
-  const { facets, value: query } = useSuggestions();
-  const { setQuery } = useQuery();
-  const [flat, other] = useMemo(() => {
-    const [a, c] = facets
-      .filter(
-        (f) =>
-          (f.valueType != null && f.valueType != "") ||
-          (f.categoryLevel != null && f.categoryLevel > 0)
-      )
-      .reduce(
-        ([flat, rest], f) => {
-          if (
-            (f.categoryLevel != null && f.categoryLevel > 0) ||
-            flatFacetIds.includes(f.id)
-          ) {
-            return [[...flat, f], rest];
-          }
-
-          return [flat, [...rest, f]];
-        },
-        [[], []] as [typeof facets, typeof facets]
-      );
-    return [
-      a.sort(byCategoryLevel).flatMap(({ id, values, name, categoryLevel }) =>
-        values.map((value) => ({
-          ...value,
-          id,
-          name,
-          categoryLevel,
-        }))
-      ),
-      c.sort(byBestHits),
-    ];
-  }, [facets]);
-
-  const sortedFlat = useMemo(
-    () =>
-      fuzzysort
-        .go(query ?? "", flat, {
-          limit: 10,
-          threshold: 0.5,
-          keys: ["value"],
-        })
-        .map((d) => d.obj),
-
-    [flat, query]
-  );
-
-  const updateQuery = (value: string, id: number) => () => {
-    setQuery({
-      string: [{ id, value: [value] }],
-      query:
-        query != null && value.toLowerCase().includes(query.toLowerCase())
-          ? undefined
-          : query ?? undefined,
-      stock: [],
-      page: 0,
-    });
-  };
-
-  const setFlat = (value: string, id: number) => () => {
-    setQuery({
-      string: [{ id, value: [value] }],
-      query: undefined,
-      stock: [],
-      page: 0,
-    });
-  };
-
-  return other.length ? (
-    <SuggestionSection title="Förslag">
-      {sortedFlat.map(({ value, id, name }) => (
-        <button
-          key={value}
-          className="text-left flex items-center gap-2"
-          onClick={setFlat(value, id)}
-        >
-          <Crosshair className="size-5" />
-          <span>
-            {name}: {value}
-          </span>
-          {/* <span className="ml-2 inline-flex items-center justify-center px-2 py-1 rounded-full bg-white text-xs">
-                {hits}
-              </span> */}
-        </button>
-      ))}
-
-      {other.map((f) => (
-        <div key={f.id} className="flex gap-2 items-center">
-          <Lightbulb className="size-5" />
-          <span>{f.name}</span>
-          <div className="flex gap-2 flex-nowrap overflow-x-auto">
-            {f.values.map(({ value }) => (
-              <button
-                key={value}
-                className="shrink-0 border line-clamp-1 text-ellipsis border-gray-200 bg-gray-100/50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
-                onClick={updateQuery(value, f.id)}
-              >
-                {value}
-                {/* <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
-                  {hits}
-                </span> */}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
-    </SuggestionSection>
-  ) : null;
-};
-
-let tempCanvas: HTMLCanvasElement | null = null;
-const getCanvas = () => {
-  if (tempCanvas == null) {
-    tempCanvas = globalThis.document.createElement("canvas");
-  }
-  return tempCanvas;
-};
-
-const measureSize = (element: HTMLElement, text: string): number => {
-  const canvas = getCanvas();
-  const context = canvas.getContext("2d");
-  if (context == null) {
-    return 0;
-  }
-  context.font = getComputedStyle(element).font;
-  const textWidth = context.measureText(text).width;
-  return textWidth;
-};
-
-const useCursorPosition = (
-  ref: React.RefObject<HTMLInputElement | null>,
-  { useCursorPosition = true }: { useCursorPosition?: boolean } = {}
-) => {
-  const [left, setLeft] = useState(0);
-
-  const updatePosition = useCallback(() => {
-    const input = ref?.current;
-    if (input == null) {
-      return;
-    }
-    const position = input.selectionStart ?? 0;
-    const text = useCursorPosition
-      ? input.value.substring(0, position)
-      : input.value;
-    setLeft(Math.round(measureSize(input, text)));
-  }, [ref, useCursorPosition]);
-
-  useEffect(() => {
-    const input = ref?.current;
-    if (input == null) {
-      return;
-    }
-
-    input.addEventListener("focus", updatePosition);
-    input.addEventListener("change", updatePosition);
-    return () => {
-      input.removeEventListener("focus", updatePosition);
-      input.removeEventListener("change", updatePosition);
-    };
-  }, [ref, updatePosition]);
-
-  return { left, updatePosition };
-};
+import { SuggestQuery } from "../lib/hooks/suggestionUtils";
+import { useCursorPosition } from "./useCursorPosition";
+import type {
+  QueryRefinement,
+  SuggestedContent,
+  SuggestedProduct,
+  SuggestResultItem,
+} from "../lib/hooks/suggestionContext";
+import { useKeyFacetValuePopularity } from "../hooks/popularityHooks";
 
 const TrieSuggestions = ({
   toShow,
@@ -242,8 +41,10 @@ const TrieSuggestions = ({
   return (
     <div
       className={cm(
-        "transition-opacity border border-gray-200 bg-gray-100/50 hover:bg-gray-100/20 px-2 py-1 absolute text-xs top-2 bottom-2 rounded-md z-20 flex gap-2 items-center",
-        open && suggestions.length > 0 ? "opacity-100" : "opacity-0"
+        "transition-opacity border border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 absolute text-xs top-2 bottom-2 rounded-md z-20 flex gap-2 items-center",
+        open && suggestions.length > 0
+          ? "opacity-100 animate-pop"
+          : "opacity-0 pointer-events-none"
       )}
       style={{ left: `${left + 50}px` }}
     >
@@ -253,7 +54,7 @@ const TrieSuggestions = ({
           onClick={() => onQueryChange([...other, match].join(" "))}
         >
           {match}
-          <span className="ml-2 inline-flex items-center justify-center px-2 h-4 rounded-full bg-blue-200 text-blue-500">
+          <span className="ml-2 hidden md:inline-flex items-center justify-center px-2 h-4 rounded-full bg-blue-200 text-blue-500">
             {hits}
           </span>
         </button>
@@ -275,7 +76,6 @@ export const AutoSuggest = () => {
     suggestions,
     setValue: setTerm,
     possibleTriggers,
-    hasSuggestions,
     smartQuery,
     items,
   } = useSuggestions();
@@ -290,7 +90,7 @@ export const AutoSuggest = () => {
   }, [value, setTerm, updatePosition]);
 
   const hasResults = items.length > 0;
-  const showItems = open && hasSuggestions;
+  const showItems = open && items.length > 0;
 
   const onKeyUp = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -356,7 +156,7 @@ export const AutoSuggest = () => {
       >
         <input
           ref={inputRef}
-          className="w-full pl-10 pr-4 py-2 transition-all border border-gray-300 rounded-md focus:outline-hidden focus:rounded-b-none"
+          className="w-full pl-10 pr-4 py-2 transition-all border border-gray-300 rounded-md focus:outline-hidden"
           type="search"
           value={value ?? ""}
           placeholder="Search..."
@@ -378,8 +178,10 @@ export const AutoSuggest = () => {
         <button
           onClick={() => smartQuery != null && setQuery(smartQuery)}
           className={cm(
-            "transition-all border-b border-gray-300 absolute -top-5 left-8 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs",
-            open && possibleTriggers != null ? "opacity-100" : "opacity-0"
+            "transition-opacity border-b border-yellow-200 absolute -top-5 left-8 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs",
+            open && possibleTriggers != null
+              ? "animate-pop"
+              : "opacity-0 pointer-events-none"
           )}
         >
           {possibleTriggers?.map(({ result }) =>
@@ -408,99 +210,198 @@ export const AutoSuggest = () => {
   );
 };
 
-const SuggestionResults = ({ open }: { open: boolean }) => {
+const SuggestedProduct = ({
+  id,
+  title,
+  img,
+  values,
+  stock,
+  stockLevel,
+}: SuggestedProduct) => {
+  return (
+    <Link
+      to={`/product/${id}`}
+      className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full"
+    >
+      <img
+        src={makeImageUrl(img)}
+        alt={title}
+        className="w-10 h-10 object-contain aspect-square mix-blend-multiply"
+      />
+      <div className="flex flex-col">
+        <div className="flex items-center gap-2">
+          <span>{title}</span>
+          <StockBalloon stock={stock} stockLevel={stockLevel} />
+        </div>
+
+        {values?.["10"] == "Outlet" && values?.["20"] != null && (
+          <em className="block text-xs text-gray-500 italic">{values["20"]}</em>
+        )}
+        {values?.["9"] != null && values?.["9"] != "Elgiganten" && (
+          <em className="block text-xs text-gray-500 italic">
+            Säljs av: {values["9"]}
+          </em>
+        )}
+      </div>
+    </Link>
+  );
+};
+
+const ContentHit = ({ name, description, picture, url }: SuggestedContent) => {
+  return (
+    <div className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full">
+      <ParsedImage picture={picture} />
+      <div className="flex flex-col flex-1">
+        <span>{name}</span>
+        <p className="line-clamp-3 text-ellipsis">{description}</p>
+        <a
+          href={url}
+          className="text-blue-500 hover:underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {name}
+        </a>
+      </div>
+    </div>
+  );
+};
+
+const FlatRefinement = ({ facetId, facetName, values }: QueryRefinement) => {
   const { setQuery } = useQuery();
-  const { popularQueries, items } = useSuggestions();
+  const { value } = values[0];
+  return (
+    <button
+      className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full"
+      onClick={() => setQuery({ string: [{ id: facetId, value: [value] }] })}
+    >
+      <Lightbulb className="size-5" />
+
+      <span>
+        {facetName} {value}
+      </span>
+    </button>
+  );
+};
+
+const PopularRefinement = ({ facetId, query, values }: QueryRefinement) => {
+  const { setQuery } = useQuery();
+  const { data } = useKeyFacetValuePopularity(facetId);
+  const items = useMemo(() => {
+    if (data == null || values == null) {
+      return [];
+    }
+    return values
+      ?.map(({ value, hits }) => ({
+        value,
+        hits,
+        popularity: data?.find((d) => d.value === value)?.score ?? 0,
+      }))
+      .sort((a, b) => b.popularity - a.popularity);
+  }, [data, values]);
+  return (
+    <div className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full">
+      <Lightbulb className="size-5" />
+      <span>{query}</span> i
+      {items?.slice(0, 3).map(({ value, hits }) => (
+        <button
+          key={value}
+          className="shrink-0 border line-clamp-1 text-ellipsis border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
+          onClick={() => {
+            setQuery({
+              string: [{ id: facetId, value: [value] }],
+              query,
+              stock: [],
+              page: 0,
+            });
+          }}
+        >
+          {value} ({hits})
+        </button>
+      ))}
+    </div>
+  );
+};
+
+const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
+  const { setQuery } = useQuery();
+  if (fields == null || fields.length === 0) {
+    return null;
+  }
+  const updateQuery =
+    (id: number, value: string): React.MouseEventHandler<HTMLButtonElement> =>
+    (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      setQuery({
+        string: [{ id, value: [value] }],
+        query,
+        stock: [],
+        page: 0,
+      });
+    };
+  return (
+    <button
+      className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full"
+      onClick={updateQuery(fields[0].id, fields[0].values[0].value)}
+    >
+      <SearchIcon className="size-5 shrink-0" />
+      <span>{query}</span>
+      <div className="flex gap-2 flex-nowrap overflow-x-auto items-center flex-1">
+        {fields.slice(undefined, 2).map(({ id, name, values }) => {
+          const { value } = values[0];
+          return (
+            <button
+              key={id}
+              className="shrink-0 border line-clamp-1 text-ellipsis border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
+              onClick={updateQuery(id, value)}
+            >
+              {name}: {value}
+              {/* <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
+                {hits}
+              </span> */}
+            </button>
+          );
+        })}
+      </div>
+    </button>
+  );
+};
+
+const SuggestSelector = (props: SuggestResultItem) => {
+  const { type } = props;
+  switch (type) {
+    case "product":
+      return <SuggestedProduct {...props} />;
+    case "content":
+      return <ContentHit {...props} />;
+    case "refinement":
+      if (props.flat) {
+        return <FlatRefinement {...props} />;
+      }
+      return <PopularRefinement {...props} />;
+    case "query":
+      return <SuggestedQuery {...props} />;
+    default:
+      return null;
+  }
+};
+
+const SuggestionResults = ({ open }: { open: boolean }) => {
+  const { items } = useSuggestions();
   return (
     <div
       className={cm(
-        "transition-all absolute block top-11 left-0 right-0 bg-white border-gray-300 rounded-b-md overflow-y-auto border-t-0 pt-1",
-        open ? "shadow-xl max-h-[70vh] border" : "shadow-none max-h-0"
+        "transition-all absolute rounded-md border border-gray-300 block top-13 left-0 right-0 bg-white overflow-y-auto pt-1",
+        open
+          ? "shadow-xl max-h-[70vh] animate-suggestbox"
+          : "shadow-none max-h-0 opacity-0"
       )}
       onClick={(e) => e.stopPropagation()}
     >
-      {popularQueries != null && popularQueries.length > 0 && (
-        <SuggestionSection title="Populära sökningar">
-          {popularQueries.slice(undefined, 5).map(({ query, fields }) => (
-            <button
-              key={query}
-              className="flex gap-2 items-center text-left"
-              onClick={() => {
-                setQuery((prev) => ({
-                  ...prev,
-                  query,
-                  string: fields.slice(undefined, 1).map(({ values, id }) => ({
-                    id,
-                    value: values.slice(undefined, 1).map((d) => d.value),
-                  })),
-                }));
-              }}
-            >
-              <SearchIcon className="size-5" />
-              <span>{query}</span>
-              <div className="flex gap-2 text-xs">
-                {fields.slice(undefined, 1).map(({ values, id, name }) => (
-                  <div
-                    key={id}
-                    className="px-2 py-1 rounded-full font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
-                  >
-                    <span key={id}>{name} </span>
-                    <span className="font-bold">
-                      {values
-                        .slice(undefined, 1)
-                        .map((d) => d.value)
-                        .join(", ")}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </button>
-          ))}
-        </SuggestionSection>
-      )}
-      <MatchingFacets />
-      {items.length > 0 && (
-        <SuggestionSection title="Produkter">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            {items.map((i, idx) => (
-              <Link
-                key={i.id}
-                onClick={() => trackClick(i.id, idx)}
-                to={`/product/${i.id}`}
-                className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full"
-              >
-                <img
-                  src={makeImageUrl(i.img)}
-                  alt={i.title}
-                  className="w-10 h-10 object-contain aspect-square"
-                />
-                <div className="flex flex-col flex-1">
-                  <span>{i.title}</span>
-                  {i.values["10"] == "Outlet" && i.values["20"] != null && (
-                    <em className="block text-xs text-gray-500 italic">
-                      {i.values["20"]}
-                    </em>
-                  )}
-                  {i.values["9"] != null && i.values["9"] != "Elgiganten" && (
-                    <em className="block text-xs text-gray-500 italic">
-                      Säljs av: {i.values["9"]}
-                    </em>
-                  )}
-                </div>
-                <StockIndicator
-                  stock={i.stock}
-                  stockLevel={i.stockLevel}
-                  showOnlyInstock
-                />
-                <span className="font-bold text-lg justify-end">
-                  <PriceValue value={i.values[4]} />
-                </span>
-              </Link>
-            ))}
-          </div>
-        </SuggestionSection>
-      )}
-      <ContentHits />
+      {items.map((item) => (
+        <SuggestSelector {...item} />
+      ))}
     </div>
   );
 };
@@ -522,43 +423,5 @@ const ParsedImage = ({ picture }: { picture?: CmsPicture }) => {
       src={src}
       className="w-full object-contain aspect-video"
     />
-  );
-};
-
-const ContentHits = () => {
-  const { content } = useSuggestions();
-
-  return content?.length ? (
-    <div className="overflow-x-auto max-w-full">
-      <div className="flex flex-nowrap">
-        {content.map(({ id, name, description, picture, url }) => (
-          <div key={id} className="p-2 shrink-0 w-[300px]">
-            <ParsedImage picture={picture} />
-            <h3 className="font-bold line-clamp-1 text-ellipsis">{name}</h3>
-            <p className="line-clamp-3 text-ellipsis">{description}</p>
-            <a
-              href={url}
-              className="text-blue-500 hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {name}
-            </a>
-          </div>
-        ))}
-      </div>
-    </div>
-  ) : null;
-};
-
-const SuggestionSection = ({
-  children,
-  title,
-}: PropsWithChildren<{ title: string }>) => {
-  return (
-    <div className="px-2 flex flex-col gap-2 border-b pb-2 mb-2 border-gray-100">
-      <h2 className="sr-only font-bold p-2">{title}:</h2>
-      {children}
-    </div>
   );
 };
