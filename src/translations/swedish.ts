@@ -9,7 +9,16 @@ export const swedish = {
     tracking: "Spårning",
     login: "Logga in",
   },
+  admin_menu: {
+    facets: "Facetter",
+    fields: "Fält",
+    missing_facets: "Saknade facetter",
+    relations: "Relationer",
+    rules: "Regler",
+    facet_groups: "Facetgrupper",
+  },
   common: {
+    save: "Spara",
     copied: "{{content}} kopierad till urklipp",
     copied_title: "Kopierad till urklipp",
     add: "Lägg till",
@@ -185,5 +194,18 @@ export const swedish = {
       events: "{{ value }} händelser",
       no_data: "Ingen data tillgänglig",
     },
+  },
+  facet_groups: {
+    title: "Facetgrupper",
+    description:
+      "Hantera och organisera dina facetgrupper för att förbättra sökupplevelsen.",
+    group_name: "Gruppnamn",
+    group_id: "Grupp-ID",
+    facets: "Facetter",
+    update_success_title: "Uppdatering lyckades",
+    update_success: "Facetgrupper uppdaterades framgångsrikt",
+    update_error_title: "Uppdatering misslyckades",
+    update_error: "Det gick inte att uppdatera facetgrupper",
+    list: "Lista",
   },
 } satisfies BaseTranslationType;

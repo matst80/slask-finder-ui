@@ -3,6 +3,7 @@ import {
   facets,
   getAdminRelations,
   getCompatible,
+  getFacetGroups,
   getFacetList,
   getFacetMap,
   getRelated,
@@ -419,6 +420,14 @@ export const useAdminRelationGroups = () => {
 
 export const useFacetList = () => {
   return useSWR("facet-list", getFacetList, {
+    revalidateOnFocus: false,
+    refreshInterval: 0,
+    focusThrottleInterval: 3600,
+  });
+};
+
+export const useFacetGroups = () => {
+  return useSWR("facet-groups", getFacetGroups, {
     revalidateOnFocus: false,
     refreshInterval: 0,
     focusThrottleInterval: 3600,

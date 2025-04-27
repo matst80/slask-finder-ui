@@ -9,7 +9,16 @@ export const norwegian = {
     tracking: "Sporing",
     login: "Logg inn",
   },
+  admin_menu: {
+    facets: "Facetter",
+    fields: "Felter",
+    missing_facets: "Manglende facetter",
+    relations: "Relasjoner",
+    rules: "Regler",
+    facet_groups: "Facetgrupper",
+  },
   common: {
+    save: "Lagre",
     copied: "{{content}} kopiert til utklippstavlen",
     copied_title: "Kopiert til utklippstavlen",
     add: "Legg til",
@@ -185,5 +194,18 @@ export const norwegian = {
       events: "{{ value }} hendelser",
       no_data: "Ingen data tilgjengelig",
     },
+  },
+  facet_groups: {
+    title: "Facetgrupper",
+    description:
+      "Her kan du administrere facetgruppene dine. Du kan opprette, redigere og slette facetgrupper.",
+    group_name: "Gruppenavn",
+    group_id: "Gruppe-ID",
+    facets: "Facetter",
+    update_success_title: "Oppdatering vellykket",
+    update_success: "Facetgrupper ble oppdatert",
+    update_error_title: "Oppdatering mislyktes",
+    update_error: "Kunne ikke oppdatere facetgrupper",
+    list: "Liste over facetgrupper",
   },
 } satisfies BaseTranslationType;

@@ -602,6 +602,11 @@ export type Popularity = {
   value: number;
 };
 
+export type FacetGroup = {
+  id: number;
+  name: string;
+};
+
 export type PopularQuery = {
   query: string;
   score: number;

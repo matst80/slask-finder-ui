@@ -1,15 +1,25 @@
+import { facets } from "../lib/datalayer/api";
 import { BaseTranslationType } from "../lib/types";
 
 export const english = {
   app_name: "dash",
   menu: {
     search: "Search",
-    builder: "Component Builder",
+    builder: "Builder",
     dashboard: "Dashboard",
     tracking: "Tracking",
     login: "Login",
   },
+  admin_menu: {
+    facets: "Facets",
+    fields: "Fields",
+    missing_facets: "Missing facets",
+    relations: "Relations",
+    rules: "Rules",
+    facet_groups: "Facet groups",
+  },
   common: {
+    save: "Save",
     copied: "{{content}} copied to clipboard",
     copied_title: "Copied to clipboard",
     add: "Add",
@@ -185,5 +195,17 @@ export const english = {
       events: "{{ value }} events",
       no_data: "No data available",
     },
+  },
+  facet_groups: {
+    title: "Facet groups",
+    description: "Manage your facet groups",
+    group_name: "Group name",
+    group_id: "Group ID",
+    facets: "Facets",
+    update_success_title: "Update successful",
+    update_success: "Facet groups updated successfully",
+    update_error_title: "Update failed",
+    update_error: "Failed to update facet groups",
+    list: "Facet groups",
   },
 } satisfies BaseTranslationType;

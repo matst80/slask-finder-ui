@@ -44,6 +44,7 @@ import { TranslationProvider } from "./lib/hooks/TranslationProvider.tsx";
 import { norwegian } from "./translations/norwegian.ts";
 import { english } from "./translations/english.ts";
 import { swedish } from "./translations/swedish.ts";
+import { FacetGroups } from "./pages/admin/FacetGroups.tsx";
 
 const router = createBrowserRouter([
   {
@@ -121,6 +122,10 @@ const router = createBrowserRouter([
         element: <RuleBuilder />,
       },
       {
+        path: "facet_groups",
+        element: <FacetGroups />,
+      },
+      {
         path: "facets",
         index: true,
         element: <EditFacetsView />,
@@ -130,7 +135,7 @@ const router = createBrowserRouter([
         element: <EditFieldsView />,
       },
       {
-        path: "missing-fields",
+        path: "missing_fields",
         element: <MissingFieldsView />,
       },
       {

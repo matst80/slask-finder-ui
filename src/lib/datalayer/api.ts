@@ -18,6 +18,7 @@ import {
   KeyFacet,
   RelationGroup,
   Funnel,
+  FacetGroup,
 } from "../types";
 
 export const baseUrl = "";
@@ -169,6 +170,8 @@ export const facets = (query: string) =>
 //   }).then((d) =>
 //     d.ok ? (d.json() as Promise<FacetResult>) : Promise.reject(d)
 //   );
+export const getFacetGroups = () =>
+  fetch(`${baseUrl}/admin/facet-groups`).then((d) => toJson<FacetGroup[]>(d));
 
 export const getRelated = (id: number) =>
   fetch(`${baseUrl}/api/related/${id}`).then((d) => readStreamed<Item>(d));
@@ -315,6 +318,20 @@ export const getRawData = (id: string | number) =>
 
 export const getFacetList = () =>
   fetch(`${baseUrl}/api/facet-list`).then((d) => toJson<FacetListItem[]>(d));
+
+type FactGroupUpdate = {
+  group_id: number;
+  group_name: string;
+  facet_ids: number[];
+};
+
+export const updateFacetGroups = (data: FactGroupUpdate) =>
+  fetch(`${baseUrl}/admin/facet-group`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  }).then((d) => {
+    return d.ok;
+  });
 
 export const getFacetMap = () =>
   fetch(`${baseUrl}/api/facet-list`)
