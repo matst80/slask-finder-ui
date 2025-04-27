@@ -148,7 +148,10 @@ export const AutoSuggest = () => {
   return (
     <>
       <div
-        className="relative md:flex-1 flex flex-col"
+        className={cm(
+          "relative md:flex-1 flex flex-col border-gray-200",
+          open && "border-b md:border-b-0"
+        )}
         onClick={(e) => {
           e.stopPropagation();
           setOpen(true);

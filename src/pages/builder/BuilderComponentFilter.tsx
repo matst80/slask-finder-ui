@@ -162,15 +162,16 @@ export const BuilderComponentFilter = () => {
   return (
     <QueryProvider initialQuery={requiredQuery} ignoreFacets={facetsToHide}>
       <BuilderQueryMerger query={requiredQuery} componentId={componentId} />
-      <div className="px-4 py-3 md:py-8 md:px-10 mb-24 max-w-[1920px] mx-auto">
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          <Facets
-            facetsToHide={facetsToHide}
-            hideCategories
-            facetsToDisable={facetsToDisable}
-          />
-
-          <main className="flex-1 container">
+      <div className="mb-24 md:mt-10 max-w-[1920px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-[288px_auto]">
+          <div className="border-b-1 py-1 px-4 md:pr-0 md:py-0 border-gray-300 md:border-none bg-gray-50 md:bg-white">
+            <Facets
+              facetsToHide={facetsToHide}
+              hideCategories
+              facetsToDisable={facetsToDisable}
+            />
+          </div>
+          <main className="px-4 md:px-10 container">
             <ResultHeader />
             <ComponentResultList
               componentId={Number(componentId)}

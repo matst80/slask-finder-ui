@@ -40,6 +40,7 @@ import { BuilderComponentSelector } from "./pages/builder/BuilderComponentSelect
 import { BuilderKit } from "./pages/builder/BuilderKit.tsx";
 import { BuilderProductPage } from "./pages/builder/BuilderProductPage.tsx";
 import { NotificationsProvider } from "./components/ui-notifications/notifications-provider.tsx";
+import ScrollToTop from "./components/ScrollToTop.tsx";
 
 const router = createBrowserRouter([
   {
@@ -80,7 +81,12 @@ const router = createBrowserRouter([
                 componentId: Number(componentId),
               }))
             : Promise.resolve(null),
-        element: <BuilderProductPage />,
+        element: (
+          <>
+            <BuilderProductPage />
+            <ScrollToTop />
+          </>
+        ),
       },
       {
         path: "selection/:id",
@@ -147,6 +153,7 @@ const router = createBrowserRouter([
     element: (
       <PageContainer>
         <ProductPage />
+        <ScrollToTop />
       </PageContainer>
     ),
   },
@@ -190,6 +197,7 @@ const router = createBrowserRouter([
     element: (
       <PageContainer>
         <Checkout />
+        <ScrollToTop />
       </PageContainer>
     ),
   },

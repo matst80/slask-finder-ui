@@ -3,6 +3,7 @@ import { ButtonLink } from "../../components/ui/button";
 import { useBuilderContext } from "./useBuilderContext";
 import { useBuilderStep } from "./useBuilderStep";
 import { Link } from "react-router-dom";
+import { StepForward } from "lucide-react";
 
 export const NextComponentButton = ({
   componentId,
@@ -49,7 +50,12 @@ export const NextComponentButton = ({
         }
         variant={hasSelection ? "default" : "outline"}
       >
-        {nextComponent == null ? `Overview` : `Next (${nextComponent?.title})`}
+        <StepForward className="size-5" />
+        <span className="hidden md:inline-flex">
+          {nextComponent == null
+            ? `Overview`
+            : `Next (${nextComponent?.title})`}
+        </span>
       </ButtonLink>
     </div>
   );

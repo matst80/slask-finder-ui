@@ -61,7 +61,7 @@ export const CurrentFilters = () => {
   }, [keyFilters, numberFilters, data]);
   return (
     (selectedFilters.length > 0 || locationId != null) && (
-      <div className="mb-6 flex flex-col md:flex-row items-center gap-2">
+      <div className="mb-6 hidden md:flex flex-col md:flex-row items-center gap-2">
         <h3 className="text-sm font-medium text-gray-700">Selected Filters:</h3>
         <div className="flex flex-wrap gap-2">
           {locationId != null && (

@@ -159,7 +159,7 @@ export const Facets = ({
   return (
     <aside>
       <button
-        className="md:text-lg w-full flex justify-between items-center font-semibold my-2 md:my-4"
+        className="md:text-lg w-full flex justify-between items-center font-semibold my-2 md:mt-0"
         onClick={() => setOpen((p) => !p)}
       >
         <span>

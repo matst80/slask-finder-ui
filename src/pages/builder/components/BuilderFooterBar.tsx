@@ -14,7 +14,7 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200 bg-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-        <div className="flex flex-col sm:flex-row justify-between gap-4 items-center">
+        <div className="flex justify-between gap-4 items-center">
           {/* Price information */}
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <div className="flex flex-col">
@@ -23,7 +23,7 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
                 Min PSU: {neededPsuWatt}w
               </span>
             </div>
-            <span className="text-2xl sm:text-3xl font-bold ml-auto sm:ml-0">
+            <span className="text-xl md:text-3xl font-bold ml-auto sm:ml-0">
               {sum}.-
             </span>
           </div>
