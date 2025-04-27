@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { isNumberFacet, KeyFacet } from "../lib/types";
 import { ChevronUp, LoaderCircle } from "lucide-react";
 
@@ -141,9 +141,26 @@ export const Facets = ({
 }: FacetListProps & {
   hideCategories?: boolean;
 }) => {
-  const { facets, categoryFacets, isLoadingFacets: isLoading } = useQuery();
+  const {
+    facets,
+    categoryFacets,
+    isLoadingFacets: isLoading,
+    query,
+  } = useQuery();
   const [open, setOpen] = useState(false);
+  const [changed, setChanged] = useState(false);
   const isDesktop = useScreenWidth(768);
+
+  useEffect(() => {
+    if (!isDesktop && open) {
+      console.log("query changed", query);
+      setChanged(true);
+    }
+    if (!open) {
+      setChanged(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
 
   if (isLoading && facets.length === 0) {
     return (
@@ -186,6 +203,25 @@ export const Facets = ({
             <h3 className="font-medium mb-2">Butiks lager</h3>
             <StoreSelector />
           </div>
+          <button
+            className={cm(
+              "sticky w-full bottom-2 left-2 right-2 p-1 bg-blue-100 border rounded-lg border-blue-300 md:hidden",
+              changed ? "animate-pop" : ""
+            )}
+            onClick={(e) => {
+              requestAnimationFrame(() => {
+                globalThis.document.querySelector("#results")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                  inline: "nearest",
+                });
+                e.preventDefault();
+                e.stopPropagation();
+              });
+            }}
+          >
+            To results
+          </button>
         </>
       )}
     </aside>
