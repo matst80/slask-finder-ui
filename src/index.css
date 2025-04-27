@@ -115,7 +115,7 @@
   }
 
   .progress {
-    height: 2px;
+    height: 3px;
     background: linear-gradient(to right,
         var(--color-yellow-500) 0%,
         var(--color-green-500) 100%);
@@ -130,7 +130,12 @@
 
   @keyframes scaleProgress {
     0% {
+      opacity: 0;
       transform: scaleX(0);
+    }
+
+    15% {
+      opacity: 1;
     }
 
     100% {
