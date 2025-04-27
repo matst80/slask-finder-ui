@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Lightbulb, Search, SearchIcon } from "lucide-react";
+import { ChevronUp, Lightbulb, Search, SearchIcon, X } from "lucide-react";
 import { cm, makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
@@ -148,7 +148,7 @@ export const AutoSuggest = () => {
   return (
     <>
       <div
-        className="relative flex-1"
+        className="relative md:flex-1 flex flex-col"
         onClick={(e) => {
           e.stopPropagation();
           setOpen(true);
@@ -205,7 +205,7 @@ export const AutoSuggest = () => {
           size={20}
         />
       </div>
-      <SuggestionResults open={showItems} />
+      <SuggestionResults open={showItems} onClose={() => setOpen(false)} />
     </>
   );
 };
@@ -387,21 +387,33 @@ const SuggestSelector = (props: SuggestResultItem) => {
   }
 };
 
-const SuggestionResults = ({ open }: { open: boolean }) => {
+const SuggestionResults = ({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) => {
   const { items } = useSuggestions();
   return (
     <div
       className={cm(
-        "transition-all absolute md:rounded-md md:border border-gray-300 block top-13 left-0 right-0 bg-white overflow-y-auto pt-1",
+        "transition-all md:absolute md:rounded-md md:border md:border-gray-300 block top-13 left-0 right-0 bg-white overflow-y-auto md:pt-1",
         open
-          ? "shadow-xl max-h-[70vh] animate-suggestbox"
-          : "shadow-none max-h-0 opacity-0"
+          ? "md:shadow-xl max-h-[70vh] animate-suggestbox flex-1"
+          : "md:shadow-none max-h-0 opacity-0"
       )}
       onClick={(e) => e.stopPropagation()}
     >
       {items.map((item) => (
         <SuggestSelector {...item} />
       ))}
+      <button
+        onClick={onClose}
+        className="md:hidden absolute top-12 right-4 rounded-full bg-white p-1"
+      >
+        <ChevronUp className="size-6" />
+      </button>
     </div>
   );
 };

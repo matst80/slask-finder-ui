@@ -48,7 +48,7 @@ export const KeyFacetSelector = ({
   return (
     <div
       className={cm(
-        "mb-4 border-b border-gray-100 pb-2",
+        "mb-4 border-b border-gray-200 pb-2",
         disabled && "opacity-50"
       )}
     >

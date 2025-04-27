@@ -6,7 +6,7 @@ export const ColorFacetSelector = ({ id, result: { values } }: KeyFacet) => {
   const { filter: keyFilters, addValue, removeValue } = useQueryKeyFacet(id);
 
   return (
-    <div className="mb-4 border-b border-gray-100 pb-2">
+    <div className="mb-4 border-b border-gray-200 pb-2">
       <h3 className="font-medium mb-2">Färg</h3>
       <div className="flex flex-wrap gap-2">
         {Object.keys(values).map((color) => {

@@ -76,7 +76,7 @@ const CategoryResult = ({ categories }: { categories: KeyFacet[] }) => {
     return null;
   }
   return (
-    <div className="mb-4 border-b border-gray-100 pb-2">
+    <div className="mb-4 pb-2">
       <div className="font-medium bold mb-2 flex items-center justify-between w-full text-left">
         <span>{sorted[0].name}</span>
       </div>
@@ -183,7 +183,7 @@ export const Facets = ({
           </div>
 
           <div className="mb-4">
-            <h3 className="font-medium mb-2">Select Store</h3>
+            <h3 className="font-medium mb-2">Butiks lager</h3>
             <StoreSelector />
           </div>
         </>
@@ -209,7 +209,7 @@ const StoreSelector = () => {
     <select
       value={stock?.[0] ?? ""}
       onChange={(e) => setStock(e.target.value === "" ? [] : [e.target.value])}
-      className="w-full p-2 border border-gray-300 rounded-md"
+      className="w-full p-2 border border-gray-300 bg-white rounded-md"
     >
       <option value="">Ingen butik</option>
       {sortedStores.map((store) => (
