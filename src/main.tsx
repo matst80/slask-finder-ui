@@ -116,22 +116,12 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        index: true,
-        element: <EditSearchView />,
-      },
-      { path: "bulk", element: <EditSearchView /> },
-      {
         path: "rules",
         element: <RuleBuilder />,
       },
       {
-        path: "product/:id",
-        loader: ({ params: { id } }) =>
-          id != null ? getRawData(id) : Promise.resolve(null),
-        element: <ProductPage />,
-      },
-      {
         path: "facets",
+        index: true,
         element: <EditFacetsView />,
       },
       {
