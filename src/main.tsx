@@ -41,7 +41,9 @@ import { BuilderProductPage } from "./pages/builder/BuilderProductPage.tsx";
 import { NotificationsProvider } from "./components/ui-notifications/notifications-provider.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 import { TranslationProvider } from "./lib/hooks/TranslationProvider.tsx";
-import { english, norwegian, swedish } from "./translations/translations.ts";
+import { norwegian } from "./translations/norwegian.ts";
+import { english } from "./translations/english.ts";
+import { swedish } from "./translations/swedish.ts";
 
 const router = createBrowserRouter([
   {
