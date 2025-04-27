@@ -1,3 +1,4 @@
+import { useTranslations } from "../lib/hooks/useTranslations";
 import { StoreWithStock } from "./ItemDetails";
 
 export const StockLocation = ({
@@ -5,6 +6,7 @@ export const StockLocation = ({
   distance,
   ...store
 }: StoreWithStock) => {
+  const t = useTranslations();
   return (
     <li
       key={store.id}
@@ -15,10 +17,14 @@ export const StockLocation = ({
           {store.name}
         </span>
         <span className="text-gray-500">•</span>
-        <span className="text-green-600 font-medium">{stock} st</span>
+        <span className="text-green-600 font-medium">
+          {t("stock.nr", { stock })}
+        </span>
       </div>
       {distance != null && (
-        <span className="text-gray-500 text-sm">{distance.toFixed(0)} km</span>
+        <span className="text-gray-500 text-sm">
+          {t("stock.distance", { distance: distance.toFixed(0) })}
+        </span>
       )}
     </li>
   );

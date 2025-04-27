@@ -19,7 +19,6 @@ export const swedish = {
     error: {
       generic: "Ett fel uppstod. Försök igen senare.",
       not_found: "Här var det tomt.",
-      // Add more error messages as needed
     },
     similar: "Liknande produkter",
     show_compatible: "Visa kompatibla",
@@ -51,6 +50,8 @@ export const swedish = {
       boxText: "Börja med",
     },
     overview: "Översikt",
+    remove: "Ta bort",
+    select: "Välj",
     next: {
       other: "Andra komponenter",
       next: "Nästa ({{ title }})",
@@ -64,6 +65,13 @@ export const swedish = {
   },
   product: {
     properties: "Specifikationer",
+  },
+  stock: {
+    level: "Lagerstatus",
+    in_stock: "I lager",
+    in_stock_online: "I lager online {{ stockLevel }} st",
+    nr: "{{ stock }} st",
+    distance: "{{ distance }} km",
   },
 } satisfies BaseTranslationType;
 

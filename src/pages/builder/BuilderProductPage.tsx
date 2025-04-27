@@ -9,12 +9,14 @@ import { ItemWithComponentId } from "./builder-types";
 import { trackAction, trackClick } from "../../lib/datalayer/beacons";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { useBuilderStep } from "./useBuilderStep";
+import { useTranslations } from "../../lib/hooks/useTranslations";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
   const { setSelectedItems, selectedItems } = useBuilderContext();
   const [unselectedComponents, nextComponent] = useBuilderStep(
     details.componentId
   );
+  const t = useTranslations();
   if (!details) return null;
   const {
     title,
@@ -70,7 +72,9 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
               <div className="space-y-8">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <span className="text-gray-500 text-sm">Pris</span>
+                    <span className="text-gray-500 text-sm">
+                      {t("common.price")}
+                    </span>
                     <div className="text-4xl font-bold text-gray-900">
                       <Price values={values} disclaimer={disclaimer} />
                     </div>
@@ -102,7 +106,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                         });
                       }}
                     >
-                      {isSelected ? "Ta bort" : "Välj"}
+                      {t(isSelected ? "builder.remove" : "builder.select")}
                     </Button>
                   </div>
                 </div>
@@ -149,7 +153,6 @@ export const BuilderProductPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Komponent detailjer</h1>
       {details ? <ComponentDetails {...details} /> : <p>Laddar...</p>}
     </div>
   );
