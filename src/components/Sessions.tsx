@@ -118,22 +118,24 @@ const ImpressionEventElement = (props: ImpressionEvent) => {
   );
 };
 
-const getActionName = (action: string) => {
+const useActionName = () => {
   const t = useTranslations();
-  if (action === "exit") {
-    return t("tracking.sessions.events.action.exit");
-  }
-  if (action === "lost-focus") {
-    return t("tracking.sessions.events.action.lostFocus");
-  }
-  if (action === "got-focus") {
-    return t("tracking.sessions.events.action.gotFocus");
-  }
-  return action;
+  return (action: string): string => {
+    if (action === "exit") {
+      return t("tracking.sessions.events.action.exit");
+    }
+    if (action === "lost-focus") {
+      return t("tracking.sessions.events.action.lostFocus");
+    }
+    if (action === "got-focus") {
+      return t("tracking.sessions.events.action.gotFocus");
+    }
+    return action;
+  };
 };
 
 const ActionEventElement = ({ action, reason }: ActionEvent) => {
-  const t = useTranslations();
+  const getActionName = useActionName();
   return (
     <div className="font-bold">
       <Flashlight className="size-5 inline-block" /> {getActionName(action)} (

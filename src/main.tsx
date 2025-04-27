@@ -216,6 +216,7 @@ const router = createBrowserRouter([
 
 const getBrowserLanguage = () => {
   const lang = navigator.language;
+  console.log("Browser language: ", lang);
   if (lang.startsWith("sv")) return swedish;
   if (lang.startsWith("nb")) return norwegian;
   if (lang.startsWith("no")) return norwegian;

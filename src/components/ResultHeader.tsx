@@ -1,4 +1,4 @@
-import { useMemo, useTransition } from "react";
+import { useMemo } from "react";
 import { Sorting } from "./Sorting";
 import { useQuery } from "../lib/hooks/useQuery";
 import { FilterQuery } from "./FilterQuery";

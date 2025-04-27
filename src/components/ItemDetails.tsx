@@ -1,11 +1,10 @@
-import { ShoppingCart } from "lucide-react";
 import {
   useCompatibleItems,
   useFacetMap,
   useRelatedItems,
   useRelationGroups,
 } from "../hooks/searchHooks";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { cm, isDefined, makeImageUrl } from "../utils";
 import {
   ItemDetail,

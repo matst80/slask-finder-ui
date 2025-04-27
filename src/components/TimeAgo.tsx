@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+//import { useState, useEffect } from "react";
 
-const utcNow = () => {
-  const d = new Date();
-  return d.getTime();
-};
+// const utcNow = () => {
+//   const d = new Date();
+//   return d.getTime();
+// };
 
 const ranges = {
   years: 3600 * 24 * 365,

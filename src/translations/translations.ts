@@ -1,4 +1,4 @@
-import { BaseTranslationType } from "../lib/types";
+import { BaseTranslationType, PathInto } from "../lib/types";
 
 export const swedish = {
   app_name: "dash",
@@ -544,3 +544,4 @@ export const norwegian = {
 } satisfies BaseTranslationType;
 
 export type Translations = typeof swedish | typeof english | typeof norwegian;
+export type TranslationKey = PathInto<Translations>;
