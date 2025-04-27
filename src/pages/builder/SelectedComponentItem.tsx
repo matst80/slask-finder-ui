@@ -7,6 +7,7 @@ import { ItemWithComponentId } from "./builder-types";
 import { useBuilderContext } from "./useBuilderContext";
 import { Link, useNavigate } from "react-router-dom";
 import { QuantityInput } from "./QuantityInput";
+import { cm } from "../../utils";
 
 export const SelectedComponentItem = ({
   componentId,
@@ -51,7 +52,10 @@ export const SelectedComponentItem = ({
           value={quantity}
           onChange={setQuantity}
           maxQuantity={maxQuantity}
-          className={"top-3 left-3 absolute animate-pop"}
+          className={cm(
+            "top-3 left-3 absolute",
+            quantity < maxQuantity ? "animate-focus" : "animate-pop"
+          )}
         />
 
         <Button

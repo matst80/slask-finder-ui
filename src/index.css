@@ -7,6 +7,7 @@
   --animate-pop-fast: pop 0.15s ease-in;
   --animate-suggestbox: suggestbox 0.3s ease-in-out;
   --animate-facets: facets 0.3s;
+  --animate-focus: focus 0.8s ease;
 
   @keyframes cartAdd {
     0% {
@@ -22,6 +23,33 @@
     100% {
       transform: scale(1);
       opacity: 1;
+    }
+  }
+
+  @keyframes focus {
+    0% {
+      opacity: 0;
+      transform: scale(0.6) rotate(0deg);
+    }
+
+    70% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+
+    80% {
+      opacity: 1;
+      transform: scale(1) rotate(4deg);
+    }
+
+    90% {
+      opacity: 1;
+      transform: scale(1) rotate(-4deg);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
     }
   }
 
