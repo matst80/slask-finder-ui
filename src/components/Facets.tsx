@@ -174,7 +174,7 @@ export const Facets = ({
         />
       </button>
       {(isDesktop || open) && (
-        <div className="animate-facets">
+        <div className="animate-facets mt-4 md:mt-0">
           {!hideCategories && <CategoryResult categories={categoryFacets} />}
           <div>
             <FacetList
@@ -189,7 +189,7 @@ export const Facets = ({
           </div>
           <button
             className={cm(
-              "sticky w-full transition-all bottom-2 left-2 right-2 p-1 bg-blue-100 border rounded-lg border-blue-300 md:hidden animate-pop"
+              "sticky w-full transition-all bottom-2 left-2 z-10 right-2 p-1 bg-blue-100 border rounded-lg border-blue-300 md:hidden animate-pop"
             )}
             onClick={(e) => {
               requestAnimationFrame(() => {

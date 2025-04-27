@@ -88,7 +88,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                         });
                       }}
                     >
-                      {isSelected ? "Remove component" : "Select component"}
+                      {isSelected ? "Ta bort" : "Välj"}
                     </Button>
                   </div>
                 </div>
