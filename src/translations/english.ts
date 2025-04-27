@@ -88,6 +88,11 @@ export const english = {
     in_stock_online: "In stock online {{ stockLevel }} pcs",
     nr: "{{ stock }} pcs",
     distance: "{{ distance }} km",
+    in_your_store: "In your store: {{ stock }}",
+    out_of_stock_in_store: "Out of stock in your store",
+    stores_with_stock: "{{ count }} stores",
+    online_stock: "Online: {{ stock }}",
+    not_in_stock: "Not in stock",
   },
   dashboard: {
     title: "System overview",

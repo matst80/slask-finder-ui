@@ -88,6 +88,11 @@ export const swedish = {
     in_stock_online: "I lager online {{ stockLevel }} st",
     nr: "{{ stock }} st",
     distance: "{{ distance }} km",
+    in_your_store: "I din butik: {{ stock }}",
+    out_of_stock_in_store: "Slut i din butik",
+    stores_with_stock: "{{ count }} butiker",
+    online_stock: "Online: {{ stock }}",
+    not_in_stock: "Inte i lager",
   },
   dashboard: {
     title: "Systemöversikt",

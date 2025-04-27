@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
 import { useImpression } from "../lib/hooks/useImpression";
 import { TimeAgo } from "./TimeAgo";
+import { useTranslations } from "../lib/hooks/useTranslations";
 
 const hasStock = (value?: string | null) => {
   return value != null && value != "0";
@@ -34,6 +35,7 @@ export const StockIndicator = ({
   stockLevel,
   showOnlyInStock = false,
 }: Pick<Item, "stock" | "stockLevel"> & { showOnlyInStock?: boolean }) => {
+  const t = useTranslations();
   const {
     query: { stock: stockQuery },
   } = useQuery();
@@ -62,8 +64,8 @@ export const StockIndicator = ({
             }`}
           />
           {stockOnLocation != null
-            ? `I din butik: ${stockOnLocation}`
-            : "Slut i din butik"}
+            ? t("stock.in_your_store", { stock: stockOnLocation })
+            : t("stock.out_of_stock_in_store")}
         </span>
       ) : (
         (!showOnlyInStock || hasStoreStock) && (
@@ -77,7 +79,7 @@ export const StockIndicator = ({
                 hasStoreStock ? "bg-green-500" : "bg-amber-500"
               }`}
             />
-            {storesWithStock} butiker
+            {t("stock.stores_with_stock", { count: storesWithStock })}
           </span>
         )
       )}
@@ -93,7 +95,9 @@ export const StockIndicator = ({
               hasOnlineStock ? "bg-green-500" : "bg-amber-500"
             }`}
           />
-          {hasOnlineStock ? `Online: ${stockLevel}` : "Inte i lager"}
+          {hasOnlineStock
+            ? t("stock.online_stock", { stock: stockLevel })
+            : t("stock.not_in_stock")}
         </span>
       )}
     </>

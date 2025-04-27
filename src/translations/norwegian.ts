@@ -88,6 +88,11 @@ export const norwegian = {
     in_stock_online: "På lager online {{ stockLevel }} stk",
     nr: "{{ stock }} stk",
     distance: "{{ distance }} km",
+    in_your_store: "I din butikk: {{ stock }}",
+    out_of_stock_in_store: "Utsolgt i din butikk",
+    stores_with_stock: "{{ count }} butikker",
+    online_stock: "Online: {{ stock }}",
+    not_in_stock: "Ikke på lager",
   },
   dashboard: {
     title: "Systemoversikt",
