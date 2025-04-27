@@ -41,12 +41,12 @@ const TrieSuggestions = ({
   return (
     <div
       className={cm(
-        "transition-opacity border border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 absolute text-xs top-2 bottom-2 rounded-md z-20 flex gap-2 items-center",
+        "transition-opacity border border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 absolute text-xs top-2 bottom-2 rounded-md z-20 flex gap-2 items-baseline",
         open && suggestions.length > 0
           ? "opacity-100 animate-pop"
           : "opacity-0 pointer-events-none"
       )}
-      style={{ left: `${left + 50}px` }}
+      style={{ left: `${left + 22}px` }}
     >
       {visible.map(({ hits, match, other }) => (
         <button
@@ -156,7 +156,7 @@ export const AutoSuggest = () => {
       >
         <input
           ref={inputRef}
-          className="w-full pl-10 pr-4 py-2 transition-all border border-gray-300 rounded-md focus:outline-hidden"
+          className="w-full pr-10 pl-4 py-2 transition-all md:border border-gray-300 shrink-0 md:rounded-md focus:outline-hidden"
           type="search"
           value={value ?? ""}
           placeholder="Search..."
@@ -201,7 +201,7 @@ export const AutoSuggest = () => {
         </button>
 
         <Search
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
           size={20}
         />
       </div>
@@ -392,7 +392,7 @@ const SuggestionResults = ({ open }: { open: boolean }) => {
   return (
     <div
       className={cm(
-        "transition-all absolute rounded-md border border-gray-300 block top-13 left-0 right-0 bg-white overflow-y-auto pt-1",
+        "transition-all absolute md:rounded-md md:border border-gray-300 block top-13 left-0 right-0 bg-white overflow-y-auto pt-1",
         open
           ? "shadow-xl max-h-[70vh] animate-suggestbox"
           : "shadow-none max-h-0 opacity-0"

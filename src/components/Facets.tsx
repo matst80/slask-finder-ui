@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { isNumberFacet, KeyFacet } from "../lib/types";
-import { LoaderCircle } from "lucide-react";
+import { ChevronUp, LoaderCircle } from "lucide-react";
 
 import { stores } from "../lib/datalayer/stores";
 import { useQuery } from "../lib/hooks/useQuery";
@@ -147,8 +147,8 @@ export const Facets = ({
 
   if (isLoading && facets.length === 0) {
     return (
-      <aside className="w-full md:w-72 animate-pulse">
-        <h2 className="text-lg font-semibold mb-4">Filter</h2>
+      <aside className="animate-pulse">
+        <h2 className="text-lg font-semibold my-4">Filter</h2>
         <div className="my-10 flex items-center justify-center">
           <LoaderCircle className="size-10 animate-spin" />
         </div>
@@ -157,12 +157,20 @@ export const Facets = ({
   }
 
   return (
-    <aside className="w-full md:w-72 border-b-2 border-gray-200 md:border-none">
+    <aside>
       <button
-        className="text-lg font-semibold mb-2 md:mb-4"
+        className="md:text-lg w-full flex justify-between items-center font-semibold my-2 md:my-4"
         onClick={() => setOpen((p) => !p)}
       >
-        Filter ({facets.length})
+        <span>
+          Filter <span className="text-gray-500">({facets.length})</span>
+        </span>
+        <ChevronUp
+          className={cm(
+            "size-5 transition-transform md:hidden",
+            open ? "rotate-0" : "rotate-180"
+          )}
+        />
       </button>
       {(isDesktop || open) && (
         <>

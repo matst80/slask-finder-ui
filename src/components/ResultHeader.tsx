@@ -1,8 +1,5 @@
 import { useMemo } from "react";
-
 import { Sorting } from "./Sorting";
-import { SelectedStore } from "./StoreSelector";
-
 import { useQuery } from "../lib/hooks/useQuery";
 import { FilterQuery } from "./FilterQuery";
 import { facetQueryToHash } from "../hooks/searchHooks";
@@ -84,11 +81,13 @@ export const ResultHeader = () => {
   }, [queryHistory, currentKey]);
   return (
     <>
-      <header className="flex justify-between gap-2 items-center mb-2">
-        <TotalResultText />
+      <header className="flex justify-end pt-4 md:pt-0 md:justify-between gap-2 items-center mb-2">
+        <div className="hidden md:flex">
+          <TotalResultText />
+        </div>
 
-        <SelectedStore />
-        <div className="relative flex gap-2 items-center">
+        {/* <SelectedStore /> */}
+        <div className="relative flex gap-2 items-center justify-end">
           {prevQuery != null && (
             <Button
               size="icon"

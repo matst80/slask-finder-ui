@@ -1,4 +1,4 @@
-import { ChevronUp, ChevronDown, Star } from "lucide-react";
+import { ChevronUp, Star } from "lucide-react";
 import { useState, useMemo } from "react";
 import { KeyFacet } from "../../lib/types";
 import { useQueryKeyFacet } from "../../lib/hooks/useQueryKeyFacet";
@@ -60,11 +60,13 @@ export const KeyFacetSelector = ({
           {name}{" "}
           <span className="text-gray-500 text-sm">({allSorted.length})</span>
         </span>
-        {open ? (
-          <ChevronUp className="size-4" />
-        ) : (
-          <ChevronDown className="size-4" />
-        )}
+
+        <ChevronUp
+          className={cm(
+            "size-4 transition-transform",
+            open ? "rotate-0" : "rotate-180"
+          )}
+        />
       </button>
       {open && (
         <fieldset className="space-y-2" disabled={disabled}>

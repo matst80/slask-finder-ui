@@ -6,6 +6,9 @@ import { SearchResultList } from "../components/SearchResultList";
 import { Facets } from "../components/Facets";
 import { SuggestionProvider } from "../lib/hooks/SuggestionProvider";
 
+// px-4 py-3 md:py-8 md:px-10
+// px-4 md:px-10
+
 function App() {
   useFocusTracking();
   return (
@@ -26,15 +29,16 @@ function App() {
         //{ type: "content", maxAmount: 5 },
       ]}
     >
-      <div className="px-4 py-3 md:py-8 md:px-10 max-w-[1920px] mx-auto">
-        <div className="flex gap-2 items-center md:mb-6 sticky top-0 z-10 bg-white py-2 rounded-b-md">
+      <div className="max-w-[1920px] mx-auto">
+        <div className="gap-2 md:my-8 border-b md:border-0 border-gray-300 md:mb-6 sticky top-0 z-10 bg-white py-2">
           <AutoSuggest />
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          <Facets />
-
-          <main className="flex-1 container">
+        <div className="grid grid-cols-1 md:grid-cols-[288px_auto]">
+          <div className="border-b-1 px-4 md:px-0 border-gray-300 md:border-none bg-gray-100 md:bg-white">
+            <Facets />
+          </div>
+          <main className="container px-4 md:px-10">
             <CurrentFilters />
             <ResultHeader />
             <SearchResultList />

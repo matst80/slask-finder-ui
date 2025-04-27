@@ -1,4 +1,4 @@
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp } from "lucide-react";
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { NumberFacet } from "../../lib/types";
 import { cm, converters } from "../../utils";
@@ -261,11 +261,12 @@ export const NumberFacetSelector = ({
         onClick={() => setOpen((p) => !p)}
       >
         <span>{name}</span>
-        {open ? (
-          <ChevronUp className="size-4" />
-        ) : (
-          <ChevronDown className="size-4" />
-        )}
+        <ChevronUp
+          className={cm(
+            "size-4 transition-transform",
+            open ? "rotate-0" : "rotate-180"
+          )}
+        />
       </button>
       {invalid && (
         <span className="bg-amber-100 text-amber-800 rounded-md px-2.5 py-1 text-xs">
