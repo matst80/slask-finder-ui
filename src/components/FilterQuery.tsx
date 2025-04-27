@@ -8,7 +8,7 @@ type Props = {
 
 export const FilterQuery = ({ show }: Props) => {
   const {
-    query: { query = "" },
+    query: { query },
     setTerm,
   } = useQuery();
 

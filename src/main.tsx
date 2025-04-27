@@ -41,6 +41,8 @@ import { BuilderKit } from "./pages/builder/BuilderKit.tsx";
 import { BuilderProductPage } from "./pages/builder/BuilderProductPage.tsx";
 import { NotificationsProvider } from "./components/ui-notifications/notifications-provider.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
+import { TranslationProvider } from "./lib/hooks/TranslationProvider.tsx";
+import { translations } from "./translations/translations.ts";
 
 const router = createBrowserRouter([
   {
@@ -225,14 +227,16 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <QueryProvider>
-      <NotificationsProvider>
-        <ImpressionProvider>
-          <SWRConfig value={{}}>
-            <RouterProvider router={router} />
-          </SWRConfig>
-        </ImpressionProvider>
-      </NotificationsProvider>
-    </QueryProvider>
+    <TranslationProvider language={translations}>
+      <QueryProvider>
+        <NotificationsProvider>
+          <ImpressionProvider>
+            <SWRConfig value={{}}>
+              <RouterProvider router={router} />
+            </SWRConfig>
+          </ImpressionProvider>
+        </NotificationsProvider>
+      </QueryProvider>
+    </TranslationProvider>
   </React.StrictMode>
 );

@@ -620,3 +620,15 @@ export type SuggestionEvent = BaseEvent & {
   results: number;
   suggestions: number;
 };
+
+export interface BaseTranslationType {
+  [key: string]: string | BaseTranslationType;
+}
+
+export type PathInto<T extends BaseTranslationType> = keyof {
+  [K in keyof T as T[K] extends string
+    ? K
+    : T[K] extends BaseTranslationType
+    ? `${K & string}.${PathInto<T[K]> & string}`
+    : never]: string;
+};

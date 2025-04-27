@@ -9,6 +9,7 @@ import { ColorFacetSelector } from "./facets/ColorFacet";
 import { NumberFacetSelector } from "./facets/NumericFacetSelectors";
 import { cm } from "../utils";
 import { useScreenWidth } from "../lib/hooks/useScreenWidth";
+import { useTranslations } from "../lib/hooks/useTranslations";
 
 const CategoryLevel = ({
   id,
@@ -142,6 +143,7 @@ export const Facets = ({
   hideCategories?: boolean;
 }) => {
   const { facets, categoryFacets, isLoadingFacets: isLoading } = useQuery();
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
 
   const isDesktop = useScreenWidth(768);
@@ -149,7 +151,7 @@ export const Facets = ({
   if (isLoading && facets.length === 0) {
     return (
       <aside className="animate-pulse">
-        <h2 className="text-lg font-semibold my-4">Filter</h2>
+        <h2 className="text-lg font-semibold my-4">{t("facets.title")}</h2>
         <div className="my-10 flex items-center justify-center">
           <LoaderCircle className="size-10 animate-spin" />
         </div>
@@ -164,7 +166,8 @@ export const Facets = ({
         onClick={() => setOpen((p) => !p)}
       >
         <span>
-          Filter <span className="text-gray-500">({facets.length})</span>
+          {t("facets.title")}{" "}
+          <span className="text-gray-500">({facets.length})</span>
         </span>
         <ChevronUp
           className={cm(
@@ -184,7 +187,7 @@ export const Facets = ({
           </div>
 
           <div className="mb-4">
-            <h3 className="font-medium mb-2">Butiks lager</h3>
+            <h3 className="font-medium mb-2">{t("facets.stock")}</h3>
             <StoreSelector />
           </div>
           <button
@@ -203,7 +206,7 @@ export const Facets = ({
               });
             }}
           >
-            To results
+            {t("facets.gotoResults")}
           </button>
         </div>
       )}

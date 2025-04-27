@@ -224,17 +224,19 @@ const SuggestedProduct = ({
   return (
     <Link
       to={`/product/${id}`}
-      className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full"
+      className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full relative"
     >
       <img
         src={makeImageUrl(img)}
         alt={title}
         className="w-10 h-10 object-contain aspect-square mix-blend-multiply"
       />
+      <div className="absolute md:static right-2">
+        <StockBalloon stock={stock} stockLevel={stockLevel} />
+      </div>
       <div className="flex flex-col">
         <div className="flex items-center gap-2">
           <span>{title}</span>
-          <StockBalloon stock={stock} stockLevel={stockLevel} />
         </div>
 
         {values?.["10"] == "Outlet" && values?.["20"] != null && (
@@ -304,24 +306,26 @@ const PopularRefinement = ({ facetId, query, values }: QueryRefinement) => {
   }, [data, values]);
   return (
     <div className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full">
-      <Lightbulb className="size-5" />
+      <Lightbulb className="size-5 shrink-0" />
       <span>{query}</span> i
-      {items?.slice(0, 3).map(({ value, hits }) => (
-        <button
-          key={value}
-          className="shrink-0 border line-clamp-1 text-ellipsis border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
-          onClick={() => {
-            setQuery({
-              string: [{ id: facetId, value: [value] }],
-              query,
-              stock: [],
-              page: 0,
-            });
-          }}
-        >
-          {value} ({hits})
-        </button>
-      ))}
+      <div className="flex gap-2 flex-nowrap overflow-x-auto items-center flex-1">
+        {items?.slice(0, 3).map(({ value, hits }) => (
+          <button
+            key={value}
+            className="shrink-0 border line-clamp-1 text-ellipsis border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
+            onClick={() => {
+              setQuery({
+                string: [{ id: facetId, value: [value] }],
+                query,
+                stock: [],
+                page: 0,
+              });
+            }}
+          >
+            {value} ({hits})
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
@@ -413,7 +417,7 @@ const SuggestionResults = ({
       ))}
       <button
         onClick={onClose}
-        className="md:hidden absolute top-12 right-4 rounded-full bg-white p-1"
+        className="md:hidden absolute top-13 right-3 rounded-full bg-white p-1 z-20"
       >
         <ChevronUp className="size-6" />
       </button>

@@ -21,8 +21,8 @@ export const StockBalloon = ({
   const hasStoreStock = Object.entries(stock ?? {}).length > 0;
   const hasOnlineStock = hasStock(stockLevel);
   return (
-    <span
-      className={`size-2 rounded-full ${
+    <div
+      className={`size-2 rounded-full aspect-square ${
         hasStoreStock || hasOnlineStock ? "bg-green-500" : "bg-amber-500"
       }`}
     />

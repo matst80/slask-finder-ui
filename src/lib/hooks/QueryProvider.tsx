@@ -169,6 +169,7 @@ export const QueryProvider = ({
       setFacetsKey(facetQueryToHash(query));
     }, 50);
     setVirtualPage(query.page ?? 0);
+
     setItemsKey(queryToHash(query));
     return () => {
       clearTimeout(t);
