@@ -141,26 +141,10 @@ export const Facets = ({
 }: FacetListProps & {
   hideCategories?: boolean;
 }) => {
-  const {
-    facets,
-    categoryFacets,
-    isLoadingFacets: isLoading,
-    query,
-  } = useQuery();
+  const { facets, categoryFacets, isLoadingFacets: isLoading } = useQuery();
   const [open, setOpen] = useState(false);
-  const [changed, setChanged] = useState(false);
-  const isDesktop = useScreenWidth(768);
 
-  useEffect(() => {
-    if (!isDesktop && open) {
-      console.log("query changed", query);
-      setChanged(true);
-    }
-    if (!open) {
-      setChanged(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  const isDesktop = useScreenWidth(768);
 
   if (isLoading && facets.length === 0) {
     return (
@@ -190,7 +174,7 @@ export const Facets = ({
         />
       </button>
       {(isDesktop || open) && (
-        <>
+        <div className="animate-facets">
           {!hideCategories && <CategoryResult categories={categoryFacets} />}
           <div>
             <FacetList
@@ -205,8 +189,7 @@ export const Facets = ({
           </div>
           <button
             className={cm(
-              "sticky w-full bottom-2 left-2 right-2 p-1 bg-blue-100 border rounded-lg border-blue-300 md:hidden",
-              changed ? "animate-pop" : ""
+              "sticky w-full transition-all bottom-2 left-2 right-2 p-1 bg-blue-100 border rounded-lg border-blue-300 md:hidden animate-pop"
             )}
             onClick={(e) => {
               requestAnimationFrame(() => {
@@ -222,7 +205,7 @@ export const Facets = ({
           >
             To results
           </button>
-        </>
+        </div>
       )}
     </aside>
   );

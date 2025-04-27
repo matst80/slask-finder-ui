@@ -163,8 +163,8 @@ export const AutoSuggest = () => {
           type="search"
           value={value ?? ""}
           placeholder="Search..."
-          onFocus={(e) => {
-            e.target.select();
+          onFocus={() => {
+            //e.target.select();
             setOpen(true);
           }}
           onKeyUp={onKeyUp}
@@ -181,7 +181,7 @@ export const AutoSuggest = () => {
         <button
           onClick={() => smartQuery != null && setQuery(smartQuery)}
           className={cm(
-            "transition-opacity border-b border-yellow-200 absolute -top-5 left-8 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 py-1 text-xs",
+            "transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs",
             open && possibleTriggers != null
               ? "animate-pop"
               : "opacity-0 pointer-events-none"
@@ -200,7 +200,7 @@ export const AutoSuggest = () => {
               Sökning: <span className="font-bold">{smartQuery.query}</span>
             </span>
           )}
-          <span className="text-[10px]">⌥ + ↵</span>
+          <span className="text-[10px] hidden md:block">⌥ + ↵</span>
         </button>
 
         <Search

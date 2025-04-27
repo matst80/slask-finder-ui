@@ -6,6 +6,7 @@
   --animate-pop: pop 0.3s ease-out;
   --animate-pop-fast: pop 0.15s ease-in;
   --animate-suggestbox: suggestbox 0.3s ease-in-out;
+  --animate-facets: facets 0.3s;
 
   @keyframes cartAdd {
     0% {
@@ -24,7 +25,17 @@
     }
   }
 
+  @keyframes facets {
+    0% {
+      opacity: 0;
+      transform: translateX(-200px);
+    }
 
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
 
   @keyframes suggestbox {
     0% {
