@@ -219,6 +219,7 @@ const StoreSelector = () => {
     query: { stock = [] },
     setStock,
   } = useQuery();
+  const t = useTranslations();
   const sortedStores = useMemo(() => {
     return Object.values(stores)
       .map(({ displayName, id }) => ({
@@ -233,7 +234,7 @@ const StoreSelector = () => {
       onChange={(e) => setStock(e.target.value === "" ? [] : [e.target.value])}
       className="w-full p-2 border border-gray-300 bg-white rounded-md"
     >
-      <option value="">Ingen butik</option>
+      <option value="">{t("facets.stockEmptySelection")}</option>
       {sortedStores.map((store) => (
         <option key={store.id} value={store.id}>
           {store.displayName}

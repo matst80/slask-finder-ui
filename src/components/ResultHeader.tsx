@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useTransition } from "react";
 import { Sorting } from "./Sorting";
 import { useQuery } from "../lib/hooks/useQuery";
 import { FilterQuery } from "./FilterQuery";
@@ -6,71 +6,28 @@ import { facetQueryToHash } from "../hooks/searchHooks";
 import { Button } from "./ui/button";
 import { ArrowLeftIcon, CopyIcon } from "lucide-react";
 import { queryToHash } from "../lib/utils";
-
-// const EditCategories = ({ onClose }: { onClose: () => void }) => {
-//   const { facets, query } = useQuery();
-
-//   const updateItemCategories = (updates: { id: number; value: string }[]) => {
-//     return getItemIds(query).then((ids) => {
-//       //console.log(ids);
-//       updateCategories(ids, updates);
-//     });
-//   };
-
-//   return (
-//     <form
-//       className="absolute top-0 right-0 bg-white p-4 shadow-lg z-10"
-//       onSubmit={(e) => {
-//         e.preventDefault();
-//         const formData = new FormData(e.currentTarget);
-
-//         const categories = Array.from(formData.entries()).map(
-//           ([id, value]) => ({
-//             id: Number(id),
-//             value: String(value),
-//           })
-//         );
-//         //console.log(categories);
-//         updateItemCategories(categories);
-//       }}
-//     >
-//       <button onClick={onClose} type="button">
-//         <X size={30} />
-//       </button>
-//       <ul className="flex flex-col gap-2">
-//         {facets
-//           ?.filter((d) => d.valueType === "virtual")
-//           .map((category) => (
-//             <li key={category.id} className="flex">
-//               <label className="flex gap-4 items-center justify-between">
-//                 <span className="flex-1">{category.name}</span>
-//                 <input
-//                   type="text"
-//                   name={`${category.id}`}
-//                   defaultValue=""
-//                   className="border border-gray-400 rounded-md"
-//                 />
-//               </label>
-//             </li>
-//           ))}
-//       </ul>
-//       <button type="submit">Save</button>
-//     </form>
-//   );
-// };
+import { useTranslations } from "../lib/hooks/useTranslations";
+import { useClipboard } from "../lib/hooks/useClipboard";
 
 export const TotalResultText = ({
   className = "md:text-2xl font-bold",
 }: {
   className?: string;
 }) => {
+  const t = useTranslations();
   const { totalHits } = useQuery();
-  return <h1 className={className}>Results ({totalHits ?? "~"}) </h1>;
+  return (
+    <h1 className={className}>
+      {t("result.header", { hits: totalHits ?? "~" })}
+    </h1>
+  );
 };
 
 export const ResultHeader = () => {
   const { totalHits, queryHistory, query, setQuery } = useQuery();
   const currentKey = useMemo(() => facetQueryToHash(query), [query]);
+  const copyToClipboard = useClipboard();
+  const t = useTranslations();
 
   const prevQuery = useMemo(() => {
     const idx = queryHistory.findIndex((d) => d.key === currentKey);
@@ -91,7 +48,7 @@ export const ResultHeader = () => {
           {prevQuery != null && (
             <Button
               size="icon"
-              title="Go back to previous search"
+              title={t("result.back")}
               variant="ghost"
               onClick={() => setQuery(prevQuery)}
             >
@@ -101,11 +58,9 @@ export const ResultHeader = () => {
           <Button
             variant="ghost"
             size="icon"
-            title="Copy link to this search"
+            title={t("result.copy")}
             onClick={() =>
-              navigator.clipboard.writeText(
-                `${location.origin}/#${queryToHash(query)}`
-              )
+              copyToClipboard(`${location.origin}/#${queryToHash(query)}`)
             }
           >
             <CopyIcon className="size-5 m-1" />

@@ -21,7 +21,7 @@ export const SelectedComponentItem = ({
   const navigate = useNavigate();
   const trackItem = () => trackClick(item.id, position);
 
-  const setQuantity = (value: number) => {
+  const setQuantity = (value: number) =>
     setSelectedItems((prev) =>
       prev.flatMap((i) => {
         if (i.id === item.id) {
@@ -37,7 +37,6 @@ export const SelectedComponentItem = ({
         return [i];
       })
     );
-  };
 
   return (
     <Link

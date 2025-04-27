@@ -16,9 +16,9 @@ export const useTranslations = () => {
       key: PathInto<Translations>,
       replacementValues?: Record<string, unknown>,
       defaultValue?: string
-    ) => {
+    ): string => {
       if (typeof key !== "string") {
-        return defaultValue;
+        return defaultValue ?? key;
       }
       const value = extractFromObject(translations, key.split("."));
       return value

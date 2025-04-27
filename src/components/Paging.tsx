@@ -18,7 +18,7 @@ export const Paging = () => {
         onClick={() => changePage(currentPage - 1)}
         disabled={currentPage === 0}
         className="p-2 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        aria-label="Previous page"
+        aria-label="Previous"
       >
         <ChevronLeft size={20} />
       </button>
@@ -60,7 +60,7 @@ export const Paging = () => {
         onClick={() => changePage(currentPage + 1)}
         disabled={currentPage >= totalPages}
         className="p-2 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        aria-label="Next page"
+        aria-label="Next"
       >
         <ChevronRight size={20} />
       </button>

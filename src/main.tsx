@@ -42,7 +42,7 @@ import { BuilderProductPage } from "./pages/builder/BuilderProductPage.tsx";
 import { NotificationsProvider } from "./components/ui-notifications/notifications-provider.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 import { TranslationProvider } from "./lib/hooks/TranslationProvider.tsx";
-import { translations } from "./translations/translations.ts";
+import { swedish } from "./translations/translations.ts";
 
 const router = createBrowserRouter([
   {
@@ -227,7 +227,7 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <TranslationProvider language={translations}>
+    <TranslationProvider language={swedish}>
       <QueryProvider initialQuery={{ query: "*", page: 0, pageSize: 20 }}>
         <NotificationsProvider>
           <ImpressionProvider>
