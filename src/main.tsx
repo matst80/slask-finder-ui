@@ -228,7 +228,7 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <TranslationProvider language={translations}>
-      <QueryProvider>
+      <QueryProvider initialQuery={{ query: "*", page: 0, pageSize: 20 }}>
         <NotificationsProvider>
           <ImpressionProvider>
             <SWRConfig value={{}}>

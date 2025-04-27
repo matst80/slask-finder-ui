@@ -89,8 +89,10 @@ export const AutoSuggest = () => {
     });
   }, [value, setTerm, updatePosition]);
 
-  const hasResults = items.length > 0;
-  const showItems = open && items.length > 0;
+  const [hasResults, showItems] = useMemo(() => {
+    const a = items.length > 0;
+    return [a, open && a];
+  }, [items, open]);
 
   const onKeyUp = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -159,7 +161,10 @@ export const AutoSuggest = () => {
       >
         <input
           ref={inputRef}
-          className="w-full pr-10 pl-4 py-2 transition-all md:border border-gray-300 shrink-0 md:rounded-md focus:outline-hidden"
+          className={cm(
+            "w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 focus:outline-hidden",
+            open ? "md:rounded-t" : "md:rounded-md"
+          )}
           type="search"
           value={value ?? ""}
           placeholder="Search..."
@@ -402,13 +407,14 @@ const SuggestionResults = ({
   onClose: () => void;
 }) => {
   const { items } = useSuggestions();
+  console.log("open", open);
   return (
     <div
       className={cm(
-        "transition-all md:absolute md:rounded-md md:border md:border-gray-300 block top-13 left-0 right-0 bg-white overflow-y-auto md:pt-1",
+        "transition-all md:absolute md:rounded-b md:border md:border-t-2  md:border-gray-300 md:border-t-white block top-10 left-0 right-0 bg-white overflow-y-auto md:pt-1",
         open
-          ? "md:shadow-xl max-h-[70vh] animate-suggestbox flex-1"
-          : "md:shadow-none max-h-0 opacity-0"
+          ? "md:shadow-xl max-h-[70vh] opacity-100 flex-1"
+          : "md:shadow-xl max-h-[0vh] opacity-0 pointer-events-none"
       )}
       onClick={(e) => e.stopPropagation()}
     >
