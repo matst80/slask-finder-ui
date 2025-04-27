@@ -51,6 +51,8 @@ export const norwegian = {
     total: "Totalt",
     totalItems: "Antall varer",
     added_to_cart: "Lagt til i handlekurven!",
+    show_confirmation: "Vis bekreftelse",
+    proceed_to_checkout: "Gå til kassen",
   },
   builder: {
     start: {

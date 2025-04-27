@@ -6,6 +6,7 @@ import { useCart, useChangeQuantity } from "../hooks/cartHooks";
 import { ButtonLink } from "./ui/button";
 import { Link } from "react-router-dom";
 import { QuantityInput } from "../pages/builder/QuantityInput";
+import { useTranslations } from "../lib/hooks/useTranslations";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -16,7 +17,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
   const { trigger: changeQuantity } = useChangeQuantity();
   const items = cart?.items ?? [];
   const totalPrice = cart?.totalPrice ?? 0;
-
+  const t = useTranslations();
   return (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
@@ -27,7 +28,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Your Cart</h2>
+          <h2 className="text-xl font-bold">{t("cart.title")}</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
@@ -36,11 +37,11 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
           </button>
         </div>
         {items.length === 0 ? (
-          <p className="text-gray-500 text-center">Your cart is empty</p>
+          <p className="text-gray-500 text-center">{t("cart.empty")}</p>
         ) : (
           <>
             {isLoading ? (
-              <div>Loading...</div>
+              <div>{t("common.loading")}</div>
             ) : (
               <ul className="divide-y divide-gray-200 overflow-y-auto max-h-screen md:max-h-[60vh]">
                 {items.map((item) => (
@@ -89,7 +90,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
               </ul>
             )}
             <div className="mt-4 flex justify-between items-center">
-              <span className="text-lg font-bold">Total:</span>
+              <span className="text-lg font-bold">{t("cart.total")}:</span>
               <span className="text-lg font-bold">{totalPrice / 100} kr</span>
             </div>
             <div className="mt-6 w-full">
@@ -98,11 +99,11 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                   onClick={onClose}
                   to={`/confirmation/${cart.orderReference}`}
                 >
-                  Show confirmation
+                  {t("cart.show_confirmation")}
                 </ButtonLink>
               ) : (
                 <ButtonLink onClick={onClose} to={"/checkout"}>
-                  Proceed to Checkout
+                  {t("cart.proceed_to_checkout")}
                 </ButtonLink>
               )}
             </div>

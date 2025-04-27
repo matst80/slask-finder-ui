@@ -51,6 +51,8 @@ export const swedish = {
     total: "Totalt",
     totalItems: "Antal artiklar",
     added_to_cart: "Tillagd i kundvagnen!",
+    show_confirmation: "Visa bekräftelse",
+    proceed_to_checkout: "Gå till kassan",
   },
   builder: {
     start: {

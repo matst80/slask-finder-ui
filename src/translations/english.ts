@@ -51,6 +51,8 @@ export const english = {
     total: "Total",
     totalItems: "Number of items",
     added_to_cart: "Added to cart!",
+    show_confirmation: "Show confirmation",
+    proceed_to_checkout: "Proceed to Checkout",
   },
   builder: {
     start: {
