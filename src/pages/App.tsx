@@ -29,11 +29,12 @@ function App() {
         //{ type: "content", maxAmount: 5 },
       ]}
     >
-      <div className="max-w-[1920px] mx-auto">
-        <div className="gap-2 md:my-8 border-b md:border-0 border-gray-300 md:mb-6 sticky top-0 z-10 bg-white py-2">
+      <div className="gap-2 md:my-8 border-b md:border-0 border-gray-300 md:mb-6 scroll-sticky-top py-2">
+        <div className="max-w-[1920px] mx-auto relative">
           <AutoSuggest />
         </div>
-
+      </div>
+      <div className="max-w-[1920px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-[288px_auto]">
           <div className="border-b-1 px-4 md:px-0 border-gray-300 md:border-none bg-gray-100 md:bg-white">
             <Facets />

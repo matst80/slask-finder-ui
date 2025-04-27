@@ -69,6 +69,32 @@
     border-color: var(--color-gray-200, currentcolor);
   }
 
+  @keyframes sticky-shadow {
+    0% {
+      box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+    }
+
+    10% {
+      box-shadow: 8px 0px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    100% {
+      box-shadow: 8px 0px 20px rgba(0, 0, 0, 0.4);
+    }
+
+  }
+
+  .scroll-sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 1);
+    animation: sticky-shadow ease-in forwards;
+    animation-timeline: scroll(root);
+    animation-duration: auto;
+  }
+
+
   @keyframes animate-in {
     0% {
       opacity: 0;
@@ -120,7 +146,8 @@
         var(--color-yellow-500) 0%,
         var(--color-green-500) 100%);
     position: fixed;
-    bottom: 0;
+    top: 0;
+    z-index: 20;
     left: 0;
     width: 100%;
     transform-origin: 0 50%;
