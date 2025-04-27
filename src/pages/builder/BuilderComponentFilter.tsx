@@ -33,10 +33,11 @@ const ComponentItem = (
 
   const hasError = issues.some((d) => d.type === "error");
   const isValid = issues.length === 0;
+  const qs = new URLSearchParams(window.location.search);
   return (
     <Link
       ref={watch({ id: Number(item.id), position })}
-      to={`/builder/product/${componentId}/${item.id}`}
+      to={`/builder/product/${componentId}/${item.id}?${qs.toString()}`}
       key={item.id}
       onClick={trackItem}
       className={cm(

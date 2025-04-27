@@ -26,9 +26,14 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
     stock,
     buyable,
     buyableInStore,
+    parentId: itemParentId,
     values,
     disclaimer,
   } = details;
+  const queryParentId = new URLSearchParams(globalThis.location.search).get(
+    "parentId"
+  );
+  const parentId = queryParentId ? parseInt(queryParentId) : itemParentId;
   const isSelected = selectedItems.some((d) => d.id === id);
   return (
     <>
@@ -75,8 +80,17 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                       variant={isSelected ? "outline" : "default"}
                       onClick={() => {
                         setSelectedItems((prev) => [
-                          ...prev.filter((d) => d.componentId != componentId),
-                          ...(isSelected ? [] : [details]),
+                          ...prev.filter(
+                            (d) => d.componentId != (parentId ?? componentId)
+                          ),
+                          ...(isSelected
+                            ? []
+                            : [
+                                {
+                                  ...details,
+                                  componentId: parentId ?? componentId,
+                                },
+                              ]),
                         ]);
                         requestAnimationFrame(() => {
                           trackClick(id, 1);

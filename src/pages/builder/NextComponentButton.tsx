@@ -50,7 +50,7 @@ export const NextComponentButton = ({
         }
         variant={hasSelection ? "default" : "outline"}
       >
-        <StepForward className="size-5" />
+        <StepForward className="size-5 md:hidden" />
         <span className="hidden md:inline-flex">
           {nextComponent == null
             ? `Overview`
