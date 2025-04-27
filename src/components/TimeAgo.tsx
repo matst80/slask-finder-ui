@@ -42,7 +42,7 @@ export const TimeAgo = ({ ts }: { ts?: number }) => {
     return null;
   }
 
-  const formatter = new Intl.RelativeTimeFormat("sv-SE");
+  const formatter = new Intl.RelativeTimeFormat();
 
   const secondsElapsed = (date.getTime() - Date.now()) / 1000;
   for (const [key, range] of Object.entries(ranges)) {

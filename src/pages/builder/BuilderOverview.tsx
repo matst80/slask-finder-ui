@@ -182,9 +182,9 @@ export const BuilderOverview = () => {
           <span className="hidden md:inline-flex">{t("cart.add")}</span>
         </Button>
         {selectedItems.length > 0 && (
-          <p className="bg-blue-50 p-4 rounded-lg my-6">
+          <div className="bg-blue-50 p-4 rounded-lg my-6">
             <SpecificationSummary />
-          </p>
+          </div>
         )}
         {/* <div className="mt-6 mb-20">
           <p className="font-bold text-lg">
