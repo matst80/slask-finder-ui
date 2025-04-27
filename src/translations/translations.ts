@@ -62,6 +62,12 @@ export const swedish = {
       progress: "{{ count }} komponenter",
       clear: "Börja om",
     },
+    summary: {
+      title: "Ditt fantasktiska bygge",
+      description:
+        "Här är en sammanställning av ditt bygge. Du kan alltid gå tillbaka och ändra något.",
+      forgotten: "Har du glömt något?",
+    },
   },
   product: {
     properties: "Specifikationer",

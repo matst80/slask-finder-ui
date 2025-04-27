@@ -10,10 +10,12 @@ import { flattenComponents } from "./builder-utils";
 import { useBuilderStep } from "./useBuilderStep";
 import { SelectedComponentItem } from "./SelectedComponentItem";
 import { useAddMultipleToCart } from "../../hooks/cartHooks";
+import { useTranslations } from "../../lib/hooks/useTranslations";
 
 const SpecificationSummary = () => {
   const { selectedItems, rules } = useBuilderContext();
   const { data } = useFacetMap();
+  const t = useTranslations();
   const specifications = useMemo(() => {
     return selectedItems.flatMap((item) => {
       const rule = rules
@@ -48,7 +50,7 @@ const SpecificationSummary = () => {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-lg font-bold">Specifications</h2>
+      <h2 className="text-lg font-bold">{t("product.properties")}</h2>
       <div className="flex flex-col gap-1">
         {specifications.map(
           ({ componentId, id, name, value, componentTitle }) => (
@@ -72,13 +74,16 @@ const SpecificationSummary = () => {
 export const BuilderOverview = () => {
   const { selectedItems, rules, components } = useBuilderContext();
   const [unselectedComponents] = useBuilderStep(0);
+  const t = useTranslations();
   const { trigger: addToCart, isMutating } = useAddMultipleToCart();
   return (
     <>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-20">
-        <h1 className="text-2xl mb-6 font-bold">Builder Overview</h1>
-        <p>Welcome to the Builder Overview page!</p>
-        <p>This is where you can see an overview of your builder components.</p>
+        <h1 className="text-2xl mb-6 font-bold">
+          {t("builder.summary.title")}
+        </h1>
+        <p className="mb-6">{t("builder.summary.description")}</p>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <ImpressionProvider>
             {selectedItems.map((item, i) => {
@@ -146,7 +151,9 @@ export const BuilderOverview = () => {
         </div>
         {unselectedComponents.length > 0 && (
           <div className="mt-6">
-            <h2 className="text-lg font-bold">Forgotten?</h2>
+            <h2 className="text-lg font-bold">
+              {t("builder.summary.forgotten")}
+            </h2>
             <div className="flex flex-col md:flex-row gap-2 mt-2">
               {unselectedComponents.map((item, i) => (
                 <ButtonLink
@@ -172,7 +179,7 @@ export const BuilderOverview = () => {
           }}
         >
           <ShoppingBasketIcon className="size-5 md:hidden" />
-          <span className="hidden md:inline-flex">Lägg till i kundvagn</span>
+          <span className="hidden md:inline-flex">{t("cart.add")}</span>
         </Button>
         {selectedItems.length > 0 && (
           <p className="bg-blue-50 p-4 rounded-lg my-6">
