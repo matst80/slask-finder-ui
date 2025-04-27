@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useBuilderContext } from "./useBuilderContext";
 import { Component } from "./builder-types";
+import { useTranslations } from "../../lib/hooks/useTranslations";
 
 export const ComponentSelectorBox = ({
   title,
@@ -13,6 +14,7 @@ export const ComponentSelectorBox = ({
   headerText?: string;
   isRecommended: boolean;
 }) => {
+  const t = useTranslations();
   return (
     <button
       className="flex-1 bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 
@@ -20,12 +22,11 @@ export const ComponentSelectorBox = ({
                  relative transform hover:-translate-y-1 focus:outline-hidden focus:ring-2 
                  focus:ring-blue focus:border-transparent"
       onClick={onClick}
-      aria-label={`Start with ${title}`}
     >
       {isRecommended && (
         <div className="absolute -top-3 w-full flex justify-center">
           <span className="bg-amber-600 text-white px-4 py-1 text-sm rounded-full font-medium">
-            Recommended
+            {t("common.recommended")}
           </span>
         </div>
       )}
@@ -46,11 +47,12 @@ export const ComponentSelectorBox = ({
 export const BuilderStartPage = () => {
   const { rules, setOrder } = useBuilderContext();
   const push = useNavigate();
+  const t = useTranslations();
 
   return (
     <div className="animate-fadeIn space-y-10 mx-auto max-w-6xl p-8">
       <h2 className="text-[#242424] text-2xl md:text-4xl font-medium pb-3 text-center w-full">
-        Where do you want to start?
+        {t("builder.start.title")}
       </h2>
 
       <div className="flex flex-col md:flex-row gap-4 md:gap-8 justify-center flex-wrap">
@@ -61,7 +63,7 @@ export const BuilderStartPage = () => {
             <ComponentSelectorBox
               key={component.id}
               {...component}
-              headerText="Start with"
+              headerText={t("builder.start.boxText")}
               isRecommended={idx === 0}
               onClick={() => {
                 if (component.order != null) {

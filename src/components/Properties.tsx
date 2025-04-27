@@ -6,10 +6,11 @@ import { useQuery } from "../lib/hooks/useQuery";
 import { ItemDetail, ItemsQuery } from "../lib/types";
 import { isDefined, byPriority, cm } from "../utils";
 import { PlusIcon } from "lucide-react";
-import { QueryProvider } from "../lib/hooks/QueryProvider"
-import { TotalResultText } from "./ResultHeader"
-import { QueryUpdater } from "./QueryMerger"
-import { ButtonLink } from "./ui/button"
+import { QueryProvider } from "../lib/hooks/QueryProvider";
+import { TotalResultText } from "./ResultHeader";
+import { QueryUpdater } from "./QueryMerger";
+import { ButtonLink } from "./ui/button";
+import { useTranslations } from "../lib/hooks/useTranslations";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -18,38 +19,41 @@ type SelectedFacet = {
   value: string[];
 };
 
-const isValidKeyFilter = (value: string[] | string | number | null|undefined) => {
-	if (value == null) {
-		return false;
-	}
-	if (Array.isArray(value)) {
-		return value.length > 0;
-	}
-	if (typeof value === "string") {
-		return value.length > 0;
-	}
-	
-	return false;
-}
+const isValidKeyFilter = (
+  value: string[] | string | number | null | undefined
+) => {
+  if (value == null) {
+    return false;
+  }
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+  if (typeof value === "string") {
+    return value.length > 0;
+  }
+
+  return false;
+};
 
 export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
   const { setQuery } = useQuery();
   const [selected, setSelected] = useState<SelectedFacet[]>([]);
   const { data } = useFacetMap();
   const [isAdmin] = useAdmin();
-	const customQuery = useMemo<ItemsQuery|null>(() => {
-		if (selected.length === 0) {
-			return null;
-		}
-		const query: ItemsQuery = {
-			page: 0,
-			string: selected.map((s) => ({
-				id: s.id,
-				value: s.value,
-			})),
-		};
-		return query;
-	}, [selected]);
+  const t = useTranslations();
+  const customQuery = useMemo<ItemsQuery | null>(() => {
+    if (selected.length === 0) {
+      return null;
+    }
+    const query: ItemsQuery = {
+      page: 0,
+      string: selected.map((s) => ({
+        id: s.id,
+        value: s.value,
+      })),
+    };
+    return query;
+  }, [selected]);
   const fields = useMemo(() => {
     return Object.entries(values)
       .map(([id, value]) => {
@@ -71,16 +75,20 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
   return (
     <div className="md:bg-white md:rounded-lg md:shadow-xs md:border border-gray-100 md:p-4 relative">
       <h3 className="text-2xl font-bold text-gray-900 mb-4">
-        Egenskaper
+        {t("product.properties")}
         <span className="ml-2 text-gray-500 text-lg">({fields.length})</span>
       </h3>
-			{customQuery != null && (<div className="bg-slate-100 absolute z-10 top-1 right-1 rounded-md p-3 flex flex-col gap-2 items-center">
-				<QueryProvider initialQuery={customQuery}>
-					<QueryUpdater query={customQuery} />
-					<TotalResultText className="text-sm" />
-				</QueryProvider>
-					<ButtonLink onClick={()=>setQuery(customQuery)} to="/">Search</ButtonLink>
-			</div>)}
+      {customQuery != null && (
+        <div className="bg-slate-100 absolute z-10 top-1 right-1 rounded-md p-3 flex flex-col gap-2 items-center">
+          <QueryProvider initialQuery={customQuery}>
+            <QueryUpdater query={customQuery} />
+            <TotalResultText className="text-sm" />
+          </QueryProvider>
+          <ButtonLink onClick={() => setQuery(customQuery)} to="/">
+            {t("common.search")}
+          </ButtonLink>
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
         {fields.map((field) => {
           const isSelected = selected.some((s) => s.id === field.id);
@@ -89,8 +97,9 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
               key={`prop-${field.id}-${field.valueType}`}
               className="py-2 md:p-3 md:rounded-lg md:hover:bg-gray-50 transition-colors relative"
             >
-							{isValidKeyFilter( field.value) && ( <button
-							className="absolute top-2 right-2 p-1 rounded-md bg-gray-100 hover:bg-gray-200"
+              {isValidKeyFilter(field.value) && (
+                <button
+                  className="absolute top-2 right-2 p-1 rounded-md bg-gray-100 hover:bg-gray-200"
                   onClick={() => {
                     if (field.value != null) {
                       setSelected((prev) => {
@@ -120,7 +129,8 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                       isSelected ? "text-blue-500" : "text-gray-500"
                     )}
                   />
-                </button>)}
+                </button>
+              )}
               <div className="flex items-center gap-2 mb-1">
                 <h4
                   className="text-lg font-semibold text-gray-900"
@@ -140,7 +150,7 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                     ? field.value.join(", ")
                     : String(field.value)}
                 </p>
-                
+
                 {field.linkedId != null &&
                   isAdmin &&
                   field.linkedId > 0 &&
@@ -164,7 +174,7 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                         }
                       }}
                     >
-                      Visa kompatibla
+                      {t("common.show_compatible")}
                       <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
                         {field.linkedId}
                       </span>

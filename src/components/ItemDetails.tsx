@@ -29,6 +29,7 @@ import { trackAction } from "../lib/datalayer/beacons";
 import { Properties } from "./Properties";
 import { StockList } from "./StockList";
 import { Link } from "react-router-dom";
+import { useTranslations } from "../lib/hooks/useTranslations";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -89,6 +90,7 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
 export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
   const { setQuery } = useQuery();
   const { data } = useFacetMap();
+  const t = useTranslations();
   const stringFilters = useMemo(() => {
     const filter = Object.entries(values)
       .map(([id]) => {
@@ -125,7 +127,9 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
   if (stringFilters.length === 0) return null;
   return (
     <Button size="sm" onClick={handleClick}>
-      Visa kompatibla ({stringFilters.map((f) => f.id).join(", ")})
+      {t("common.show_compatible", {
+        ids: stringFilters.map((f) => f.id).join(", "),
+      })}
     </Button>
   );
 };
@@ -298,38 +302,6 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
   );
 };
 
-const CartAnimation = ({
-  isVisible,
-  onComplete,
-}: {
-  isVisible: boolean;
-  onComplete: () => void;
-}) => {
-  useEffect(() => {
-    if (isVisible) {
-      const timer = setTimeout(() => {
-        onComplete();
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [isVisible, onComplete]);
-
-  if (!isVisible) return null;
-
-  return (
-    <div className="fixed inset-0 pointer-events-none">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div className="animate-[cartAdd_1s_ease-out]">
-          <div className="bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg">
-            <ShoppingCart className="w-6 h-6" />
-            <span className="font-medium">Tillagd i kundvagnen!</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
   const { setQuery } = useQuery();
   const parts = useMemo(() => {
@@ -369,12 +341,8 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
 
 export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart, isMutating } = useAddToCart(details.id);
-  const [showAnimation, setShowAnimation] = useState(false);
 
-  const handleAddToCart = async () => {
-    await addToCart({ sku: details.sku, quantity: 1 });
-    setShowAnimation(true);
-  };
+  const t = useTranslations();
 
   if (!details) return null;
   const {
@@ -391,10 +359,6 @@ export const ItemDetails = (details: ItemDetail) => {
   } = details;
   return (
     <>
-      <CartAnimation
-        isVisible={showAnimation}
-        onComplete={() => setShowAnimation(false)}
-      />
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
           {/* Image Section */}
@@ -428,7 +392,9 @@ export const ItemDetails = (details: ItemDetail) => {
               <div className="space-y-8">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <span className="text-gray-500 text-sm">Pris</span>
+                    <span className="text-gray-500 text-sm">
+                      {t("common.price")}
+                    </span>
                     <div className="text-4xl font-bold text-gray-900">
                       <Price values={values} disclaimer={disclaimer} />
                     </div>
@@ -438,9 +404,9 @@ export const ItemDetails = (details: ItemDetail) => {
                       "bg-blue-600 text-white px-4 py-2 text-center rounded-lg transition-all hover:bg-blue-700 items-center gap-3 text-lg",
                       isMutating ? "animate-pulse" : ""
                     )}
-                    onClick={handleAddToCart}
+                    onClick={() => addToCart({ sku: details.sku, quantity: 1 })}
                   >
-                    Lägg i kundvagn
+                    {t("cart.add")}
                   </button>
                 </div>
                 <PopulateAdminDetails id={id} />
@@ -461,7 +427,7 @@ export const ItemDetails = (details: ItemDetail) => {
 
           <div className="animating-element">
             <h3 className="text-2xl font-bold text-gray-900 border-b border-gray-200 pb-6 mb-8">
-              Liknande produkter
+              {t("common.similar")}
             </h3>
             <RelatedItems id={details.id} />
           </div>

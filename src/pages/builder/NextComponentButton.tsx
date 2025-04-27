@@ -4,6 +4,7 @@ import { useBuilderContext } from "./useBuilderContext";
 import { useBuilderStep } from "./useBuilderStep";
 import { Link } from "react-router-dom";
 import { StepForward } from "lucide-react";
+import { useTranslations } from "../../lib/hooks/useTranslations";
 
 export const NextComponentButton = ({
   componentId,
@@ -11,6 +12,7 @@ export const NextComponentButton = ({
   componentId: number;
 }) => {
   const { selectedItems } = useBuilderContext();
+  const t = useTranslations();
   const hasSelection = useMemo(
     () =>
       selectedItems.length > 0 &&
@@ -25,7 +27,7 @@ export const NextComponentButton = ({
       {unselectedComponents.length > 1 && (
         <div className="absolute -bottom-0 mb-11 bg-white p-4 rounded-lg shadow-xl flex flex-col gap-2 opacity-0 group-hover:animate-pop-fast group-hover:opacity-100 transition-all duration-200 w-72 z-10 border border-gray-100">
           <div className="text-sm font-medium text-gray-500 border-b pb-2 mb-1">
-            Other Components
+            {t("builder.next.other")}
           </div>
           <div className="max-h-[300px] overflow-y-auto flex flex-col gap-1.5">
             {unselectedComponents
@@ -53,8 +55,8 @@ export const NextComponentButton = ({
         <StepForward className="size-5 md:hidden" />
         <span className="hidden md:inline-flex">
           {nextComponent == null
-            ? `Overview`
-            : `Next (${nextComponent?.title})`}
+            ? t("builder.overview")
+            : t("builder.next.next", nextComponent)}
         </span>
       </ButtonLink>
     </div>

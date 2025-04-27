@@ -5,11 +5,13 @@ import { Link } from "react-router-dom";
 import { RotateCcw } from "lucide-react";
 import { useBuilderSum } from "../useBuilderSum";
 import { useRecommendedWatt } from "../useRecommendedWatt";
+import { useTranslations } from "../../../lib/hooks/useTranslations";
 
 export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
   const { setSelectedItems, selectedItems } = useBuilderContext();
   const neededPsuWatt = useRecommendedWatt();
   const sum = useBuilderSum();
+  const t = useTranslations();
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-10 border-t border-gray-200 bg-white shadow-lg">
@@ -18,9 +20,11 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
           {/* Price information */}
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <div className="flex-col hidden sm:flex">
-              <h2 className="text-gray-700 font-medium">Summa:</h2>
+              <h2 className="text-gray-700 font-medium">
+                {t("builder.footer.sum")}
+              </h2>
               <span className="text-xs text-gray-500">
-                Min PSU: {neededPsuWatt}w
+                {t("builder.footer.psu", { watt: neededPsuWatt })}
               </span>
             </div>
             <span className="text-xl md:text-3xl font-bold md:ml-auto sm:ml-0">
@@ -33,7 +37,9 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
             to="/builder/overview"
             className="hidden lg:block text-lg font-bold tracking-tight"
           >
-            Show overview: {selectedItems.length} items
+            {t("builder.footer.progress", {
+              count: selectedItems.length,
+            })}
           </Link>
 
           {/* Action buttons */}
@@ -46,7 +52,9 @@ export const BuilderFooterBar = ({ children }: PropsWithChildren) => {
               onClick={() => setSelectedItems([])}
             >
               <RotateCcw className="size-5 md:hidden" />
-              <span className="hidden md:inline-flex">Börja om</span>
+              <span className="hidden md:inline-flex">
+                {t("builder.footer.clear")}
+              </span>
             </ButtonLink>
           </div>
         </div>
