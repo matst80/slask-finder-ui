@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronUp, Lightbulb, Search, SearchIcon, X } from "lucide-react";
+import { ChevronUp, Lightbulb, Search, SearchIcon } from "lucide-react";
 import { cm, makeImageUrl } from "../utils";
 import { Link } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
