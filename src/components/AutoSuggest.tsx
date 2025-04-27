@@ -151,7 +151,7 @@ export const AutoSuggest = () => {
     <>
       <div
         className={cm(
-          "relative md:flex-1 flex flex-col border-gray-200",
+          "relative md:flex-1 flex flex-col md:block border-gray-200",
           open && "border-b md:border-b-0"
         )}
         onClick={(e) => {
@@ -162,8 +162,8 @@ export const AutoSuggest = () => {
         <input
           ref={inputRef}
           className={cm(
-            "w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 focus:outline-hidden",
-            open ? "md:rounded-t" : "md:rounded-md"
+            "w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden",
+            "md:focus:rounded-t md:rounded-md"
           )}
           type="search"
           value={value ?? ""}
@@ -407,14 +407,14 @@ const SuggestionResults = ({
   onClose: () => void;
 }) => {
   const { items } = useSuggestions();
-  console.log("open", open);
+
   return (
     <div
       className={cm(
-        "transition-all md:absolute md:rounded-b md:border md:border-t-2  md:border-gray-300 md:border-t-white block top-10 left-0 right-0 bg-white overflow-y-auto md:pt-1",
+        "transition-all md:absolute md:rounded-b md:border md:border-t-white  md:border-gray-300 block top-10 left-0 right-0 bg-white overflow-y-auto md:pt-1",
         open
-          ? "md:shadow-xl max-h-[70vh] opacity-100 flex-1"
-          : "md:shadow-xl max-h-[0vh] opacity-0 pointer-events-none"
+          ? "md:shadow-xl max-h-[70vh] opacity-100"
+          : "md:shadow-xl max-h-0 opacity-0"
       )}
       onClick={(e) => e.stopPropagation()}
     >
