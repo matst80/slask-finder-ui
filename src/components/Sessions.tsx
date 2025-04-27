@@ -16,9 +16,11 @@ import { useFacetList } from "../hooks/searchHooks";
 import { Eye, Flashlight, Search, ShoppingCart, Sparkles } from "lucide-react";
 import { Link, useLoaderData } from "react-router-dom";
 import { TimeAgo } from "./TimeAgo";
+import { useTranslations } from "../lib/hooks/useTranslations";
 
 const SearchEventElement = ({ string, query }: SearchEvent) => {
   const { data } = useFacetList();
+  const t = useTranslations();
   const usedFacets = useMemo(() => {
     return (
       string
@@ -35,7 +37,8 @@ const SearchEventElement = ({ string, query }: SearchEvent) => {
   return (
     <div>
       <span className="font-bold">
-        <Search className="size-4 inline-block" /> Search
+        <Search className="size-4 inline-block" />{" "}
+        {t("tracking.sessions.events.search")}
         {query != null && query.length > 0 ? ` (${query})` : ""}
       </span>
       <ul>
@@ -51,8 +54,9 @@ const SearchEventElement = ({ string, query }: SearchEvent) => {
 
 const ItemPreview = ({ id }: { id: number }) => {
   const { data } = useItemData(id);
+  const t = useTranslations();
   if (!data) {
-    return <div>Loading...</div>;
+    return <div>{t("tracking.sessions.loading")}</div>;
   }
   return (
     <img
@@ -65,23 +69,30 @@ const ItemPreview = ({ id }: { id: number }) => {
 
 const ClickEventElement = (props: ClickEvent) => {
   const [open, setOpen] = useState(false);
+  const t = useTranslations();
   return (
     <div onClick={() => setOpen((p) => !p)}>
-      Click ({props.item}){open && <ItemPreview id={props.item} />}
+      {t("tracking.sessions.events.click")} ({props.item})
+      {open && <ItemPreview id={props.item} />}
     </div>
   );
 };
 const CartEventElement = (props: CartEvent) => {
   const [open, setOpen] = useState(false);
+  const t = useTranslations();
   return (
     <div className="font-bold" onClick={() => setOpen((p) => !p)}>
       <ShoppingCart className="size-5 inline-block mr-2" />
       {props.event == 15 ? (
-        <>Change quantity to {props.quantity}</>
+        <>
+          {t("tracking.sessions.events.changeQuantity", {
+            quantity: props.quantity,
+          })}
+        </>
       ) : (
         <>
-          Add to cart ({props.item} - {props.quantity})
-          {open && <ItemPreview id={props.item} />}
+          {t("tracking.sessions.events.addToCart")} ({props.item} -{" "}
+          {props.quantity}){open && <ItemPreview id={props.item} />}
         </>
       )}
     </div>
@@ -89,14 +100,16 @@ const CartEventElement = (props: CartEvent) => {
 };
 const ImpressionEventElement = (props: ImpressionEvent) => {
   const [open, setOpen] = useState(false);
+  const t = useTranslations();
   return (
     <div className="font-bold" onClick={() => setOpen((p) => !p)}>
-      <Eye className="size-5 inline-block" /> Impression ({props.items.length})
+      <Eye className="size-5 inline-block" />{" "}
+      {t("tracking.sessions.events.impression", { count: props.items.length })}
       {open && (
         <div className="p-4 rounded-lg bg-white">
           <div className="flex gap-2 flex-wrap">
             {props.items.map((item) => (
-              <ItemPreview id={item.id} />
+              <ItemPreview key={item.id} id={item.id} />
             ))}
           </div>
         </div>
@@ -106,19 +119,21 @@ const ImpressionEventElement = (props: ImpressionEvent) => {
 };
 
 const getActionName = (action: string) => {
+  const t = useTranslations();
   if (action === "exit") {
-    return "Leave the page";
+    return t("tracking.sessions.events.action.exit");
   }
   if (action === "lost-focus") {
-    return "Tab out of the application";
+    return t("tracking.sessions.events.action.lostFocus");
   }
   if (action === "got-focus") {
-    return "Got back to the application";
+    return t("tracking.sessions.events.action.gotFocus");
   }
   return action;
 };
 
 const ActionEventElement = ({ action, reason }: ActionEvent) => {
+  const t = useTranslations();
   return (
     <div className="font-bold">
       <Flashlight className="size-5 inline-block" /> {getActionName(action)} (
@@ -129,15 +144,21 @@ const ActionEventElement = ({ action, reason }: ActionEvent) => {
 
 const SuggestionEventElement = (props: SuggestionEvent) => {
   const { value, results, suggestions } = props;
+  const t = useTranslations();
 
   return (
     <div>
       <span className="font-bold">
-        <Sparkles className="size-4 inline-block" /> Suggestions: {value}
+        <Sparkles className="size-4 inline-block" />{" "}
+        {t("tracking.sessions.events.suggestion", { value })}
       </span>
       <div className="mt-1">
-        <div>Items: {results}</div>
-        <div>Suggested words: {suggestions}</div>
+        <div>
+          {t("tracking.sessions.events.items")}: {results}
+        </div>
+        <div>
+          {t("tracking.sessions.events.suggestedWords")}: {suggestions}
+        </div>
       </div>
     </div>
   );
@@ -146,11 +167,12 @@ const SuggestionEventElement = (props: SuggestionEvent) => {
 const CheckoutEventElement = (props: CheckoutEvent) => {
   const { items } = props;
   const [open, setOpen] = useState(false);
+  const t = useTranslations();
   return (
     <div onClick={() => setOpen((p) => !p)}>
       <span className="font-bold">
-        <ShoppingCart className="size-4 inline-block" /> Checkout (
-        {items.length})
+        <ShoppingCart className="size-4 inline-block" />{" "}
+        {t("tracking.sessions.events.checkout", { count: items.length })}
       </span>
       {open && (
         <div className="p-4 rounded-lg bg-white">
@@ -264,7 +286,7 @@ const EventList = ({ events }: { events: TrackedEvent[] }) => {
                 event.event === 6 &&
                   "bg-gray-50 text-gray-800 hover:bg-gray-100",
                 event.event === 7 &&
-                  "bg-pink-50 text-pink-800 hover:bg-pink-100",
+                  "bg-pink-50 text-pink-800 hover:bg-pink-100"
               )}
             >
               <Event {...event} />
@@ -296,59 +318,61 @@ const trimLanguage = (language?: string) => {
 };
 
 const getDeviceFromUserAgent = (user_agent?: string) => {
+  const t = useTranslations();
   if (!user_agent) {
     return null;
   }
   if (user_agent.includes("SM-")) {
-    return "Samsung";
+    return t("tracking.sessions.device.samsung");
   }
   if (user_agent.includes("Android")) {
-    return "Android";
+    return t("tracking.sessions.device.android");
   }
   if (user_agent.includes("iPhone")) {
-    return "iPhone";
+    return t("tracking.sessions.device.iphone");
   }
   if (user_agent.includes("iPad")) {
-    return "iPad";
+    return t("tracking.sessions.device.ipad");
   }
   if (user_agent.includes("Macintosh")) {
-    return "Mac";
+    return t("tracking.sessions.device.mac");
   }
   if (user_agent.includes("Windows")) {
-    return "Windows";
+    return t("tracking.sessions.device.windows");
   }
   if (user_agent.includes("Linux")) {
-    return "Linux";
+    return t("tracking.sessions.device.linux");
   }
 
   return user_agent.split(" ")[0];
 };
 
 const getBrowserFromUserAgent = (user_agent?: string) => {
+  const t = useTranslations();
   if (!user_agent) {
     return null;
   }
   if (user_agent.includes("SamsungBrowser")) {
-    return "Samsung Browser";
+    return t("tracking.sessions.browser.samsung");
   }
   if (user_agent.includes("Chrome")) {
-    return "Chrome";
+    return t("tracking.sessions.browser.chrome");
   }
   if (user_agent.includes("Firefox")) {
-    return "Firefox";
+    return t("tracking.sessions.browser.firefox");
   }
   if (user_agent.includes("Safari")) {
-    return "Safari";
+    return t("tracking.sessions.browser.safari");
   }
   if (user_agent.includes("Edge")) {
-    return "Edge";
+    return t("tracking.sessions.browser.edge");
   }
 
   return user_agent.split(" ")[1];
 };
 const Session = (props: SessionData) => {
   const { user_agent, ip, language, id } = props;
-
+  const t = useTranslations();
   return (
     <Link
       to={`/stats/session/${id}`}
@@ -361,11 +385,15 @@ const Session = (props: SessionData) => {
       </div>
       <div className="flex justify-between text-sm text-gray-600">
         <div className="flex flex-col">
-          <span className="text-xs text-gray-500">Created</span>
+          <span className="text-xs text-gray-500">
+            {t("tracking.sessions.created")}
+          </span>
           <TimeAgo ts={props.ts * 1000} />
         </div>
         <div className="flex flex-col">
-          <span className="text-xs text-gray-500">Last Activity</span>
+          <span className="text-xs text-gray-500">
+            {t("tracking.sessions.updated")}
+          </span>
           <TimeAgo ts={props.last_update * 1000} />
         </div>
       </div>
@@ -379,11 +407,12 @@ const byLastUpdate = (a: SessionData, b: SessionData) => {
 
 export const Sessions = () => {
   const { data, isLoading } = useSessions();
+  const t = useTranslations();
   const sessions = useMemo(() => {
     return data?.sort(byLastUpdate) ?? [];
   }, [data]);
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>{t("tracking.sessions.loading")}</div>;
   }
   return (
     <div className="flex flex-col gap-2">
@@ -396,7 +425,7 @@ export const Sessions = () => {
 
 export const SessionView = () => {
   const data = useLoaderData() as SessionData | null;
-
+  const t = useTranslations();
   const eventSummary = useMemo(() => {
     if (!data)
       return {
@@ -451,28 +480,40 @@ export const SessionView = () => {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-xs p-6 mb-6">
-        <h1 className="text-2xl font-bold mb-4">Session Details</h1>
+        <h1 className="text-2xl font-bold mb-4">
+          {t("tracking.sessions.details")}
+        </h1>
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <h2 className="text-sm font-medium text-gray-500">IP Address</h2>
+            <h2 className="text-sm font-medium text-gray-500">
+              {t("tracking.sessions.ip")}
+            </h2>
             <p className="text-lg">{data.ip}</p>
           </div>
           <div>
-            <h2 className="text-sm font-medium text-gray-500">Language</h2>
+            <h2 className="text-sm font-medium text-gray-500">
+              {t("tracking.sessions.language")}
+            </h2>
             <p className="text-lg">{data.language}</p>
           </div>
           <div>
-            <h2 className="text-sm font-medium text-gray-500">User Agent</h2>
+            <h2 className="text-sm font-medium text-gray-500">
+              {t("tracking.sessions.user_agent")}
+            </h2>
             <p className="text-sm text-gray-600">{data.user_agent}</p>
           </div>
           <div>
-            <h2 className="text-sm font-medium text-gray-500">Last Activity</h2>
+            <h2 className="text-sm font-medium text-gray-500">
+              {t("tracking.sessions.updated")}
+            </h2>
             <p className="text-lg">
               <TimeAgo ts={data.last_update * 1000} />
             </p>
           </div>
           <div>
-            <h2 className="text-sm font-medium text-gray-500">Created</h2>
+            <h2 className="text-sm font-medium text-gray-500">
+              {t("tracking.sessions.created")}
+            </h2>
             <p className="text-lg">
               <TimeAgo ts={data.ts * 1000} />
             </p>
@@ -480,50 +521,66 @@ export const SessionView = () => {
         </div>
 
         <div className="bg-gray-50 rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-3">Session Summary</h2>
+          <h2 className="text-lg font-semibold mb-3">
+            {t("tracking.sessions.summary")}
+          </h2>
           <div className="grid grid-cols-6 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">
                 {eventSummary.searches}
               </div>
-              <div className="text-sm text-gray-600">Searches</div>
+              <div className="text-sm text-gray-600">
+                {t("tracking.sessions.actions.search")}
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
                 {eventSummary.clicks}
               </div>
-              <div className="text-sm text-gray-600">Clicks</div>
+              <div className="text-sm text-gray-600">
+                {t("tracking.sessions.actions.click")}
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600">
                 {eventSummary.cartActions}
               </div>
-              <div className="text-sm text-gray-600">Cart Actions</div>
+              <div className="text-sm text-gray-600">
+                {t("tracking.sessions.actions.cart")}
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">
                 {eventSummary.impressions}
               </div>
-              <div className="text-sm text-gray-600">Impressions</div>
+              <div className="text-sm text-gray-600">
+                {t("tracking.sessions.actions.impressions")}
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-gray-600">
                 {eventSummary.actions}
               </div>
-              <div className="text-sm text-gray-600">Actions</div>
+              <div className="text-sm text-gray-600">
+                {t("tracking.sessions.actions.actions")}
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-pink-600">
                 {eventSummary.suggestions}
               </div>
-              <div className="text-sm text-gray-600">Suggestions</div>
+              <div className="text-sm text-gray-600">
+                {t("tracking.sessions.actions.suggestions")}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-xs p-6">
-        <h2 className="text-xl font-semibold mb-4">Event Timeline</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {t("tracking.sessions.timeline")}
+        </h2>
         <EventList events={data.events} />
       </div>
     </div>

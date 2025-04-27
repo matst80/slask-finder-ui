@@ -10,6 +10,11 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { useDefaultMetricsQuery } from "../hooks/metricsHooks";
+import { useTranslations } from "../lib/hooks/useTranslations";
+
+type CardProps = {
+  title: string;
+};
 
 const StatCard = ({
   title,
@@ -18,8 +23,7 @@ const StatCard = ({
   trend,
   icon: Icon,
   color,
-}: {
-  title: string;
+}: CardProps & {
   value: string | number;
   isLoading: boolean;
   error?: Error;
@@ -73,11 +77,11 @@ const StatCard = ({
   );
 };
 
-const SearchStats = () => {
+const SearchStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
     `sum(slaskfinder_searches_total)`,
     ({ data }) => ({
-      label: "Total searches",
+      label: title,
       data,
     })
   );
@@ -90,7 +94,7 @@ const SearchStats = () => {
 
   return (
     <StatCard
-      title="Total Searches"
+      title={title}
       value={currentValue.toLocaleString()}
       isLoading={isLoading}
       error={error}
@@ -101,11 +105,11 @@ const SearchStats = () => {
   );
 };
 
-const FacetStats = () => {
+const FacetStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
     `sum(slaskfinder_facets_total)`,
     ({ data }) => ({
-      label: "Total facets",
+      label: title,
       data,
     })
   );
@@ -118,7 +122,7 @@ const FacetStats = () => {
 
   return (
     <StatCard
-      title="Total Facet Generations"
+      title={title}
       value={currentValue.toLocaleString()}
       isLoading={isLoading}
       error={error}
@@ -129,11 +133,11 @@ const FacetStats = () => {
   );
 };
 
-const TrackingEventsStats = () => {
+const TrackingEventsStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
     `sum(slasktracking_processed_tracking_events_total)`,
     ({ data }) => ({
-      label: "Total tracking events",
+      label: title,
       data,
     })
   );
@@ -146,7 +150,7 @@ const TrackingEventsStats = () => {
 
   return (
     <StatCard
-      title="Total Tracking Events"
+      title={title}
       value={currentValue.toLocaleString()}
       isLoading={isLoading}
       error={error}
@@ -157,11 +161,11 @@ const TrackingEventsStats = () => {
   );
 };
 
-const MemoryStats = () => {
+const MemoryStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
     `avg(container_memory_working_set_bytes{container="slask-finder"})`,
     ({ data }) => ({
-      label: "Memory usage",
+      label: title,
       data,
     })
   );
@@ -175,7 +179,7 @@ const MemoryStats = () => {
 
   return (
     <StatCard
-      title="Average Memory Usage"
+      title={title}
       value={`${memoryUsageGB} GB`}
       isLoading={isLoading}
       error={error}
@@ -186,11 +190,11 @@ const MemoryStats = () => {
   );
 };
 
-const CpuStats = () => {
+const CpuStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
     `sum(rate(container_cpu_usage_seconds_total{container="slask-finder"}[1m]))`,
     ({ data }) => ({
-      label: "CPU usage",
+      label: title,
       data,
     })
   );
@@ -204,7 +208,7 @@ const CpuStats = () => {
 
   return (
     <StatCard
-      title="CPU Usage"
+      title={title}
       value={`${cpuUsagePercent}%`}
       isLoading={isLoading}
       error={error}
@@ -215,11 +219,11 @@ const CpuStats = () => {
   );
 };
 
-const UpsertsStats = () => {
+const UpsertsStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
     `sum(slaskfinder_index_updates_total)`,
     ({ data }) => ({
-      label: "Total updates",
+      label: title,
       data,
     })
   );
@@ -232,7 +236,7 @@ const UpsertsStats = () => {
 
   return (
     <StatCard
-      title="Total Item Updates"
+      title={title}
       value={currentValue.toLocaleString()}
       isLoading={isLoading}
       error={error}
@@ -243,11 +247,11 @@ const UpsertsStats = () => {
   );
 };
 
-const SuggestStats = () => {
+const SuggestStats = ({ title }: CardProps) => {
   const { data, error, isLoading } = useDefaultMetricsQuery(
     `sum(slaskfinder_suggest_total)`,
     ({ data }) => ({
-      label: "Total suggestions",
+      label: title,
       data,
     })
   );
@@ -260,7 +264,7 @@ const SuggestStats = () => {
 
   return (
     <StatCard
-      title="Total Suggestions"
+      title={title}
       value={currentValue.toLocaleString()}
       error={error}
       trend={trend}
@@ -272,17 +276,18 @@ const SuggestStats = () => {
 };
 
 export const DashboardView = () => {
+  const t = useTranslations();
   return (
     <div className="container p-4 md:p-10">
-      <h1 className="text-2xl font-bold mb-6">System Statistics</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("dashboard.title")}</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <SearchStats />
-        <FacetStats />
-        <TrackingEventsStats />
-        <MemoryStats />
-        <CpuStats />
-        <UpsertsStats />
-        <SuggestStats />
+        <SearchStats title={t("dashboard.searches")} />
+        <FacetStats title={t("dashboard.facets")} />
+        <TrackingEventsStats title={t("dashboard.tracking_events")} />
+        <MemoryStats title={t("dashboard.memory")} />
+        <CpuStats title={t("dashboard.cpu")} />
+        <UpsertsStats title={t("dashboard.updates")} />
+        <SuggestStats title={t("dashboard.suggestions")} />
       </div>
     </div>
   );

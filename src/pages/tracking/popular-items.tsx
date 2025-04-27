@@ -2,6 +2,7 @@ import useSWR from "swr";
 import { getTrackingPopularity } from "../../lib/datalayer/api";
 import { useItemData } from "../../hooks/trackingHooks";
 import { makeImageUrl } from "../../utils";
+import { useTranslations } from "../../lib/hooks/useTranslations";
 
 const PopularItem = ({ itemId, value }: { itemId: number; value: number }) => {
   const { data } = useItemData(itemId);
@@ -33,9 +34,12 @@ const PopularItem = ({ itemId, value }: { itemId: number; value: number }) => {
 
 export const PopularItemsView = () => {
   const { data } = useSWR("/api/popular-items", getTrackingPopularity);
+  const t = useTranslations();
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="font-bold text-3xl mb-8 text-gray-800">Popular Items</h1>
+      <h1 className="font-bold text-3xl mb-8 text-gray-800">
+        {t("tracking.items.title")}
+      </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {Object.entries(data ?? {})
           .sort(([, a], [, b]) => b - a)

@@ -6,6 +6,7 @@ import { useIsAdmin, useUser } from "../adminHooks";
 import { PropsWithChildren, useEffect } from "react";
 import { MiniCart } from "./MiniCart";
 import { useAdmin } from "../hooks/appState";
+import { useTranslations } from "../lib/hooks/useTranslations";
 
 const UserButton = () => {
   const { data, isLoading } = useUser();
@@ -44,7 +45,7 @@ const MenuLink = ({ to, children }: PropsWithChildren<{ to: To }>) => (
 );
 
 export function Navbar() {
-  const isAdmin = useIsAdmin();
+  const t = useTranslations();
   return (
     <nav className="bg-white shadow-md hidden md:block">
       <div className="mx-auto px-6">
@@ -52,17 +53,15 @@ export function Navbar() {
           <div className="flex items-center">
             <div className="shrink-0">
               <span className="text-2xl font-bold text-blue-600">
-                slask-finder
+                {t("app_name")}
               </span>
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
-                <MenuLink to="/">Search</MenuLink>
-                <MenuLink to="/dashboard">Dashboard</MenuLink>
-                <MenuLink to="/builder">PC Builder</MenuLink>
-                <MenuLink to="/stats">Tracking</MenuLink>
-
-                {isAdmin && <MenuLink to="/edit">Edit</MenuLink>}
+                <MenuLink to="/">{t("menu.search")}</MenuLink>
+                <MenuLink to="/dashboard">{t("menu.dashboard")}</MenuLink>
+                <MenuLink to="/builder">{t("menu.builder")}</MenuLink>
+                <MenuLink to="/stats">{t("menu.tracking")}</MenuLink>
               </div>
             </div>
           </div>
