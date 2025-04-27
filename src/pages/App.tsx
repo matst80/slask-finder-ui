@@ -46,6 +46,7 @@ function App() {
           </main>
         </div>
       </div>
+      <div className="progress" />
     </SuggestionProvider>
   );
 }
