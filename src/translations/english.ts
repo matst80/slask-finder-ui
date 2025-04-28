@@ -1,3 +1,4 @@
+import { li, title } from "framer-motion/client";
 import { BaseTranslationType } from "../lib/types";
 
 export const english = {
@@ -69,6 +70,28 @@ export const english = {
     start: {
       title: "Where do you want to start?",
       boxText: "Start with",
+      cpu: {
+        title: "Processor",
+        description: "Select a processor for your build",
+      },
+      gpu: {
+        title: "Graphics card",
+        description: "Select a graphics card for your build",
+      },
+      case: {
+        title: "Case",
+        description: "Select a case for your build",
+      },
+    },
+    selector: {
+      air_cooler: {
+        title: "Air cooler",
+        description: "Select an air cooler for your build",
+      },
+      liquid_cooler: {
+        title: "Liquid cooler",
+        description: "Select a liquid cooler for your build",
+      },
     },
     overview: "Overview",
     remove: "Remove",

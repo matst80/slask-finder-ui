@@ -3,8 +3,9 @@ import { BuilderContext } from "./builder-context";
 import { fixSingleArray, isRangeFilter, isStringFilter } from "./builder-utils";
 import { FilteringQuery } from "../../lib/types";
 import { useComponentFilters } from "./useComponentFilters";
+import { ComponentId } from "./builder-types";
 
-export const useBuilderQuery = (selectedComponentId: number) => {
+export const useBuilderQuery = (selectedComponentId?: ComponentId) => {
   const ctx = useContext(BuilderContext);
   if (!ctx) {
     throw new Error("useBuilderQuery must be used within a BuilderProvider");
@@ -13,7 +14,8 @@ export const useBuilderQuery = (selectedComponentId: number) => {
   const selectionFilters = useComponentFilters(selectedComponentId);
 
   return useMemo(() => {
-    const selectedComponent = components[selectedComponentId];
+    const selectedComponent =
+      selectedComponentId != null ? components[selectedComponentId] : undefined;
 
     return {
       selectionFilters,

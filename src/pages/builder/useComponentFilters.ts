@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { SelectedAdditionalFilter } from "./builder-types";
+import { ComponentId, SelectedAdditionalFilter } from "./builder-types";
 import { useBuilderFilters } from "./useBuilderFilters";
 import { isDefined } from "../../utils";
 
 export const useComponentFilters = (
-  componentId: number
+  componentId?: ComponentId
 ): SelectedAdditionalFilter[] => {
   const filters = useBuilderFilters();
 

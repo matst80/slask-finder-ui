@@ -1,24 +1,28 @@
 import { ItemValues } from "../../lib/types";
 import { isDefined } from "../../utils";
 import {
+  ComponentId,
   ConverterResult,
   Issue,
   ItemWithComponentId,
+  OptionsId,
   Rule,
+  RuleId,
+  SelectionId,
 } from "./builder-types";
 import { asNumber } from "./builder-utils";
 
-export const GPU = 5;
-export const CPU = 1;
-export const MOTHERBOARD = 2;
-export const RAM = 3;
-export const PSU = 6;
-export const CASE = 7;
-export const STORAGE = 4;
-export const COOLER = 8;
-export const ADDONS = 100;
-const AIR_COOLER = 81;
-const LIQUID_COOLER = 82;
+export const GPU: ComponentId = "gpu";
+export const CPU: ComponentId = "cpu";
+export const MOTHERBOARD: ComponentId = "motherboard";
+export const RAM: ComponentId = "ram";
+export const PSU: ComponentId = "psu";
+export const CASE: ComponentId = "case";
+export const STORAGE: ComponentId = "storage";
+export const COOLER: SelectionId = "cooler";
+export const ADDONS: OptionsId = "addons";
+const AIR_COOLER: ComponentId = "air_cooler";
+const LIQUID_COOLER: ComponentId = "liquid_cooler";
 
 const isKey = (value: unknown): value is string | string[] => {
   return (
@@ -181,7 +185,7 @@ const toStringFilter = (
   return [];
 };
 
-export const defaultComponentOrder = [
+export const defaultComponentOrder: RuleId[] = [
   CPU,
   MOTHERBOARD,
   RAM,
@@ -462,7 +466,7 @@ export const componentRules: Rule[] = [
         stringMatch(values, 30857, "error", "X"),
       ].filter(isDefined);
     },
-    requires: [1],
+    requires: [CPU],
     topFilters: [
       2, 36207, 30552, 30552, 30276, 32161, 32103, 33514, 33533, 33576, 36232,
       36211, 36213,
@@ -653,11 +657,11 @@ export const componentRules: Rule[] = [
       {
         type: "component",
         title: "Luftkylare",
-        requires: [7, 1],
+        requires: [CASE, CPU],
         id: AIR_COOLER,
         disabled: disabledIfCoolerIncluded,
         //ignoreIfComponentSelected: 8,
-        startingText: "Luftkylning är tryggt sätt att kyla din cpu.",
+        //startingText: "Luftkylning är tryggt sätt att kyla din cpu.",
         topFilters: [32093, 32177],
         //importantFacets: [32093, 36310, 32097, 32177, 36311, 36306], //, 32077
         importantFacets: [36310, 36307, 32133],
@@ -681,7 +685,7 @@ export const componentRules: Rule[] = [
       {
         type: "component",
         title: "Vattenkylning",
-        requires: [7, 1],
+        requires: [CASE, CPU],
         id: LIQUID_COOLER,
         disabled: disabledIfCoolerIncluded,
         //ignoreIfComponentSelected: 9,
@@ -692,8 +696,8 @@ export const componentRules: Rule[] = [
             numberMatch(values, 36307, { min: 10, max: 9999 }, "warning"),
           ].filter(isDefined);
         },
-        startingText:
-          "Vattenkylning är ett bra val för att kyla din CPU. kan vara mer effektivt än luftkylning.",
+        // startingText:
+        //   "Vattenkylning är ett bra val för att kyla din CPU. kan vara mer effektivt än luftkylning.",
         //importantFacets: [32093, 36310, 32097, 32177, 36311, 36306], //, 32077
         importantFacets: [36310, 36307, 32133],
         filter: {
@@ -734,7 +738,7 @@ export const componentRules: Rule[] = [
       if (maxSlotsNum > modulesNum) return Math.floor(maxSlotsNum / modulesNum);
       return 1;
     },
-    requires: [2],
+    requires: [MOTHERBOARD],
     topFilters: [36272, 36258, 36268, 36272, 36267, 36271],
     //importantFacets: [36268, 31191, 36271],
     importantFacets: [36267, 36268, 36271],
@@ -831,11 +835,11 @@ export const componentRules: Rule[] = [
   {
     type: "group",
     title: "Tillbehör",
-    id: ADDONS,
+    id: "addons",
     components: [
       {
         type: "component",
-        id: 10,
+        id: "screen",
         title: "Skärm",
         filtersToApply: [],
         topFilters: [
@@ -855,7 +859,7 @@ export const componentRules: Rule[] = [
       {
         type: "component",
         title: "Extra SSD Lagring",
-        id: 11,
+        id: "extra_storage",
         topFilters: [31508, 32194, 32195],
         filter: {
           range: [],
@@ -876,7 +880,7 @@ export const componentRules: Rule[] = [
       {
         type: "component",
         title: "Operativsystem",
-        id: 12,
+        id: "os",
         topFilters: [],
         filtersToApply: [],
         filter: {
@@ -892,7 +896,7 @@ export const componentRules: Rule[] = [
       {
         type: "component",
         title: "Tangentbord",
-        id: 13,
+        id: "keyboard",
         filter: {
           range: [],
           string: [
@@ -907,7 +911,7 @@ export const componentRules: Rule[] = [
       {
         type: "component",
         title: "Mus",
-        id: 14,
+        id: "mouse",
         filter: {
           range: [],
           string: [

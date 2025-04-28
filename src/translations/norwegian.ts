@@ -69,6 +69,21 @@ export const norwegian = {
     start: {
       title: "Hvor vil du begynne?",
       boxText: "Start med",
+      cpu: {
+        title: "Prosessor",
+        description:
+          "Velg en prosessor for å begynne byggingen. Du kan alltid endre den senere.",
+      },
+      gpu: {
+        title: "Grafikkort",
+        description:
+          "Velg et grafikkort for å begynne byggingen. Du kan alltid endre det senere.",
+      },
+      case: {
+        title: "Kabinetter",
+        description:
+          "Velg et kabinett for å begynne byggingen. Du kan alltid endre det senere.",
+      },
     },
     overview: "Oversikt",
     remove: "Fjern",

@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 import { useBuilderContext } from "./useBuilderContext";
 import { isDefined } from "../../utils";
-import { Rule } from "./builder-types";
+import { Rule, RuleId } from "./builder-types";
 
-export const useBuilderStep = (componentId: number) => {
+export const useBuilderStep = (componentId?: RuleId) => {
   const { selectedItems, order, rules } = useBuilderContext();
 
   return useMemo(() => {
     const currentIdx = order.findIndex((id) => id === componentId);
-
-    const selectedIds = new Set([
+    console.log("selectedItems", selectedItems);
+    const selectedIds = new Set<RuleId>([
       ...selectedItems.flatMap((d) =>
         [d.componentId, d.parentId].filter(isDefined)
       ),
@@ -17,6 +17,8 @@ export const useBuilderStep = (componentId: number) => {
         .filter((d) => d.disabled != null && d.disabled(selectedItems))
         .map((d) => d.id),
     ]);
+
+    console.log("selectedIds", selectedIds);
 
     const unselected = order
       .filter((id) => {

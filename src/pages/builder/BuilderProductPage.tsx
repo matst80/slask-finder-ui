@@ -5,7 +5,7 @@ import { makeImageUrl } from "../../utils";
 import { StockList } from "../../components/StockList";
 import { Button, ButtonLink } from "../../components/ui/button";
 import { useBuilderContext } from "./useBuilderContext";
-import { ItemWithComponentId } from "./builder-types";
+import { isParentId, ItemWithComponentId } from "./builder-types";
 import { trackAction, trackClick } from "../../lib/datalayer/beacons";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { useBuilderStep } from "./useBuilderStep";
@@ -33,10 +33,10 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
     values,
     disclaimer,
   } = details;
-  const queryParentId = new URLSearchParams(globalThis.location.search).get(
-    "parentId"
-  );
-  const parentId = queryParentId ? parseInt(queryParentId) : itemParentId;
+  const queryParentId =
+    new URLSearchParams(globalThis.location.search).get("parentId") ??
+    undefined;
+  const parentId = isParentId(queryParentId) ? queryParentId : itemParentId;
   const isSelected = selectedItems.some((d) => d.id === id);
   return (
     <>
@@ -87,15 +87,18 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                       variant={isSelected ? "outline" : "default"}
                       onClick={() => {
                         setSelectedItems((prev) => [
-                          ...prev.filter(
-                            (d) => d.componentId != (parentId ?? componentId)
+                          ...prev.filter((d) =>
+                            parentId == null
+                              ? d.componentId != componentId
+                              : d.parentId != parentId
                           ),
                           ...(isSelected
                             ? []
                             : [
                                 {
                                   ...details,
-                                  componentId: parentId ?? componentId,
+                                  parentId,
+                                  componentId,
                                 },
                               ]),
                         ]);

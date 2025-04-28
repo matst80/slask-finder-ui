@@ -151,14 +151,15 @@ export type PageResult = {
 
 export type ItemResult = Item[];
 
-export type NumberValue = { min: number; max: number };
-
 export const isNumberValue = (value: unknown): value is NumberValue => {
   if (typeof value === "object" && value != null) {
     return typeof (value as NumberValue).min === "number";
   }
   return false;
 };
+export type KeyValue = string | string[];
+
+export type NumberValue = { min: number; max: number };
 
 export type NumberField = { id: number } & NumberValue;
 

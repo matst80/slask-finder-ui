@@ -1,3 +1,4 @@
+import { title } from "framer-motion/client";
 import { BaseTranslationType } from "../lib/types";
 
 export const swedish = {
@@ -69,6 +70,31 @@ export const swedish = {
     start: {
       title: "Var vill du börja?",
       boxText: "Börja med",
+      cpu: {
+        title: "Processor",
+        description:
+          "Välj en processor för din byggnad. Du kan alltid ändra den senare.",
+      },
+      gpu: {
+        title: "Grafikkort",
+        description:
+          "Välj ett grafikkort för din byggnad. Du kan alltid ändra den senare.",
+      },
+      case: {
+        title: "Chassi",
+        description:
+          "Välj ett chassi för din byggnad. Du kan alltid ändra den senare.",
+      },
+    },
+    selector: {
+      air_cooler: {
+        title: "Luftkylnare",
+        description: "Välj en luftkylnare för din byggnad",
+      },
+      liquid_cooler: {
+        title: "Vattenkylning",
+        description: "Välj vattenkylning för din byggnad",
+      },
     },
     overview: "Översikt",
     remove: "Ta bort",

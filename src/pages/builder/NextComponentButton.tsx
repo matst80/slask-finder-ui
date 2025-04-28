@@ -5,11 +5,12 @@ import { useBuilderStep } from "./useBuilderStep";
 import { Link } from "react-router-dom";
 import { StepForward } from "lucide-react";
 import { useTranslations } from "../../lib/hooks/useTranslations";
+import { RuleId } from "./builder-types";
 
 export const NextComponentButton = ({
   componentId,
 }: {
-  componentId: number;
+  componentId: RuleId;
 }) => {
   const { selectedItems } = useBuilderContext();
   const t = useTranslations();

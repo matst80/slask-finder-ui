@@ -1,14 +1,14 @@
 import { Outlet } from "react-router-dom";
 import { BuilderProvider } from "./BuilderProvider";
 import { componentRules, defaultComponentOrder } from "./rules";
-import { ItemWithComponentId } from "./builder-types";
+import { ItemWithComponentId, RuleId } from "./builder-types";
 import { PageContainer } from "../../PageContainer";
 import { useBuilderContext } from "./useBuilderContext";
 import { useEffect } from "react";
 
 type LocalStorageData = {
   items: ItemWithComponentId[];
-  order: number[];
+  order: RuleId[];
 };
 
 const saveBuildToLocalStorage = (data: LocalStorageData) => {

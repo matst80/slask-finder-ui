@@ -73,7 +73,7 @@ const SpecificationSummary = () => {
 
 export const BuilderOverview = () => {
   const { selectedItems, rules, components } = useBuilderContext();
-  const [unselectedComponents] = useBuilderStep(0);
+  const [unselectedComponents] = useBuilderStep();
   const t = useTranslations();
   const { trigger: addToCart, isMutating } = useAddMultipleToCart();
   return (

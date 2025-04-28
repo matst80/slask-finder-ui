@@ -1,13 +1,19 @@
 import { createContext } from "react";
-import { Component, ItemWithComponentId, Rule } from "./builder-types";
+import {
+  Component,
+  ComponentId,
+  ItemWithComponentId,
+  Rule,
+  RuleId,
+} from "./builder-types";
 
 export const BuilderContext = createContext<{
   selectedItems: ItemWithComponentId[];
   updateRules: React.Dispatch<React.SetStateAction<Rule[]>>;
-  order: number[];
-  setOrder: React.Dispatch<React.SetStateAction<number[]>>;
+  order: RuleId[];
+  setOrder: React.Dispatch<React.SetStateAction<RuleId[]>>;
   rules: Rule[];
-  components: Record<number, Component>;
+  components: Record<ComponentId, Component>;
   setSelectedItems: React.Dispatch<React.SetStateAction<ItemWithComponentId[]>>;
   reset: () => void;
 } | null>(null);

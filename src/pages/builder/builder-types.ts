@@ -1,19 +1,25 @@
-import { FilteringQuery, Item, ItemValues } from "../../lib/types";
+import {
+  FilteringQuery,
+  Item,
+  ItemValues,
+  KeyValue,
+  NumberValue,
+} from "../../lib/types";
 
 export type ItemWithComponentId = Item & {
-  componentId: number;
-  parentId?: number;
+  componentId: ComponentId;
+  parentId?: SelectionId;
   quantity?: number;
 };
 
 export type ConverterResult = {
-  id: number;
+  id: FacetId;
   value: string | string[] | { min: number; max: number };
 };
 
 export type AdditionalFilter = {
-  id: number;
-  to: number;
+  id: FacetId;
+  to: ComponentId;
   converter?: (values: ItemValues) => ConverterResult[];
 };
 
@@ -21,25 +27,53 @@ export type QuickFilter = {
   name: string;
   options: {
     title: string;
-    filters: { id: number; value: FilterValue }[];
+    filters: { id: FacetId; value: FilterValue }[];
   }[];
 };
 
 export type Issue = {
   type: "error" | "warning";
   message?: string;
-  facetId: number;
+  facetId: FacetId;
 };
+
+export type SelectionId = "cooler";
+
+export const isParentId = (
+  parentId: string | null | undefined
+): parentId is SelectionId => {
+  return parentId != null && parentId == "cooler";
+};
+
+export type OptionsId = "addons";
+
+export type ComponentId =
+  | "cpu"
+  | "gpu"
+  | "motherboard"
+  | "ram"
+  | "storage"
+  | "psu"
+  | "case"
+  | "air_cooler"
+  | "liquid_cooler"
+  | "screen"
+  | "keyboard"
+  | "os"
+  | "extra_storage"
+  | "mouse";
+
+export type RuleId = ComponentId | SelectionId | OptionsId;
+export type FacetId = number;
 
 export type Component = {
   type: "component";
   title: string;
-  id: number;
-  requires?: number[];
-  parentId?: number;
+  id: ComponentId;
+  requires?: ComponentId[];
+  parentId?: SelectionId;
   ignoreIfComponentSelected?: number;
-  key?: string;
-  order?: number[];
+  order?: RuleId[];
   //nextComponentId?: number;
   quickFilters?: QuickFilter[];
   validator?: (values: ItemValues) => Issue[];
@@ -47,14 +81,14 @@ export type Component = {
   filter: Pick<FilteringQuery, "string" | "range">;
   disabled?: (selectedItems: ItemWithComponentId[]) => boolean;
   maxQuantity?: (selectedItems: ItemWithComponentId[]) => number;
-  topFilters?: number[];
-  importantFacets?: number[];
+  topFilters?: FacetId[];
+  importantFacets?: FacetId[];
 };
 
 export type ComponentSelection = {
   type: "selection";
   title: string;
-  id: number;
+  id: SelectionId;
   disabled?: (selectedItems: ItemWithComponentId[]) => boolean;
   options: Component[];
 };
@@ -63,21 +97,14 @@ export type ComponentGroup = {
   type: "group";
   title: string;
   description?: string;
-  id: number;
+  id: OptionsId;
   disabled?: (selectedItems: ItemWithComponentId[]) => boolean;
   components: Component[];
 };
 
-// export type OnSelectedItem = { onSelectedChange: (data: Item | null) => void };
-// export type ComponentSelectorProps = Component &
-//   OnSelectedItem & {
-//     selectedIds: number[];
-//     otherFilters: (SelectedAdditionalFilter & { from?: number })[];
-//   };
-
 export type Rule = Component | ComponentGroup | ComponentSelection;
 
-export type FilterValue = string | string[] | { min: number; max: number };
+export type FilterValue = KeyValue | NumberValue;
 
 export type SelectedAdditionalFilter = AdditionalFilter & {
   value: FilterValue;

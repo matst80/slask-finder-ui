@@ -84,7 +84,7 @@ const router = createBrowserRouter([
           id != null
             ? getRawData(id).then((d) => ({
                 ...d,
-                componentId: Number(componentId),
+                componentId: componentId,
               }))
             : Promise.resolve(null),
         element: (
@@ -97,7 +97,7 @@ const router = createBrowserRouter([
       {
         path: "selection/:id",
         loader: ({ params: { id } }) =>
-          Promise.resolve(componentRules.find((d) => d.id === Number(id))),
+          Promise.resolve(componentRules.find((d) => d.id === id)),
         element: <BuilderComponentSelector />,
       },
       {

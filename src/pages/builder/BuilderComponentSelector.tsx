@@ -14,16 +14,11 @@ export const BuilderComponentSelector = () => {
     <div className="animate-fadeIn space-y-10 mx-auto max-w-6xl p-8">
       <div className="flex flex-col md:flex-row gap-4 md:gap-8 justify-center flex-wrap">
         {component.options
-          .filter((d) => d.type === "component")
-          .filter(
-            (d) =>
-              d.startingText != null &&
-              (d.disabled == null || !d.disabled(selectedItems))
-          )
+          .filter((d) => d.disabled == null || !d.disabled(selectedItems))
           .map((option, idx) => (
             <ComponentSelectorBox
               key={option.id}
-              {...option}
+              prefix={`builder.selector.${option.id}`}
               headerText="Choose"
               isRecommended={idx === 0}
               onClick={() => {

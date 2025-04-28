@@ -1,4 +1,11 @@
-import { Component, Rule, SelectedAdditionalFilter } from "./builder-types";
+import { KeyValue, NumberValue } from "../../lib/types";
+import {
+  AdditionalFilter,
+  Component,
+  FacetId,
+  Rule,
+  SelectedAdditionalFilter,
+} from "./builder-types";
 
 export const isUniqueFilter = (
   value: SelectedAdditionalFilter,
@@ -7,8 +14,8 @@ export const isUniqueFilter = (
 ) => self.findIndex((t) => t.id === value.id) === index;
 
 export const isRangeFilter = (
-  d: SelectedAdditionalFilter | { id: number; value: unknown }
-): d is { id: number; to: number; value: { min: number; max: number } } => {
+  d: SelectedAdditionalFilter | { id: FacetId; value: unknown }
+): d is AdditionalFilter & { value: NumberValue } => {
   return (
     "value" in d &&
     d.value != null &&
@@ -19,8 +26,8 @@ export const isRangeFilter = (
 };
 
 export const isStringFilter = (
-  d: SelectedAdditionalFilter | { id: number; value: unknown }
-): d is { id: number; to: number; value: string | string[] } => {
+  d: SelectedAdditionalFilter | { id: FacetId; value: unknown }
+): d is AdditionalFilter & { value: KeyValue } => {
   return (
     "value" in d && (Array.isArray(d.value) || typeof d.value === "string")
   );
@@ -40,11 +47,10 @@ export const fixSingleArray = ({
   id,
   value,
 }: {
-  id: number;
-  to: number;
-  value: string | string[];
+  id: FacetId;
+  value: KeyValue;
 }): {
-  id: number;
+  id: FacetId;
   value: string[];
 } => {
   if (Array.isArray(value)) {

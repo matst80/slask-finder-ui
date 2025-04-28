@@ -12,7 +12,7 @@ import { ImpressionProvider } from "../../lib/hooks/ImpressionProvider";
 import { FilteringQuery, Item, ItemValues } from "../../lib/types";
 import { useBuilderContext } from "./useBuilderContext";
 import { cm } from "../../utils";
-import { Issue } from "./builder-types";
+import { ComponentId, Issue, RuleId } from "./builder-types";
 import { IssueList } from "./IssueList";
 import { NextComponentButton } from "./NextComponentButton";
 import { InfiniteHitList } from "../../components/InfiniteHitList";
@@ -21,7 +21,7 @@ import { trackClick } from "../../lib/datalayer/beacons";
 
 const ComponentItem = (
   item: Item & {
-    componentId: number;
+    componentId: RuleId;
     position: number;
     issues: Issue[];
     isSelected: boolean;
@@ -65,7 +65,7 @@ const ComponentResultList = ({
   componentId,
   validator,
 }: {
-  componentId: number;
+  componentId: RuleId;
   validator?: (values: ItemValues) => Issue[];
 }) => {
   const {
@@ -143,10 +143,10 @@ const BuilderQueryMerger = ({
 };
 
 export const BuilderComponentFilter = () => {
-  const componentId = useLoaderData() as string | null;
+  const componentId = useLoaderData() as ComponentId | null;
 
   const { component, requiredQuery, selectionFilters } = useBuilderQuery(
-    Number(componentId)
+    componentId ?? undefined
   );
   const [facetsToHide, facetsToDisable] = useMemo(() => {
     const { filter } = component ?? {};
@@ -165,7 +165,7 @@ export const BuilderComponentFilter = () => {
     ];
   }, [component, selectionFilters]);
 
-  if (!requiredQuery) {
+  if (!requiredQuery || !componentId) {
     return <div>Loading</div>;
   }
   return (
@@ -183,7 +183,7 @@ export const BuilderComponentFilter = () => {
           <main className="px-4 md:px-10 container">
             <ResultHeader />
             <ComponentResultList
-              componentId={Number(componentId)}
+              componentId={componentId}
               validator={component?.validator}
             />
             <Paging />
@@ -191,7 +191,7 @@ export const BuilderComponentFilter = () => {
         </div>
       </div>
       <BuilderFooterBar>
-        <NextComponentButton componentId={Number(componentId)} />
+        <NextComponentButton componentId={componentId} />
       </BuilderFooterBar>
     </QueryProvider>
   );

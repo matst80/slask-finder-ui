@@ -1,15 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useBuilderContext } from "./useBuilderContext";
-import { Component } from "./builder-types";
 import { useTranslations } from "../../lib/hooks/useTranslations";
+import { TranslationKey } from "../../translations/translations";
 
 export const ComponentSelectorBox = ({
-  title,
-  startingText,
   headerText,
   onClick,
   isRecommended,
-}: Pick<Component, "title" | "startingText"> & {
+  prefix,
+}: {
+  prefix: string;
   onClick: () => void;
   headerText?: string;
   isRecommended: boolean;
@@ -35,10 +35,12 @@ export const ComponentSelectorBox = ({
           {headerText}
         </div>
       )}
-      <div className="text-black text-[40px] font-bold">{title}</div>
+      <div className="text-black text-[40px] font-bold">
+        {t(`${prefix}.title` as TranslationKey)}
+      </div>
       <div className="w-24 h-[1px] bg-gray-400 my-2"></div>
       <div className="text-center text-gray-600 text-sm max-w-xs">
-        {startingText}
+        {t(`${prefix}.description` as TranslationKey)}
       </div>
     </button>
   );
@@ -58,11 +60,11 @@ export const BuilderStartPage = () => {
       <div className="flex flex-col md:flex-row gap-4 md:gap-8 justify-center flex-wrap">
         {rules
           .filter((d) => d.type === "component")
-          .filter((d) => d.startingText != null)
+          .filter((d) => d.order != null)
           .map((component, idx) => (
             <ComponentSelectorBox
               key={component.id}
-              {...component}
+              prefix={`builder.start.${component.id}`}
               headerText={t("builder.start.boxText")}
               isRecommended={idx === 0}
               onClick={() => {
