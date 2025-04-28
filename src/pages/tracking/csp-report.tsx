@@ -22,7 +22,7 @@ export const CspReport = () => {
   );
   return (
     <>
-      <div className="flex flex-wrap gap-4 mb-10">
+      <div className="flex flex-wrap gap-4 my-10">
         {Object.entries(data || {}).map(([key, value]) => (
           <Card key={key} className="shadow-lg">
             <div className="h-2 bg-gradient-to-r from-purple-500 to-pink-500"></div>
