@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { PropsWithChildren, useMemo } from "react";
 import { Sorting } from "./Sorting";
 import { useQuery } from "../lib/hooks/useQuery";
 import { FilterQuery } from "./FilterQuery";
@@ -23,7 +23,7 @@ export const TotalResultText = ({
   );
 };
 
-export const ResultHeader = () => {
+export const ResultHeader = ({ children }: PropsWithChildren) => {
   const { totalHits, queryHistory, query, setQuery } = useQuery();
   const currentKey = useMemo(() => facetQueryToHash(query), [query]);
   const copyToClipboard = useClipboard();
@@ -42,8 +42,7 @@ export const ResultHeader = () => {
         <div className="hidden md:flex">
           <TotalResultText />
         </div>
-
-        {/* <SelectedStore /> */}
+        {children}
         <div className="relative flex gap-2 items-center justify-end">
           {prevQuery != null && (
             <Button

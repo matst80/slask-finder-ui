@@ -4,7 +4,7 @@ import { Paging } from "../../components/Paging";
 import { ResultHeader } from "../../components/ResultHeader";
 import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { useBuilderQuery } from "./useBuilderQuery";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { PlaceholderItem, ResultItemInner } from "../../components/ResultItem";
 import { useQuery } from "../../lib/hooks/useQuery";
@@ -18,6 +18,7 @@ import { NextComponentButton } from "./NextComponentButton";
 import { InfiniteHitList } from "../../components/InfiniteHitList";
 import { useImpression } from "../../lib/hooks/useImpression";
 import { trackClick } from "../../lib/datalayer/beacons";
+import { ComponentResultTable } from "./components/ComponentResultTable";
 
 const ComponentItem = (
   item: Item & {
@@ -144,6 +145,7 @@ const BuilderQueryMerger = ({
 
 export const BuilderComponentFilter = () => {
   const componentId = useLoaderData() as ComponentId | null;
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
   const { component, requiredQuery, selectionFilters } = useBuilderQuery(
     componentId ?? undefined
@@ -181,11 +183,44 @@ export const BuilderComponentFilter = () => {
             />
           </div>
           <main className="px-4 md:px-10 container">
-            <ResultHeader />
-            <ComponentResultList
-              componentId={componentId}
-              validator={component?.validator}
-            />
+            <ResultHeader>
+              <div className="flex space-x-2">
+                <button
+                  className={`px-3 py-1 rounded-md ${
+                    viewMode === "grid"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200"
+                  }`}
+                  onClick={() => setViewMode("grid")}
+                >
+                  Grid
+                </button>
+                <button
+                  className={`px-3 py-1 rounded-md ${
+                    viewMode === "table"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200"
+                  }`}
+                  onClick={() => setViewMode("table")}
+                >
+                  Table
+                </button>
+              </div>
+            </ResultHeader>
+
+            {viewMode === "grid" ? (
+              <ComponentResultList
+                componentId={componentId}
+                validator={component?.validator}
+              />
+            ) : (
+              <ComponentResultTable
+                componentId={componentId}
+                importantFacets={component?.importantFacets ?? []}
+                validator={component?.validator}
+              />
+            )}
+
             <Paging />
           </main>
         </div>
