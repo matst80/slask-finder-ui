@@ -21,6 +21,10 @@ export const swedish = {
     csp: "CSP Rapport",
   },
   common: {
+    view: {
+      grid: "Grid",
+      table: "Table",
+    },
     save: "Spara",
     copied: "{{content}} kopierad till urklipp",
     copied_title: "Kopierad till urklipp",

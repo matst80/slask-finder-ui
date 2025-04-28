@@ -19,6 +19,8 @@ import { InfiniteHitList } from "../../components/InfiniteHitList";
 import { useImpression } from "../../lib/hooks/useImpression";
 import { trackClick } from "../../lib/datalayer/beacons";
 import { ComponentResultTable } from "./components/ComponentResultTable";
+import { useTranslations } from "../../lib/hooks/useTranslations";
+import { TranslationKey } from "../../translations/translations";
 
 const ComponentItem = (
   item: Item & {
@@ -123,6 +125,9 @@ const ComponentResultList = ({
   );
 };
 
+const views = ["grid", "table"] as const;
+type View = (typeof views)[number];
+
 const BuilderQueryMerger = ({
   query,
   componentId,
@@ -145,8 +150,8 @@ const BuilderQueryMerger = ({
 
 export const BuilderComponentFilter = () => {
   const componentId = useLoaderData() as ComponentId | null;
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
-
+  const [viewMode, setViewMode] = useState<View>("grid");
+  const t = useTranslations();
   const { component, requiredQuery, selectionFilters } = useBuilderQuery(
     componentId ?? undefined
   );
@@ -185,26 +190,18 @@ export const BuilderComponentFilter = () => {
           <main className="px-4 md:px-10 container">
             <ResultHeader>
               <div className="flex space-x-2">
-                <button
-                  className={`px-3 py-1 rounded-md ${
-                    viewMode === "grid"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200"
-                  }`}
-                  onClick={() => setViewMode("grid")}
-                >
-                  Grid
-                </button>
-                <button
-                  className={`px-3 py-1 rounded-md ${
-                    viewMode === "table"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200"
-                  }`}
-                  onClick={() => setViewMode("table")}
-                >
-                  Table
-                </button>
+                {views.map((view) => (
+                  <button
+                    className={`px-3 py-1 rounded-md ${
+                      viewMode === view
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200"
+                    }`}
+                    onClick={() => setViewMode(view)}
+                  >
+                    {t(`common.view.${view}` as TranslationKey)}
+                  </button>
+                ))}
               </div>
             </ResultHeader>
 
@@ -221,7 +218,7 @@ export const BuilderComponentFilter = () => {
               />
             )}
 
-            <Paging />
+            {/* <Paging /> */}
           </main>
         </div>
       </div>

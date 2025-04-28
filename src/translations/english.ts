@@ -1,4 +1,3 @@
-import { li, title } from "framer-motion/client";
 import { BaseTranslationType } from "../lib/types";
 
 export const english = {
@@ -21,6 +20,10 @@ export const english = {
     csp: "CSP Report",
   },
   common: {
+    view: {
+      grid: "Grid",
+      table: "Table",
+    },
     save: "Save",
     copied: "{{content}} copied to clipboard",
     copied_title: "Copied to clipboard",
