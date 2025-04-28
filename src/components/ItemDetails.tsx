@@ -312,7 +312,7 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
       );
   }, [values]);
   return (
-    <div className="flex items-center mb-4">
+    <div className="inline-flex items-center overflow-x-auto max-w-full mb-4">
       {parts.map(({ id, value }, idx) => (
         <Link
           to="/"
@@ -328,7 +328,7 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
               ],
             });
           }}
-          className="text-sm text-gray-500 hover:text-blue-600 cursor-pointer"
+          className="text-sm grow-0 shrink-0 text-gray-500 hover:text-blue-600 cursor-pointer"
         >
           {value}
           {idx < parts.length - 1 && <span className="mx-2">/</span>}
@@ -416,7 +416,7 @@ export const ItemDetails = (details: ItemDetail) => {
         </div>
 
         {/* Bottom Sections */}
-        <div className="mt-16 space-y-16">
+        <div className="mt-6 space-y-6 md:mt-16 md:space-y-16">
           <BreadCrumbs values={values} />
           <RelationGroups values={values} />
 

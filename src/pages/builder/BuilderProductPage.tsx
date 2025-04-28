@@ -139,7 +139,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
         </div>
 
         {/* Bottom Sections */}
-        <div className="mt-16 space-y-16 mb-20 animating-element">
+        <div className="mt-6 space-y-6 md:mt-16 md:space-y-16 animating-element">
           <Properties values={details.values} />
         </div>
       </div>
