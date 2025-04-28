@@ -123,9 +123,9 @@
 
   }
 
-  @view-transition {
+  /* @view-transition {
     navigation: auto;
-  }
+  } */
 
   ::view-transition-product-image(root) {
     isolation: auto;
