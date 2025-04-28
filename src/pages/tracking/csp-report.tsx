@@ -7,9 +7,11 @@ import {
   CardTitle,
   CardContent,
 } from "../../components/ui/card";
+import { TimeAgo } from "../../components/TimeAgo";
 
 type CspIssue = {
   firstSeen: number;
+  lastSeen: number;
   count: number;
   [key: string]: unknown;
 };
@@ -36,7 +38,11 @@ export const CspReport = () => {
               <ul>
                 {Object.entries(value).map(([subKey, issue]) => (
                   <li key={subKey} className="mb-2">
-                    <strong>{subKey}</strong>: {issue.count} issues
+                    <strong>{subKey}</strong>: {issue.count} issues{" "}
+                    <TimeAgo ts={issue.firstSeen} />
+                    {issue.lastSeen && issue.lastSeen > 0 && (
+                      <TimeAgo ts={issue.lastSeen} />
+                    )}
                   </li>
                 ))}
               </ul>
