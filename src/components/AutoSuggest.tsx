@@ -163,7 +163,7 @@ export const AutoSuggest = () => {
           ref={inputRef}
           className={cm(
             "w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden",
-            "md:focus:rounded-t md:rounded-md"
+            "md:rounded-md focus:md:rounded-b-none"
           )}
           type="search"
           value={value ?? ""}
