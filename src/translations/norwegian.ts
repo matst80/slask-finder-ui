@@ -8,6 +8,7 @@ export const norwegian = {
     dashboard: "Dashbord",
     tracking: "Sporing",
     login: "Logg inn",
+    admin: "Admin",
   },
   admin_menu: {
     facets: "Facetter",

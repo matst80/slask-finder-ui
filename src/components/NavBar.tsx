@@ -67,6 +67,7 @@ export function Navbar() {
                 <MenuLink to="/dashboard">{t("menu.dashboard")}</MenuLink>
                 <MenuLink to="/builder">{t("menu.builder")}</MenuLink>
                 <MenuLink to="/stats">{t("menu.tracking")}</MenuLink>
+                <MenuLink to="/edit">{t("menu.admin")}</MenuLink>
               </div>
             </div>
           </div>
