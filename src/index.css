@@ -123,6 +123,38 @@
 
   }
 
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-product-image(root) {
+    isolation: auto;
+    mix-blend-mode: multiply;
+  }
+
+  ::view-transition-product-name(root) {
+    isolation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    mix-blend-mode: normal;
+    animation-duration: 0.5s;
+    display: block;
+  }
+
+  .product-image {
+    width: fit-content;
+    transition: all;
+    view-transition-name: product-image;
+  }
+
+  .product-name {
+    width: fit-content;
+    transition: all;
+    view-transition-name: product-name;
+  }
+
   .scroll-sticky-top {
     position: sticky;
     top: 0;

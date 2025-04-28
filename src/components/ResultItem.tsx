@@ -5,7 +5,7 @@ import { Stars } from "./Stars";
 
 import { PropsWithChildren, useState } from "react";
 import { trackClick } from "../lib/datalayer/beacons";
-import { Link } from "react-router-dom";
+import { Link, useViewTransitionState } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
 import { useImpression } from "../lib/hooks/useImpression";
 import { TimeAgo } from "./TimeAgo";
@@ -117,7 +117,11 @@ export const StockIndicator = ({
 //   ) : null;
 // };
 
-const ImageWithPlaceHolder = ({ img, title }: Pick<Item, "img" | "title">) => {
+const ImageWithPlaceHolder = ({
+  img,
+  isTransitioning,
+  title,
+}: Pick<Item, "img" | "title"> & { isTransitioning: boolean }) => {
   const [loaded, setLoaded] = useState(false);
   if (img == null) {
     return (
@@ -135,6 +139,9 @@ const ImageWithPlaceHolder = ({ img, title }: Pick<Item, "img" | "title">) => {
           }`}
           src={makeImageUrl(img)}
           alt={title}
+          style={{
+            viewTransitionName: isTransitioning ? "product-image" : "none",
+          }}
           onLoad={() => setLoaded(true)}
         />
       )}
@@ -153,6 +160,7 @@ export const ResultItemInner = ({
   badgeUrl,
   values,
   stock,
+  id,
   children,
   bp,
   stockLevel,
@@ -162,10 +170,15 @@ export const ResultItemInner = ({
 }: PropsWithChildren<Item>) => {
   const hasRating = values?.["6"] != null && values?.["7"] != null;
   const soldBy = values?.["9"];
+  const isTransitioning = useViewTransitionState(`/product/${id}`);
   return (
     <>
       <div className="relative pt-4 px-4">
-        <ImageWithPlaceHolder img={img} title={title} />
+        <ImageWithPlaceHolder
+          img={img}
+          title={title}
+          isTransitioning={isTransitioning}
+        />
 
         {badgeUrl != null && (
           <img
@@ -182,7 +195,12 @@ export const ResultItemInner = ({
         )}
       </div>
       <div className="p-4 space-y-1">
-        <h2 className="text-lg font-semibold leading-tight text-gray-900 hover:text-blue-600 transition-colors">
+        <h2
+          className="text-lg font-semibold leading-tight text-gray-900 hover:text-blue-600 transition-colors"
+          style={{
+            viewTransitionName: isTransitioning ? "product-name" : "none",
+          }}
+        >
           {title}
         </h2>
 
@@ -305,6 +323,7 @@ export const ResultItem = ({
       ref={watch({ id: Number(item.id), position })}
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
+      viewTransition={true}
       className="group bg-white md:shadow-xs hover:shadow-md transition-all duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
       onClick={trackItem}
     >
