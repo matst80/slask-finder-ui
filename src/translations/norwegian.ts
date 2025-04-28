@@ -16,6 +16,7 @@ export const norwegian = {
     relations: "Relasjoner",
     rules: "Regler",
     facet_groups: "Facetgrupper",
+    csp: "CSP Rapport",
   },
   common: {
     save: "Lagre",

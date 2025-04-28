@@ -16,6 +16,7 @@ export const english = {
     relations: "Relations",
     rules: "Rules",
     facet_groups: "Facet groups",
+    csp: "CSP Report",
   },
   common: {
     save: "Save",
