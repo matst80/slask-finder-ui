@@ -1,7 +1,7 @@
 import { Bell, LoaderCircle, Menu, Settings, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link, To } from "react-router-dom";
-import { cm } from "../utils";
+import { cm, setCookie } from "../utils";
 import { useUser } from "../adminHooks";
 import { PropsWithChildren, useEffect } from "react";
 import { MiniCart } from "./MiniCart";
@@ -44,6 +44,11 @@ const MenuLink = ({ to, children }: PropsWithChildren<{ to: To }>) => (
   </Link>
 );
 
+const regions = ["sv-SE", "en-US", "no-NB"];
+const regionNamesInEnglish = new Intl.DisplayNames(["en"], {
+  type: "language",
+});
+
 export function Navbar() {
   const t = useTranslations();
   return (
@@ -64,6 +69,21 @@ export function Navbar() {
                 <MenuLink to="/stats">{t("menu.tracking")}</MenuLink>
               </div>
             </div>
+          </div>
+          <div className="ml-4 flex items-center md:ml-6">
+            {regions.map((item) => (
+              <Button
+                key={item}
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setCookie("locale", item, 365);
+                  window.location.reload();
+                }}
+              >
+                {regionNamesInEnglish.of(item)?.split(" ")[0]}
+              </Button>
+            ))}
           </div>
           <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6">

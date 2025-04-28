@@ -45,6 +45,7 @@ import { norwegian } from "./translations/norwegian.ts";
 import { english } from "./translations/english.ts";
 import { swedish } from "./translations/swedish.ts";
 import { FacetGroups } from "./pages/admin/FacetGroups.tsx";
+import { cookieObject } from "./utils.ts";
 
 const router = createBrowserRouter([
   {
@@ -222,8 +223,13 @@ const router = createBrowserRouter([
 ]);
 
 const getBrowserLanguage = () => {
-  const lang = navigator.language;
-  console.log("Browser language: ", lang);
+  const { locale: cookieLanguage } = cookieObject();
+  const browserLanguage = navigator.language;
+  console.log("Browser language: ", {
+    lang: browserLanguage,
+    locale: cookieLanguage,
+  });
+  const lang = cookieLanguage || browserLanguage;
   if (lang.startsWith("sv")) return swedish;
   if (lang.startsWith("nb")) return norwegian;
   if (lang.startsWith("no")) return norwegian;

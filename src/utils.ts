@@ -22,7 +22,7 @@ export const makeImageUrl = (pathOrUrl: string, size = "640") => {
 
   const params = new URLSearchParams({
     w: size,
-    q: "80",
+    q: "75",
   });
 
   return `https://next-media.elkjop.com${pathOrUrl}?${params.toString()}`;
@@ -215,4 +215,21 @@ export const useDebounce = <TArg extends unknown[], TRet>(
       fn(...args);
     }, delay);
   };
+};
+
+export const cookieObject = () => {
+  const cookies = document.cookie.split("; ");
+  const cookieObject: { [key: string]: string } = {};
+  for (const cookie of cookies) {
+    const [key, value] = cookie.split("=");
+    cookieObject[key] = decodeURIComponent(value);
+  }
+  return cookieObject;
+};
+
+export const setCookie = (name: string, value: string, days: number) => {
+  const date = new Date();
+  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+  const expires = "expires=" + date.toUTCString();
+  document.cookie = `${name}=${value}; ${expires}; path=/`;
 };

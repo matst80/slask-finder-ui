@@ -1,10 +1,10 @@
 import fuzzysort from "fuzzysort";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations } from "../../lib/hooks/useTranslations";
 import { useFacetGroups, useFacetList } from "../../hooks/searchHooks";
 import { updateFacetGroups } from "../../lib/datalayer/api";
 import { useNotifications } from "../../components/ui-notifications/useNotifications";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 // UI Components
 import { Input } from "../../components/ui/input";
@@ -15,7 +15,6 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "../../components/ui/card";
 import {
   Tabs,
@@ -306,7 +305,7 @@ export const FacetGroups = () => {
                         </div>
                       ) : (
                         <>
-                          {filteredFacets.map((facet, index) => (
+                          {filteredFacets.map((facet) => (
                             <div
                               key={facet.id}
                               className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 ${

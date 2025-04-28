@@ -341,7 +341,10 @@ const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
     return null;
   }
   const updateQuery =
-    (id: number, value: string): React.MouseEventHandler<HTMLButtonElement> =>
+    (
+      id: number,
+      value: string
+    ): React.MouseEventHandler<HTMLButtonElement | HTMLDivElement> =>
     (e) => {
       e.stopPropagation();
       e.preventDefault();
@@ -363,7 +366,7 @@ const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
         {fields.slice(undefined, 2).map(({ id, name, values }) => {
           const { value } = values[0];
           return (
-            <button
+            <div
               key={id}
               className="shrink-0 border line-clamp-1 text-ellipsis border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
               onClick={updateQuery(id, value)}
@@ -372,7 +375,7 @@ const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
               {/* <span className="ml-2 inline-flex items-center justify-center px-1 h-4 rounded-full bg-blue-200 text-blue-500">
                 {hits}
               </span> */}
-            </button>
+            </div>
           );
         })}
       </div>

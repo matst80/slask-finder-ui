@@ -1,4 +1,3 @@
-import { facets } from "../lib/datalayer/api";
 import { BaseTranslationType } from "../lib/types";
 
 export const english = {
