@@ -22,7 +22,7 @@ export const makeImageUrl = (pathOrUrl: string, size = "640") => {
 
   const params = new URLSearchParams({
     w: size,
-    q: "75",
+    q: "70",
   });
 
   return `https://next-media.elkjop.com${pathOrUrl}?${params.toString()}`;
