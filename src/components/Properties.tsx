@@ -11,6 +11,7 @@ import { TotalResultText } from "./ResultHeader";
 import { QueryUpdater } from "./QueryMerger";
 import { ButtonLink } from "./ui/button";
 import { useTranslations } from "../lib/hooks/useTranslations";
+import { useClipboard } from "../lib/hooks/useClipboard";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -37,6 +38,7 @@ const isValidKeyFilter = (
 
 export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
   const { setQuery } = useQuery();
+  const toClipboard = useClipboard();
   const [selected, setSelected] = useState<SelectedFacet[]>([]);
   const { data } = useFacetMap();
   const [isAdmin] = useAdmin();
@@ -135,7 +137,18 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                 <h4
                   className="text-lg font-semibold text-gray-900"
                   onClick={() => {
-                    navigator.clipboard.writeText(String(field.id));
+                    toClipboard(
+                      JSON.stringify(
+                        {
+                          id: field.id,
+                          value: Array.isArray(field.value)
+                            ? field.value
+                            : [String(field.value)],
+                        },
+                        null,
+                        2
+                      )
+                    );
                   }}
                 >
                   {field.name}

@@ -339,9 +339,13 @@ export const componentRules: Rule[] = [
         //   id: 11,
         //   value: "Datorkomponenter",
         // },
+        // {
+        //   id: 31158,
+        //   value: ["Processor (CPU)"],
+        // },
         {
-          id: 31158,
-          value: ["Processor (CPU)"],
+          id: 35,
+          value: ["59030"],
         },
       ],
     },
@@ -562,14 +566,18 @@ export const componentRules: Rule[] = [
       pageSize: 120,
       stock: [],
       string: [
+        {
+          id: 35,
+          value: ["59010"],
+        },
         // {
         //   id: 11,
         //   value: "Datorkomponenter",
         // },
-        {
-          id: 31158,
-          value: ["Moderkort"],
-        },
+        // {
+        //   id: 31158,
+        //   value: ["Moderkort"],
+        // },
       ],
     },
   },
@@ -924,7 +932,7 @@ export const componentRules: Rule[] = [
       pageSize: 120,
       stock: [],
       string: [
-        { id: 13, value: ["Nätaggregat (PSU)"] },
+        { id: 35, value: ["59050"] },
         // {
         //   id: 11,
         //   value: "Datorkomponenter",

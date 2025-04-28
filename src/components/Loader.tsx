@@ -1,0 +1,36 @@
+import { cm } from "../utils";
+
+const sizes = {
+  sm: "size-5",
+  md: "size-10",
+  lg: "size-20",
+  xl: "size-40",
+};
+
+const variants = {
+  overlay: "bg-gray-200/50 flex items-center justify-center",
+  default: "",
+};
+
+export const Loader = ({
+  size,
+  variant,
+  show = true,
+}: {
+  size: keyof typeof sizes;
+  variant?: keyof typeof variants;
+  show?: boolean;
+}) => {
+  return (
+    show && (
+      <div className={cm(variant && variants[variant])}>
+        <div
+          className={cm(
+            sizes[size] &&
+              "border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"
+          )}
+        />
+      </div>
+    )
+  );
+};

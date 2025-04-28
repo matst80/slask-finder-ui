@@ -10,6 +10,7 @@ import { trackAction, trackClick } from "../../lib/datalayer/beacons";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { useBuilderStep } from "./useBuilderStep";
 import { useTranslations } from "../../lib/hooks/useTranslations";
+import { Loader } from "../../components/Loader";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
   const { setSelectedItems, selectedItems } = useBuilderContext();
@@ -155,7 +156,11 @@ export const BuilderProductPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {details ? <ComponentDetails {...details} /> : <p>Laddar...</p>}
+      {details ? (
+        <ComponentDetails {...details} />
+      ) : (
+        <Loader size="lg" variant="overlay" />
+      )}
     </div>
   );
 };
