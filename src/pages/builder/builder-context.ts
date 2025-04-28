@@ -1,10 +1,5 @@
 import { createContext } from "react";
-import {
-  Component,
-  ItemWithComponentId,
-  Rule,
-  //SelectedAdditionalFilter,
-} from "./builder-types";
+import { Component, ItemWithComponentId, Rule } from "./builder-types";
 
 export const BuilderContext = createContext<{
   selectedItems: ItemWithComponentId[];

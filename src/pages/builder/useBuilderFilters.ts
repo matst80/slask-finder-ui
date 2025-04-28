@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { SelectedAdditionalFilter } from "./builder-types";
-import { GPU, CPU } from "./rules";
+import { GPU, CPU, PSU } from "./rules";
 import { useBuilderContext } from "./useBuilderContext";
 import { useRecommendedWatt } from "./useRecommendedWatt";
 
@@ -13,7 +13,7 @@ export const useBuilderFilters = (): SelectedAdditionalFilter[] => {
       neededPsuWatt > 500
         ? [
             {
-              to: 6,
+              to: PSU,
               id: 31986,
               from: neededPsuWatt > 300 ? GPU : CPU,
               value: { min: neededPsuWatt, max: 3000 },

@@ -181,14 +181,25 @@ const toStringFilter = (
   return [];
 };
 
+export const defaultComponentOrder = [
+  CPU,
+  MOTHERBOARD,
+  RAM,
+  STORAGE,
+  GPU,
+  CASE,
+  PSU,
+  COOLER,
+];
+
 export const componentRules: Rule[] = [
   {
     type: "component",
     title: "CPU",
     id: CPU,
-    startingText:
-      "Your selected CPU determines motherboard and ram speed, and power requirements of the PSU and your recommended CPU cooling options.",
-    order: [CPU, MOTHERBOARD, RAM, STORAGE, GPU, CASE, PSU, COOLER],
+    // startingText:
+    //   "Your selected CPU determines motherboard and ram speed, and power requirements of the PSU and your recommended CPU cooling options.",
+    order: defaultComponentOrder,
 
     filtersToApply: [
       { id: 32103, to: MOTHERBOARD },
@@ -338,8 +349,8 @@ export const componentRules: Rule[] = [
     type: "component",
     title: "GPU",
     id: GPU,
-    startingText:
-      "Your selected GPU determines the minimum power requirements of the PSU and the range of PC case sizes that will accommodate it.",
+    // startingText:
+    //   "Your selected GPU determines the minimum power requirements of the PSU and the range of PC case sizes that will accommodate it.",
     order: [GPU, CPU, MOTHERBOARD, RAM, STORAGE, CASE, PSU, COOLER],
     quickFilters: [
       {
@@ -527,8 +538,8 @@ export const componentRules: Rule[] = [
   {
     type: "component",
     title: "Chassi",
-    startingText:
-      "Your selected motherboard determines a number of compatibility factors, including maximum number of memory slots, total memory, M.2 storage slots, and case compatibility.",
+    // startingText:
+    //   "Your selected motherboard determines a number of compatibility factors, including maximum number of memory slots, total memory, M.2 storage slots, and case compatibility.",
     order: [CASE, GPU, CPU, MOTHERBOARD, RAM, STORAGE, PSU, COOLER],
 
     topFilters: [

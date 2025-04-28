@@ -1,4 +1,4 @@
-import { FilteringQuery, Item, ItemsQuery, ItemValues } from "../../lib/types";
+import { FilteringQuery, Item, ItemValues } from "../../lib/types";
 
 export type ItemWithComponentId = Item & {
   componentId: number;
@@ -38,9 +38,9 @@ export type Component = {
   requires?: number[];
   parentId?: number;
   ignoreIfComponentSelected?: number;
-  startingText?: string;
+  key?: string;
   order?: number[];
-  nextComponentId?: number;
+  //nextComponentId?: number;
   quickFilters?: QuickFilter[];
   validator?: (values: ItemValues) => Issue[];
   filtersToApply: AdditionalFilter[];
@@ -68,12 +68,12 @@ export type ComponentGroup = {
   components: Component[];
 };
 
-export type OnSelectedItem = { onSelectedChange: (data: Item | null) => void };
-export type ComponentSelectorProps = Component &
-  OnSelectedItem & {
-    selectedIds: number[];
-    otherFilters: (SelectedAdditionalFilter & { from?: number })[];
-  };
+// export type OnSelectedItem = { onSelectedChange: (data: Item | null) => void };
+// export type ComponentSelectorProps = Component &
+//   OnSelectedItem & {
+//     selectedIds: number[];
+//     otherFilters: (SelectedAdditionalFilter & { from?: number })[];
+//   };
 
 export type Rule = Component | ComponentGroup | ComponentSelection;
 
