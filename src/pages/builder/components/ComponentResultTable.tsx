@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Item, ItemValues } from "../../../lib/types";
 import { useQuery } from "../../../lib/hooks/useQuery";
@@ -7,7 +7,6 @@ import { ImpressionProvider } from "../../../lib/hooks/ImpressionProvider";
 import { useImpression } from "../../../lib/hooks/useImpression";
 import { trackClick } from "../../../lib/datalayer/beacons";
 import { ComponentId, FacetId, Issue } from "../builder-types";
-import { IssueList } from "../IssueList";
 import { cm, isDefined, makeImageUrl } from "../../../utils";
 import { InfiniteHitList } from "../../../components/InfiniteHitList";
 import { useFacetMap } from "../../../hooks/searchHooks";
@@ -106,7 +105,7 @@ const TableRowItem = ({
         </td>
       </tr>
       {isExpanded && (
-        <tr>
+        <tr className="animate-pop">
           <td
             colSpan={4 + importantFacets.length}
             className="px-6 py-4 bg-gray-50"
