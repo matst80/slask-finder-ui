@@ -9,6 +9,7 @@ const items = [
   "rules",
   "relations",
   "facet_groups",
+  "csp",
 ];
 
 export const AdminNavBar = () => {

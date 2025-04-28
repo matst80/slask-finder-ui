@@ -46,6 +46,7 @@ import { english } from "./translations/english.ts";
 import { swedish } from "./translations/swedish.ts";
 import { FacetGroups } from "./pages/admin/FacetGroups.tsx";
 import { cookieObject } from "./utils.ts";
+import { CspReport } from "./pages/tracking/csp-report.tsx";
 
 const router = createBrowserRouter([
   {
@@ -142,6 +143,10 @@ const router = createBrowserRouter([
       {
         path: "relations",
         element: <RelationGroupEditor />,
+      },
+      {
+        path: "csp",
+        element: <CspReport />,
       },
     ],
   },
