@@ -1,4 +1,4 @@
-import { Item, ItemsQuery, ItemValues } from "../../lib/types";
+import { FilteringQuery, Item, ItemsQuery, ItemValues } from "../../lib/types";
 
 export type ItemWithComponentId = Item & {
   componentId: number;
@@ -44,7 +44,7 @@ export type Component = {
   quickFilters?: QuickFilter[];
   validator?: (values: ItemValues) => Issue[];
   filtersToApply: AdditionalFilter[];
-  filter: ItemsQuery;
+  filter: Pick<FilteringQuery, "string" | "range">;
   disabled?: (selectedItems: ItemWithComponentId[]) => boolean;
   maxQuantity?: (selectedItems: ItemWithComponentId[]) => number;
   topFilters?: number[];

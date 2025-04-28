@@ -218,6 +218,7 @@ const RelationGroupCarousel = ({
   values: ItemValues;
   defaultOpen?: boolean;
 }) => {
+  const { setQuery } = useQuery();
   const query = useMemo(() => makeQuery(group, values), [group, values]);
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -225,13 +226,21 @@ const RelationGroupCarousel = ({
       key={group.groupId}
       className="mb-2 border-b border-gray-200 pb-2 animating-element"
     >
-      <button
-        onClick={() => setOpen((p) => !p)}
-        className={cm("text-xl font-bold transition-all", open ? "" : "")}
-      >
-        {group.name}
-      </button>
-
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setOpen((p) => !p)}
+          className={cm("text-xl font-bold transition-all", open ? "" : "")}
+        >
+          {group.name}
+        </button>
+        <Link
+          to="/"
+          onClick={() => setQuery(query)}
+          className={cm("text-xl font-bold transition-all", open ? "" : "")}
+        >
+          Show all
+        </Link>
+      </div>
       {open && (
         <QueryProvider initialQuery={query} loadFacets={false}>
           {/* <QueryMerger query={query} /> */}

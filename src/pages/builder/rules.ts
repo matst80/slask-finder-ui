@@ -323,26 +323,10 @@ export const componentRules: Rule[] = [
         numberMatch(values, 35980, { min: 500, max: 29999 }, "warning"),
         numberMatch(values, 35990, { min: 5, max: 500 }, "warning"),
       ].filter(isDefined);
-      // if (!isKey(values[32103])) return false;
-      // if (!Array.isArray(values[36202])) return false;
-      // //if (isNaN(Number(values[35980]))) return false;
-      // return true; //values[32103] != null;
     },
     filter: {
       range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 120,
-      stock: [],
       string: [
-        // {
-        //   id: 11,
-        //   value: "Datorkomponenter",
-        // },
-        // {
-        //   id: 31158,
-        //   value: ["Processor (CPU)"],
-        // },
         {
           id: 35,
           value: ["59030"],
@@ -354,7 +338,6 @@ export const componentRules: Rule[] = [
     type: "component",
     title: "GPU",
     id: GPU,
-    //nextComponentId: 6,
     startingText:
       "Your selected GPU determines the minimum power requirements of the PSU and the range of PC case sizes that will accommodate it.",
     order: [GPU, CPU, MOTHERBOARD, RAM, STORAGE, CASE, PSU, COOLER],
@@ -448,14 +431,10 @@ export const componentRules: Rule[] = [
     ],
     filter: {
       range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 120,
-      stock: [],
       string: [
         {
-          id: 31158,
-          value: ["Grafikkort"],
+          id: 35,
+          value: ["59036"],
         },
       ],
     },
@@ -471,13 +450,6 @@ export const componentRules: Rule[] = [
         stringMatch(values, 35921, "error", "X"),
         stringMatch(values, 30857, "error", "X"),
       ].filter(isDefined);
-      // return (
-      //   values[32103] != null &&
-      //   values[35921] != null &&
-      //   values[30857] != null &&
-      //   values[30857] != "X" &&
-      //   values[35921] != "X"
-      // );
     },
     requires: [1],
     topFilters: [
@@ -488,10 +460,8 @@ export const componentRules: Rule[] = [
     importantFacets: [32103, 30276, 31694],
     filtersToApply: [
       { id: 32103, to: CPU }, // cpu socket
-      // add chipset, when we get all chipsets!
       { id: 35921, to: RAM }, // ram type
       { id: 30857, to: RAM }, // ram pins
-      // maybe add max ram speed or in ui!
       {
         id: 36249,
         to: STORAGE,
@@ -540,44 +510,17 @@ export const componentRules: Rule[] = [
         id: 30552,
         to: CASE,
         converter: (values) => {
-          // todo fix this!
-          const formFactor = values[30552];
-          const allowed = [];
-          if (typeof formFactor === "string") {
-            if (formFactor.includes("Mini") || formFactor.includes("mATX")) {
-              allowed.push("Mini-ITX");
-            } else {
-              allowed.push("ATX");
-              if (formFactor.includes("eATX")) {
-                allowed.push("eATX");
-              }
-            }
-            return [{ id: 32056, value: formFactor }];
-          }
-          return [];
+          return toStringFilter(values[30552], { id: 32057 });
         },
       },
-      // number of ram slots / max ram per slot?
     ],
     filter: {
       range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 120,
-      stock: [],
       string: [
         {
           id: 35,
           value: ["59010"],
         },
-        // {
-        //   id: 11,
-        //   value: "Datorkomponenter",
-        // },
-        // {
-        //   id: 31158,
-        //   value: ["Moderkort"],
-        // },
       ],
     },
   },
@@ -587,7 +530,7 @@ export const componentRules: Rule[] = [
     startingText:
       "Your selected motherboard determines a number of compatibility factors, including maximum number of memory slots, total memory, M.2 storage slots, and case compatibility.",
     order: [CASE, GPU, CPU, MOTHERBOARD, RAM, STORAGE, PSU, COOLER],
-    //nextComponentId: 6,
+
     topFilters: [
       2, 32062, 32056, 36284, 32056, 36284, 32061, 36287, 32183, 36294, 36280,
     ],
@@ -611,17 +554,6 @@ export const componentRules: Rule[] = [
             min: 1,
             multiplier: 0.1,
           });
-          // const maxGpuSize = Number(values[32062]);
-          // if (isNaN(maxGpuSize)) {
-          //   return [];
-          // }
-
-          // return [
-          //   {
-          //     id: 30376,
-          //     value: { max: maxGpuSize / 10, min: 1 },
-          //   },
-          // ];
         },
       },
       {
@@ -629,8 +561,6 @@ export const componentRules: Rule[] = [
         to: PSU,
         converter: (values) => {
           return toStringFilter(values[36284], { id: 36252 });
-          // if (!isKey(values[36284])) return [];
-          // return [{ id: 36252, value: values[36284] }];
         },
       },
       {
@@ -642,13 +572,6 @@ export const componentRules: Rule[] = [
             min: 0,
             multiplier: 0.1,
           });
-          // const cpuHeightInMM = Number(values[32061]);
-          // if (isNaN(cpuHeightInMM)) {
-          //   console.log("Invalid cpu height", values[32061]);
-          //   return [];
-          // }
-
-          // return [{ id: 30648, value: { min: 0, max: cpuHeightInMM / 10 } }];
         },
       },
       {
@@ -682,14 +605,18 @@ export const componentRules: Rule[] = [
         to: MOTHERBOARD,
         converter: (values) => {
           const supportedFormFactors = values[32057];
-          const formFactor = values[32056];
 
           if (isKey(supportedFormFactors)) {
+            if (Array.isArray(supportedFormFactors)) {
+              return [{ id: 30552, value: supportedFormFactors }];
+            }
             return handleMotherBoardFormFactor(supportedFormFactors);
           }
 
-          if (isKey(formFactor)) {
-            return handleMotherBoardFormFactor(formFactor);
+          const maxFormFactor = values[32056]; // Max form factor
+
+          if (isKey(maxFormFactor)) {
+            return handleMotherBoardFormFactor(maxFormFactor);
           }
           return [];
         },
@@ -698,18 +625,10 @@ export const componentRules: Rule[] = [
     id: CASE,
     filter: {
       range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 120,
-      stock: [],
       string: [
-        // {
-        //   id: 11,
-        //   value: "Datorkomponenter",
-        // },
         {
-          id: 31158,
-          value: ["Chassi"],
+          id: 35,
+          value: ["59020"],
         },
       ],
     },
@@ -739,14 +658,10 @@ export const componentRules: Rule[] = [
         },
         filter: {
           range: [],
-          sort: "popular",
-          page: 0,
-          pageSize: 120,
-          stock: [],
           string: [
             {
-              id: 31158,
-              value: ["CPU luftkylning"],
+              id: 33,
+              value: ["PT1303"],
             },
           ],
         },
@@ -772,14 +687,10 @@ export const componentRules: Rule[] = [
         importantFacets: [36310, 36307, 32133],
         filter: {
           range: [],
-          sort: "popular",
-          page: 0,
-          pageSize: 120,
-          stock: [],
           string: [
             {
-              id: 31158,
-              value: ["Vattenkylning"],
+              id: 33,
+              value: ["PT1302"],
             },
           ],
         },
@@ -822,27 +733,13 @@ export const componentRules: Rule[] = [
         stringMatch(values, 35921, "error", "X"),
         numberMatch(values, 36268, { min: 1, max: 16 }, "warning"),
       ].filter(isDefined);
-      // return (
-      //   values[35921] != null &&
-      //   values[35921] != "X" &&
-      //   values[30857] != null &&
-      //   values[30857] != "X"
-      // );
     },
     filter: {
       range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 120,
-      stock: [],
       string: [
-        // {
-        //   id: 11,
-        //   value: "Datorkomponenter",
-        // },
         {
-          id: 31158,
-          value: ["RAM minne"],
+          id: 35,
+          value: ["59032"],
         },
       ],
     },
@@ -886,18 +783,10 @@ export const componentRules: Rule[] = [
     //topFilters: [31508, 32194, 32195],
     filter: {
       range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 120,
-      stock: [],
       string: [
-        // {
-        //   id: 11,
-        //   value: "Datorkomponenter",
-        // },
         {
-          id: 31158,
-          value: ["Intern SSD"],
+          id: 35,
+          value: ["59060"],
         },
       ],
     },
@@ -916,8 +805,6 @@ export const componentRules: Rule[] = [
         to: CASE,
         converter: (values) => {
           return toStringFilter(values[36252], { id: 36284 });
-          // if (!isKey(values[36252])) return [];
-          // return [{ id: 36284, value: values[36252] }];
         },
       },
     ],
@@ -927,17 +814,7 @@ export const componentRules: Rule[] = [
     disabled: disabledIfPsuIncluded,
     filter: {
       range: [],
-      sort: "popular",
-      page: 0,
-      pageSize: 120,
-      stock: [],
-      string: [
-        { id: 35, value: ["59050"] },
-        // {
-        //   id: 11,
-        //   value: "Datorkomponenter",
-        // },
-      ],
+      string: [{ id: 35, value: ["59050"] }],
     },
   },
   {
@@ -956,16 +833,11 @@ export const componentRules: Rule[] = [
         importantFacets: [36341, 32023, 30924, 32226, 31239, 30636, 30584],
         filter: {
           range: [],
-          sort: "popular",
-          page: 0,
-          pageSize: 120,
-          stock: [],
           string: [
             {
-              id: 12,
-              value: ["Datorskärm"],
+              id: 35,
+              value: ["52307"],
             },
-            { id: 31041, value: ["Ja"] },
           ],
         },
       },
@@ -976,19 +848,16 @@ export const componentRules: Rule[] = [
         topFilters: [31508, 32194, 32195],
         filter: {
           range: [],
-          sort: "popular",
-          page: 0,
-          pageSize: 120,
-          stock: [],
+
           string: [
             {
-              id: 31158,
-              value: ["Intern SSD"],
+              id: 35,
+              value: ["59060"],
             },
-            {
-              id: 30714,
-              value: ["SATA 3.0"],
-            },
+            // {
+            //   id: 30714,
+            //   value: ["SATA 3.0"],
+            // },
           ],
         },
         filtersToApply: [],
@@ -1001,18 +870,10 @@ export const componentRules: Rule[] = [
         filtersToApply: [],
         filter: {
           range: [],
-          sort: "popular",
-          page: 0,
-          pageSize: 120,
-          stock: [],
           string: [
             {
-              id: 31158,
-              value: ["Operativsystem"],
-            },
-            {
-              id: 11,
-              value: ["Mjukvara"],
+              id: 32,
+              value: ["PT307"],
             },
           ],
         },
@@ -1023,14 +884,10 @@ export const componentRules: Rule[] = [
         id: 13,
         filter: {
           range: [],
-          sort: "popular",
-          page: 0,
-          pageSize: 120,
-          stock: [],
           string: [
             {
-              id: 31158,
-              value: ["Tangentbord"],
+              id: 35,
+              value: ["55540"],
             },
           ],
         },
@@ -1042,14 +899,10 @@ export const componentRules: Rule[] = [
         id: 14,
         filter: {
           range: [],
-          sort: "popular",
-          page: 0,
-          pageSize: 120,
-          stock: [],
           string: [
             {
-              id: 31158,
-              value: ["Mus"],
+              id: 35,
+              value: ["55520"],
             },
           ],
         },
