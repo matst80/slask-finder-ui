@@ -364,7 +364,7 @@ export const ItemDetails = (details: ItemDetail) => {
 
           <div className="flex items-center justify-center">
             <img
-              className="max-w-full h-auto object-contain product-image"
+              className="max-w-full mix-blend-multiply h-auto object-contain product-image"
               src={makeImageUrl(img)}
               alt={title}
             />
