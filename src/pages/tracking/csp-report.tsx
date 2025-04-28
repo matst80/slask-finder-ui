@@ -8,12 +8,69 @@ import {
   CardContent,
 } from "../../components/ui/card";
 import { TimeAgo } from "../../components/TimeAgo";
+import { useState } from "react";
+import { useClipboard } from "../../lib/hooks/useClipboard";
 
 type CspIssue = {
   firstSeen: number;
   lastSeen: number;
   count: number;
+  firstBody: unknown;
   [key: string]: unknown;
+};
+
+const CspIssueView = ({
+  url,
+  count,
+  lastSeen,
+  firstSeen,
+  firstBody,
+}: CspIssue & { url: string }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <li key={url} className="mb-2 border-b border-gray-200 pb-2">
+      <div className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-md">
+        <button
+          className="flex gap-4 items-center w-full cursor-pointer"
+          onClick={() => setOpen(!open)}
+        >
+          <span className="text-sm p-1 bg-purple-700 rounded-full size-5 flex items-center justify-center text-white aspect-square">
+            {count}
+          </span>
+
+          <span className="font-bold line-clamp-1 overflow-ellipsis text-left">
+            {url}
+          </span>
+        </button>
+        <div className="text-xs flex-nowrap shrink-0 flex gap-2 text-gray-500 bg-gray-50 p-2 rounded-sm">
+          <div>
+            First: <TimeAgo ts={firstSeen} />
+          </div>
+
+          {lastSeen != null && lastSeen > 0 && (
+            <div>
+              Last: <TimeAgo ts={lastSeen} />
+            </div>
+          )}
+        </div>
+      </div>
+      <div className={open ? "" : "hidden"}>
+        <JsonView data={firstBody} />
+      </div>
+    </li>
+  );
+};
+
+const JsonView = ({ data }: { data: unknown }) => {
+  const copy = useClipboard();
+  return (
+    <pre
+      className="bg-black text-white p-4 text-sm overflow-x-auto rounded-md"
+      onClick={() => copy(JSON.stringify(data, null, 2))}
+    >
+      <code>{JSON.stringify(data, null, 2)}</code>
+    </pre>
+  );
 };
 
 export const CspReport = () => {
@@ -23,8 +80,8 @@ export const CspReport = () => {
     ).then((res) => toJson<Record<string, Record<string, CspIssue>>>(res))
   );
   return (
-    <>
-      <div className="flex flex-wrap gap-4 my-10">
+    <div className="max-w-[1920px] mx-auto px-4">
+      <div className="flex flex-col gap-4 my-10">
         {Object.entries(data || {}).map(([key, value]) => (
           <Card key={key} className="shadow-lg">
             <div className="h-2 bg-gradient-to-r from-purple-500 to-pink-500"></div>
@@ -37,23 +94,15 @@ export const CspReport = () => {
             <CardContent className="p-6">
               <ul>
                 {Object.entries(value).map(([subKey, issue]) => (
-                  <li key={subKey} className="mb-2">
-                    <strong>{subKey}</strong>: {issue.count} issues{" "}
-                    <TimeAgo ts={issue.firstSeen} />
-                    {issue.lastSeen && issue.lastSeen > 0 && (
-                      <TimeAgo ts={issue.lastSeen} />
-                    )}
-                  </li>
+                  <CspIssueView key={subKey} url={subKey} {...issue} />
                 ))}
               </ul>
             </CardContent>
           </Card>
         ))}
       </div>
-      <h2 className="text-xl font-bold">Full Report</h2>
-      <pre>
-        <code>{JSON.stringify(data, null, 2)}</code>
-      </pre>
-    </>
+      {/* <h2 className="text-xl font-bold">Full Report</h2>
+      <JsonView data={data} /> */}
+    </div>
   );
 };

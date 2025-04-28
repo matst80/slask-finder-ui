@@ -12,7 +12,7 @@ export const NotificationsContainer = ({
   dismissNotification,
 }: NotificationsContainerProps) => {
   return (
-    <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 w-full max-w-[80vw]">
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 max-w-[80vw] md:max-w-[500px]">
       {notifications.map((notification) => (
         <Notification
           key={notification.id}
