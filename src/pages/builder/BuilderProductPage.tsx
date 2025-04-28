@@ -45,7 +45,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
 
           <div className="flex items-center justify-center">
             <img
-              className="max-w-full h-auto object-contain product-image"
+              className="max-w-full h-auto mix-blend-multiply object-contain product-image"
               src={makeImageUrl(img)}
               alt={title}
             />
