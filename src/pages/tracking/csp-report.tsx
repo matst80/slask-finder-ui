@@ -19,19 +19,31 @@ type CspIssue = {
   [key: string]: unknown;
 };
 
+const splitType = (url: string) => {
+  const parts = url.split(";");
+  if (parts[0] === "inline" && parts[1] != null) {
+    return { type: "inline", url: parts[1] };
+  }
+  return { type: "url", url };
+};
+
 const CspIssueView = ({
-  url,
+  url: initialUrl,
   count,
   lastSeen,
   firstSeen,
   firstBody,
 }: CspIssue & { url: string }) => {
   const [open, setOpen] = useState(false);
+  const { type, url } = splitType(initialUrl);
   return (
-    <li key={url} className="mb-2 border-b border-gray-200 pb-2">
+    <li
+      key={url}
+      className="mb-2 border-b border-gray-200 pb-2 last:border-b-0 last:pb-0 last:mb-0"
+    >
       <div className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-md">
         <button
-          className="flex gap-4 items-center w-full cursor-pointer"
+          className="flex gap-4 items-center w-full cursor-pointer mr-4"
           onClick={() => setOpen(!open)}
         >
           <span className="text-sm p-1 bg-purple-700 rounded-full size-5 flex items-center justify-center text-white aspect-square">
@@ -40,6 +52,9 @@ const CspIssueView = ({
 
           <span className="font-bold line-clamp-1 overflow-ellipsis text-left">
             {url}
+          </span>
+          <span className="text-sm p-1 px-2 bg-blue-900 rounded-full flex items-center justify-center text-white">
+            {type}
           </span>
         </button>
         <div className="text-xs flex-nowrap shrink-0 flex gap-2 text-gray-500 bg-gray-50 p-2 rounded-sm">
