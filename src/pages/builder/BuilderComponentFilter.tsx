@@ -34,11 +34,13 @@ const ComponentItem = (
   const hasError = issues.some((d) => d.type === "error");
   const isValid = issues.length === 0;
   const qs = new URLSearchParams(window.location.search);
+  const url = `/builder/product/${componentId}/${item.id}?${qs.toString()}`;
   return (
     <Link
       ref={watch({ id: Number(item.id), position })}
-      to={`/builder/product/${componentId}/${item.id}?${qs.toString()}`}
+      to={url}
       key={item.id}
+      viewTransition
       onClick={trackItem}
       className={cm(
         "group bg-white md:shadow-xs text-left hover:shadow-md transition-all duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item bg-linear-to-br border-b border-gray-200 md:border-b-0",
@@ -52,7 +54,7 @@ const ComponentItem = (
           isValid ? "opacity-100" : hasError ? "opacity-50" : "opacity-75"
         }
       >
-        <ResultItemInner key={item.id} {...item} />
+        <ResultItemInner key={item.id} {...item} transitionUrl={url} />
       </div>
       <IssueList issues={issues} />
     </Link>

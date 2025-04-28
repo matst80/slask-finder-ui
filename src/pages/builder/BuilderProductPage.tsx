@@ -45,7 +45,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
 
           <div className="flex items-center justify-center">
             <img
-              className="max-w-full h-auto object-contain"
+              className="max-w-full h-auto object-contain product-image"
               src={makeImageUrl(img)}
               alt={title}
             />
@@ -54,7 +54,9 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
           {/* Details Section */}
           <div className="space-y-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">{title}</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6 product-name">
+                {title}
+              </h2>
               {bp && (
                 <ul className="space-y-3 text-gray-600">
                   {bp.split("\n").map((txt) => (

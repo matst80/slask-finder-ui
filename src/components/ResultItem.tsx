@@ -160,6 +160,7 @@ export const ResultItemInner = ({
   badgeUrl,
   values,
   stock,
+  transitionUrl,
   id,
   children,
   bp,
@@ -167,10 +168,12 @@ export const ResultItemInner = ({
   lastUpdate,
   disclaimer,
   advertisingText,
-}: PropsWithChildren<Item>) => {
+}: PropsWithChildren<Item> & { transitionUrl?: string }) => {
   const hasRating = values?.["6"] != null && values?.["7"] != null;
   const soldBy = values?.["9"];
-  const isTransitioning = useViewTransitionState(`/product/${id}`);
+  const isTransitioning = useViewTransitionState(
+    transitionUrl ?? `/product/${id}`
+  );
   return (
     <>
       <div className="relative pt-4 px-4">

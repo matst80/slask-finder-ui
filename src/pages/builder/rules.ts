@@ -137,12 +137,48 @@ const arrayMatch = (
 
 const toMinFilter = (
   value: string | number | string[] | undefined,
-  { id, max = 99999 }: { id: number; max?: number }
+  {
+    id,
+    max = 99999,
+    multiplier = 1,
+  }: { id: number; max?: number; multiplier?: number }
 ): ConverterResult[] => {
   if (value == null) return [];
   const number = asNumber(value);
   if (isNaN(number)) return [];
-  return [{ id, value: { min: number, max } }];
+  return [{ id, value: { min: number * multiplier, max } }];
+};
+
+const toMaxFilter = (
+  value: string | number | string[] | undefined,
+  {
+    id,
+    min = 0,
+    multiplier = 1,
+  }: { id: number; min?: number; multiplier?: number }
+): ConverterResult[] => {
+  if (value == null) return [];
+  const number = asNumber(value);
+  if (isNaN(number)) return [];
+  return [{ id, value: { min, max: number * multiplier } }];
+};
+
+const toStringFilter = (
+  value: number | string | string[] | undefined,
+  { id }: { id: number }
+) => {
+  if (value == null) return [];
+  if (typeof value === "string") {
+    return [{ id, value: [value] }];
+  }
+  if (Array.isArray(value)) {
+    return [{ id, value }];
+  }
+  if (typeof value === "number") {
+    console.warn("converting number to string", { value, id });
+    return [{ id, value: [String(value)] }];
+  }
+  return [];
 };
 
 export const componentRules: Rule[] = [
@@ -201,27 +237,30 @@ export const componentRules: Rule[] = [
         id: 35980,
         to: RAM,
         converter: (value) => {
-          const min = Number(value[35980]);
-          if (isNaN(min)) return [];
-          return [
-            { id: 31191, value: { min: Number(value[35980]), max: 999999 } },
-          ];
+          return toMinFilter(value[35980], { id: 31191, max: 999999 });
+          // const min = Number(value[35980]);
+          // if (isNaN(min)) return [];
+          // return [
+          //   { id: 31191, value: { min: Number(value[35980]), max: 999999 } },
+          // ];
         },
       },
       {
         id: 32103,
         to: LIQUID_COOLER,
         converter: (values) => {
-          if (!isKey(values[32103])) return [];
-          return [{ id: 32077, value: values[32103] }];
+          return toStringFilter(values[32103], { id: 32077 });
+          // if (!isKey(values[32103])) return [];
+          // return [{ id: 32077, value: values[32103] }];
         },
       },
       {
         id: 32103,
         to: AIR_COOLER,
         converter: (values) => {
-          if (!isKey(values[32103])) return [];
-          return [{ id: 32077, value: values[32103] }];
+          return toStringFilter(values[32103], { id: 32077 });
+          // if (!isKey(values[32103])) return [];
+          // return [{ id: 32077, value: values[32103] }];
         },
       },
     ],
@@ -384,17 +423,22 @@ export const componentRules: Rule[] = [
         id: 30376,
         to: CASE,
         converter: (values) => {
-          const gpuSize = Number(values[30376]);
-          if (isNaN(gpuSize)) {
-            return [];
-          }
+          return toMinFilter(values[30376], {
+            id: 32062,
+            max: 99999,
+            multiplier: 10,
+          });
+          // const gpuSize = Number(values[30376]);
+          // if (isNaN(gpuSize)) {
+          //   return [];
+          // }
 
-          return [
-            {
-              id: 32062,
-              value: { min: Number(values[30376]) * 10, max: 99999 },
-            },
-          ];
+          // return [
+          //   {
+          //     id: 32062,
+          //     value: { min: Number(values[30376]) * 10, max: 99999 },
+          //   },
+          // ];
         },
       },
     ],
@@ -459,13 +503,13 @@ export const componentRules: Rule[] = [
               // add max size!!!!
               const values = [];
               for (let i = 2; i <= genNr; i++) {
-                values.push(`${i}.0`);
+                values.push(`${i}.0`, `${i}`);
               }
               ret.push({ id: 36249, value: values });
               //ret.push({ id: /* to be added */, value: {min:0, max:Number(size)} });
             }
           } else {
-            ret.push({ id: 36249, value: ["3.0"] });
+            ret.push({ id: 36249, value: ["3", "3.0", "4", "4.0"] });
           }
           return ret;
         },
@@ -474,22 +518,25 @@ export const componentRules: Rule[] = [
         id: 32103,
         to: AIR_COOLER,
         converter: (values) => {
-          if (typeof values[32103] != "string") return [];
-          return [{ id: 32077, value: values[32103] }];
+          return toStringFilter(values[32103], { id: 32077 });
+          // if (typeof values[32103] != "string") return [];
+          // return [{ id: 32077, value: values[32103] }];
         },
       },
       {
         id: 32103,
         to: LIQUID_COOLER,
         converter: (values) => {
-          if (typeof values[32103] != "string") return [];
-          return [{ id: 32077, value: values[32103] }];
+          return toStringFilter(values[32103], { id: 32077 });
+          // if (typeof values[32103] != "string") return [];
+          // return [{ id: 32077, value: values[32103] }];
         },
       },
       {
         id: 30552,
         to: CASE,
         converter: (values) => {
+          // todo fix this!
           const formFactor = values[30552];
           const allowed = [];
           if (typeof formFactor === "string") {
@@ -551,44 +598,56 @@ export const componentRules: Rule[] = [
         id: 32062,
         to: GPU,
         converter: (values) => {
-          const maxGpuSize = Number(values[32062]);
-          if (isNaN(maxGpuSize)) {
-            return [];
-          }
+          return toMaxFilter(values[32062], {
+            id: 30376,
+            min: 1,
+            multiplier: 0.1,
+          });
+          // const maxGpuSize = Number(values[32062]);
+          // if (isNaN(maxGpuSize)) {
+          //   return [];
+          // }
 
-          return [
-            {
-              id: 30376,
-              value: { max: maxGpuSize / 10, min: 1 },
-            },
-          ];
+          // return [
+          //   {
+          //     id: 30376,
+          //     value: { max: maxGpuSize / 10, min: 1 },
+          //   },
+          // ];
         },
       },
       {
         id: 36284,
         to: PSU,
         converter: (values) => {
-          if (!isKey(values[36284])) return [];
-          return [{ id: 36252, value: values[36284] }];
+          return toStringFilter(values[36284], { id: 36252 });
+          // if (!isKey(values[36284])) return [];
+          // return [{ id: 36252, value: values[36284] }];
         },
       },
       {
         id: 32061,
         to: AIR_COOLER,
         converter: (values) => {
-          const cpuHeightInMM = Number(values[32061]);
-          if (isNaN(cpuHeightInMM)) {
-            console.log("Invalid cpu height", values[32061]);
-            return [];
-          }
+          return toMaxFilter(values[32061], {
+            id: 30648,
+            min: 0,
+            multiplier: 0.1,
+          });
+          // const cpuHeightInMM = Number(values[32061]);
+          // if (isNaN(cpuHeightInMM)) {
+          //   console.log("Invalid cpu height", values[32061]);
+          //   return [];
+          // }
 
-          return [{ id: 30648, value: { min: 0, max: cpuHeightInMM / 10 } }];
+          // return [{ id: 30648, value: { min: 0, max: cpuHeightInMM / 10 } }];
         },
       },
       {
         id: 36294,
         to: LIQUID_COOLER,
         converter: (values) => {
+          // todo fix this, or check values!!!!
           const ret = [];
           const maxSize = Math.max(
             ...[values[36296], values[36298], values[36299], values[36300]]
@@ -848,8 +907,9 @@ export const componentRules: Rule[] = [
         id: 36252,
         to: CASE,
         converter: (values) => {
-          if (!isKey(values[36252])) return [];
-          return [{ id: 36284, value: values[36252] }];
+          return toStringFilter(values[36252], { id: 36284 });
+          // if (!isKey(values[36252])) return [];
+          // return [{ id: 36284, value: values[36252] }];
         },
       },
     ],
