@@ -47,7 +47,7 @@ function App() {
           </main>
         </div>
       </div>
-      <div className="progress" />
+      <div className="progress z-40" />
     </SuggestionProvider>
   );
 }

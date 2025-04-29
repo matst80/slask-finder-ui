@@ -212,12 +212,12 @@
   }
 
   .progress {
-    height: 3px;
+    height: 4px;
     background: linear-gradient(to right,
         var(--color-yellow-500) 0%,
         var(--color-green-500) 100%);
     position: fixed;
-    top: 0;
+    bottom: 0;
     z-index: 20;
     left: 0;
     width: 100%;
