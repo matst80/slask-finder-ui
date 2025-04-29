@@ -20,7 +20,7 @@ import { useClipboard } from "../lib/hooks/useClipboard";
 import { Tooltip } from "./Tooltip";
 
 const ignoreFaceIds = [
-  3, 4, 5, 6, 10, 11, 12, 13, 20, 1, 30, 31, 32, 33, 35, 36, 23, 9,
+  3, 4, 5, 6, 10, 11, 12, 13, 20, 1, 30, 31, 32, 33, 35, 36, 23, 9, 24,
 ];
 
 type SelectedFacet = {
