@@ -19,7 +19,7 @@ import { useTranslations } from "../lib/hooks/useTranslations";
 import { useClipboard } from "../lib/hooks/useClipboard";
 import { Tooltip } from "./Tooltip";
 
-const ignoreFaceIds = [3, 4, 5, 6, 10, 11, 12, 13];
+const ignoreFaceIds = [3, 4, 5, 6, 10, 11, 12, 13, 20];
 
 type SelectedFacet = {
   id: number;
@@ -98,12 +98,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
     return Object.entries(values)
       .map(([id, value]) => {
         const facet = data?.[id];
-        if (
-          !facet ||
-          value == null ||
-          (!isAdmin && facet.hide) ||
-          ignoreFaceIds.includes(facet.id)
-        ) {
+        if (!facet || value == null || ignoreFaceIds.includes(facet.id)) {
           return null;
         }
 
