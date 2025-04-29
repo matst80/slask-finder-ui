@@ -120,6 +120,7 @@ export const FacetGroups = () => {
                     onValueChange={(value) => {
                       const groupId = parseInt(value);
                       const group = groups?.find((g) => g.id === groupId);
+                      setIds([]);
                       setRequest({
                         group_id: groupId,
                         group_name: group?.name || "",
