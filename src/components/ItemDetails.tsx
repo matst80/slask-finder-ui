@@ -25,10 +25,10 @@ import { useAdmin } from "../hooks/appState";
 import { getAdminItem } from "../lib/datalayer/api";
 import { useQuery } from "../lib/hooks/useQuery";
 import { trackAction } from "../lib/datalayer/beacons";
-import { Properties } from "./Properties";
 import { StockList } from "./StockList";
 import { Link } from "react-router-dom";
 import { useTranslations } from "../lib/hooks/useTranslations";
+import { GroupedProperties } from "./GroupedProperties";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -432,7 +432,7 @@ export const ItemDetails = (details: ItemDetail) => {
           <RelationGroups values={values} />
 
           <div className="animating-element">
-            <Properties values={details.values} />
+            <GroupedProperties values={details.values} />
           </div>
 
           <div className="animating-element">

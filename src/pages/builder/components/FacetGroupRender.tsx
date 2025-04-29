@@ -120,7 +120,7 @@ export const GroupRenderer = ({ values }: { values: ItemValues }) => {
               <div className="mt-4">
                 {values
                   ?.sort((a, b) => a.name.localeCompare(b.name))
-                  .map(({ name, value, id }) => {
+                  .map(({ name, value }) => {
                     //console.log({ id, name, value });
                     return (
                       <div key={name} className="break-inside-avoid-column">

@@ -231,9 +231,8 @@ export const cookieObject = () => {
   const cookies = document.cookie.split("; ");
   const cookieObject: { [key: string]: string } = {};
   for (const cookie of cookies) {
-    const [key, value, ...rest] = cookie.split("=");
+    const [key, value] = cookie.split("=");
     cookieObject[key] = decodeURIComponent(value);
-    console.log({ key, value, rest });
   }
   return cookieObject;
 };
