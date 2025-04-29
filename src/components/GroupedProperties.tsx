@@ -14,10 +14,9 @@ import { InfoIcon, PlusIcon } from "lucide-react";
 import { QueryProvider } from "../lib/hooks/QueryProvider";
 import { TotalResultText } from "./ResultHeader";
 import { QueryUpdater } from "./QueryMerger";
-import { Button, ButtonLink } from "./ui/button";
+import { ButtonLink } from "./ui/button";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { useClipboard } from "../lib/hooks/useClipboard";
-import { PopoverMenu } from "./PopoverMenu";
 import { Tooltip } from "./Tooltip";
 
 const ignoreFaceIds = [3, 4, 5, 6, 10, 11, 12, 13];
