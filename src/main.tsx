@@ -45,7 +45,7 @@ import { norwegian } from "./translations/norwegian.ts";
 import { english } from "./translations/english.ts";
 import { swedish } from "./translations/swedish.ts";
 import { FacetGroups } from "./pages/admin/FacetGroups.tsx";
-import { cookieObject } from "./utils.ts";
+import { cookieObject, getLocale } from "./utils.ts";
 import { CspReport } from "./pages/tracking/csp-report.tsx";
 
 const router = createBrowserRouter([
@@ -227,23 +227,15 @@ const router = createBrowserRouter([
   },
 ]);
 
-const getBrowserLanguage = () => {
-  const { locale: cookieLanguage } = cookieObject();
-  const browserLanguage = navigator.language;
-  console.log("Browser language: ", {
-    lang: browserLanguage,
-    locale: cookieLanguage,
-  });
-  const lang = cookieLanguage || browserLanguage;
+const getBrowserTranslations = () => {
+  const lang = getLocale();
   if (lang.startsWith("sv")) return swedish;
-  if (lang.startsWith("nb")) return norwegian;
-  if (lang.startsWith("no")) return norwegian;
   return english;
 };
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <TranslationProvider language={getBrowserLanguage()}>
+    <TranslationProvider language={getBrowserTranslations()}>
       <QueryProvider initialQuery={{ query: "*", page: 0, pageSize: 20 }}>
         <NotificationsProvider>
           <ImpressionProvider>

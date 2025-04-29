@@ -1,7 +1,7 @@
 import { Bell, LoaderCircle, Menu, Settings, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link, To } from "react-router-dom";
-import { cm, setCookie } from "../utils";
+import { cm, getLocale, setCookie } from "../utils";
 import { useUser } from "../adminHooks";
 import { PropsWithChildren, useEffect } from "react";
 import { MiniCart } from "./MiniCart";
@@ -44,13 +44,14 @@ const MenuLink = ({ to, children }: PropsWithChildren<{ to: To }>) => (
   </Link>
 );
 
-const regions = ["sv-SE", "en-US", "no-NB"];
+const regions = ["sv-SE", "sv-FI", "en-US", "en-GB"];
 const regionNamesInEnglish = new Intl.DisplayNames(["en"], {
   type: "language",
 });
 
 export function Navbar() {
   const t = useTranslations();
+  const locale = getLocale();
   return (
     <nav className="bg-white shadow-md hidden md:block">
       <div className="mx-auto px-6">
@@ -72,19 +73,20 @@ export function Navbar() {
             </div>
           </div>
           <div className="ml-4 flex items-center md:ml-6">
-            {regions.map((item) => (
-              <Button
-                key={item}
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setCookie("locale", item, 365);
-                  window.location.reload();
-                }}
-              >
-                {regionNamesInEnglish.of(item)?.split(" ")[0]}
-              </Button>
-            ))}
+            <select
+              onChange={(e) => {
+                setCookie("sflocale", e.target.value, 365);
+                window.location.reload();
+              }}
+              value={locale}
+              className="border border-gray-300 rounded-md p-2 appearance-none"
+            >
+              {regions.map((item) => (
+                <option key={item} value={item}>
+                  {regionNamesInEnglish.of(item)}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6">

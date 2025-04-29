@@ -152,6 +152,16 @@ const colorHexMap: Record<string, React.CSSProperties> = {
   },
 };
 
+export const getLocale = () => {
+  const { sflocale: cookieLanguage } = cookieObject();
+  const browserLanguage = navigator.language;
+  console.log("Browser language: ", {
+    lang: browserLanguage,
+    locale: cookieLanguage,
+  });
+  return cookieLanguage || browserLanguage;
+};
+
 export const colourNameToHex = (color: string) => {
   return colorHexMap[color];
 };
@@ -221,8 +231,9 @@ export const cookieObject = () => {
   const cookies = document.cookie.split("; ");
   const cookieObject: { [key: string]: string } = {};
   for (const cookie of cookies) {
-    const [key, value] = cookie.split("=");
+    const [key, value, ...rest] = cookie.split("=");
     cookieObject[key] = decodeURIComponent(value);
+    console.log({ key, value, rest });
   }
   return cookieObject;
 };
