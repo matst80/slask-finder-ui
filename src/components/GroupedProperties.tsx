@@ -19,7 +19,9 @@ import { useTranslations } from "../lib/hooks/useTranslations";
 import { useClipboard } from "../lib/hooks/useClipboard";
 import { Tooltip } from "./Tooltip";
 
-const ignoreFaceIds = [3, 4, 5, 6, 10, 11, 12, 13, 20];
+const ignoreFaceIds = [
+  3, 4, 5, 6, 10, 11, 12, 13, 20, 1, 30, 31, 32, 33, 35, 36, 23,
+];
 
 type SelectedFacet = {
   id: number;
@@ -140,8 +142,8 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                     <div
                       key={`prop-${field.id}-${field.valueType}`}
                       className={cm(
-                        "py-2 md:p-3 md:rounded-lg md:hover:bg-gray-50 transition-colors relative",
-                        field.hide && "opacity-50"
+                        "py-2 md:p-3 md:rounded-lg md:hover:bg-gray-50 transition-colors relative"
+                        //field.hide && "opacity-50"
                       )}
                     >
                       {isValidKeyFilter(field.value) && (
