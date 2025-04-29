@@ -133,7 +133,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
       <div className="flex flex-col gap-4">
         {Object.entries(fields).map(([groupName, fields]) => {
           return (
-            <div key={groupName} className="animated-element">
+            <div key={groupName} className="animating-element">
               <h3 className="text-xl font-bold my-6">{groupName}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
                 {fields.map((field) => {
