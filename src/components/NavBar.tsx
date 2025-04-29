@@ -72,38 +72,40 @@ export function Navbar() {
               </div>
             </div>
           </div>
-          <div className="ml-4 flex items-center md:ml-6">
-            <select
-              onChange={(e) => {
-                setCookie("sflocale", e.target.value, 365);
-                window.location.reload();
-              }}
-              value={locale}
-              className="border border-gray-300 rounded-md p-2 appearance-none"
-            >
-              {regions.map((item) => (
-                <option key={item} value={item}>
-                  {regionNamesInEnglish.of(item)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="hidden md:block">
+          <div className="flex items-center">
             <div className="ml-4 flex items-center md:ml-6">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Settings className="h-5 w-5" />
-              </Button>
-              <MiniCart />
-              <UserButton />
+              <select
+                onChange={(e) => {
+                  setCookie("sflocale", e.target.value, 365);
+                  window.location.reload();
+                }}
+                value={locale}
+                className="border border-gray-50 rounded-md p-2 appearance-none"
+              >
+                {regions.map((item) => (
+                  <option key={item} value={item}>
+                    {regionNamesInEnglish.of(item)}
+                  </option>
+                ))}
+              </select>
             </div>
-          </div>
-          <div className="-mr-2 flex md:hidden">
-            <Button variant="ghost" size="icon">
-              <Menu className="h-6 w-6" />
-            </Button>
+            <div className="hidden md:block">
+              <div className="ml-4 flex items-center md:ml-6">
+                <Button variant="ghost" size="icon">
+                  <Bell className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Settings className="h-5 w-5" />
+                </Button>
+                <MiniCart />
+                <UserButton />
+              </div>
+            </div>
+            <div className="-mr-2 flex md:hidden">
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
