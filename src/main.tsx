@@ -19,7 +19,6 @@ import { UpdatedItems } from "./pages/tracking/updates.tsx";
 import { DashboardView } from "./pages/Dashboard.tsx";
 import { PageContainer } from "./PageContainer.tsx";
 import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx";
-// import { Builder } from "./components/Builder.tsx";
 import { QueryProvider } from "./lib/hooks/QueryProvider.tsx";
 import { ImpressionProvider } from "./lib/hooks/ImpressionProvider.tsx";
 import {
@@ -41,11 +40,10 @@ import { BuilderProductPage } from "./pages/builder/BuilderProductPage.tsx";
 import { NotificationsProvider } from "./components/ui-notifications/notifications-provider.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 import { TranslationProvider } from "./lib/hooks/TranslationProvider.tsx";
-import { norwegian } from "./translations/norwegian.ts";
 import { english } from "./translations/english.ts";
 import { swedish } from "./translations/swedish.ts";
 import { FacetGroups } from "./pages/admin/FacetGroups.tsx";
-import { cookieObject, getLocale } from "./utils.ts";
+import { getLocale } from "./utils.ts";
 import { CspReport } from "./pages/tracking/csp-report.tsx";
 
 const router = createBrowserRouter([

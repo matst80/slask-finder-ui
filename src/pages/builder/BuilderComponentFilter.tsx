@@ -1,6 +1,5 @@
 import { Link, useLoaderData } from "react-router-dom";
 import { Facets } from "../../components/Facets";
-import { Paging } from "../../components/Paging";
 import { ResultHeader } from "../../components/ResultHeader";
 import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { useBuilderQuery } from "./useBuilderQuery";

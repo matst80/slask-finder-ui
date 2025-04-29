@@ -1,4 +1,3 @@
-import { title } from "framer-motion/client";
 import { BaseTranslationType } from "../lib/types";
 
 export const swedish = {
