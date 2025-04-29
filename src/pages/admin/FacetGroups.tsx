@@ -15,12 +15,6 @@ import {
   CardTitle,
   CardDescription,
 } from "../../components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../../components/ui/tabs";
 import { Label } from "../../components/ui/label";
 import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
 import { Checkbox } from "../../components/ui/checkbox";
@@ -84,11 +78,6 @@ export const FacetGroups = () => {
           selected: ids.includes(obj.id),
         })),
     [filter, facets, ids]
-  );
-
-  const selectedFacets = useMemo(
-    () => filteredFacets.filter((facet) => facet.selected),
-    [filteredFacets]
   );
 
   const handleSelectAll = () => {
