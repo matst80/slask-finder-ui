@@ -11,7 +11,7 @@ import { cm, isDefined, makeImageUrl } from "../../../utils";
 import { InfiniteHitList } from "../../../components/InfiniteHitList";
 import { useFacetMap } from "../../../hooks/searchHooks";
 import { Loader } from "lucide-react";
-import { GroupRenderer } from "./ItemDetails";
+import { GroupRenderer } from "./FacetGroupRender";
 import { Price } from "../../../components/Price";
 
 const TableRowItem = ({
