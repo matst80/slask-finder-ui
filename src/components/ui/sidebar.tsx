@@ -1,8 +1,10 @@
 import { X } from "lucide-react";
 import { PropsWithChildren, useEffect, useRef } from "react";
+import { cm } from "../../utils";
 
 type SidebarProps = {
   open: boolean;
+  side?: "left" | "right";
   setOpen: (open: boolean) => void;
 };
 
@@ -40,6 +42,7 @@ const useSwipeAway = (
 
 export const Sidebar = ({
   open,
+  side = "left",
   setOpen,
   children,
 }: PropsWithChildren<SidebarProps>) => {
@@ -75,14 +78,19 @@ export const Sidebar = ({
     }
   }, [ref]);
   return (
-    <dialog ref={ref}>
+    <dialog ref={ref} className={side}>
       <button
         onClick={() => ref.current?.close()}
         className="text-gray-500 hover:text-gray-700 absolute top-3 right-3 rounded-full p-1 transition-colors duration-200"
       >
         <X size={24} />
       </button>
-      <div className="border-r h-full p-6 border-r-gray-300 bg-white min-w-sm">
+      <div
+        className={cm(
+          "h-full p-6 border-gray-300 bg-white min-w-sm",
+          side == "left" ? "border-r" : "border-l"
+        )}
+      >
         {children}
       </div>
     </dialog>

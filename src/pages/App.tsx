@@ -52,7 +52,7 @@ function App() {
           </main>
         </div>
       </div>
-      <Sidebar open={open} setOpen={setOpen}>
+      <Sidebar open={open} setOpen={setOpen} side="right">
         <div className="flex flex-col justify-between gap-2">
           <span>test content</span>
           <Button
