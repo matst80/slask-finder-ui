@@ -196,7 +196,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                           )}
                         </h4>
                       </div>
-                      <div className="flex flex-col gap-1">
+                      <div className="flex justify-between gap-1">
                         <p className="text-gray-700">
                           {Array.isArray(field.value)
                             ? field.value.join(", ")
@@ -208,7 +208,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                           field.linkedId > 0 &&
                           field.value != null && (
                             <Link
-                              className="text-blue-600 hover:text-blue-800 text-sm font-medium inline-flex items-center gap-1"
+                              className="text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium inline-flex items-center gap-1"
                               to="/"
                               onClick={() => {
                                 if (
@@ -230,9 +230,9 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                               }}
                             >
                               {t("common.show_compatible")}
-                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                              {/* <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
                                 {field.linkedId}
-                              </span>
+                              </span> */}
                             </Link>
                           )}
                       </div>

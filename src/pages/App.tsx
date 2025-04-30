@@ -5,12 +5,17 @@ import { ResultHeader } from "../components/ResultHeader";
 import { SearchResultList } from "../components/SearchResultList";
 import { Facets } from "../components/Facets";
 import { SuggestionProvider } from "../lib/hooks/SuggestionProvider";
+import { Sidebar } from "../components/ui/sidebar";
+import { useState } from "react";
+import { Button } from "../components/ui/button";
+import { Menu } from "lucide-react";
 
 // px-4 py-3 md:py-8 md:px-10
 // px-4 md:px-10
 
 function App() {
   useFocusTracking();
+  const [open, setOpen] = useState(false);
   return (
     <SuggestionProvider
       config={[
@@ -47,6 +52,24 @@ function App() {
           </main>
         </div>
       </div>
+      <Sidebar open={open} setOpen={setOpen}>
+        <div className="flex flex-col justify-between gap-2">
+          <span>test content</span>
+          <Button
+            className="absolute right-3 bottom-3"
+            onClick={() => setOpen(false)}
+          >
+            Ok
+          </Button>
+        </div>
+      </Sidebar>
+      <button
+        className="fixed right-3 bottom-3 bg"
+        onClick={() => setOpen((p) => !p)}
+      >
+        <Menu className="size-5" />
+        <span className="sr-only">Open sidebar</span>
+      </button>
       <div className="progress z-40" />
     </SuggestionProvider>
   );

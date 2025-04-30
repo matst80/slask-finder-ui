@@ -240,6 +240,90 @@
       transform: scaleX(1);
     }
   }
+
+  dialog::backdrop {
+    transition: display 0.5s allow-discrete, overlay 0.5s allow-discrete;
+    animation: backdrop-close 0.5s forwards;
+    margin: 0;
+    padding: 0;
+  }
+
+  dialog:modal,
+  dialog {
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    max-height: 100%;
+    position: fixed;
+    min-width: 0px;
+    left: 0px;
+    max-width: calc(100% - 3em);
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+  }
+
+  dialog[open]::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: backdrop-open 0.5s forwards;
+  }
+
+  dialog {
+    transition: display 0.5s allow-discrete, overlay 0.5s allow-discrete;
+    animation: close 0.5s forwards;
+
+    &[open] {
+      animation: open 0.5s forwards;
+    }
+  }
+
+  @keyframes backdrop-open {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes backdrop-close {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes open {
+    from {
+      translate: -200px 0;
+      opacity: 0;
+    }
+
+    to {
+      translate: 0 0;
+      opacity: 1;
+    }
+  }
+
+  @keyframes close {
+    from {
+      translate: 0 0;
+      opacity: 1;
+    }
+
+    to {
+      translate: -10% 0;
+      opacity: 0;
+    }
+  }
 }
 
 :root {
