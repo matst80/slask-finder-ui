@@ -9,8 +9,11 @@ export const swedish = {
     tracking: "Spårning",
     login: "Logga in",
     admin: "Admin",
+    checkout: "Kassan",
+    updated: "Uppdaterade",
   },
   admin_menu: {
+    edit: "Redigera",
     facets: "Facetter",
     fields: "Fält",
     missing_facets: "Saknade facetter",
@@ -88,6 +91,9 @@ export const swedish = {
         description:
           "Välj ett chassi för din byggnad. Du kan alltid ändra den senare.",
       },
+    },
+    kit: {
+      title: "Anpassa från mall",
     },
     selector: {
       air_cooler: {

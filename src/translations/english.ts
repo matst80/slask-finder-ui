@@ -9,8 +9,11 @@ export const english = {
     tracking: "Tracking",
     login: "Login",
     admin: "Admin",
+    checkout: "Checkout",
+    updated: "Updated",
   },
   admin_menu: {
+    edit: "Edit",
     facets: "Facets",
     fields: "Fields",
     missing_facets: "Missing facets",
@@ -85,6 +88,9 @@ export const english = {
         title: "Case",
         description: "Select a case for your build",
       },
+    },
+    kit: {
+      title: "Prebuilt kits",
     },
     selector: {
       air_cooler: {

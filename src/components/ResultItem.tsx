@@ -131,10 +131,10 @@ const ImageWithPlaceHolder = ({
     );
   }
   return (
-    <div className="relative w-full h-48 overflow-hidden">
+    <div className="relative w-full h-48">
       {img != null && (
         <img
-          className={`w-full h-full transition-all duration-300 object-contain mix-blend-multiply ${
+          className={`w-full h-full transition-all group-hover:scale-110 duration-300 object-contain mix-blend-multiply ${
             loaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
           }`}
           src={makeImageUrl(img)}

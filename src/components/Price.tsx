@@ -49,7 +49,7 @@ export const Price = ({
           {disclaimer != null && (
             <div className="relative">
               <div className="hidden group-hover:block absolute left-0 top-1 z-10">
-                <div className="bg-white p-3 rounded-md shadow-lg border border-gray-200 max-w-xs">
+                <div className="bg-white transition-opacity opacity-0 group-hover:opacity-100 p-3 rounded-md shadow-lg border border-gray-200 max-w-xs">
                   <div className="absolute -top-1 left-4 w-3 h-3 bg-white border-l border-t border-gray-200 transform rotate-45"></div>
                   <p className="text-xs font-normal text-gray-700">
                     {disclaimer}

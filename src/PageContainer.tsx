@@ -1,11 +1,11 @@
-import { PropsWithChildren } from "react"
-import { Navbar } from "./components/NavBar"
+import { PropsWithChildren } from "react";
+import { SidebarMenu } from "./components/SidebarMenu";
 
 export const PageContainer = ({ children }: PropsWithChildren) => {
   return (
     <>
-      <Navbar />
+      <SidebarMenu />
       {children}
     </>
-  )
-}
+  );
+};

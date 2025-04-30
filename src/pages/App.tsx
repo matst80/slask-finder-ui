@@ -5,17 +5,13 @@ import { ResultHeader } from "../components/ResultHeader";
 import { SearchResultList } from "../components/SearchResultList";
 import { Facets } from "../components/Facets";
 import { SuggestionProvider } from "../lib/hooks/SuggestionProvider";
-import { Sidebar } from "../components/ui/sidebar";
-import { useState } from "react";
-import { Button } from "../components/ui/button";
-import { Menu, X } from "lucide-react";
 
 // px-4 py-3 md:py-8 md:px-10
 // px-4 md:px-10
 
 function App() {
   useFocusTracking();
-  const [open, setOpen] = useState(false);
+
   return (
     <SuggestionProvider
       config={[
@@ -52,25 +48,7 @@ function App() {
           </main>
         </div>
       </div>
-      <Sidebar open={open} setOpen={setOpen} side="right">
-        <button
-          onClick={() => setOpen(false)}
-          className="text-gray-500 hover:text-gray-700 absolute top-3 rounded-full p-1 z-10 transition-colors duration-200 right-3"
-        >
-          <X size={24} />
-        </button>
-        <div className="flex flex-col justify-between gap-2 min-w-sm h-full p-6 bg-white">
-          <span>test content</span>
-          <Button onClick={() => setOpen(false)}>Ok</Button>
-        </div>
-      </Sidebar>
-      <button
-        className="fixed right-5 bottom-5 bg bg-gray-50 p-2 border rounded-md z-50 border-gray-100 hover:border-gray-300 hover:bg-gray-100 transition-colors"
-        onClick={() => setOpen((p) => !p)}
-      >
-        <Menu className="size-5" />
-        <span className="sr-only">Open sidebar</span>
-      </button>
+
       <div className="progress z-40" />
     </SuggestionProvider>
   );

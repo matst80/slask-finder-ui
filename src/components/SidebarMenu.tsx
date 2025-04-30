@@ -1,0 +1,294 @@
+import {
+  Menu,
+  X,
+  ChevronDown,
+  Search,
+  LayoutDashboard,
+  Box,
+  Edit,
+  BarChart2,
+  ShoppingCart,
+  Clock,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import { Sidebar } from "./ui/sidebar";
+import { useTranslations } from "../lib/hooks/useTranslations";
+import { TranslationKey } from "../translations/translations";
+import { Link, useLocation } from "react-router-dom";
+
+type NavigationItemType = {
+  translationKey: TranslationKey;
+  url: string;
+  icon?: React.ReactNode;
+  children?: NavigationItemType[];
+  color?: string;
+};
+
+// Color palette for menu items
+const menuColors = {
+  search: "from-indigo-500 to-blue-500",
+  dashboard: "from-blue-500 to-cyan-500",
+  builder: "from-cyan-500 to-teal-500",
+  edit: "from-teal-500 to-emerald-500",
+  tracking: "from-emerald-500 to-green-500",
+  checkout: "from-amber-500 to-orange-500",
+  updated: "from-orange-500 to-rose-500",
+};
+
+const NavigationItem = ({
+  translationKey,
+  url,
+  icon,
+  children,
+  level,
+  color = "from-blue-500 to-indigo-600",
+}: NavigationItemType & { level: number }) => {
+  const t = useTranslations();
+  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+  const isActive = location.pathname === url;
+  const hasChildren = children && children.length > 0;
+
+  // Automatically open menu items when their children are active
+  useEffect(() => {
+    if (
+      hasChildren &&
+      children.some(
+        (child) =>
+          location.pathname === child.url ||
+          (child.children &&
+            child.children.some(
+              (grandchild) => location.pathname === grandchild.url
+            ))
+      )
+    ) {
+      setIsOpen(true);
+    }
+  }, [location.pathname, hasChildren, children]);
+
+  const isChildActive =
+    hasChildren &&
+    children.some(
+      (child) =>
+        location.pathname === child.url ||
+        (child.children &&
+          child.children.some(
+            (grandchild) => location.pathname === grandchild.url
+          ))
+    );
+
+  return (
+    <li className={`mb-2 ${level > 0 ? "mt-1" : "mt-0"}`}>
+      <div className={`group ${hasChildren ? "cursor-pointer" : ""}`}>
+        <Link
+          to={url}
+          className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 
+            ${
+              isActive
+                ? `bg-gradient-to-r ${color} text-white font-medium shadow-sm`
+                : isChildActive
+                ? "bg-gray-50 text-gray-900"
+                : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+            }`}
+          onClick={
+            hasChildren
+              ? (e) => {
+                  e.preventDefault();
+                  setIsOpen(!isOpen);
+                }
+              : undefined
+          }
+        >
+          <div className="flex items-center gap-3">
+            <span
+              className={`${
+                isActive
+                  ? "text-white"
+                  : "text-gray-500 group-hover:text-gray-700"
+              } transition-colors duration-200`}
+            >
+              {icon}
+            </span>
+            <span className={`${level === 0 ? "font-medium" : ""}`}>
+              {t(translationKey)}
+            </span>
+            {isActive && level === 0 && (
+              <span className="absolute left-0 w-1 h-6 bg-white rounded-r-full" />
+            )}
+          </div>
+
+          {hasChildren && (
+            <ChevronDown
+              size={16}
+              className={`transition-transform duration-300 ${
+                isOpen ? "rotate-180" : ""
+              } ${isActive ? "text-white" : "text-gray-400"}`}
+            />
+          )}
+        </Link>
+      </div>
+
+      {hasChildren && (
+        <ul
+          className={`pl-3 mt-1 overflow-hidden transition-all duration-300 ease-in-out border-l-2 border-gray-100 ml-2 
+            ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
+        >
+          {children.map((child) => (
+            <NavigationItem
+              key={child.translationKey}
+              {...child}
+              level={level + 1}
+              color={color}
+            />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+};
+
+const menu: NavigationItemType[] = [
+  {
+    translationKey: "menu.search",
+    url: "/",
+    icon: <Search size={20} />,
+    color: menuColors.search,
+  },
+  {
+    translationKey: "menu.dashboard",
+    url: "/dashboard",
+    icon: <LayoutDashboard size={20} />,
+    color: menuColors.dashboard,
+  },
+  {
+    translationKey: "menu.builder",
+    url: "/builder",
+    icon: <Box size={20} />,
+    color: menuColors.builder,
+    children: [
+      {
+        translationKey: "builder.start.title",
+        url: "/builder",
+      },
+      {
+        translationKey: "builder.overview",
+        url: "/builder/overview",
+      },
+      {
+        translationKey: "builder.kit.title",
+        url: "/builder/kit",
+      },
+    ],
+  },
+  {
+    translationKey: "admin_menu.edit",
+    url: "/edit",
+    icon: <Edit size={20} />,
+    color: menuColors.edit,
+    children: [
+      {
+        translationKey: "admin_menu.facets",
+        url: "/edit/facets",
+      },
+      {
+        translationKey: "admin_menu.facet_groups",
+        url: "/edit/facet_groups",
+      },
+      {
+        translationKey: "admin_menu.rules",
+        url: "/edit/rules",
+      },
+      {
+        translationKey: "admin_menu.relations",
+        url: "/edit/relations",
+      },
+      {
+        translationKey: "admin_menu.fields",
+        url: "/edit/fields",
+      },
+      {
+        translationKey: "admin_menu.csp",
+        url: "/edit/csp",
+      },
+      {
+        translationKey: "admin_menu.missing_facets",
+        url: "/edit/missing_fields",
+      },
+    ],
+  },
+  {
+    translationKey: "menu.tracking",
+    url: "/stats",
+    icon: <BarChart2 size={20} />,
+    color: menuColors.tracking,
+    children: [
+      {
+        translationKey: "tracking.menu.queries",
+        url: "/stats/queries",
+      },
+      {
+        translationKey: "tracking.menu.items",
+        url: "/stats/popular",
+      },
+      {
+        translationKey: "tracking.menu.facets",
+        url: "/stats/facets",
+      },
+      {
+        translationKey: "tracking.menu.funnels",
+        url: "/stats/funnels",
+      },
+    ],
+  },
+  {
+    translationKey: "menu.checkout",
+    url: "/checkout",
+    icon: <ShoppingCart size={20} />,
+    color: menuColors.checkout,
+  },
+  {
+    translationKey: "menu.updated",
+    url: "/updated",
+    icon: <Clock size={20} />,
+    color: menuColors.updated,
+  },
+];
+
+export const SidebarMenu = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Sidebar open={open} setOpen={setOpen} side="left">
+        <button
+          onClick={() => setOpen(false)}
+          className="text-white hover:text-gray-300 absolute top-4 right-4 rounded-full p-2 z-10 transition-colors duration-200"
+        >
+          <X size={30} />
+        </button>
+        <div className="flex flex-col justify-between gap-2 h-full bg-white">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-6 px-6 mb-4">
+            <h2 className="text-2xl font-bold">Slask Finder</h2>
+            <p className="text-blue-100 text-sm mt-1">Admin Dashboard</p>
+          </div>
+          <nav className="flex-1 overflow-y-auto px-3 md:px-6 py-2">
+            <ul className="space-y-2">
+              {menu.map((i) => (
+                <NavigationItem key={i.translationKey} {...i} level={0} />
+              ))}
+            </ul>
+          </nav>
+          <div className="pt-4 border-t border-gray-100 mt-auto p-4 bg-gray-50">
+            <div className="text-xs text-gray-500">Slask Finder UI © 2025</div>
+          </div>
+        </div>
+      </Sidebar>
+      <button
+        className="fixed left-5 bottom-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-3 rounded-full z-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+        onClick={() => setOpen((p) => !p)}
+      >
+        <Menu className="size-5" />
+        <span className="sr-only">Open sidebar</span>
+      </button>
+    </>
+  );
+};
