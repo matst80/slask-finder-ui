@@ -161,6 +161,7 @@ export const AutoSuggest = () => {
       >
         <input
           ref={inputRef}
+          accessKey="f"
           className={cm(
             "w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden",
             "md:rounded-md focus:md:rounded-b-none"
@@ -337,19 +338,19 @@ const PopularRefinement = ({ facetId, query, values }: QueryRefinement) => {
 
 const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
   const { setQuery } = useQuery();
-  if (fields == null || fields.length === 0) {
-    return null;
-  }
+  // if (fields == null || fields.length === 0) {
+  //   return null;
+  // }
   const updateQuery =
     (
-      id: number,
-      value: string
+      id?: number,
+      value?: string
     ): React.MouseEventHandler<HTMLButtonElement | HTMLDivElement> =>
     (e) => {
       e.stopPropagation();
       e.preventDefault();
       setQuery({
-        string: [{ id, value: [value] }],
+        string: id != null && value != null ? [{ id, value: [value] }] : [],
         query,
         stock: [],
         page: 0,
@@ -358,7 +359,7 @@ const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
   return (
     <button
       className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full"
-      onClick={updateQuery(fields[0].id, fields[0].values[0].value)}
+      onClick={updateQuery(fields[0]?.id, fields[0]?.values?.[0]?.value)}
     >
       <SearchIcon className="size-5 shrink-0" />
       <span>{query}</span>

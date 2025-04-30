@@ -7,6 +7,7 @@ import { PropsWithChildren, useEffect } from "react";
 import { MiniCart } from "./MiniCart";
 import { useAdmin } from "../hooks/appState";
 import { useTranslations } from "../lib/hooks/useTranslations";
+import { LanguageSelector } from "./LanguageSelector";
 
 const UserButton = () => {
   const { data, isLoading } = useUser();
@@ -44,14 +45,9 @@ const MenuLink = ({ to, children }: PropsWithChildren<{ to: To }>) => (
   </Link>
 );
 
-const regions = ["sv-SE", "sv-FI", "en-US", "en-GB"];
-const regionNamesInEnglish = new Intl.DisplayNames(["en"], {
-  type: "language",
-});
-
 export function Navbar() {
   const t = useTranslations();
-  const locale = getLocale();
+
   return (
     <nav className="bg-white shadow-md hidden md:block">
       <div className="mx-auto px-6">
@@ -74,20 +70,7 @@ export function Navbar() {
           </div>
           <div className="flex items-center">
             <div className="ml-4 flex items-center md:ml-6">
-              <select
-                onChange={(e) => {
-                  setCookie("sflocale", e.target.value, 365);
-                  window.location.reload();
-                }}
-                value={locale}
-                className="border border-gray-50 rounded-md p-2 appearance-none"
-              >
-                {regions.map((item) => (
-                  <option key={item} value={item}>
-                    {regionNamesInEnglish.of(item)}
-                  </option>
-                ))}
-              </select>
+              <LanguageSelector />
             </div>
             <div className="hidden md:block">
               <div className="ml-4 flex items-center md:ml-6">

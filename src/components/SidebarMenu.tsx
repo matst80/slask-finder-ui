@@ -15,12 +15,14 @@ import { Sidebar } from "./ui/sidebar";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { TranslationKey } from "../translations/translations";
 import { Link, useLocation } from "react-router-dom";
+import { LanguageSelector } from "./LanguageSelector";
 
 type NavigationItemType = {
   translationKey: TranslationKey;
   url: string;
   icon?: React.ReactNode;
   children?: NavigationItemType[];
+  accessKey?: string;
   color?: string;
 };
 
@@ -40,6 +42,7 @@ const NavigationItem = ({
   url,
   icon,
   children,
+  accessKey,
   level,
   color = "from-blue-500 to-indigo-600",
 }: NavigationItemType & { level: number }) => {
@@ -82,6 +85,7 @@ const NavigationItem = ({
       <div className={`group ${hasChildren ? "cursor-pointer" : ""}`}>
         <Link
           to={url}
+          accessKey={accessKey}
           className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 
             ${
               isActive
@@ -151,55 +155,35 @@ const menu: NavigationItemType[] = [
   {
     translationKey: "menu.search",
     url: "/",
+    accessKey: "1",
     icon: <Search size={20} />,
     color: menuColors.search,
   },
   {
-    translationKey: "menu.dashboard",
-    url: "/dashboard",
-    icon: <LayoutDashboard size={20} />,
-    color: menuColors.dashboard,
-  },
-  {
-    translationKey: "menu.builder",
-    url: "/builder",
-    icon: <Box size={20} />,
-    color: menuColors.builder,
-    children: [
-      {
-        translationKey: "builder.start.title",
-        url: "/builder",
-      },
-      {
-        translationKey: "builder.overview",
-        url: "/builder/overview",
-      },
-      {
-        translationKey: "builder.kit.title",
-        url: "/builder/kit",
-      },
-    ],
-  },
-  {
     translationKey: "admin_menu.edit",
     url: "/edit",
+
     icon: <Edit size={20} />,
     color: menuColors.edit,
     children: [
       {
         translationKey: "admin_menu.facets",
+        accessKey: "2",
         url: "/edit/facets",
       },
       {
         translationKey: "admin_menu.facet_groups",
+        accessKey: "3",
         url: "/edit/facet_groups",
       },
       {
         translationKey: "admin_menu.rules",
+        accessKey: "r",
         url: "/edit/rules",
       },
       {
         translationKey: "admin_menu.relations",
+        accessKey: "l",
         url: "/edit/relations",
       },
       {
@@ -208,6 +192,7 @@ const menu: NavigationItemType[] = [
       },
       {
         translationKey: "admin_menu.csp",
+        accessKey: "c",
         url: "/edit/csp",
       },
       {
@@ -228,10 +213,12 @@ const menu: NavigationItemType[] = [
       },
       {
         translationKey: "tracking.menu.items",
+        accessKey: "p",
         url: "/stats/popular",
       },
       {
         translationKey: "tracking.menu.facets",
+        accessKey: "t",
         url: "/stats/facets",
       },
       {
@@ -241,8 +228,37 @@ const menu: NavigationItemType[] = [
     ],
   },
   {
+    translationKey: "menu.builder",
+    url: "/builder",
+    icon: <Box size={20} />,
+    color: menuColors.builder,
+    children: [
+      {
+        translationKey: "builder.start.title",
+        accessKey: "b",
+        url: "/builder",
+      },
+      {
+        translationKey: "builder.overview",
+        url: "/builder/overview",
+      },
+      {
+        translationKey: "builder.kit.title",
+        url: "/builder/kit",
+      },
+    ],
+  },
+  {
+    translationKey: "menu.dashboard",
+    url: "/dashboard",
+    accessKey: "d",
+    icon: <LayoutDashboard size={20} />,
+    color: menuColors.dashboard,
+  },
+  {
     translationKey: "menu.checkout",
     url: "/checkout",
+    accessKey: "c",
     icon: <ShoppingCart size={20} />,
     color: menuColors.checkout,
   },
@@ -270,12 +286,13 @@ export const SidebarMenu = () => {
             <h2 className="text-2xl font-bold">Slask Finder</h2>
             <p className="text-blue-100 text-sm mt-1">Admin Dashboard</p>
           </div>
-          <nav className="flex-1 overflow-y-auto px-3 md:px-6 py-2">
+          <nav className="flex-1 overflow-y-auto flex flex-col justify-between px-3 md:px-6 py-2">
             <ul className="space-y-2">
               {menu.map((i) => (
                 <NavigationItem key={i.translationKey} {...i} level={0} />
               ))}
             </ul>
+            <LanguageSelector />
           </nav>
           <div className="pt-4 border-t border-gray-100 mt-auto p-4 bg-gray-50">
             <div className="text-xs text-gray-500">Slask Finder UI © 2025</div>
@@ -283,6 +300,7 @@ export const SidebarMenu = () => {
         </div>
       </Sidebar>
       <button
+        accessKey="m"
         className="fixed left-5 bottom-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-3 rounded-full z-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
         onClick={() => setOpen((p) => !p)}
       >

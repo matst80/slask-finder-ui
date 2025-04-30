@@ -1,5 +1,7 @@
 //import { useState, useEffect } from "react";
 
+import { getLocale } from "../utils";
+
 // const utcNow = () => {
 //   const d = new Date();
 //   return d.getTime();
@@ -41,8 +43,8 @@ export const TimeAgo = ({ ts }: { ts?: number }) => {
   if (ts == null) {
     return null;
   }
-
-  const formatter = new Intl.RelativeTimeFormat();
+  const locale = getLocale();
+  const formatter = new Intl.RelativeTimeFormat(locale);
 
   const secondsElapsed = (date.getTime() - Date.now()) / 1000;
   for (const [key, range] of Object.entries(ranges)) {

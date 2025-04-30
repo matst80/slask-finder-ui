@@ -155,10 +155,6 @@ const colorHexMap: Record<string, React.CSSProperties> = {
 export const getLocale = () => {
   const { sflocale: cookieLanguage } = cookieObject();
   const browserLanguage = navigator.language;
-  console.log("Browser language: ", {
-    lang: browserLanguage,
-    locale: cookieLanguage,
-  });
   return cookieLanguage || browserLanguage;
 };
 

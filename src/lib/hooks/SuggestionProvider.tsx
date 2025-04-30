@@ -205,6 +205,11 @@ export const SuggestionProvider = ({
           break;
         case "query":
           if (popularQueries.length > 0) {
+            console.log(
+              "popularQueries",
+              popularQueries,
+              popularQueries.slice(0, maxAmount)
+            );
             const queries = popularQueries.slice(0, maxAmount).map(
               (item) =>
                 ({

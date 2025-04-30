@@ -78,19 +78,17 @@ const convertKeyFacetEntry = (
 export const convertPopularQueries =
   (facetData: Record<string, FacetListItem>) =>
   (d: PopularQuery[]): SuggestQuery[] => {
-    return d
-      .map(({ facets, query, score }) => {
-        const fields = facets
-          .map((field) => convertKeyFacetEntry(facetData[field.id], field))
-          .filter(isDefined)
-          .sort(byPopularity);
+    return d.map(({ facets, query, score }) => {
+      const fields = facets
+        .map((field) => convertKeyFacetEntry(facetData[field.id], field))
+        .filter(isDefined)
+        .sort(byPopularity);
 
-        return {
-          fields,
-          popularity: score,
-          query,
-          type: "query",
-        } satisfies SuggestQuery;
-      })
-      .sort(byPopularity);
+      return {
+        fields,
+        popularity: score,
+        query,
+        type: "query",
+      } satisfies SuggestQuery;
+    });
   };
