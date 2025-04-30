@@ -296,6 +296,7 @@ export type FacetListItem = {
   searchable?: boolean;
   hide?: boolean;
   isKey?: boolean;
+  internal?: boolean;
   groupId?: number;
 };
 

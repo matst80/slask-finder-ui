@@ -14,6 +14,7 @@ import {
 import { useState } from "react";
 import useSWRMutation from "swr/mutation";
 import { RelationGroup } from "./lib/types";
+import { useNotifications } from "./components/ui-notifications/useNotifications";
 
 export const useFieldValues = (id: string | number) =>
   useSWR(`field-values/${id}`, () => getKeyFieldsValues(id));
@@ -78,6 +79,7 @@ export const useAdminFacets = () => {
 };
 
 export const useUpdateFacet = () => {
+  const { showNotification } = useNotifications();
   const { trigger } = useSWRMutation(
     "/admin/facets",
     (_: string, { arg }: { arg: { id: number; [key: string]: unknown } }) =>
@@ -85,6 +87,28 @@ export const useUpdateFacet = () => {
         method: "PUT",
         body: JSON.stringify(arg),
       })
+        .then((res) => {
+          if (res.ok) {
+            showNotification({
+              title: "Updated",
+              message: "Facet updated successfully",
+              variant: "success",
+            });
+          } else {
+            showNotification({
+              title: "Error",
+              message: "Failed to update facet",
+              variant: "error",
+            });
+          }
+        })
+        .catch((e) => {
+          showNotification({
+            title: "Error",
+            message: `Failed to update facet: ${e.message}`,
+            variant: "error",
+          });
+        })
   );
   return trigger;
 };

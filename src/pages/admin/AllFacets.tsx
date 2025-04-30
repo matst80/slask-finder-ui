@@ -21,6 +21,7 @@ import { useQuery } from "../../lib/hooks/useQuery";
 import { FacetListItem } from "../../lib/types";
 import { getPossibleRelations } from "../../lib/datalayer/api";
 import { useNotifications } from "../../components/ui-notifications/useNotifications";
+import { useFacetGroups } from "../../hooks/searchHooks";
 
 type KeyValues =
   | [true, Fuzzysort.Results]
@@ -152,6 +153,7 @@ const ConfirmButton = ({ onConfirm, title }: ConfirmButtonProps) => {
 
 const FacetEditor = ({ data }: { data: FacetListItem }) => {
   const [value, setValue] = useState<FacetListItem>(data);
+  const { data: groups } = useFacetGroups();
   const saveFacet = useUpdateFacet();
   const deleteFacet = useDeleteFacet();
 
@@ -251,6 +253,20 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
             placeholder="Category level"
             className="w-full"
           />
+          <select
+            value={value.groupId}
+            onChange={(e) => {
+              const nr = Number(e.target.value);
+              if (!isNaN(nr)) {
+                setValue((prev) => ({ ...prev, groupId: nr }));
+              }
+            }}
+          >
+            <option value={0}>No group</option>
+            {groups?.map(({ id, name }) => (
+              <option value={id}>{name}</option>
+            ))}
+          </select>
         </div>
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2">
@@ -289,6 +305,19 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
               className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm font-medium text-gray-700">Key facet</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={value.internal}
+              onChange={(e) =>
+                setValue((prev) => ({ ...prev, internal: e.target.checked }))
+              }
+              className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm font-medium text-gray-700">
+              Internal only
+            </span>
           </label>
         </div>
       </div>

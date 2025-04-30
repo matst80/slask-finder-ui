@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useFacetMap } from "../../../hooks/searchHooks";
 import { ItemValues } from "../../../lib/types";
+//import { updateFacetGroups } from "../../../lib/datalayer/api";
 
 const groups = {
   Vattenkylning: [
@@ -115,13 +116,11 @@ export const GroupRenderer = ({ values }: { values: ItemValues }) => {
         onClick={() => {
           updateFacetGroups({
             facet_ids: [
-              31158, 30879, 32152, 31586, 30353, 36201, 32103, 36202, 31158,
-              31157, 30552, 36258, 36305, 36253, 32091, 36266, 30290, 31508,
-              31553, 31416, 33706, 30877, 30805, 33986, 31158, 36280, 36281,
-              30811, 32061, 32062, 36282, 31158, 36252, 35938, 36317, 36306,
+              33531, 33574, 33575, 33533, 33576, 33577, 34582, 34583, 36301,
+              30007, 36302,
             ],
-            group_id: 102,
-            group_name: "Modellbeskrivning",
+            group_id: 104,
+            group_name: "Anslutningar",
           }).then((res) => {
             console.log(res);
           });
