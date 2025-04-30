@@ -1,6 +1,4 @@
-import { X } from "lucide-react";
 import { PropsWithChildren, useEffect, useRef } from "react";
-import { cm } from "../../utils";
 
 type SidebarProps = {
   open: boolean;

@@ -45,7 +45,6 @@ import { swedish } from "./translations/swedish.ts";
 import { FacetGroups } from "./pages/admin/FacetGroups.tsx";
 import { getLocale } from "./utils.ts";
 import { CspReport } from "./pages/tracking/csp-report.tsx";
-import { SidebarMenu } from "./components/SidebarMenu.tsx";
 
 const router = createBrowserRouter([
   {
