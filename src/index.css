@@ -213,6 +213,10 @@
         animation-duration: auto;
         animation-range: entry;
       }
+
+      .progress {
+        opacity: 1;
+      }
     }
   }
 
@@ -225,6 +229,7 @@
     bottom: 0;
     z-index: 20;
     left: 0;
+    opacity: 0;
     width: 100%;
     transform-origin: 0 50%;
     animation: scaleProgress auto linear;

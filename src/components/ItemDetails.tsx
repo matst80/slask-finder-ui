@@ -79,7 +79,7 @@ export const ResultCarousel = () => {
 
 const CarouselItem = ({ children }: PropsWithChildren) => {
   return (
-    <div className="shrink-0 w-[300px] flex snap-start animated-element">
+    <div className="shrink-0 w-[300px] flex snap-start animating-element">
       {children}
     </div>
   );
