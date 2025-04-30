@@ -13,7 +13,7 @@ export const Sidebar = ({
 }: PropsWithChildren<SidebarProps>) => {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
-    console.log("open", open, ref.current);
+    //console.log("open", open, ref.current);
     if (ref.current) {
       if (open) {
         ref.current.showModal();
@@ -25,20 +25,18 @@ export const Sidebar = ({
   useEffect(() => {
     if (ref.current) {
       const c = ref.current;
-      const handleClose = (e: Event) => {
-        console.log("dialog close event", e);
-        setOpen(false);
-      };
+      const handleClose = () => setOpen(false);
+
       c.addEventListener("click", (e) => {
         if (e.target === c) {
           setOpen(false);
         }
-        console.log("clickevent", e.target, e.target === c);
       });
       c.addEventListener("cancel", handleClose);
       c.addEventListener("close", handleClose);
       return () => {
         c?.removeEventListener("close", handleClose);
+        c?.removeEventListener("cancel", handleClose);
       };
     }
   }, [ref]);
