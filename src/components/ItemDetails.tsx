@@ -4,7 +4,7 @@ import {
   useRelatedItems,
   useRelationGroups,
 } from "../hooks/searchHooks";
-import { useMemo, useState } from "react";
+import { PropsWithChildren, useMemo, useState } from "react";
 import { cm, isDefined, makeImageUrl } from "../utils";
 import {
   ItemDetail,
@@ -35,20 +35,28 @@ export type StoreWithStock = Store & {
   distance: number | null;
 };
 
+const ProductCarouselContainer = ({ children }: PropsWithChildren) => {
+  return (
+    <div className="max-w-[100vw] w-[100vw] md:max-w-screen -mx-4 md:mx-0 md:w-full overflow-y-auto snap-x">
+      {children}
+    </div>
+  );
+};
+
 export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
   const { data, isLoading } = useRelatedItems(id);
 
   return (
-    <div className="max-w-full overflow-y-auto snap-y">
+    <ProductCarouselContainer>
       <div className="flex w-fit">
         {isLoading && <p>Laddar...</p>}
         {data?.map((item, idx) => (
-          <div key={item.id} className="shrink-0 w-[250px] flex snap-start">
+          <CarouselItem key={item.id}>
             <ResultItem {...item} position={idx} />
-          </div>
+          </CarouselItem>
         ))}
       </div>
-    </div>
+    </ProductCarouselContainer>
   );
 };
 
@@ -56,15 +64,23 @@ export const ResultCarousel = () => {
   const { hits, isLoading } = useQuery();
 
   return (
-    <div className="max-w-full overflow-y-auto snap-y">
+    <ProductCarouselContainer>
       <div className="flex w-fit">
         {isLoading && <p>Laddar...</p>}
         {hits?.map((item, idx) => (
-          <div key={item.id} className="shrink-0 w-[300px] flex snap-start">
+          <CarouselItem key={item.id}>
             <ResultItem {...item} position={idx} />
-          </div>
+          </CarouselItem>
         ))}
       </div>
+    </ProductCarouselContainer>
+  );
+};
+
+const CarouselItem = ({ children }: PropsWithChildren) => {
+  return (
+    <div className="shrink-0 w-[300px] flex snap-start animated-element">
+      {children}
     </div>
   );
 };
@@ -73,16 +89,16 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
   const { data, isLoading } = useCompatibleItems(id);
 
   return (
-    <div className="max-w-full overflow-y-auto snap-y">
+    <ProductCarouselContainer>
       <div className="flex w-fit">
         {isLoading && <p>Laddar...</p>}
         {data?.map((item, idx) => (
-          <div key={item.id} className="shrink-0 w-[250px] flex snap-start">
+          <CarouselItem key={item.id}>
             <ResultItem {...item} position={idx} />
-          </div>
+          </CarouselItem>
         ))}
       </div>
-    </div>
+    </ProductCarouselContainer>
   );
 };
 
@@ -236,7 +252,7 @@ const RelationGroupCarousel = ({
         <Link
           to="/"
           onClick={() => setQuery(query)}
-          className={cm("text-xl font-bold transition-all", open ? "" : "")}
+          className={cm("text-sm hover:underline transition-all")}
         >
           Show all
         </Link>

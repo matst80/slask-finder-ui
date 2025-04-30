@@ -317,7 +317,6 @@ export const ResultItem = ({
 }: Item & {
   position: number;
 }) => {
-  //return <DataView item={item} />;
   const { watch } = useImpression();
   const trackItem = () => trackClick(item.id, position);
 
@@ -327,7 +326,7 @@ export const ResultItem = ({
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
       viewTransition={true}
-      className="group bg-white md:shadow-xs hover:shadow-md transition-all duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
+      className="group bg-white md:shadow-xs hover:shadow-md transition-all hover:z-10 duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
       onClick={trackItem}
     >
       <ResultItemInner {...item} />
