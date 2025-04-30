@@ -1,9 +1,41 @@
 import { X } from "lucide-react";
-import { PropsWithChildren, useEffect, useRef } from "react";
+import { PropsWithChildren, use, useEffect, useRef } from "react";
 
 type SidebarProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
+};
+
+const useSwipeAway = (
+  ref: React.RefObject<HTMLElement | null>,
+  onClose: () => void
+) => {
+  useEffect(() => {
+    if (!ref.current) return;
+    const handleTouchStart = (e: TouchEvent) => {
+      console.log("touchstart", e.touches[0]);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (ref.current) {
+        console.log("touchmove", e);
+        const touch = e.touches[0];
+        const rect = ref.current.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        if (x < 0 || x > rect.width || y < 0 || y > rect.height) {
+          onClose();
+        }
+      }
+    };
+    const c = ref.current;
+    c.addEventListener("touchstart", handleTouchStart);
+    c.addEventListener("touchmove", handleTouchMove);
+    return () => {
+      c.removeEventListener("touchstart", handleTouchStart);
+      c.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, [ref, onClose]);
 };
 
 export const Sidebar = ({
@@ -21,6 +53,9 @@ export const Sidebar = ({
       }
     }
   }, [open]);
+  useSwipeAway(ref, () => {
+    ref.current?.close();
+  });
   useEffect(() => {
     if (ref.current) {
       const c = ref.current;
