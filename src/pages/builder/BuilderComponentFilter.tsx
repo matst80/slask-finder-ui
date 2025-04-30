@@ -191,7 +191,7 @@ export const BuilderComponentFilter = () => {
               <div className="flex space-x-2">
                 {views.map((view) => (
                   <button
-                    className={`px-3 py-1 rounded-md ${
+                    className={`px-2 md:px-3 py-1 rounded-md ${
                       viewMode === view
                         ? "bg-blue-500 text-white"
                         : "bg-gray-200"

@@ -154,9 +154,9 @@ export const ComponentResultTable = ({
 
   return (
     <ImpressionProvider>
-      <div className="overflow-x-auto">
+      <div className="-mx-4 md:mx-0 overflow-x-auto w-[100vw] md:w-auto max-w-screen">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 sticky top-0 z-10">
             <tr>
               <th
                 scope="col"
