@@ -269,9 +269,6 @@
     left: 0px;
     max-width: calc(100% - 3em);
     height: 100%;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
   }
 
   dialog[open]::backdrop {
@@ -327,7 +324,7 @@
     }
 
     to {
-      translate: -10% 0;
+      translate: -200px 0;
       opacity: 0;
     }
   }

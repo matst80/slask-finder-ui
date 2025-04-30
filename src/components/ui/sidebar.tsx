@@ -13,7 +13,6 @@ export const Sidebar = ({
 }: PropsWithChildren<SidebarProps>) => {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
-    //console.log("open", open, ref.current);
     if (ref.current) {
       if (open) {
         ref.current.showModal();
@@ -29,7 +28,7 @@ export const Sidebar = ({
 
       c.addEventListener("click", (e) => {
         if (e.target === c) {
-          setOpen(false);
+          c.close();
         }
       });
       c.addEventListener("cancel", handleClose);
@@ -42,19 +41,15 @@ export const Sidebar = ({
   }, [ref]);
   return (
     <dialog ref={ref}>
-      {open && (
-        <>
-          <button
-            onClick={() => ref.current?.close()}
-            className="text-gray-500 hover:text-gray-700 absolute top-3 right-3 rounded-full p-1 transition-colors duration-200"
-          >
-            <X size={24} />
-          </button>
-          <div className="border-r h-full p-6 border-r-gray-300 shadow-2xl bg-white min-w-sm">
-            {children}
-          </div>
-        </>
-      )}
+      <button
+        onClick={() => ref.current?.close()}
+        className="text-gray-500 hover:text-gray-700 absolute top-3 right-3 rounded-full p-1 transition-colors duration-200"
+      >
+        <X size={24} />
+      </button>
+      <div className="border-r h-full p-6 border-r-gray-300 shadow-2xl bg-white min-w-sm">
+        {children}
+      </div>
     </dialog>
   );
 };
