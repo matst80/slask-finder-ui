@@ -1,7 +1,7 @@
 import { Bell, LoaderCircle, Menu, Settings, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link, To } from "react-router-dom";
-import { cm, getLocale, setCookie } from "../utils";
+import { cm } from "../utils";
 import { useUser } from "../adminHooks";
 import { PropsWithChildren, useEffect } from "react";
 import { MiniCart } from "./MiniCart";
