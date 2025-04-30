@@ -64,7 +64,7 @@ function App() {
         </div>
       </Sidebar>
       <button
-        className="fixed right-3 bottom-3 bg p-2 rounded-md z-50 border-gray-100 hover:border-gray-300 hover:bg-gray-100 transition-colors"
+        className="fixed right-3 bottom-3 bg p-2 border rounded-md z-50 border-gray-100 hover:border-gray-300 hover:bg-gray-100 transition-colors"
         onClick={() => setOpen((p) => !p)}
       >
         <Menu className="size-5" />
