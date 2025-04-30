@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+:root {
+  --dialog-duration: 0.4s;
+  --dialog-bg: rgba(0, 0, 0, 0.5);
+}
+
 @theme {
   --animate-cart-add: cartAdd 1s ease-out;
   --animate-cart-open: cartAdd 0.5s ease-out;
@@ -241,9 +246,11 @@
     }
   }
 
+
+
   dialog::backdrop {
-    transition: display 0.5s allow-discrete, overlay 0.5s allow-discrete;
-    animation: backdrop-close 0.5s forwards;
+    transition: display var(--dialog-duration) allow-discrete, overlay var(--dialog-duration) allow-discrete;
+    animation: backdrop-close var(--dialog-duration) forwards;
     margin: 0;
     padding: 0;
   }
@@ -268,16 +275,16 @@
   }
 
   dialog[open]::backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-    animation: backdrop-open 0.5s forwards;
+    background-color: var(--dialog-bg);
+    animation: backdrop-open var(--dialog-duration) forwards;
   }
 
   dialog {
-    transition: display 0.5s allow-discrete, overlay 0.5s allow-discrete;
-    animation: close 0.5s forwards;
+    transition: display var(--dialog-duration) allow-discrete, overlay var(--dialog-duration) allow-discrete;
+    animation: close var(--dialog-duration) forwards;
 
     &[open] {
-      animation: open 0.5s forwards;
+      animation: open var(--dialog-duration) forwards;
     }
   }
 
