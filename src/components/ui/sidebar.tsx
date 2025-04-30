@@ -47,7 +47,7 @@ export const Sidebar = ({
       >
         <X size={24} />
       </button>
-      <div className="border-r h-full p-6 border-r-gray-300 shadow-2xl bg-white min-w-sm">
+      <div className="border-r h-full p-6 border-r-gray-300 bg-white min-w-sm">
         {children}
       </div>
     </dialog>

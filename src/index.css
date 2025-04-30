@@ -307,11 +307,13 @@
 
   @keyframes open {
     from {
+      box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.01);
       translate: -200px 0;
       opacity: 0;
     }
 
     to {
+      box-shadow: 4px 0px 50px rgba(0, 0, 0, 0.3);
       translate: 0 0;
       opacity: 1;
     }
@@ -319,12 +321,14 @@
 
   @keyframes close {
     from {
+      box-shadow: 4px 0px 50px rgba(0, 0, 0, 0.3);
       translate: 0 0;
       opacity: 1;
     }
 
     to {
       translate: -200px 0;
+      box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.01);
       opacity: 0;
     }
   }
