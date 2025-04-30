@@ -8,7 +8,7 @@ import { SuggestionProvider } from "../lib/hooks/SuggestionProvider";
 import { Sidebar } from "../components/ui/sidebar";
 import { useState } from "react";
 import { Button } from "../components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 // px-4 py-3 md:py-8 md:px-10
 // px-4 md:px-10
@@ -53,14 +53,15 @@ function App() {
         </div>
       </div>
       <Sidebar open={open} setOpen={setOpen} side="right">
-        <div className="flex flex-col justify-between gap-2">
+        <button
+          onClick={() => setOpen(false)}
+          className="text-gray-500 hover:text-gray-700 absolute top-3 rounded-full p-1 z-10 transition-colors duration-200 right-3"
+        >
+          <X size={24} />
+        </button>
+        <div className="flex flex-col justify-between gap-2 min-w-sm h-full p-6 bg-white">
           <span>test content</span>
-          <Button
-            className="absolute right-3 bottom-3"
-            onClick={() => setOpen(false)}
-          >
-            Ok
-          </Button>
+          <Button onClick={() => setOpen(false)}>Ok</Button>
         </div>
       </Sidebar>
       <button

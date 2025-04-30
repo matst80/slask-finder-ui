@@ -79,20 +79,7 @@ export const Sidebar = ({
   }, [ref]);
   return (
     <dialog ref={ref} className={side}>
-      <button
-        onClick={() => ref.current?.close()}
-        className="text-gray-500 hover:text-gray-700 absolute top-3 right-3 rounded-full p-1 transition-colors duration-200"
-      >
-        <X size={24} />
-      </button>
-      <div
-        className={cm(
-          "h-full p-6 border-gray-300 bg-white min-w-sm",
-          side == "left" ? "border-r" : "border-l"
-        )}
-      >
-        {children}
-      </div>
+      {children}
     </dialog>
   );
 };
