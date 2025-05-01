@@ -1,4 +1,4 @@
-import { ShoppingCartIcon, X } from "lucide-react";
+import { ShoppingCartIcon, Sidebar, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { makeImageUrl } from "../utils";
@@ -144,7 +144,7 @@ export const MiniCart = () => {
     <>
       <button
         onClick={() => setIsCartOpen(true)}
-        className="relative bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors size-10 flex items-center justify-center"
+        className="fixed top-3 right-3 z-40 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors size-10 flex items-center justify-center"
       >
         <ShoppingCartIcon className="size-5" />
 

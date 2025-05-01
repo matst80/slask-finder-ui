@@ -9,6 +9,8 @@ import {
   BarChart2,
   ShoppingCart,
   Clock,
+  LoaderCircle,
+  User,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Sidebar } from "./ui/sidebar";
@@ -16,6 +18,10 @@ import { useTranslations } from "../lib/hooks/useTranslations";
 import { TranslationKey } from "../translations/translations";
 import { Link, useLocation } from "react-router-dom";
 import { LanguageSelector } from "./LanguageSelector";
+import { useUser } from "../adminHooks";
+import { useAdmin } from "../hooks/appState";
+import { Button } from "./ui/button";
+import { cm } from "../utils";
 
 type NavigationItemType = {
   translationKey: TranslationKey;
@@ -271,6 +277,33 @@ const menu: NavigationItemType[] = [
   },
 ];
 
+const UserButton = () => {
+  const { data, isLoading } = useUser();
+  const [, setIsAdmin] = useAdmin();
+  const loggedIn = data?.role != null;
+  useEffect(() => {
+    // console.log("user changed", data);
+    if (data != null) {
+      setIsAdmin(data?.role != null);
+    }
+  }, [data, setIsAdmin]);
+  return (
+    <a href={loggedIn ? "/admin/logout" : "/admin/login"}>
+      <Button
+        variant={loggedIn ? "outline" : "ghost"}
+        size="icon"
+        title={data?.name ?? "Logga in"}
+      >
+        {isLoading ? (
+          <LoaderCircle className="size-5 animate-spin inline-block ml-2" />
+        ) : (
+          <User className={cm("size-5", loggedIn ? "text-blue-600" : "")} />
+        )}
+      </Button>
+    </a>
+  );
+};
+
 const NavMenu = () => {
   return (
     <nav className="flex-1 overflow-y-auto flex flex-col justify-between px-3 md:px-6 py-2">
@@ -279,7 +312,10 @@ const NavMenu = () => {
           <NavigationItem key={i.translationKey} {...i} level={0} />
         ))}
       </ul>
-      <LanguageSelector />
+      <div className="flex items-center justify-between mt-4">
+        <LanguageSelector />
+        <UserButton />
+      </div>
     </nav>
   );
 };
