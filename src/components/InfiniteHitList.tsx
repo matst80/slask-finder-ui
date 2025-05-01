@@ -7,7 +7,7 @@ export const InfiniteHitList = ({
 }: {
   children: (item: Item & { position: number }) => ReactNode;
 }) => {
-  const { hits, addPage } = useQuery();
+  const { hits, addPage, query } = useQuery();
   const loadingRef = useRef(false);
   const canLoadMoreRef = useRef(true);
   const endRef = useRef<HTMLDivElement>(null);
@@ -46,6 +46,11 @@ export const InfiniteHitList = ({
       observer.disconnect();
     };
   }, [endRef, loadingRef, addPage]);
+  useEffect(() => {
+    // Reset the loading state when the query changes
+    loadingRef.current = false;
+    canLoadMoreRef.current = true;
+  }, [query]);
   return (
     <>
       {hits?.map((item, idx) => (

@@ -7,6 +7,8 @@ import { ButtonLink } from "./ui/button";
 import { Link } from "react-router-dom";
 import { QuantityInput } from "../pages/builder/QuantityInput";
 import { useTranslations } from "../lib/hooks/useTranslations";
+import { Sidebar } from "./ui/sidebar";
+import { PriceValue } from "./Price";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -20,35 +22,27 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
   const t = useTranslations();
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      onClick={onClose}
+      className="bg-white flex flex-col overflow-y-auto p-6 h-full w-full max-w-full md:max-w-md"
+      onClick={(e) => e.stopPropagation()}
     >
-      <div
-        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-[80vw] md:max-w-[60vw] lg:max-w-[40vw] animate-cart-open"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">{t("cart.title")}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <X size={24} />
-          </button>
-        </div>
-        {items.length === 0 ? (
-          <p className="text-gray-500 text-center">{t("cart.empty")}</p>
-        ) : (
-          <>
-            {isLoading ? (
-              <div>{t("common.loading")}</div>
-            ) : (
-              <ul className="divide-y divide-gray-200 overflow-y-auto max-h-screen md:max-h-[60vh]">
-                {items.map((item) => (
-                  <li
-                    key={item.id + item.sku}
-                    className="py-4 flex items-center"
-                  >
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">{t("cart.title")}</h2>
+        <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <X size={24} />
+        </button>
+      </div>
+
+      {items.length === 0 ? (
+        <p className="text-gray-500 text-center">{t("cart.empty")}</p>
+      ) : (
+        <>
+          {isLoading ? (
+            <div>{t("common.loading")}</div>
+          ) : (
+            <ul className="divide-y flex-1 divide-gray-200">
+              {items.map((item) => (
+                <li key={item.id + item.sku} className="py-4 flex flex-col">
+                  <div className="flex items-start gap-2">
                     {item.image ? (
                       <img
                         src={makeImageUrl(item.image)}
@@ -58,21 +52,30 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                     ) : (
                       <div></div>
                     )}
-                    <div className="flex-1">
-                      <Link
-                        to={`/product/${item.sku}`}
-                        className="text-sm font-medium"
-                      >
-                        {item.name}
-                      </Link>
-                      <p className="text-sm text-gray-500">
-                        {(item.price / 100).toFixed(2)} kr{" "}
-                        {item.orgPrice > 0 && item.orgPrice > item.price && (
-                          <span className="line-through text-gray-400">
-                            {(item.orgPrice / 100).toFixed(2)} kr
-                          </span>
-                        )}
-                      </p>
+
+                    <Link
+                      to={`/product/${item.sku}`}
+                      className="text-sm font-medium"
+                    >
+                      {item.name}
+                    </Link>
+                  </div>
+                  <div className="flex justify-end items-center gap-2">
+                    <div className="flex items-center gap-2">
+                      <PriceValue
+                        value={item.price}
+                        className={
+                          item.orgPrice > 0 && item.orgPrice > item.price
+                            ? "text-red-600 font-bold"
+                            : "font-bold"
+                        }
+                      />
+                      {item.orgPrice > 0 && item.orgPrice > item.price && (
+                        <PriceValue
+                          className="line-through text-gray-400"
+                          value={item.orgPrice}
+                        />
+                      )}
                     </div>
                     <QuantityInput
                       value={item.qty}
@@ -85,13 +88,16 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                       minQuantity={0}
                       maxQuantity={99}
                     />
-                  </li>
-                ))}
-              </ul>
-            )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="justify-end grow-0">
             <div className="mt-4 flex justify-between items-center">
               <span className="text-lg font-bold">{t("cart.total")}:</span>
-              <span className="text-lg font-bold">{totalPrice / 100} kr</span>
+              <PriceValue className="text-lg font-bold" value={totalPrice} />
             </div>
             <div className="mt-6 w-full">
               {cart?.paymentStatus === "checkout_completed" ? (
@@ -107,9 +113,9 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                 </ButtonLink>
               )}
             </div>
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
@@ -155,7 +161,9 @@ export const MiniCart = () => {
           {totalItems}
         </span>
       </button>
-      {isCartOpen && <CartDialog onClose={() => setIsCartOpen(false)} />}
+      <Sidebar open={isCartOpen} setOpen={setIsCartOpen} side="right">
+        <CartDialog onClose={() => setIsCartOpen(false)} />
+      </Sidebar>
     </>
   );
 };

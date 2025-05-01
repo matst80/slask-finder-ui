@@ -1,13 +1,5 @@
 import { ItemValues } from "../lib/types";
-import { cm, getPrice } from "../utils";
-
-const SEK = new Intl.NumberFormat("se-SV", {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
-  currencySign: "accounting",
-  currencyDisplay: "symbol",
-  currency: "SEK",
-});
+import { cm, getLocale, getPrice } from "../utils";
 
 type ValueProps = {
   values: ItemValues;
@@ -20,10 +12,19 @@ export const PriceValue = ({
 }: {
   value?: number;
   className?: string;
-}) =>
-  value == null ? null : (
-    <span className={className}>{SEK.format(value / 100)}</span>
+}) => {
+  return value == null ? null : (
+    <span className={className}>
+      {new Intl.NumberFormat(getLocale(), {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+        currencySign: "standard",
+        currencyDisplay: "symbol",
+        currency: "SEK",
+      }).format(value / 100)}
+    </span>
   );
+};
 
 const sizes = {
   large: "text-3xl",
