@@ -1,9 +1,6 @@
 import { Link, Edit, Trash } from "lucide-react";
-import { useMemo } from "react";
-import { useFacetList } from "../../hooks/searchHooks";
 import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
-import { Input } from "../../components/ui/input";
 import {
   Table,
   TableHeader,
