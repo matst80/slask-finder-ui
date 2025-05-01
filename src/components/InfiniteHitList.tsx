@@ -33,14 +33,16 @@ export const InfiniteHitList = ({
           // Only load more if we have more results to fetch
           loadingRef.current = true;
           addPage().then(({ hasMorePages }) => {
-            elm.classList.add("opacity-0");
-            elm.classList.remove("opacity-100");
-            loadingRef.current = false;
             canLoadMoreRef.current = hasMorePages;
-            if (!hasMorePages) {
-              // No more pages to load, stop observing
-              observer.unobserve(elm);
-            }
+            setTimeout(() => {
+              elm.classList.add("opacity-0");
+              elm.classList.remove("opacity-100");
+              loadingRef.current = false;
+            }, 250);
+            // if (!hasMorePages) {
+            //   // No more pages to load, stop observing
+            //   observer.unobserve(elm);
+            // }
           });
         }
       },
@@ -57,7 +59,7 @@ export const InfiniteHitList = ({
   }, [endRef, loadingRef, addPage]);
   useEffect(() => {
     // Reset the loading state when the query changes
-    loadingRef.current = false;
+    console.log("query changed", query);
     canLoadMoreRef.current = true;
   }, [query]);
   return (
@@ -72,7 +74,7 @@ export const InfiniteHitList = ({
         {
           ref: endRef,
           className:
-            "opacity-0 transition-opacity flex items-center justify-center w-full",
+            "opacity-0 transition-opacity flex items-center justify-center w-full min-h-16",
         },
         loader ?? <Loader size="md" variant="default" />
       )}

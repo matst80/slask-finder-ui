@@ -344,7 +344,7 @@ export const SidebarMenu = () => {
       </Sidebar>
       <button
         accessKey="m"
-        className="fixed left-5 bottom-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-3 rounded-full z-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 xl:hidden"
+        className="fixed left-5 bottom-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-3 rounded-full z-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
         onClick={() => setOpen((p) => !p)}
       >
         <Menu className="size-5" />

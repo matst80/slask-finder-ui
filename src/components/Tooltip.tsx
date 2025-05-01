@@ -7,6 +7,7 @@ export const Tooltip = ({
 }: PropsWithChildren<{ popover: ReactNode; className?: string }>) => {
   const id = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const anchorName = `--anchor-${id}`;
   useEffect(() => {
     if (buttonRef.current) {
       const button = buttonRef.current;
@@ -15,6 +16,15 @@ export const Tooltip = ({
       Object.assign(popover!.style, {
         opacity: 0,
         transition: "opacity 0.3s ease-in-out",
+        positionAnchor: anchorName,
+        position: "fixed",
+        bottom: "anchor(top)",
+        justifySelf: "anchor-center",
+      });
+
+      Object.assign(button.style, {
+        anchorName: anchorName,
+        cursor: "pointer",
       });
 
       const onEnter = () => {
@@ -52,7 +62,7 @@ export const Tooltip = ({
       >
         {children}
       </button>
-      <div id={id} role="tooltip" popover="" className={className}>
+      <div id={id} role="tooltip" popover="auto" className={className}>
         {popover}
       </div>
     </>
