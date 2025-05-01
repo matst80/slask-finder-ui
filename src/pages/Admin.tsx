@@ -6,7 +6,7 @@ export const Admin = () => {
   return (
     <>
       {/* <AdminNavBar /> */}
-      <div className="p-2 md:p-10 bg-gray-100 min-h-screen">
+      <div className="p-2 md:p-10 min-h-screen">
         <Outlet />
         {/* <SaveButton /> */}
       </div>
