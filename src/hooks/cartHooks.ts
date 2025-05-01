@@ -63,11 +63,11 @@ export const useAddToCart = (itemId: number) => {
       return trigger(item)
         .then((data) => {
           if (data) {
-            showNotification({
-              title: "Added to cart",
-              message: `Item added to your cart.`,
-              variant: "success",
-            });
+            // showNotification({
+            //   title: "Added to cart",
+            //   message: `Item added to your cart.`,
+            //   variant: "success",
+            // });
             trackCart({ item: itemId, quantity: item.quantity, type: "add" });
           }
           return data;
