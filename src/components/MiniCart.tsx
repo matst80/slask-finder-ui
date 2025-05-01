@@ -17,9 +17,10 @@ type CartDialogProps = {
 const CartDialog = ({ onClose }: CartDialogProps) => {
   const { data: cart, isLoading } = useCart();
   const { trigger: changeQuantity } = useChangeQuantity();
+  const t = useTranslations();
   const items = cart?.items ?? [];
   const totalPrice = cart?.totalPrice ?? 0;
-  const t = useTranslations();
+
   return (
     <div
       className="bg-white flex flex-col overflow-y-auto p-6 h-full w-full max-w-full md:max-w-md"
@@ -145,6 +146,10 @@ export const MiniCart = () => {
       };
     }
   }, [totalItems, ref]);
+
+  if (cart == null || cart.items.length === 0) {
+    return null;
+  }
 
   return (
     <>
