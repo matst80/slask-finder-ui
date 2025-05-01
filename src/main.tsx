@@ -235,7 +235,7 @@ const getBrowserTranslations = () => {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <TranslationProvider language={getBrowserTranslations()}>
-      <QueryProvider initialQuery={{ query: "*", page: 0, pageSize: 20 }}>
+      <QueryProvider initialQuery={{ page: 0, pageSize: 20 }}>
         <NotificationsProvider>
           <ImpressionProvider>
             <SWRConfig value={{}}>

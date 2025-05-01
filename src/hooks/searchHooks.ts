@@ -8,6 +8,7 @@ import {
   getFacetMap,
   getRelated,
   getRelations,
+  getYourPopularItems,
   streamItems,
 } from "../lib/datalayer/api";
 import {
@@ -444,6 +445,14 @@ export const useRelatedItems = (id: number) => {
 
 export const useCompatibleItems = (id: number) => {
   return useSWR(`compatible-items-${id}`, () => getCompatible(id), {
+    revalidateOnFocus: false,
+    refreshInterval: 0,
+    focusThrottleInterval: 3600,
+  });
+};
+
+export const useYourPopularItems = () => {
+  return useSWR("your-popular-items", () => getYourPopularItems(), {
     revalidateOnFocus: false,
     refreshInterval: 0,
     focusThrottleInterval: 3600,

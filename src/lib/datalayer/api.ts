@@ -430,6 +430,9 @@ export const updateFieldPopularity = (overrides: Record<string, number>) =>
     throw new Error("Failed to update popularity");
   });
 
+export const getYourPopularItems = () =>
+  fetch(`${baseUrl}/api/popular`).then((d) => readStreamed<Item>(d));
+
 export const getPromotions = () =>
   fetch(`${baseUrl}/api/promotion`).then((d) => toJson<Promotion[]>(d));
 

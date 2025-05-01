@@ -36,6 +36,9 @@ export const ResultHeader = ({ children }: PropsWithChildren) => {
     }
     return queryHistory[idx - 1] ?? null;
   }, [queryHistory, currentKey]);
+  if (totalHits === 0) {
+    return null;
+  }
   return (
     <>
       <header className="flex justify-end pt-4 md:pt-0 md:justify-between gap-2 items-center mb-2">
