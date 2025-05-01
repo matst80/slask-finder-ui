@@ -13,6 +13,7 @@ import {
   TableCell,
 } from "../../components/ui/table";
 import { useQuery } from "../../lib/hooks/useQuery";
+import { Loader } from "../../components/Loader";
 
 export const TableSearchResultList = () => {
   const {
@@ -20,28 +21,9 @@ export const TableSearchResultList = () => {
     isLoading: loadingItems,
     query: { query },
   } = useQuery();
-  // const {
-  //   popular,
-  //   setItemPopularity,
-  //   isDirty: isDirtyPopular,
-  //   save: savePopular,
-  // } = usePopularity();
-  // const {
-  //   positions,
-  //   setItemPosition,
-  //   isDirty: isDirtyPositions,
-  //   save: savePositions,
-  // } = useStaticPositions();
 
-  const { data } = useFacetList();
-  const virtualCategories = useMemo(
-    () => data?.filter((facet) => facet.valueType === "virtual"),
-    [data]
-  );
-
-  //const start = (page ?? 0) * (pageSize ?? 40);
   if (loadingItems) {
-    return <div>Loading...</div>;
+    return <Loader size="lg" variant="default" />;
   }
 
   if (!items.length && (query == null || query.length < 1)) {
@@ -57,13 +39,7 @@ export const TableSearchResultList = () => {
                 <TableHead className="w-[50px]">Select</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Category</TableHead>
-                {/* <TableHead>Popularity</TableHead>
-                <TableHead>Static position</TableHead> */}
-                {virtualCategories?.map((category) => (
-                  <TableHead key={`vcat-${category.id}`}>
-                    {category.name}
-                  </TableHead>
-                ))}
+
                 <TableHead>Price</TableHead>
                 <TableHead>Stock</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -101,7 +77,7 @@ export const TableSearchResultList = () => {
                       className="w-14"
                     />
                   </TableCell> */}
-                  {virtualCategories?.map((category) => (
+                  {/* {virtualCategories?.map((category) => (
                     <TableCell key={`vcat-${category.id}-${product.id}`}>
                       <Input
                         defaultValue={product.values[category.id]}
@@ -109,7 +85,7 @@ export const TableSearchResultList = () => {
                         name={`${category.id}-${product.id}`}
                       />
                     </TableCell>
-                  ))}
+                  ))} */}
                   <TableCell>{product.values["4"].toFixed(2)}</TableCell>
                   <TableCell>{product.stockLevel ?? "0"}</TableCell>
                   <TableCell className="justify-end flex gap-2">

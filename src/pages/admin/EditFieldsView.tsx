@@ -12,6 +12,7 @@ import { FieldListItem } from "../../lib/types";
 import { TimeAgo } from "../../components/TimeAgo";
 import { LoaderCircle } from "lucide-react";
 import { Input } from "../../components/ui/input";
+import { Loader } from "../../components/Loader";
 
 const byCount = (a: FieldListItem, b: FieldListItem) => {
   return (b.itemCount ?? 0) - (a.itemCount ?? 0);
@@ -203,7 +204,7 @@ const FilteredFieldView = ({
 export const EditFieldsView = () => {
   const { data, isLoading } = useFields();
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader size="lg" variant="default" />;
   }
   return <FilteredFieldView data={data ?? []} />;
 };
@@ -211,7 +212,7 @@ export const EditFieldsView = () => {
 export const MissingFieldsView = () => {
   const { data, isLoading } = useMissingFacets();
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader size="lg" variant="default" />;
   }
   return <FilteredFieldView data={data ?? []} />;
 };

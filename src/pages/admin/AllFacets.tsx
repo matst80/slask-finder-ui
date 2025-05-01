@@ -22,6 +22,7 @@ import { FacetListItem } from "../../lib/types";
 import { getPossibleRelations } from "../../lib/datalayer/api";
 import { useNotifications } from "../../components/ui-notifications/useNotifications";
 import { useFacetGroups } from "../../hooks/searchHooks";
+import { Loader } from "../../components/Loader";
 
 type KeyValues =
   | [true, Fuzzysort.Results]
@@ -49,7 +50,7 @@ const FacetValues = ({ id }: { id: number }) => {
   }, [data, filter]);
 
   if (!data) {
-    return <div>Loading...</div>;
+    return <Loader size="lg" variant="overlay" />;
   }
 
   if (!isKeyValues) {

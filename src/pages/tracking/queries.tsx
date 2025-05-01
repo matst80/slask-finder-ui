@@ -6,7 +6,7 @@ export const QueriesView = () => {
   const { data } = useSWR("/api/queries", getTrackingQueries);
   const t = useTranslations();
   return (
-    <div className=" p-6">
+    <div className="p-4 md:p-6">
       <h1 className="font-bold text-2xl mb-6">{t("tracking.queries.title")}</h1>
       <div className="grid gap-4">
         {Object.entries(data ?? {})

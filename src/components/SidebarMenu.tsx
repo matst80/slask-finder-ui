@@ -207,6 +207,7 @@ const menu: NavigationItemType[] = [
     icon: <BarChart2 size={20} />,
     color: menuColors.tracking,
     children: [
+      { translationKey: "tracking.menu.sessions", url: "/stats/sessions" },
       {
         translationKey: "tracking.menu.queries",
         url: "/stats/queries",

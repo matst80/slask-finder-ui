@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./pages/App.tsx";
 import "./index.css";
 import { RouterProvider } from "react-router/dom";
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Outlet } from "react-router";
 import { Admin } from "./pages/Admin.tsx";
 import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
 import { Tracking } from "./pages/Tracking.tsx";
@@ -45,6 +45,7 @@ import { swedish } from "./translations/swedish.ts";
 import { FacetGroups } from "./pages/admin/FacetGroups.tsx";
 import { getLocale } from "./utils.ts";
 import { CspReport } from "./pages/tracking/csp-report.tsx";
+import { SessionList } from "./components/SessionList.tsx";
 
 const router = createBrowserRouter([
   {
@@ -163,10 +164,11 @@ const router = createBrowserRouter([
     path: "stats",
     element: (
       <PageContainer>
-        <Tracking />
+        <Outlet />
       </PageContainer>
     ),
     children: [
+      { path: "sessions", element: <SessionList /> },
       {
         path: "session/:id",
         loader: ({ params: { id } }) =>
