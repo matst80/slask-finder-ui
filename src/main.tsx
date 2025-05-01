@@ -6,7 +6,6 @@ import { RouterProvider } from "react-router/dom";
 import { createBrowserRouter, Outlet } from "react-router";
 import { Admin } from "./pages/Admin.tsx";
 import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
-import { Tracking } from "./pages/Tracking.tsx";
 import { SWRConfig } from "swr";
 import { getRawData, getTrackingSessions } from "./lib/datalayer/api.ts";
 import { getConfirmation } from "./lib/datalayer/cart-api.ts";
