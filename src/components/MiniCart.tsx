@@ -1,4 +1,4 @@
-import { ShoppingCartIcon, Sidebar, X } from "lucide-react";
+import { ShoppingCartIcon, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { makeImageUrl } from "../utils";
