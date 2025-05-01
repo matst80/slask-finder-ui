@@ -1,6 +1,7 @@
 import { ReactNode, useRef, useEffect, Fragment } from "react";
 import { useQuery } from "../lib/hooks/useQuery";
 import { Item } from "../lib/types";
+import { Loader } from "./Loader";
 
 export const InfiniteHitList = ({
   children,
@@ -23,6 +24,8 @@ export const InfiniteHitList = ({
           !loadingRef.current &&
           canLoadMoreRef.current
         ) {
+          elm.classList.add("opacity-100");
+          elm.classList.remove("opacity-0");
           // Only load more if we have more results to fetch
           loadingRef.current = true;
           addPage().then(({ hasMorePages }) => {
@@ -59,7 +62,12 @@ export const InfiniteHitList = ({
         </Fragment>
       ))}
 
-      <div ref={endRef}></div>
+      <div
+        className="opacity-0 transition-opacity flex items-center justify-center w-full"
+        ref={endRef}
+      >
+        <Loader size="md" variant="default" />
+      </div>
     </>
   );
 };

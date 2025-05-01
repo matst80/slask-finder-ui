@@ -215,7 +215,7 @@ export const ResultItemInner = ({
             />
           )}
           {lastUpdate != null && lastUpdate > 0 && (
-            <span className="inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-800 rounded-full px-2.5 py-1">
+            <span className="text-sm inline-block align-top bg-amber-300 rounded-bl-none after:absolute after:left-0 after:box-content after:border-transparent forced-colors:border forced-colors:after:hidden after:border-l-amber-300 rounded-border px-2 py-0.5 after:-bottom-[7px] after:border-[7px] absolute left-0 top-0 z-1">
               <TimeAgo ts={lastUpdate} />
             </span>
           )}
@@ -255,7 +255,7 @@ export const ResultItemInner = ({
         )}
       </div>
       <div className="mb-0 mt-auto px-4 pb-3 flex gap-1 justify-between">
-        <StockIndicator stock={stock} stockLevel={stockLevel} />
+        <StockIndicator stock={stock} stockLevel={stockLevel} showOnlyInStock />
       </div>
     </>
   );

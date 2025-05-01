@@ -40,26 +40,20 @@ export const Price = ({
   const prc = getPrice(values);
   if (prc.isDiscounted) {
     return (
-      <div className="group">
-        <div className={cm("flex flex-col gap-1")}>
-          <PriceValue
-            value={prc.current}
-            className={cm("text-red-600 font-bold", sizes[size])}
-          />
+      <div className={cm("flex flex-col gap-1")}>
+        <PriceValue
+          value={prc.current}
+          className={cm("text-red-600 font-bold peer", sizes[size])}
+        />
 
-          {disclaimer != null && (
-            <div className="relative">
-              <div className="hidden group-hover:block absolute left-0 top-1 z-10">
-                <div className="bg-white transition-opacity opacity-0 group-hover:opacity-100 p-3 rounded-md shadow-lg border border-gray-200 max-w-xs">
-                  <div className="absolute -top-1 left-4 w-3 h-3 bg-white border-l border-t border-gray-200 transform rotate-45"></div>
-                  <p className="text-xs font-normal text-gray-700">
-                    {disclaimer}
-                  </p>
-                </div>
-              </div>
+        {disclaimer != null && (
+          <div className="hidden peer-hover:block absolute z-10 mt-11">
+            <div className="bg-white transition-opacity opacity-0 group-hover:opacity-100 p-3 rounded-md shadow-lg border border-gray-200 max-w-xs">
+              <div className="absolute -top-1 left-4 w-3 h-3 bg-white border-l border-t border-gray-200 transform rotate-45"></div>
+              <p className="text-xs font-normal text-gray-700">{disclaimer}</p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     );
   }
