@@ -10,9 +10,9 @@ import { ComponentId, FacetId, Issue } from "../builder-types";
 import { cm, isDefined, makeImageUrl } from "../../../utils";
 import { InfiniteHitList } from "../../../components/InfiniteHitList";
 import { useFacetMap } from "../../../hooks/searchHooks";
-import { Loader } from "lucide-react";
 import { GroupRenderer } from "./FacetGroupRender";
 import { Price } from "../../../components/Price";
+import { Loader } from "../../../components/Loader";
 
 const TableRowItem = ({
   item,
@@ -195,7 +195,14 @@ export const ComponentResultTable = ({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            <InfiniteHitList>
+            <InfiniteHitList
+              as="tr"
+              loader={
+                <td className="relative" colSpan={4 + importantFacets.length}>
+                  <Loader size={"lg"} variant="overlay" />
+                </td>
+              }
+            >
               {({ position, ...item }) => (
                 <TableRowItem
                   key={item.id}

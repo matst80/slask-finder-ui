@@ -1,17 +1,21 @@
-import { ReactNode, useRef, useEffect, Fragment } from "react";
+import { ReactNode, useRef, useEffect, Fragment, createElement } from "react";
 import { useQuery } from "../lib/hooks/useQuery";
 import { Item } from "../lib/types";
 import { Loader } from "./Loader";
 
 export const InfiniteHitList = ({
   children,
+  loader,
+  as = "div",
 }: {
+  as?: keyof HTMLElementTagNameMap;
+  loader?: ReactNode;
   children: (item: Item & { position: number }) => ReactNode;
 }) => {
   const { hits, addPage, query } = useQuery();
   const loadingRef = useRef(false);
   const canLoadMoreRef = useRef(true);
-  const endRef = useRef<HTMLDivElement>(null);
+  const endRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!endRef.current) return;
@@ -29,6 +33,8 @@ export const InfiniteHitList = ({
           // Only load more if we have more results to fetch
           loadingRef.current = true;
           addPage().then(({ hasMorePages }) => {
+            elm.classList.add("opacity-0");
+            elm.classList.remove("opacity-100");
             loadingRef.current = false;
             canLoadMoreRef.current = hasMorePages;
             if (!hasMorePages) {
@@ -61,13 +67,15 @@ export const InfiniteHitList = ({
           {children({ ...item, position: idx })}
         </Fragment>
       ))}
-
-      <div
-        className="opacity-0 transition-opacity flex items-center justify-center w-full"
-        ref={endRef}
-      >
-        <Loader size="md" variant="default" />
-      </div>
+      {createElement(
+        as,
+        {
+          ref: endRef,
+          className:
+            "opacity-0 transition-opacity flex items-center justify-center w-full",
+        },
+        loader ?? <Loader size="md" variant="default" />
+      )}
     </>
   );
 };

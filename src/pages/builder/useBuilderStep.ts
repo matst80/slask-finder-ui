@@ -8,7 +8,7 @@ export const useBuilderStep = (componentId?: RuleId) => {
 
   return useMemo(() => {
     const currentIdx = order.findIndex((id) => id === componentId);
-    console.log("selectedItems", selectedItems);
+
     const selectedIds = new Set<RuleId>([
       ...selectedItems.flatMap((d) =>
         [d.componentId, d.parentId].filter(isDefined)
@@ -17,8 +17,6 @@ export const useBuilderStep = (componentId?: RuleId) => {
         .filter((d) => d.disabled != null && d.disabled(selectedItems))
         .map((d) => d.id),
     ]);
-
-    console.log("selectedIds", selectedIds);
 
     const unselected = order
       .filter((id) => {

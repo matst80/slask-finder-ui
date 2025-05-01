@@ -37,7 +37,7 @@ export type StoreWithStock = Store & {
 
 const ProductCarouselContainer = ({ children }: PropsWithChildren) => {
   return (
-    <div className="max-w-[100vw] w-[100vw] md:max-w-screen -mx-4 md:mx-0 md:w-full overflow-y-auto snap-x">
+    <div className="max-w-[100vw] w-[100vw] md:max-w-screen -mx-4 md:mx-0 md:w-full overflow-y-visible overflow-x-auto snap-x">
       {children}
     </div>
   );
