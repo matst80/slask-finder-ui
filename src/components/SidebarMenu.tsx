@@ -270,6 +270,19 @@ const menu: NavigationItemType[] = [
   },
 ];
 
+const NavMenu = () => {
+  return (
+    <nav className="flex-1 overflow-y-auto flex flex-col justify-between px-3 md:px-6 py-2">
+      <ul className="space-y-2">
+        {menu.map((i) => (
+          <NavigationItem key={i.translationKey} {...i} level={0} />
+        ))}
+      </ul>
+      <LanguageSelector />
+    </nav>
+  );
+};
+
 export const SidebarMenu = () => {
   const [open, setOpen] = useState(false);
   return (
@@ -286,14 +299,7 @@ export const SidebarMenu = () => {
             <h2 className="text-2xl font-bold">Slask Finder</h2>
             <p className="text-blue-100 text-sm mt-1">Admin Dashboard</p>
           </div>
-          <nav className="flex-1 overflow-y-auto flex flex-col justify-between px-3 md:px-6 py-2">
-            <ul className="space-y-2">
-              {menu.map((i) => (
-                <NavigationItem key={i.translationKey} {...i} level={0} />
-              ))}
-            </ul>
-            <LanguageSelector />
-          </nav>
+          <NavMenu />
           <div className="pt-4 border-t border-gray-100 mt-auto p-4 bg-gray-50">
             <div className="text-xs text-gray-500">Slask Finder UI © 2025</div>
           </div>
