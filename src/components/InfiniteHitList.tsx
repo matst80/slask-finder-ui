@@ -37,10 +37,10 @@ export const InfiniteHitList = ({
             elm.classList.remove("opacity-100");
             loadingRef.current = false;
             canLoadMoreRef.current = hasMorePages;
-            if (!hasMorePages) {
-              // No more pages to load, stop observing
-              observer.unobserve(elm);
-            }
+            // if (!hasMorePages) {
+            //   // No more pages to load, stop observing
+            //   observer.unobserve(elm);
+            // }
           });
         }
       },
@@ -57,7 +57,7 @@ export const InfiniteHitList = ({
   }, [endRef, loadingRef, addPage]);
   useEffect(() => {
     // Reset the loading state when the query changes
-    loadingRef.current = false;
+
     canLoadMoreRef.current = true;
   }, [query]);
   return (
