@@ -9,7 +9,7 @@ import { useKeyFacetValuePopularity } from "../hooks/popularityHooks";
 
 import { Button } from "../components/ui/button";
 
-const ignoredFacets = [2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321];
+const ignoredFacets = [2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186];
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
@@ -26,15 +26,13 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
 
   const allSorted = useMemo(() => toSorted(values), [values, filterValue]);
 
-  const { data: popularValues } = useKeyFacetValuePopularity(id);
+  //const { data: popularValues } = useKeyFacetValuePopularity(id);
 
   return (
     <div>
       <span>{name}</span>
       <fieldset className="flex gap-2 flex-wrap">
         {allSorted.map(({ value, count }) => {
-          const popularityIndex =
-            popularValues?.findIndex((d) => d.value === value) ?? -1;
           return (
             <Button
               variant={filterValue.has(value) ? "danger" : "outline"}
@@ -46,13 +44,9 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
               key={value}
             >
               {value}{" "}
-              {popularityIndex != -1 && popularityIndex < 4 && (
-                <Star
-                  // fill="yellow"
-                  className="size-4 text-xs inline-flex mr-2 text-amber-300 animate-pop"
-                />
+              {count > 1 && !filterValue.has(value) && (
+                <span className="text-sm text-gray-400">({count})</span>
               )}
-              <span>({count})</span>
             </Button>
           );
         })}
