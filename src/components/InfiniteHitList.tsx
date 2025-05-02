@@ -59,7 +59,7 @@ export const InfiniteHitList = ({
   }, [endRef, loadingRef, addPage]);
   useEffect(() => {
     // Reset the loading state when the query changes
-    console.log("query changed", query);
+
     canLoadMoreRef.current = true;
   }, [query]);
   return (
