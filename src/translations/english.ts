@@ -11,6 +11,7 @@ export const english = {
     admin: "Admin",
     checkout: "Checkout",
     updated: "Updated",
+    config: "Config",
   },
   admin_menu: {
     edit: "Edit",

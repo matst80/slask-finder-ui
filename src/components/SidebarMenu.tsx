@@ -35,6 +35,7 @@ type NavigationItemType = {
 // Color palette for menu items
 const menuColors = {
   search: "from-indigo-500 to-blue-500",
+  config: "from-blue-500 to-indigo-500",
   dashboard: "from-blue-500 to-cyan-500",
   builder: "from-cyan-500 to-teal-500",
   edit: "from-teal-500 to-emerald-500",
@@ -162,6 +163,13 @@ const menu: NavigationItemType[] = [
     translationKey: "menu.search",
     url: "/",
     accessKey: "1",
+    icon: <Search size={20} />,
+    color: menuColors.search,
+  },
+  {
+    translationKey: "menu.config",
+    url: "/config",
+    accessKey: "c",
     icon: <Search size={20} />,
     color: menuColors.search,
   },

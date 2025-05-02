@@ -49,6 +49,7 @@ import { Banner } from "./components/SearchResultList.tsx";
 import { TrackingProvider } from "./lib/hooks/TrackingContext.tsx";
 import { googleTracker } from "./tracking/google-tracking.ts";
 import { slaskTracker } from "./tracking/slaskTracker.ts";
+import { ProductConfigurator } from "./pages/ProductConfigurator.tsx";
 
 const router = createBrowserRouter([
   {
@@ -64,6 +65,14 @@ const router = createBrowserRouter([
     element: (
       <PageContainer>
         <Banner />
+      </PageContainer>
+    ),
+  },
+  {
+    path: "config",
+    element: (
+      <PageContainer>
+        <ProductConfigurator />
       </PageContainer>
     ),
   },

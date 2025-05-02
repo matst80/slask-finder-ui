@@ -11,6 +11,7 @@ export const swedish = {
     admin: "Admin",
     checkout: "Kassan",
     updated: "Uppdaterade",
+    config: "Konfigurera",
   },
   admin_menu: {
     edit: "Redigera",
