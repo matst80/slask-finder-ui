@@ -28,13 +28,14 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
   //const { data: popularValues } = useKeyFacetValuePopularity(id);
 
   return (
-    <div>
-      <span>{name}</span>
+    <div className="border-b border-gray-300 pb-6">
+      <span className="text-lg mb-4 block">{name}</span>
       <fieldset className="flex gap-2 flex-wrap">
         {allSorted.map(({ value, count }) => {
           return (
             <Button
-              variant={filterValue.has(value) ? "danger" : "outline"}
+              variant={filterValue.has(value) ? "default" : "outline"}
+              size="sm"
               onClick={() =>
                 filterValue.has(value)
                   ? removeValue(value)
@@ -42,10 +43,10 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
               }
               key={value}
             >
-              {value}{" "}
-              {count > 1 && !filterValue.has(value) && (
+              {value}
+              {/* {count > 1 && !filterValue.has(value) && (
                 <span className="text-sm text-gray-400">({count})</span>
-              )}
+              )} */}
             </Button>
           );
         })}
