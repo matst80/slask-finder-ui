@@ -81,12 +81,12 @@ export const ProductConfigurator = () => {
           ],
         }}
       >
-        <h1 className="text-2xl font-bold mb-4">Product Configurator</h1>
-        <p className="text-lg mb-4">
-          This is a simple product configurator page.
-        </p>
-        <div className="mb-6">
-          <FacetSelector />
+        <div className="px-4 lg:px-0">
+          <h1 className="text-2xl font-bold mb-4">Apple Watch S10</h1>
+
+          <div className="mb-6">
+            <FacetSelector />
+          </div>
         </div>
         <SearchResultList />
       </QueryProvider>
