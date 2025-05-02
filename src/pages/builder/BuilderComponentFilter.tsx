@@ -16,7 +16,6 @@ import { IssueList } from "./IssueList";
 import { NextComponentButton } from "./NextComponentButton";
 import { InfiniteHitList } from "../../components/InfiniteHitList";
 import { useImpression } from "../../lib/hooks/useImpression";
-import { trackClick } from "../../lib/datalayer/beacons";
 import { ComponentResultTable } from "./components/ComponentResultTable";
 import { useTranslations } from "../../lib/hooks/useTranslations";
 import { TranslationKey } from "../../translations/translations";

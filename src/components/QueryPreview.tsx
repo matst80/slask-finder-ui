@@ -45,7 +45,7 @@ export const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
         </div>
         {open && (
           <div className="mt-3">
-            <ResultCarousel />
+            <ResultCarousel list_id="preview" list_name="Query preview" />
           </div>
         )}
       </div>

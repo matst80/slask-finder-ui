@@ -7,7 +7,7 @@ export type BaseEcomEvent = {
   item_category3?: string;
   item_category4?: string;
   item_category5?: string;
-  index?: number;
+  index: number;
   price?: number;
 };
 
@@ -405,7 +405,7 @@ export type SearchEvent = BaseEvent & {
 
 export type ImpressionEvent = BaseEvent & {
   event: 5;
-  items: Impression[];
+  items: { id: number; position: number }[];
 };
 
 export type ClickEvent = BaseEvent & {

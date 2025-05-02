@@ -1,5 +1,4 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
-import { trackImpression } from "../datalayer/beacons";
 import { ImpressionContext } from "./ImpressionContext";
 import { useTracking } from "./TrackingContext";
 import { BaseEcomEvent } from "../types";
