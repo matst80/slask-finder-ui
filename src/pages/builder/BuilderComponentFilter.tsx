@@ -20,6 +20,7 @@ import { trackClick } from "../../lib/datalayer/beacons";
 import { ComponentResultTable } from "./components/ComponentResultTable";
 import { useTranslations } from "../../lib/hooks/useTranslations";
 import { TranslationKey } from "../../translations/translations";
+import { toImpression } from "../../components/toImpression";
 
 const ComponentItem = (
   item: Item & {
@@ -39,7 +40,7 @@ const ComponentItem = (
   const url = `/builder/product/${componentId}/${item.id}?${qs.toString()}`;
   return (
     <Link
-      ref={watch({ id: Number(item.id), position })}
+      ref={watch(toImpression(item, position))}
       to={url}
       key={item.id}
       viewTransition

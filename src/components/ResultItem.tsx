@@ -10,6 +10,7 @@ import { useQuery } from "../lib/hooks/useQuery";
 import { useImpression } from "../lib/hooks/useImpression";
 import { TimeAgo } from "./TimeAgo";
 import { useTranslations } from "../lib/hooks/useTranslations";
+import { toImpression } from "./toImpression";
 
 const hasStock = (value?: string | null) => {
   return value != null && value != "0";
@@ -322,7 +323,7 @@ export const ResultItem = ({
 
   return (
     <Link
-      ref={watch({ id: item.id, position })}
+      ref={watch(toImpression(item, position))}
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
       viewTransition={true}

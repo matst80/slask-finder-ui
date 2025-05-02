@@ -13,6 +13,7 @@ import { useFacetMap } from "../../../hooks/searchHooks";
 import { GroupRenderer } from "./FacetGroupRender";
 import { Price } from "../../../components/Price";
 import { Loader } from "../../../components/Loader";
+import { toImpression } from "../../../components/toImpression";
 
 const TableRowItem = ({
   item,
@@ -42,7 +43,7 @@ const TableRowItem = ({
   return (
     <>
       <tr
-        ref={watch({ id: item.id, position })}
+        ref={watch(toImpression(item, position))}
         onClick={() => setIsExpanded((prev) => !prev)}
         className={cm(
           "transition-all duration-300",
