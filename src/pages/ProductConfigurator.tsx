@@ -4,8 +4,6 @@ import { useQuery } from "../lib/hooks/useQuery";
 import { useMemo } from "react";
 import { isKeyFacet, KeyFacet } from "../lib/types";
 import { useQueryKeyFacet } from "../lib/hooks/useQueryKeyFacet";
-import { Star } from "lucide-react";
-import { useKeyFacetValuePopularity } from "../hooks/popularityHooks";
 
 import { Button } from "../components/ui/button";
 
