@@ -16,6 +16,7 @@ type ClickEvent = {
 
 export type TrackingHandler = {
   type: string;
+  [key: string]: unknown;
   track: (event: TrackingEvent) => void;
 };
 
@@ -30,8 +31,10 @@ export const TrackingProvider = ({
   handlers: initialHandlers,
   children,
 }: PropsWithChildren<{ handlers: TrackingHandler[] }>) => {
-  const [handlers, setHandlers] =
-    React.useState<TrackingHandler[]>(initialHandlers);
+  const context = React.useContext(TrackingContext);
+  const all = [...initialHandlers, ...(context?.handlers || [])];
+  console.log("all handlers", all);
+  const [handlers, setHandlers] = React.useState<TrackingHandler[]>(all);
 
   return (
     <TrackingContext.Provider value={{ handlers, setHandlers }}>
@@ -48,4 +51,18 @@ export const useTrackingHandlers = () => {
     );
   }
   return context.handlers;
+};
+
+export const useTracking = () => {
+  const context = React.useContext(TrackingContext);
+  if (!context) {
+    throw new Error("useTracking must be used within a TrackingProvider");
+  }
+  return {
+    track: (event: TrackingEvent) => {
+      context.handlers.forEach((handler) => {
+        handler.track.apply(handler, [event]);
+      });
+    },
+  };
 };

@@ -5,6 +5,7 @@ import { ItemWithComponentId, RuleId } from "./builder-types";
 import { PageContainer } from "../../PageContainer";
 import { useBuilderContext } from "./useBuilderContext";
 import { useEffect } from "react";
+import { TrackingProvider } from "../../lib/hooks/TrackingContext";
 
 type LocalStorageData = {
   items: ItemWithComponentId[];
@@ -42,10 +43,22 @@ export const BuilderMain = () => {
       initialItems={items}
       initialOrder={order}
     >
-      <PageContainer>
-        <SaveBuild />
-        <Outlet />
-      </PageContainer>
+      <TrackingProvider
+        handlers={[
+          {
+            type: "builder",
+            context: "hej",
+            track: function (evt) {
+              console.log("builder with context", { evt, this: this });
+            },
+          },
+        ]}
+      >
+        <PageContainer>
+          <SaveBuild />
+          <Outlet />
+        </PageContainer>
+      </TrackingProvider>
     </BuilderProvider>
   );
 };
