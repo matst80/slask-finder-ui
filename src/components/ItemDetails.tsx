@@ -29,17 +29,28 @@ import { StockList } from "./StockList";
 import { Link } from "react-router-dom";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { GroupedProperties } from "./GroupedProperties";
+import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
+import { TrackingProvider } from "../lib/hooks/TrackingContext";
+import { googleTracker } from "../tracking/google-tracking";
+import { Loader } from "./Loader";
 
 export type StoreWithStock = Store & {
   stock: string;
   distance: number | null;
 };
 
-const ProductCarouselContainer = ({ children }: PropsWithChildren) => {
+const ProductCarouselContainer = ({
+  children,
+  ...context
+}: PropsWithChildren<{ list_id: string; list_name: string }>) => {
   return (
-    <div className="max-w-[100vw] w-[100vw] md:max-w-screen -mx-4 md:mx-0 md:w-full overflow-y-visible overflow-x-auto snap-x">
-      {children}
-    </div>
+    <TrackingProvider handlers={[googleTracker(context)]}>
+      <ImpressionProvider>
+        <div className="max-w-[100vw] w-[100vw] md:max-w-screen -mx-4 md:mx-0 md:w-full overflow-y-visible overflow-x-auto snap-x">
+          {children}
+        </div>
+      </ImpressionProvider>
+    </TrackingProvider>
   );
 };
 
@@ -47,7 +58,7 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
   const { data, isLoading } = useRelatedItems(id);
 
   return (
-    <ProductCarouselContainer>
+    <ProductCarouselContainer list_id="related" list_name="Related">
       <div className="flex w-fit">
         {isLoading && <p>Laddar...</p>}
         {data?.map((item, idx) => (
@@ -60,13 +71,16 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
   );
 };
 
-export const ResultCarousel = () => {
+export const ResultCarousel = (context: {
+  list_id: string;
+  list_name: string;
+}) => {
   const { hits, isLoading } = useQuery();
 
   return (
-    <ProductCarouselContainer>
+    <ProductCarouselContainer {...context}>
       <div className="flex w-fit">
-        {isLoading && <p>Laddar...</p>}
+        {isLoading && <Loader size="md" />}
         {hits?.map((item, idx) => (
           <CarouselItem key={item.id}>
             <ResultItem {...item} position={idx} />
@@ -89,7 +103,7 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
   const { data, isLoading } = useCompatibleItems(id);
 
   return (
-    <ProductCarouselContainer>
+    <ProductCarouselContainer list_id="compatible" list_name="Compatible">
       <div className="flex w-fit">
         {isLoading && <p>Laddar...</p>}
         {data?.map((item, idx) => (
@@ -260,7 +274,10 @@ const RelationGroupCarousel = ({
       {open && (
         <QueryProvider initialQuery={query} loadFacets={false}>
           {/* <QueryMerger query={query} /> */}
-          <ResultCarousel />
+          <ResultCarousel
+            list_id={String(group.groupId)}
+            list_name={group.name}
+          />
         </QueryProvider>
       )}
     </div>

@@ -1,15 +1,24 @@
-import { TrackingHandler } from "../lib/hooks/TrackingContext";
+import {
+  GoogleTracker,
+  GoogleTrackingContext,
+} from "../lib/hooks/TrackingContext";
 
 type WindowWithDataLayer = Window & {
   dataLayer?: unknown[];
 };
 
-export const googleTracker: TrackingHandler = {
-  type: "google",
-  track: (event) => {
-    const w = globalThis?.window as WindowWithDataLayer;
-    if (w?.dataLayer) {
-      w?.dataLayer.push(event);
-    }
-  },
+export const googleTracker = (
+  context?: GoogleTrackingContext
+): GoogleTracker => {
+  return {
+    type: "google",
+    context: context || {},
+    track: (event, context) => {
+      const w = globalThis?.window as WindowWithDataLayer;
+      console.log("google tracker", { event, context, dataLayer: w.dataLayer });
+      if (w?.dataLayer) {
+        w?.dataLayer.push(event);
+      }
+    },
+  };
 };

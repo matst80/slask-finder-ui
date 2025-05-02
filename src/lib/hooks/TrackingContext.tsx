@@ -1,11 +1,11 @@
 import React, { createContext, PropsWithChildren, useCallback } from "react";
+import { Impression } from "../datalayer/beacons";
 
 export type TrackingEvent = ImpressionEvent | ClickEvent;
 
 type ImpressionEvent = {
-  type: "impression";
-  id: number;
-  position: number;
+  type: "impressions";
+  items: Impression[];
 };
 
 type ClickEvent = {
@@ -14,11 +14,25 @@ type ClickEvent = {
   position: number;
 };
 
-export type TrackingHandler = {
-  type: string;
-  [key: string]: unknown;
-  track: (event: TrackingEvent, handler: TrackingHandler) => void;
+export type BaseTrackingHandler<
+  TType extends string,
+  TContext extends Record<string, unknown> = Record<string, unknown>
+> = {
+  type: TType;
+  context: TContext;
+  track: (event: TrackingEvent, handler: TContext) => void;
 };
+
+export type GoogleTrackingContext = { list_id?: string; list_name?: string };
+
+export type GoogleTracker = BaseTrackingHandler<
+  "google",
+  GoogleTrackingContext
+>;
+
+export type SlaskTracker = BaseTrackingHandler<"slask">;
+
+export type TrackingHandler = GoogleTracker | SlaskTracker;
 
 type TrackingContextProps = {
   handlers: TrackingHandler[];
@@ -32,7 +46,12 @@ export const TrackingProvider = ({
   children,
 }: PropsWithChildren<{ handlers: TrackingHandler[] }>) => {
   const context = React.useContext(TrackingContext);
-  const all = [...initialHandlers, ...(context?.handlers || [])];
+  const all = [
+    ...initialHandlers,
+    ...(context?.handlers.filter(
+      (d) => !initialHandlers.some((e) => e.type == d.type)
+    ) || []),
+  ];
 
   const [handlers, setHandlers] = React.useState<TrackingHandler[]>(all);
 
@@ -62,7 +81,7 @@ export const useTracking = () => {
   const track = useCallback(
     (event: TrackingEvent) => {
       context.handlers.forEach((handler) => {
-        handler.track.apply(handler, [event, handler]);
+        handler.track.apply(handler, [event, handler.context]);
       });
     },
     [handlers]

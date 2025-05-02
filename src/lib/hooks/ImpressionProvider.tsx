@@ -1,19 +1,21 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 import { Impression, trackImpression } from "../datalayer/beacons";
 import { ImpressionContext } from "./ImpressionContext";
-import { useTracking, useTrackingHandlers } from "./TrackingContext";
+import { useTracking } from "./TrackingContext";
 
 export const ImpressionProvider = ({ children }: PropsWithChildren) => {
   const { track } = useTracking();
   const observer = useRef<IntersectionObserver | null>(null);
+  const watched = useRef<Map<HTMLElement, Impression>>(new Map());
 
   const watch = useCallback(
     (data: Impression) => (ref: HTMLElement | null) => {
       if (ref != null && observer.current) {
         requestAnimationFrame(() => {
           observer.current?.observe(ref);
-          ref.dataset.id = String(data.id);
-          ref.dataset.position = String(data.position);
+          watched.current.set(ref, data);
+          // ref.dataset.id = String(data.id);
+          // ref.dataset.position = String(data.position);
         });
       }
     },
@@ -24,15 +26,14 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
       if (ref != null && observer.current) {
         requestAnimationFrame(() => {
           observer.current?.unobserve(ref);
-          delete ref.dataset.id;
-          delete ref.dataset.position;
+          watched.current.delete(ref);
         });
       }
     },
     [observer]
   );
   useEffect(() => {
-    const impressions = new Set<number>();
+    //const impressions = new Set<number>();
     let toPush: Impression[] = [];
     const observerInstance = new IntersectionObserver(
       (entries) => {
@@ -40,16 +41,12 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
           .filter((d) => d.isIntersecting)
           .forEach((entry) => {
             const target = entry.target as HTMLElement;
-            const id = Number(target.dataset.id);
-            const position = Number(target.dataset.position);
+            const impression = watched.current.get(target);
 
-            if (id != null && !isNaN(position)) {
-              if (!impressions.has(id)) {
-                toPush.push({ id, position });
-                track({ type: "impression", id, position });
+            if (impression != null) {
+              toPush.push({ ...impression });
 
-                impressions.add(id);
-              }
+              watched.current.delete(target);
             }
           });
       },
@@ -58,6 +55,7 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
     const pushImpressions = () => {
       if (toPush.length) {
         trackImpression(toPush);
+        track({ type: "impressions", items: toPush });
         toPush = [];
       }
     };

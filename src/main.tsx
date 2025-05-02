@@ -245,7 +245,9 @@ const getBrowserTranslations = () => {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <TrackingProvider handlers={[googleTracker]}>
+    <TrackingProvider
+      handlers={[googleTracker({ list_id: "main", list_name: "search" })]}
+    >
       <TranslationProvider language={getBrowserTranslations()}>
         <QueryProvider initialQuery={{ page: 0, pageSize: 20 }}>
           <NotificationsProvider>
