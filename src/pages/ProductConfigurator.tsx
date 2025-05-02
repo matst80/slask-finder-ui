@@ -1,7 +1,6 @@
 import { QueryProvider } from "../lib/hooks/QueryProvider";
-import { SearchResultList } from "../components/SearchResultList";
 import { useQuery } from "../lib/hooks/useQuery";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { isKeyFacet, KeyFacet } from "../lib/types";
 import { useQueryKeyFacet } from "../lib/hooks/useQueryKeyFacet";
 
@@ -28,7 +27,7 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
   //const { data: popularValues } = useKeyFacetValuePopularity(id);
 
   return (
-    <div className="border-b border-gray-300 pb-6">
+    <div className="border-b border-gray-300 pb-6 last:border-b-0">
       <span className="text-lg mb-4 block">{name}</span>
       <fieldset className="flex gap-2 flex-wrap">
         {allSorted.map(({ value, count }) => {
@@ -72,7 +71,7 @@ const FacetSelector = () => {
 };
 
 const ResultItem = () => {
-  const { hits } = useQuery();
+  const { hits, totalHits } = useQuery();
   const [first] = hits;
   if (!first) {
     return <div className="flex items-center justify-center h-full"></div>;
@@ -80,7 +79,10 @@ const ResultItem = () => {
   const { title, img } = first;
 
   return (
-    <div className="flex items-center justify-center h-full p-6">
+    <div className="flex items-center justify-center h-full p-6 relative">
+      <div className="absolute top-3 right-3 p-2 bg-purple-500 rounded-full aspect-square w-10 h-10 flex items-center justify-center text-white font-bold">
+        {totalHits}
+      </div>
       <img
         className="max-w-full mix-blend-multiply h-auto object-contain product-image"
         src={makeImageUrl(img)}
@@ -102,7 +104,7 @@ export const ProductConfigurator = () => {
           ],
         }}
       >
-        <div className="mb-6 p-6 bg-gray-100 border-b md:border-b-0 md:border-r md:border-gray-300">
+        <div className="mb-6 p-6 mb:mb-0 bg-gray-100 border-b md:border-b-0 md:border-r md:border-gray-300">
           <h1 className="text-2xl font-bold mb-4">Apple Watch S10</h1>
 
           <FacetSelector />
