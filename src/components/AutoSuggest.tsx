@@ -164,7 +164,7 @@ export const AutoSuggest = () => {
           accessKey="f"
           className={cm(
             "w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden",
-            "md:rounded-md focus:md:rounded-b-none"
+            "md:rounded-md focus:md:rounded-b-none suggest-input"
           )}
           type="search"
           value={value ?? ""}
@@ -415,7 +415,7 @@ const SuggestionResults = ({
   return (
     <div
       className={cm(
-        "transition-all md:absolute md:rounded-b md:border md:border-t-white  md:border-gray-300 block top-10 left-0 right-0 bg-white overflow-y-auto md:pt-1",
+        "transition-all md:rounded-b md:border md:border-t-white md:border-gray-300 block bg-white overflow-y-auto suggest-result",
         open
           ? "md:shadow-xl max-h-[70vh] opacity-100"
           : "md:shadow-xl max-h-0 opacity-0"

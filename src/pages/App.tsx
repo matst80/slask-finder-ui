@@ -31,7 +31,7 @@ function App() {
       ]}
     >
       <div className="gap-2 md:my-8 border-b md:border-0 border-gray-300 md:mb-6 scroll-sticky-top z-30 py-2 max-h-screen">
-        <div className="max-w-[1920px] mx-auto md:relative md:mx-6">
+        <div className="max-w-[1920px] mx-auto md:relative md:px-6">
           <AutoSuggest />
         </div>
       </div>

@@ -175,6 +175,18 @@
     }
   }
 
+  .suggest-input {
+    anchor-name: --suggestfield;
+  }
+
+  .suggest-result {
+    position: absolute;
+    position-anchor: --suggestfield;
+    top: calc(anchor(bottom)-1px);
+    left: anchor(left);
+    right: anchor(right);
+  }
+
 
   @keyframes animate-in {
     0% {
