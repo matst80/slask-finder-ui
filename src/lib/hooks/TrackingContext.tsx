@@ -1,17 +1,16 @@
 import React, { createContext, PropsWithChildren, useCallback } from "react";
-import { Impression } from "../datalayer/beacons";
+import { BaseEcomEvent } from "../types";
 
 export type TrackingEvent = ImpressionEvent | ClickEvent;
 
 type ImpressionEvent = {
   type: "impressions";
-  items: Impression[];
+  items: BaseEcomEvent[];
 };
 
 type ClickEvent = {
   type: "click";
-  id: number;
-  position: number;
+  item: BaseEcomEvent;
 };
 
 export type BaseTrackingHandler<
@@ -32,7 +31,9 @@ export type GoogleTracker = BaseTrackingHandler<
 
 export type SlaskTracker = BaseTrackingHandler<"slask">;
 
-export type TrackingHandler = GoogleTracker | SlaskTracker;
+export type TrackingHandler = GoogleTracker | SlaskTracker | BuilderTracker;
+
+export type BuilderTracker = BaseTrackingHandler<"builder">;
 
 type TrackingContextProps = {
   handlers: TrackingHandler[];

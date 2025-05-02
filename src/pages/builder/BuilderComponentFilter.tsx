@@ -20,7 +20,8 @@ import { trackClick } from "../../lib/datalayer/beacons";
 import { ComponentResultTable } from "./components/ComponentResultTable";
 import { useTranslations } from "../../lib/hooks/useTranslations";
 import { TranslationKey } from "../../translations/translations";
-import { toImpression } from "../../components/toImpression";
+import { toEcomTrackingEvent } from "../../components/toImpression";
+import { useTracking } from "../../lib/hooks/TrackingContext";
 
 const ComponentItem = (
   item: Item & {
@@ -32,7 +33,12 @@ const ComponentItem = (
 ) => {
   const { position, issues, componentId, isSelected } = item;
   const { watch } = useImpression();
-  const trackItem = () => trackClick(item.id, position);
+  const { track } = useTracking();
+  const ecomItem = useMemo(
+    () => toEcomTrackingEvent(item, position),
+    [item, position]
+  );
+  const trackItem = () => track({ type: "click", item: ecomItem });
 
   const hasError = issues.some((d) => d.type === "error");
   const isValid = issues.length === 0;
@@ -40,7 +46,7 @@ const ComponentItem = (
   const url = `/builder/product/${componentId}/${item.id}?${qs.toString()}`;
   return (
     <Link
-      ref={watch(toImpression(item, position))}
+      ref={watch(ecomItem)}
       to={url}
       key={item.id}
       viewTransition

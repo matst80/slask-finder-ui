@@ -1,14 +1,15 @@
 import { RefreshCw } from "lucide-react";
 import { ResultItemInner } from "../../components/ResultItem";
 import { Button } from "../../components/ui/button";
-import { trackClick } from "../../lib/datalayer/beacons";
 import { useImpression } from "../../lib/hooks/useImpression";
 import { ItemWithComponentId } from "./builder-types";
 import { useBuilderContext } from "./useBuilderContext";
 import { Link, useNavigate } from "react-router-dom";
 import { QuantityInput } from "./QuantityInput";
 import { cm } from "../../utils";
-import { toImpression } from "../../components/toImpression";
+import { toEcomTrackingEvent } from "../../components/toImpression";
+import { useTracking } from "../../lib/hooks/TrackingContext";
+import { useMemo } from "react";
 
 export const SelectedComponentItem = ({
   componentId,
@@ -20,7 +21,12 @@ export const SelectedComponentItem = ({
   const { setSelectedItems } = useBuilderContext();
   const { watch } = useImpression();
   const navigate = useNavigate();
-  const trackItem = () => trackClick(item.id, position);
+  const { track } = useTracking();
+  const ecomItem = useMemo(
+    () => toEcomTrackingEvent(item, position),
+    [item, position]
+  );
+  const trackItem = () => track({ type: "click", item: ecomItem });
 
   const setQuantity = (value: number) =>
     setSelectedItems((prev) =>
@@ -41,7 +47,7 @@ export const SelectedComponentItem = ({
 
   return (
     <Link
-      ref={watch(toImpression(item, position))}
+      ref={watch(ecomItem)}
       to={`/builder/product/${componentId}/${item.id}`}
       key={`item-${item.id}`}
       className="group bg-white md:shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"

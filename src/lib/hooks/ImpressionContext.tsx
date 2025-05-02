@@ -1,8 +1,8 @@
 import { createContext } from "react";
-import { Impression } from "../datalayer/beacons";
+import { BaseEcomEvent } from "../types";
 
 type ImpressionContextProps = {
-  watch: (data: Impression) => (ref: HTMLElement | null) => void;
+  watch: (data: BaseEcomEvent) => (ref: HTMLElement | null) => void;
   unwatch: (ref: HTMLElement) => void;
   observer: IntersectionObserver | null;
 };

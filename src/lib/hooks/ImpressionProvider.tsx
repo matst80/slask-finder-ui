@@ -1,15 +1,16 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
-import { Impression, trackImpression } from "../datalayer/beacons";
+import { trackImpression } from "../datalayer/beacons";
 import { ImpressionContext } from "./ImpressionContext";
 import { useTracking } from "./TrackingContext";
+import { BaseEcomEvent } from "../types";
 
 export const ImpressionProvider = ({ children }: PropsWithChildren) => {
   const { track } = useTracking();
   const observer = useRef<IntersectionObserver | null>(null);
-  const watched = useRef<Map<HTMLElement, Impression>>(new Map());
+  const watched = useRef<Map<HTMLElement, BaseEcomEvent>>(new Map());
 
   const watch = useCallback(
-    (data: Impression) => (ref: HTMLElement | null) => {
+    (data: BaseEcomEvent) => (ref: HTMLElement | null) => {
       if (ref != null && observer.current) {
         requestAnimationFrame(() => {
           observer.current?.observe(ref);
@@ -34,7 +35,7 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
   );
   useEffect(() => {
     //const impressions = new Set<number>();
-    let toPush: Impression[] = [];
+    let toPush: BaseEcomEvent[] = [];
     const observerInstance = new IntersectionObserver(
       (entries) => {
         entries
@@ -54,7 +55,7 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
     );
     const pushImpressions = () => {
       if (toPush.length) {
-        trackImpression(toPush);
+        //trackImpression(toPush);
         track({ type: "impressions", items: toPush });
         toPush = [];
       }

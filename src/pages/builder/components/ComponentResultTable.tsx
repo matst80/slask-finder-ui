@@ -5,7 +5,6 @@ import { useQuery } from "../../../lib/hooks/useQuery";
 import { useBuilderContext } from "../useBuilderContext";
 import { ImpressionProvider } from "../../../lib/hooks/ImpressionProvider";
 import { useImpression } from "../../../lib/hooks/useImpression";
-import { trackClick } from "../../../lib/datalayer/beacons";
 import { ComponentId, FacetId, Issue } from "../builder-types";
 import { cm, isDefined, makeImageUrl } from "../../../utils";
 import { InfiniteHitList } from "../../../components/InfiniteHitList";
@@ -13,7 +12,8 @@ import { useFacetMap } from "../../../hooks/searchHooks";
 import { GroupRenderer } from "./FacetGroupRender";
 import { Price } from "../../../components/Price";
 import { Loader } from "../../../components/Loader";
-import { toImpression } from "../../../components/toImpression";
+import { toEcomTrackingEvent } from "../../../components/toImpression";
+import { useTracking } from "../../../lib/hooks/TrackingContext";
 
 const TableRowItem = ({
   item,
@@ -33,7 +33,12 @@ const TableRowItem = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const { watch } = useImpression();
 
-  const trackItem = () => trackClick(item.id, position);
+  const { track } = useTracking();
+  const ecomItem = useMemo(
+    () => toEcomTrackingEvent(item, position),
+    [item, position]
+  );
+  const trackItem = () => track({ type: "click", item: ecomItem });
   const issues = validator?.(item.values) ?? [];
   const hasError = issues.some((d) => d.type === "error");
   const isValid = issues.length === 0;
@@ -43,7 +48,7 @@ const TableRowItem = ({
   return (
     <>
       <tr
-        ref={watch(toImpression(item, position))}
+        ref={watch(ecomItem)}
         onClick={() => setIsExpanded((prev) => !prev)}
         className={cm(
           "transition-all duration-300",

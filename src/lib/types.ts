@@ -1,4 +1,15 @@
-import { Impression } from "./datalayer/beacons";
+export type BaseEcomEvent = {
+  item_id: string;
+  item_name: string;
+  item_brand?: string;
+  item_category?: string;
+  item_category2?: string;
+  item_category3?: string;
+  item_category4?: string;
+  item_category5?: string;
+  index?: number;
+  price?: number;
+};
 
 export type Suggestion = {
   match: string;
@@ -13,6 +24,11 @@ export type ItemValues = {
   "4": number;
   "5"?: number;
   "8"?: number;
+  "10"?: string;
+  "11"?: string;
+  "12"?: string;
+  "13"?: string;
+  "14"?: string;
 };
 
 export const Sort = {

@@ -8,19 +8,6 @@ type WindowWithDataLayer = Window & {
   dataLayer?: unknown[];
 };
 
-const getCategories = (category: string[] | undefined) =>
-  category
-    ? Object.fromEntries(
-        category.map(
-          (value, level) =>
-            [
-              level === 0 ? "item_category" : `item_category_${level + 1}`,
-              value,
-            ] as [string, string]
-        )
-      )
-    : {};
-
 export const googleTracker = (
   context?: GoogleTrackingContext
 ): GoogleTracker => {
@@ -36,18 +23,18 @@ export const googleTracker = (
             w.gtag("event", "view_item_list", {
               list_name,
               list_id,
-              items: event.items.map(
-                ({ name, id, brand, position, category, ...data }) => ({
-                  ...data,
-                  item_name: name,
-                  item_id: String(id),
-                  item_brand: brand,
-                  index: position,
-                  currency: "SEK",
-                  ...getCategories(category),
-                })
-              ),
+              items: event.items,
             });
+            break;
+          case "click":
+            w.gtag("event", "select_item", {
+              list_name,
+              list_id,
+              items: [event.item],
+            });
+            break;
+          default:
+            console.warn("Unknown event type for Google Tracker", event);
             break;
         }
       }

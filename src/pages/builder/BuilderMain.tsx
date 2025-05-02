@@ -47,7 +47,7 @@ export const BuilderMain = () => {
         handlers={[
           {
             type: "builder",
-            context: "hej",
+            context: {},
             track: function (evt) {
               console.log("builder with context", { evt, this: this });
             },

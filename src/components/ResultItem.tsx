@@ -3,14 +3,15 @@ import { makeImageUrl } from "../utils";
 import { Price } from "./Price";
 import { Stars } from "./Stars";
 
-import { PropsWithChildren, useState } from "react";
-import { trackClick } from "../lib/datalayer/beacons";
+import { PropsWithChildren, useMemo, useState } from "react";
+
 import { Link, useViewTransitionState } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
 import { useImpression } from "../lib/hooks/useImpression";
 import { TimeAgo } from "./TimeAgo";
 import { useTranslations } from "../lib/hooks/useTranslations";
-import { toImpression } from "./toImpression";
+import { toEcomTrackingEvent } from "./toImpression";
+import { useTracking } from "../lib/hooks/TrackingContext";
 
 const hasStock = (value?: string | null) => {
   return value != null && value != "0";
@@ -319,11 +320,16 @@ export const ResultItem = ({
   position: number;
 }) => {
   const { watch } = useImpression();
-  const trackItem = () => trackClick(item.id, position);
+  const { track } = useTracking();
+  const ecomItem = useMemo(
+    () => toEcomTrackingEvent(item, position),
+    [item, position]
+  );
+  const trackItem = () => track({ type: "click", item: ecomItem });
 
   return (
     <Link
-      ref={watch(toImpression(item, position))}
+      ref={watch(ecomItem)}
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
       viewTransition={true}

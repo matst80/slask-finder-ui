@@ -6,11 +6,13 @@ import { StockList } from "../../components/StockList";
 import { Button, ButtonLink } from "../../components/ui/button";
 import { useBuilderContext } from "./useBuilderContext";
 import { isParentId, ItemWithComponentId } from "./builder-types";
-import { trackAction, trackClick } from "../../lib/datalayer/beacons";
+import { trackAction } from "../../lib/datalayer/beacons";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
 import { useBuilderStep } from "./useBuilderStep";
 import { useTranslations } from "../../lib/hooks/useTranslations";
 import { Loader } from "../../components/Loader";
+import { useTracking } from "../../lib/hooks/TrackingContext";
+import { toEcomTrackingEvent } from "../../components/toImpression";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
   const { setSelectedItems, selectedItems } = useBuilderContext();
@@ -38,6 +40,8 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
     undefined;
   const parentId = isParentId(queryParentId) ? queryParentId : itemParentId;
   const isSelected = selectedItems.some((d) => d.id === id);
+  const { track } = useTracking();
+
   return (
     <>
       <div className="max-w-7xl mx-auto">
@@ -103,7 +107,11 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                               ]),
                         ]);
                         requestAnimationFrame(() => {
-                          trackClick(id, 1);
+                          track({
+                            type: "click",
+                            item: toEcomTrackingEvent(details, 1),
+                          });
+                          //trackClick(id, 1);
                           trackAction({
                             item: id,
                             action: "select_component",

@@ -48,6 +48,7 @@ import { SessionList } from "./components/SessionList.tsx";
 import { Banner } from "./components/SearchResultList.tsx";
 import { TrackingProvider } from "./lib/hooks/TrackingContext.tsx";
 import { googleTracker } from "./tracking/google-tracking.ts";
+import { slaskTracker } from "./tracking/slaskTracker.ts";
 
 const router = createBrowserRouter([
   {
@@ -246,7 +247,10 @@ const getBrowserTranslations = () => {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <TrackingProvider
-      handlers={[googleTracker({ list_id: "main", list_name: "search" })]}
+      handlers={[
+        googleTracker({ list_id: "main", list_name: "search" }),
+        slaskTracker(),
+      ]}
     >
       <TranslationProvider language={getBrowserTranslations()}>
         <QueryProvider initialQuery={{ page: 0, pageSize: 20 }}>
