@@ -325,7 +325,6 @@ export const ResultItem = ({
     () => toEcomTrackingEvent(item, position),
     [item, position]
   );
-  const trackItem = () => track({ type: "click", item: ecomItem });
 
   return (
     <Link
@@ -334,7 +333,7 @@ export const ResultItem = ({
       key={`item-${item.id}`}
       viewTransition={true}
       className="group bg-white md:shadow-xs hover:shadow-md transition-all hover:z-10 duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
-      onClick={trackItem}
+      onClick={() => track({ type: "click", item: ecomItem })}
     >
       <ResultItemInner {...item} />
       {/* <DataView item={item} /> */}

@@ -19,7 +19,7 @@ export type BaseTrackingHandler<
 > = {
   type: TType;
   context: TContext;
-  track: (event: TrackingEvent, handler: TContext) => void;
+  handle: (event: TrackingEvent, handler: TContext) => void;
 };
 
 export type GoogleTrackingContext = { list_id?: string; list_name?: string };
@@ -82,7 +82,7 @@ export const useTracking = () => {
   const track = useCallback(
     (event: TrackingEvent) => {
       context.handlers.forEach((handler) => {
-        handler.track.apply(handler, [event, handler.context]);
+        handler.handle.apply(handler, [event, handler.context]);
       });
     },
     [handlers]

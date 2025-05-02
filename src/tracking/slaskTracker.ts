@@ -5,7 +5,7 @@ export const slaskTracker = (): SlaskTracker => {
   return {
     type: "slask",
     context: {},
-    track: (event) => {
+    handle: (event) => {
       console.log("slask tracker", { event });
       switch (event.type) {
         case "impressions":

@@ -48,7 +48,7 @@ export const BuilderMain = () => {
           {
             type: "builder",
             context: {},
-            track: function (evt) {
+            handle: function (evt) {
               console.log("builder with context", { evt, this: this });
             },
           },

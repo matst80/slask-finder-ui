@@ -14,7 +14,7 @@ export const googleTracker = (
   return {
     type: "google",
     context: context || {},
-    track: (event, { list_id, list_name }) => {
+    handle: (event, { list_id, list_name }) => {
       const w = globalThis?.window as WindowWithDataLayer;
       console.log("google tracker", { event, context, dataLayer: w.gtag });
       if (w?.gtag) {
