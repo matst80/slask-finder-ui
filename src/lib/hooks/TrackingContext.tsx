@@ -1,4 +1,4 @@
-import React, { createContext, PropsWithChildren } from "react";
+import React, { createContext, PropsWithChildren, useCallback } from "react";
 
 export type TrackingEvent = ImpressionEvent | ClickEvent;
 
@@ -17,7 +17,7 @@ type ClickEvent = {
 export type TrackingHandler = {
   type: string;
   [key: string]: unknown;
-  track: (event: TrackingEvent) => void;
+  track: (event: TrackingEvent, handler: TrackingHandler) => void;
 };
 
 type TrackingContextProps = {
@@ -33,7 +33,7 @@ export const TrackingProvider = ({
 }: PropsWithChildren<{ handlers: TrackingHandler[] }>) => {
   const context = React.useContext(TrackingContext);
   const all = [...initialHandlers, ...(context?.handlers || [])];
-  console.log("all handlers", all);
+
   const [handlers, setHandlers] = React.useState<TrackingHandler[]>(all);
 
   return (
@@ -58,11 +58,16 @@ export const useTracking = () => {
   if (!context) {
     throw new Error("useTracking must be used within a TrackingProvider");
   }
-  return {
-    track: (event: TrackingEvent) => {
+  const { handlers } = context;
+  const track = useCallback(
+    (event: TrackingEvent) => {
       context.handlers.forEach((handler) => {
-        handler.track.apply(handler, [event]);
+        handler.track.apply(handler, [event, handler]);
       });
     },
+    [handlers]
+  );
+  return {
+    track,
   };
 };

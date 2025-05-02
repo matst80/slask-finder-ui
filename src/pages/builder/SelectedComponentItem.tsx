@@ -52,7 +52,7 @@ export const SelectedComponentItem = ({
           onChange={setQuantity}
           maxQuantity={maxQuantity}
           className={cm(
-            "top-3 right-3 absolute",
+            "bottom-12 right-3 absolute",
             quantity < maxQuantity ? "animate-focus" : "animate-pop"
           )}
         />

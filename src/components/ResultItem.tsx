@@ -322,7 +322,7 @@ export const ResultItem = ({
 
   return (
     <Link
-      ref={watch({ id: Number(item.id), position })}
+      ref={watch({ id: item.id, position })}
       to={`/product/${item.id}`}
       key={`item-${item.id}`}
       viewTransition={true}
