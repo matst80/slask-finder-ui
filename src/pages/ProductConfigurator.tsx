@@ -71,7 +71,7 @@ const FacetSelector = () => {
 
 export const ProductConfigurator = () => {
   return (
-    <div className="container mx-auto my-10">
+    <div className="container mx-auto my-10 px-4">
       <QueryProvider
         ignoreFacets={ignoredFacets}
         initialQuery={{
@@ -81,12 +81,10 @@ export const ProductConfigurator = () => {
           ],
         }}
       >
-        <div className="px-4 lg:px-0">
+        <div className="mb-6">
           <h1 className="text-2xl font-bold mb-4">Apple Watch S10</h1>
 
-          <div className="mb-6">
-            <FacetSelector />
-          </div>
+          <FacetSelector />
         </div>
         <SearchResultList />
       </QueryProvider>
