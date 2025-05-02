@@ -7,7 +7,9 @@ import { useQueryKeyFacet } from "../lib/hooks/useQueryKeyFacet";
 import { Button } from "../components/ui/button";
 import { makeImageUrl } from "../utils";
 
-const ignoredFacets = [2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186];
+const ignoredFacets = [
+  2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559,
+];
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
