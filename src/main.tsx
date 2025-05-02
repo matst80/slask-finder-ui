@@ -45,6 +45,7 @@ import { FacetGroups } from "./pages/admin/FacetGroups.tsx";
 import { getLocale } from "./utils.ts";
 import { CspReport } from "./pages/tracking/csp-report.tsx";
 import { SessionList } from "./components/SessionList.tsx";
+import { Banner } from "./components/SearchResultList.tsx";
 
 const router = createBrowserRouter([
   {
@@ -52,6 +53,14 @@ const router = createBrowserRouter([
     element: (
       <PageContainer>
         <App />
+      </PageContainer>
+    ),
+  },
+  {
+    path: "test",
+    element: (
+      <PageContainer>
+        <Banner />
       </PageContainer>
     ),
   },
