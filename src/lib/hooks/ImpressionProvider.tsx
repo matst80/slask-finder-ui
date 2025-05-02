@@ -1,8 +1,10 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 import { Impression, trackImpression } from "../datalayer/beacons";
 import { ImpressionContext } from "./ImpressionContext";
+import { useTrackingHandlers } from "./TrackingContext";
 
 export const ImpressionProvider = ({ children }: PropsWithChildren) => {
+  const handlers = useTrackingHandlers();
   const observer = useRef<IntersectionObserver | null>(null);
 
   const watch = useCallback(
@@ -40,9 +42,15 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
             const target = entry.target as HTMLElement;
             const id = Number(target.dataset.id);
             const position = Number(target.dataset.position);
+
             if (id != null && !isNaN(position)) {
               if (!impressions.has(id)) {
                 toPush.push({ id, position });
+                if (handlers) {
+                  handlers.forEach((handler) => {
+                    handler.track({ type: "impression", id, position });
+                  });
+                }
                 impressions.add(id);
               }
             }
@@ -62,7 +70,7 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
       clearInterval(interval);
       observerInstance.disconnect();
     };
-  }, []);
+  }, [handlers]);
   return (
     <ImpressionContext.Provider
       value={{ watch, unwatch, observer: observer.current }}

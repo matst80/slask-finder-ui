@@ -46,6 +46,8 @@ import { getLocale } from "./utils.ts";
 import { CspReport } from "./pages/tracking/csp-report.tsx";
 import { SessionList } from "./components/SessionList.tsx";
 import { Banner } from "./components/SearchResultList.tsx";
+import { TrackingProvider } from "./lib/hooks/TrackingContext.tsx";
+import { googleTracker } from "./tracking/google-tracking.ts";
 
 const router = createBrowserRouter([
   {
@@ -243,16 +245,18 @@ const getBrowserTranslations = () => {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <TranslationProvider language={getBrowserTranslations()}>
-      <QueryProvider initialQuery={{ page: 0, pageSize: 20 }}>
-        <NotificationsProvider>
-          <ImpressionProvider>
-            <SWRConfig value={{}}>
-              <RouterProvider router={router} />
-            </SWRConfig>
-          </ImpressionProvider>
-        </NotificationsProvider>
-      </QueryProvider>
-    </TranslationProvider>
+    <TrackingProvider handlers={[googleTracker]}>
+      <TranslationProvider language={getBrowserTranslations()}>
+        <QueryProvider initialQuery={{ page: 0, pageSize: 20 }}>
+          <NotificationsProvider>
+            <ImpressionProvider>
+              <SWRConfig value={{}}>
+                <RouterProvider router={router} />
+              </SWRConfig>
+            </ImpressionProvider>
+          </NotificationsProvider>
+        </QueryProvider>
+      </TranslationProvider>
+    </TrackingProvider>
   </React.StrictMode>
 );
