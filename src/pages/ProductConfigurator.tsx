@@ -1,17 +1,18 @@
 import { QueryProvider } from "../lib/hooks/QueryProvider";
 import { SearchResultList } from "../components/SearchResultList";
 import { useQuery } from "../lib/hooks/useQuery";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { isKeyFacet, KeyFacet } from "../lib/types";
 import { useQueryKeyFacet } from "../lib/hooks/useQueryKeyFacet";
 
 import { Button } from "../components/ui/button";
+import { makeImageUrl } from "../utils";
 
 const ignoredFacets = [2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186];
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([value, count]) => ({ value, count }));
 
 export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
@@ -69,9 +70,28 @@ const FacetSelector = () => {
   );
 };
 
+const ResultItem = () => {
+  const { hits } = useQuery();
+  const [first] = hits;
+  if (!first) {
+    return <div className="flex items-center justify-center h-full"></div>;
+  }
+  const { title, img } = first;
+
+  return (
+    <div className="flex items-center justify-center h-full p-6">
+      <img
+        className="max-w-full mix-blend-multiply h-auto object-contain product-image"
+        src={makeImageUrl(img)}
+        alt={title}
+      />
+    </div>
+  );
+};
+
 export const ProductConfigurator = () => {
   return (
-    <div className="container mx-auto my-10 px-4">
+    <div className="grid grid-cols-1 md:grid-cols-[300px_auto] gap-2 h-screen">
       <QueryProvider
         ignoreFacets={ignoredFacets}
         initialQuery={{
@@ -81,12 +101,13 @@ export const ProductConfigurator = () => {
           ],
         }}
       >
-        <div className="mb-6">
+        <div className="mb-6 p-6 bg-gray-100 border-b md:border-b-0 md:border-r md:border-gray-300">
           <h1 className="text-2xl font-bold mb-4">Apple Watch S10</h1>
 
           <FacetSelector />
         </div>
-        <SearchResultList />
+        <ResultItem />
+        {/* <SearchResultList /> */}
       </QueryProvider>
     </div>
   );
