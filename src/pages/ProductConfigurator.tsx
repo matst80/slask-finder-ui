@@ -30,7 +30,7 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
     <div className="border-b border-gray-300 pb-6 last:border-b-0">
       <span className="text-lg mb-4 block">{name}</span>
       <fieldset className="flex gap-2 flex-wrap">
-        {allSorted.map(({ value, count }) => {
+        {allSorted.map(({ value }) => {
           return (
             <Button
               variant={filterValue.has(value) ? "default" : "outline"}
