@@ -13,6 +13,7 @@ import { useTranslations } from "../../lib/hooks/useTranslations";
 import { Loader } from "../../components/Loader";
 import { useTracking } from "../../lib/hooks/TrackingContext";
 import { toEcomTrackingEvent } from "../../components/toImpression";
+import { GroupedProperties } from "../../components/GroupedProperties";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
   const { setSelectedItems, selectedItems } = useBuilderContext();
@@ -155,7 +156,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
 
         {/* Bottom Sections */}
         <div className="mt-6 space-y-6 md:mt-16 md:space-y-16 animating-element">
-          <Properties values={details.values} />
+          <GroupedProperties values={details.values} />
         </div>
       </div>
       <BuilderFooterBar />
