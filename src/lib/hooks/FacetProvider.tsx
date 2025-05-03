@@ -41,7 +41,8 @@ export const FacetProvider = ({
   const [categoryFacets, setCategoryFacets] = useState<KeyFacet[]>([]);
 
   useEffect(() => {
-    const key = queryToHash(query);
+    const { query: q, range, stock, string } = query;
+    const key = queryToHash({ query: q, range, stock, string });
     if (key !== facetsKey) {
       const to = setTimeout(() => {
         setFacetsKey(key);
