@@ -411,20 +411,16 @@ const SuggestionResults = ({
   onClose: () => void;
 }) => {
   const { items } = useSuggestions();
-
+  console.log("render");
   return (
     <div
       className={cm(
-        "transition-all md:rounded-b md:border md:border-t-white md:border-gray-300 block bg-white overflow-y-auto suggest-result",
-        open
-          ? "md:shadow-xl max-h-[70vh] opacity-100"
-          : "md:shadow-xl max-h-0 opacity-0"
+        "transition-all md:rounded-b md:border md:border-t-white md:border-gray-300 block bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]",
+        open ? "opacity-100" : "opacity-0"
       )}
       onClick={(e) => e.stopPropagation()}
     >
-      {items.map((item) => (
-        <SuggestSelector {...item} />
-      ))}
+      {open && items.map((item) => <SuggestSelector {...item} />)}
       <button
         onClick={onClose}
         className="md:hidden absolute top-13 right-3 rounded-full bg-white p-1 z-20"
