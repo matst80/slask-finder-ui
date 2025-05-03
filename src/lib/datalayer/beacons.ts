@@ -1,19 +1,28 @@
-export const trackClick = (id: string | number, position: number) =>
-  globalThis.navigator.sendBeacon(`/track/click?id=${id}&pos=${position}`);
+import { BaseEcomEvent } from "../types";
 
-export const trackImpression = (
-  impressions: { id: number; position: number }[]
-) =>
+const toTrackingEvent = ({ item_id, ...rest }: BaseEcomEvent) => ({
+  ...rest,
+  id: Number(item_id),
+});
+
+export const trackClick = (data: BaseEcomEvent) =>
   globalThis.navigator.sendBeacon(
-    `/track/impressions`,
-    JSON.stringify([...impressions])
+    `/track/click`,
+    JSON.stringify(toTrackingEvent(data))
   );
 
-export const trackAction = (payload: {
-  item?: number;
-  action: string;
-  reason: string;
-}) => globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload));
+export const trackImpression = (impressions: BaseEcomEvent[]) =>
+  globalThis.navigator.sendBeacon(
+    `/track/impressions`,
+    JSON.stringify(impressions.map(toTrackingEvent))
+  );
+
+export const trackAction = (
+  payload: BaseEcomEvent & {
+    action: string;
+    reason: string;
+  }
+) => globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload));
 
 export const trackSuggest = (payload: {
   value: string;
@@ -22,15 +31,13 @@ export const trackSuggest = (payload: {
 }) =>
   globalThis.navigator.sendBeacon(`/track/suggest`, JSON.stringify(payload));
 
-export const trackCart = (payload: {
-  item: number;
-  quantity: number;
-  type: "add" | "quantity" | "remove";
-}) => globalThis.navigator.sendBeacon(`/track/cart`, JSON.stringify(payload));
+export const trackCart = (
+  payload: BaseEcomEvent & {
+    type: "add" | "quantity" | "remove";
+  }
+) => globalThis.navigator.sendBeacon(`/track/cart`, JSON.stringify(payload));
 
-export const trackEnterCheckout = (data: {
-  items: { item: number; quantity: number }[];
-}) =>
+export const trackEnterCheckout = (data: { items: BaseEcomEvent[] }) =>
   globalThis.navigator.sendBeacon(
     `/track/enter-checkout`,
     JSON.stringify(data)

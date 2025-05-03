@@ -1,5 +1,5 @@
 export type BaseEcomEvent = {
-  item_id: string;
+  item_id: string | number;
   item_name: string;
   item_brand?: string;
   item_category?: string;
@@ -282,6 +282,12 @@ export type CartItem = {
   id: number;
   image: string;
   name: string;
+  brand?: string;
+  category?: string;
+  category2?: string;
+  category3?: string;
+  category4?: string;
+  category5?: string;
   orgPrice: number;
   price: number;
   qty: number;

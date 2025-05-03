@@ -260,7 +260,7 @@ const getBrowserTranslations = () => {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <SWRConfig value={{}}>
+    <SWRConfig value={{ keepPreviousData: true }}>
       <TrackingProvider
         handlers={[
           googleTracker({ list_id: "main", list_name: "search" }),

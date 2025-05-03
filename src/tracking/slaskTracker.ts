@@ -6,18 +6,13 @@ export const slaskTracker = (): SlaskTracker => {
     type: "slask",
     context: {},
     handle: (event) => {
-      console.log("slask tracker", { event });
+      // console.log("slask tracker", { event });
       switch (event.type) {
         case "impressions":
-          trackImpression(
-            event.items.map((item) => ({
-              id: Number(item.item_id),
-              position: item.index,
-            }))
-          );
+          trackImpression(event.items);
           break;
         case "click":
-          trackClick(event.item.item_id, event.item.index);
+          trackClick(event.item);
           break;
         default:
           console.warn("Unknown event type for Slask Tracker", event);
