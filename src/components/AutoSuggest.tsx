@@ -411,7 +411,7 @@ const SuggestionResults = ({
   onClose: () => void;
 }) => {
   const { items } = useSuggestions();
-  console.log("render");
+
   return (
     <div
       className={cm(

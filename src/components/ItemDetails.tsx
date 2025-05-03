@@ -333,7 +333,7 @@ const RelationGroupCarousel = ({
         </Link>
       </div>
       {open && (
-        <QueryProvider initialQuery={query} loadFacets={false}>
+        <QueryProvider initialQuery={query}>
           {/* <QueryMerger query={query} /> */}
           <ResultCarousel
             list_id={String(group.groupId)}

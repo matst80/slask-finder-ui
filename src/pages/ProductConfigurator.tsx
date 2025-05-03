@@ -6,6 +6,8 @@ import { useQueryKeyFacet } from "../lib/hooks/useQueryKeyFacet";
 
 import { Button } from "../components/ui/button";
 import { makeImageUrl } from "../utils";
+import { FacetProvider } from "../lib/hooks/FacetProvider";
+import { useFacets } from "../lib/hooks/useFacets";
 
 const ignoredFacets = [
   2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559,
@@ -57,7 +59,7 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
 };
 
 const FacetSelector = () => {
-  const { facets } = useQuery();
+  const { facets } = useFacets();
   const toShow = useMemo<KeyFacet[]>(() => {
     return facets
       .filter(isKeyFacet)
@@ -98,7 +100,6 @@ export const ProductConfigurator = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[300px_auto] gap-2 h-screen">
       <QueryProvider
-        ignoreFacets={ignoredFacets}
         initialQuery={{
           string: [
             { id: 30879, value: ["Apple Watch S10"] },
@@ -108,8 +109,9 @@ export const ProductConfigurator = () => {
       >
         <div className="mb-6 p-6 md:mb-0 bg-gray-100 border-b md:border-b-0 md:border-r md:border-gray-300">
           <h1 className="text-2xl font-bold mb-4">Apple Watch S10</h1>
-
-          <FacetSelector />
+          <FacetProvider ignoreFacets={ignoredFacets}>
+            <FacetSelector />
+          </FacetProvider>
         </div>
         <ResultItem />
         {/* <SearchResultList /> */}

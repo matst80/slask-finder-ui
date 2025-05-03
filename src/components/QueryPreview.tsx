@@ -27,7 +27,7 @@ export const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
   }, [matches]);
 
   return (
-    <QueryProvider initialQuery={query} loadFacets={false}>
+    <QueryProvider initialQuery={query}>
       <div
         onClick={() => setOpen((p) => !p)}
         className="cursor-pointer border-b border-gray-200 pb-3 mb-4"

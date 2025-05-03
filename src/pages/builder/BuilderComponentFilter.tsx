@@ -21,6 +21,7 @@ import { useTranslations } from "../../lib/hooks/useTranslations";
 import { TranslationKey } from "../../translations/translations";
 import { toEcomTrackingEvent } from "../../components/toImpression";
 import { useTracking } from "../../lib/hooks/TrackingContext";
+import { FacetProvider } from "../../lib/hooks/FacetProvider";
 
 const ComponentItem = (
   item: Item & {
@@ -181,16 +182,18 @@ export const BuilderComponentFilter = () => {
     return <div>Loading</div>;
   }
   return (
-    <QueryProvider initialQuery={requiredQuery} ignoreFacets={facetsToHide}>
+    <QueryProvider initialQuery={requiredQuery}>
       <BuilderQueryMerger query={requiredQuery} componentId={componentId} />
       <div className="mb-24 md:mt-10 max-w-[1920px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-[288px_auto]">
           <div className="border-b-1 py-1 px-4 md:pr-0 md:py-0 border-gray-300 md:border-none bg-gray-50 md:bg-white">
-            <Facets
-              facetsToHide={facetsToHide}
-              hideCategories
-              facetsToDisable={facetsToDisable}
-            />
+            <FacetProvider ignoreFacets={facetsToHide}>
+              <Facets
+                facetsToHide={facetsToHide}
+                hideCategories
+                facetsToDisable={facetsToDisable}
+              />
+            </FacetProvider>
           </div>
           <main className="px-4 md:px-10 container">
             <ResultHeader>

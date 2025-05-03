@@ -7,14 +7,11 @@ import {
 } from "react";
 import * as api from "../datalayer/api";
 import {
-  Facet,
   Item,
   ItemsQuery,
   isNumberValue,
   NumberField,
   HistoryQuery,
-  KeyFacet,
-  isKeyFacet,
 } from "../types";
 import {
   facetQueryToHash,
@@ -25,7 +22,6 @@ import {
 import { mergeFilters } from "./queryUtils";
 import { AddPageResult, QueryContext } from "./queryContext";
 
-const facetCache = new Map<string, Facet[]>();
 const itemsCache = new Map<string, Item[]>();
 
 export type QueryProviderRef = {
@@ -49,42 +45,20 @@ const loadQueryFromHash = (): ItemsQuery => {
   return queryFromHash(hash);
 };
 
-const splitCategoryFacets = (facets: Facet[]): [KeyFacet[], Facet[]] => {
-  return facets.reduce(
-    ([c, all], facet) => {
-      if (
-        facet.categoryLevel != null &&
-        facet.categoryLevel > 0 &&
-        isKeyFacet(facet)
-      ) {
-        return [[...c, facet], all];
-      }
-      return [c, [...all, facet]];
-    },
-    [[] as KeyFacet[], [] as Facet[]]
-  );
-};
-
 export const QueryProvider = ({
   initialQuery,
   children,
-  ignoreFacets,
-  loadFacets = true,
   ref,
 }: PropsWithChildren<{
   initialQuery?: ItemsQuery;
-  ignoreFacets?: number[];
-  loadFacets?: boolean;
   ref?: React.Ref<QueryProviderRef>;
 }>) => {
   const [virtualPage, setVirtualPage] = useState(0);
   const [queryHistory, setQueryHistory] = useState<HistoryQuery[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingFacets, setIsLoadingFacets] = useState(false);
-  const [facetsKey, setFacetsKey] = useState<string | null>(null);
+
   const [itemsKey, setItemsKey] = useState<string | null>(null);
-  const [facets, setFacets] = useState<Facet[]>([]);
-  const [categoryFacets, setCategoryFacets] = useState<KeyFacet[]>([]);
+
   const [hits, setHits] = useState<Item[]>([]);
   const [totalHits, setTotalHits] = useState<number>(0);
   const [query, setQuery] = useState<ItemsQuery>(
@@ -165,51 +139,11 @@ export const QueryProvider = ({
       }
       return [...prev, { ...query, key: currentKey }];
     });
-    const t = setTimeout(() => {
-      setFacetsKey(facetQueryToHash(query));
-    }, 50);
+
     setVirtualPage(query.page ?? 0);
 
     setItemsKey(queryToHash(query));
-    return () => {
-      clearTimeout(t);
-    };
   }, [query]);
-
-  useEffect(() => {
-    if (facetsKey == null || !loadFacets) {
-      return;
-    }
-    if (facetCache.has(facetsKey)) {
-      const cached = facetCache.get(facetsKey) ?? [];
-
-      const [cat, other] = splitCategoryFacets(cached);
-      setFacets(other);
-      setCategoryFacets(cat);
-    }
-
-    setIsLoadingFacets(true);
-    api.facets(toQuery(query, ignoreFacets)).then((data) => {
-      facetCache.set(facetsKey, data);
-      const [cat, other] = data.reduce(
-        ([c, all], facet) => {
-          if (
-            facet.categoryLevel != null &&
-            facet.categoryLevel > 0 &&
-            isKeyFacet(facet)
-          ) {
-            return [[...c, facet], all];
-          }
-          return [c, [...all, facet]];
-        },
-        [[] as KeyFacet[], [] as Facet[]]
-      );
-      setFacets(other);
-      setCategoryFacets(cat);
-      setIsLoadingFacets(false);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [facetsKey, loadFacets]);
 
   const addPage = useCallback(() => {
     const virtualQuery = { ...query, page: virtualPage + 1 };
@@ -272,13 +206,12 @@ export const QueryProvider = ({
         setStock,
         addPage,
         queryHistory,
-        categoryFacets,
+
         setTerm,
         removeFilter,
         setFilter,
         isLoading,
-        isLoadingFacets,
-        facets,
+
         hits,
         totalHits,
       }}

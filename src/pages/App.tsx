@@ -5,6 +5,7 @@ import { ResultHeader } from "../components/ResultHeader";
 import { SearchResultList } from "../components/SearchResultList";
 import { Facets } from "../components/Facets";
 import { SuggestionProvider } from "../lib/hooks/SuggestionProvider";
+import { FacetProvider } from "../lib/hooks/FacetProvider";
 
 // px-4 py-3 md:py-8 md:px-10
 // px-4 md:px-10
@@ -38,7 +39,9 @@ function App() {
       <div className="max-w-[1920px] mx-auto md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-[288px_auto]">
           <div className="border-b-1 py-1 px-4 md:px-0 md:py-0 border-gray-300 md:border-none bg-gray-50 md:bg-white">
-            <Facets />
+            <FacetProvider>
+              <Facets />
+            </FacetProvider>
           </div>
           <main className="container px-4 md:px-10">
             <CurrentFilters />

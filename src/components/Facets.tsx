@@ -10,6 +10,7 @@ import { NumberFacetSelector } from "./facets/NumericFacetSelectors";
 import { cm } from "../utils";
 import { useScreenWidth } from "../lib/hooks/useScreenWidth";
 import { useTranslations } from "../lib/hooks/useTranslations";
+import { useFacets } from "../lib/hooks/useFacets";
 
 const CategoryLevel = ({
   id,
@@ -94,7 +95,7 @@ export const FacetList = ({
   facetsToHide,
   facetsToDisable = [],
 }: FacetListProps) => {
-  const { facets } = useQuery();
+  const { facets } = useFacets();
   const allFacets = useMemo(
     () =>
       facets
@@ -142,7 +143,7 @@ export const Facets = ({
 }: FacetListProps & {
   hideCategories?: boolean;
 }) => {
-  const { facets, categoryFacets, isLoadingFacets: isLoading } = useQuery();
+  const { facets, categoryFacets, isLoadingFacets: isLoading } = useFacets();
   const t = useTranslations();
   const [open, setOpen] = useState(false);
 

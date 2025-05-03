@@ -1,6 +1,5 @@
 import useSWR from "swr";
 import {
-  facets,
   getAdminRelations,
   getCompatible,
   getFacetGroups,
@@ -148,7 +147,7 @@ export const facetQueryToHash = ({
 
 const itemsKey = (data: ItemsQuery) => `items-` + queryToHash(data);
 
-const facetsKey = (data: FacetQuery) => "facets-" + facetQueryToHash(data);
+//const facetsKey = (data: FacetQuery) => "facets-" + facetQueryToHash(data);
 
 export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
   const { range, sort, page, pageSize, query, stock, string } = data;
@@ -203,13 +202,13 @@ export const useItemsSearch = (query: ItemsQuery) => {
 //     });
 // };
 
-export const useFacets = (data: FacetQuery) => {
-  return useSWR(facetsKey(data), () => facets(toQuery(data)), {
-    keepPreviousData: true,
-    revalidateOnFocus: false,
-    refreshInterval: 0,
-  });
-};
+// export const useFacets = (data: FacetQuery) => {
+//   return useSWR(facetsKey(data), () => facets(toQuery(data)), {
+//     keepPreviousData: true,
+//     revalidateOnFocus: false,
+//     refreshInterval: 0,
+//   });
+// };
 
 // const getLocationHashData = (): ItemsQuery => {
 //   const hash = globalThis.location.hash;

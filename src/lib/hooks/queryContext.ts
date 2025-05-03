@@ -1,12 +1,5 @@
 import { createContext } from "react";
-import {
-  ItemsQuery,
-  Facet,
-  Item,
-  NumberField,
-  HistoryQuery,
-  KeyFacet,
-} from "../types";
+import { ItemsQuery, Item, NumberField, HistoryQuery } from "../types";
 
 export type AddPageResult = {
   currentPage: number;
@@ -16,12 +9,9 @@ export type AddPageResult = {
 
 type QueryContextType = {
   query: ItemsQuery;
-  facets: Facet[];
-  categoryFacets: KeyFacet[];
   hits: Item[];
   totalHits: number;
   isLoading: boolean;
-  isLoadingFacets: boolean;
   queryHistory: HistoryQuery[];
   setQuery: React.Dispatch<React.SetStateAction<ItemsQuery>>;
   addPage: () => Promise<AddPageResult>;
