@@ -16,6 +16,8 @@ import type {
   SuggestResultItem,
 } from "../lib/hooks/suggestionContext";
 import { useKeyFacetValuePopularity } from "../hooks/popularityHooks";
+import { useTracking } from "../lib/hooks/TrackingContext";
+import { toEcomTrackingEvent } from "./toImpression";
 
 const TrieSuggestions = ({
   toShow,
@@ -219,17 +221,15 @@ export const AutoSuggest = () => {
   );
 };
 
-const SuggestedProduct = ({
-  id,
-  title,
-  img,
-  values,
-  stock,
-  stockLevel,
-}: SuggestedProduct) => {
+const SuggestedProduct = (item: SuggestedProduct & { index: number }) => {
+  const { id, title, img, values, stock, stockLevel } = item;
+  const { track } = useTracking();
   return (
     <Link
       to={`/product/${id}`}
+      onClick={() =>
+        track({ type: "click", item: toEcomTrackingEvent(item, item.index) })
+      }
       className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full relative"
     >
       <img
@@ -384,7 +384,7 @@ const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
   );
 };
 
-const SuggestSelector = (props: SuggestResultItem) => {
+const SuggestSelector = (props: SuggestResultItem & { index: number }) => {
   const { type } = props;
   switch (type) {
     case "product":
@@ -420,7 +420,8 @@ const SuggestionResults = ({
       )}
       onClick={(e) => e.stopPropagation()}
     >
-      {open && items.map((item) => <SuggestSelector {...item} />)}
+      {open &&
+        items.map((item, idx) => <SuggestSelector {...item} index={idx} />)}
       <button
         onClick={onClose}
         className="md:hidden absolute top-13 right-3 rounded-full bg-white p-1 z-20"
