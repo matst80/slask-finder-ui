@@ -4,7 +4,7 @@ import {
   useRelatedItems,
   useRelationGroups,
 } from "../hooks/searchHooks";
-import { PropsWithChildren, useMemo, useState } from "react";
+import { PropsWithChildren, useCallback, useMemo, useState } from "react";
 import { cm, isDefined, makeImageUrl } from "../utils";
 import {
   ItemDetail,
@@ -39,14 +39,72 @@ export type StoreWithStock = Store & {
   distance: number | null;
 };
 
+const useSwiper = () => {
+  return useCallback((ref: HTMLDivElement | HTMLElement | null) => {
+    if (ref == null) return;
+    ref.querySelectorAll(".swiper-button").forEach((el) => {
+      el.remove();
+    });
+    new MutationObserver((list) => {
+      console.log("Mutation", list);
+    }).observe(ref, {
+      childList: true,
+    });
+    ref.addEventListener("scroll", (e) => {
+      const el = e.target as HTMLDivElement;
+      const scrollLeft = el.scrollLeft;
+      const maxScrollLeft = el.scrollWidth - el.clientWidth;
+      const scrollPercent = (scrollLeft / maxScrollLeft) * 100;
+
+      prevBtn.style.opacity = scrollPercent > 0 ? "1" : "0";
+      nextBtn.style.opacity = scrollPercent < 100 ? "1" : "0";
+    });
+    const scroll = (dir: "next" | "prev") => (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const el = ref as HTMLDivElement;
+      const scrollAmount = el.clientWidth;
+      const scrollLeft = el.scrollLeft;
+      const maxScrollLeft = el.scrollWidth - el.clientWidth;
+      if (dir === "next") {
+        el.scrollTo({
+          left: Math.min(scrollLeft + scrollAmount, maxScrollLeft),
+          behavior: "smooth",
+        });
+      } else {
+        el.scrollTo({
+          left: Math.max(scrollLeft - scrollAmount, 0),
+          behavior: "smooth",
+        });
+      }
+    };
+    const [nextBtn, prevBtn] = ["next", "prev"].map((dir) => {
+      const btn = globalThis.document.createElement("button");
+      btn.className = `swiper-button-${dir}`;
+      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-${dir}"><polyline points="${
+        dir === "next" ? "9 18 15 12 9 6" : "15 6 9 12 15 18"
+      }"></polyline></svg>`;
+      btn.addEventListener("click", scroll(dir as "next" | "prev"));
+      btn.classList.add("swiper-button");
+      return btn;
+    });
+    ref.appendChild(nextBtn);
+    ref.appendChild(prevBtn);
+  }, []);
+};
+
 const ProductCarouselContainer = ({
   children,
   ...context
 }: PropsWithChildren<{ list_id: string; list_name: string }>) => {
+  const swiperRef = useSwiper();
   return (
     <TrackingProvider handlers={[googleTracker(context)]}>
       <ImpressionProvider>
-        <div className="max-w-[100vw] w-[100vw] md:max-w-screen -mx-4 md:mx-0 md:w-full overflow-y-visible overflow-x-auto snap-x">
+        <div
+          ref={swiperRef}
+          className="max-w-[100vw] w-[100vw] md:max-w-screen -mx-4 md:mx-0 md:w-full overflow-y-visible overflow-x-auto md:overflow-x-hidden snap-x"
+        >
           {children}
         </div>
       </ImpressionProvider>
@@ -252,10 +310,7 @@ const RelationGroupCarousel = ({
   const query = useMemo(() => makeQuery(group, values), [group, values]);
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div
-      key={group.groupId}
-      className="mb-2 border-b border-gray-200 pb-2 animating-element"
-    >
+    <div key={group.groupId} className="mb-2 pb-2 animating-element">
       <div className="flex items-center gap-2">
         <button
           onClick={() => setOpen((p) => !p)}
@@ -469,7 +524,7 @@ export const ItemDetails = (details: ItemDetail) => {
           </div>
 
           <div className="animating-element">
-            <h3 className="text-2xl font-bold text-gray-900 border-b border-gray-200 pb-6 mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 pb-6 mb-8">
               {t("common.similar")}
             </h3>
             <RelatedItems id={details.id} />
