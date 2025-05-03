@@ -428,6 +428,8 @@ export type SessionData = BaseEvent & {
   user_agent?: string;
   ip?: string;
   language?: string;
+  variations?: Record<string, unknown>;
+  groups?: Record<string, number>;
   events: TrackedEvent[];
 };
 

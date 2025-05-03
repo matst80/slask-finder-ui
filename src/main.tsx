@@ -7,7 +7,7 @@ import { createBrowserRouter, Outlet } from "react-router";
 import { Admin } from "./pages/Admin.tsx";
 import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
 import { SWRConfig } from "swr";
-import { getRawData, getTrackingSessions } from "./lib/datalayer/api.ts";
+import { getRawData, getTrackingSession } from "./lib/datalayer/api.ts";
 import { getConfirmation } from "./lib/datalayer/cart-api.ts";
 import { ProductPage } from "./components/ProductPage.tsx";
 import { SessionView } from "./components/Sessions.tsx";
@@ -193,9 +193,7 @@ const router = createBrowserRouter([
       {
         path: "session/:id",
         loader: ({ params: { id } }) =>
-          getTrackingSessions().then((d) => {
-            return d.find((s) => String(s.id) === id);
-          }),
+          id != null ? getTrackingSession(id) : Promise.reject(),
         errorElement: <div>Session not found</div>,
         element: <SessionView />,
       },
