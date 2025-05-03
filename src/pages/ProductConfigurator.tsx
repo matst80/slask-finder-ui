@@ -106,7 +106,7 @@ export const ProductConfigurator = () => {
           ],
         }}
       >
-        <div className="mb-6 p-6 mb:mb-0 bg-gray-100 border-b md:border-b-0 md:border-r md:border-gray-300">
+        <div className="mb-6 p-6 md:mb-0 bg-gray-100 border-b md:border-b-0 md:border-r md:border-gray-300">
           <h1 className="text-2xl font-bold mb-4">Apple Watch S10</h1>
 
           <FacetSelector />
