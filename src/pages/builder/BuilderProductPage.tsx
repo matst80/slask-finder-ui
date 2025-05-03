@@ -1,6 +1,5 @@
 import { useLoaderData } from "react-router-dom";
 import { Price } from "../../components/Price";
-import { Properties } from "../../components/Properties";
 import { makeImageUrl } from "../../utils";
 import { StockList } from "../../components/StockList";
 import { Button, ButtonLink } from "../../components/ui/button";
