@@ -10,7 +10,7 @@ import { FacetProvider } from "../lib/hooks/FacetProvider";
 import { useFacets } from "../lib/hooks/useFacets";
 
 const ignoredFacets = [
-  2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559,
+  2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559, 31158,
 ];
 
 const toSorted = (values: Record<string, number>) =>
