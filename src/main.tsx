@@ -260,23 +260,23 @@ const getBrowserTranslations = () => {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <TrackingProvider
-      handlers={[
-        googleTracker({ list_id: "main", list_name: "search" }),
-        slaskTracker(),
-      ]}
-    >
-      <TranslationProvider language={getBrowserTranslations()}>
-        <QueryProvider initialQuery={{ page: 0, pageSize: 20 }}>
-          <NotificationsProvider>
-            <ImpressionProvider>
-              <SWRConfig value={{}}>
+    <SWRConfig value={{}}>
+      <TrackingProvider
+        handlers={[
+          googleTracker({ list_id: "main", list_name: "search" }),
+          slaskTracker(),
+        ]}
+      >
+        <TranslationProvider language={getBrowserTranslations()}>
+          <QueryProvider initialQuery={{ page: 0, pageSize: 20 }}>
+            <NotificationsProvider>
+              <ImpressionProvider>
                 <RouterProvider router={router} />
-              </SWRConfig>
-            </ImpressionProvider>
-          </NotificationsProvider>
-        </QueryProvider>
-      </TranslationProvider>
-    </TrackingProvider>
+              </ImpressionProvider>
+            </NotificationsProvider>
+          </QueryProvider>
+        </TranslationProvider>
+      </TrackingProvider>
+    </SWRConfig>
   </React.StrictMode>
 );
