@@ -39,6 +39,7 @@ import { googleTracker } from "../tracking/google-tracking";
 import { Loader } from "./Loader";
 import { UserCog } from "lucide-react";
 import { JsonView } from "../pages/tracking/JsonView";
+import { toEcomTrackingEvent } from "./toImpression";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -449,7 +450,7 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
 };
 
 export const ItemDetails = (details: ItemDetail) => {
-  const { trigger: addToCart, isMutating } = useAddToCart(details.id);
+  const { trigger: addToCart, isMutating } = useAddToCart();
 
   const t = useTranslations();
 
@@ -515,7 +516,12 @@ export const ItemDetails = (details: ItemDetail) => {
                       "bg-blue-600 text-white px-4 py-2 text-center rounded-lg transition-all hover:bg-blue-700 items-center gap-3 text-lg",
                       isMutating ? "animate-pulse" : ""
                     )}
-                    onClick={() => addToCart({ sku: details.sku, quantity: 1 })}
+                    onClick={() =>
+                      addToCart(
+                        { sku: details.sku, quantity: 1 },
+                        toEcomTrackingEvent(details, 0)
+                      )
+                    }
                   >
                     {t("cart.add")}
                   </button>

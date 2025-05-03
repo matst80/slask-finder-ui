@@ -8,8 +8,9 @@ import {
 } from "../lib/datalayer/cart-api";
 import { useFetchMutation } from "../utils";
 import { trackCart } from "../lib/datalayer/beacons";
-import { Item } from "../lib/types";
+import { BaseEcomEvent, Item } from "../lib/types";
 import { useNotifications } from "../components/ui-notifications/useNotifications";
+import { toEcomTrackingEvent } from "../components/toImpression";
 
 const cartKey = "/cart";
 
@@ -28,7 +29,7 @@ export const useAddMultipleToCart = () => {
   const { showNotification } = useNotifications();
   return useFetchMutation(cartKey, (items: (Item & { quantity?: number })[]) =>
     Promise.all(
-      items.map((item) => {
+      items.map((item, idx) => {
         return addToCart({ sku: item.sku, quantity: item.quantity ?? 1 })
           .then(() => {
             showNotification({
@@ -37,7 +38,7 @@ export const useAddMultipleToCart = () => {
               variant: "success",
             });
             trackCart({
-              item: item.id,
+              ...toEcomTrackingEvent(item, idx),
               quantity: item.quantity ?? 1,
               type: "add",
             });
@@ -54,12 +55,15 @@ export const useAddMultipleToCart = () => {
   );
 };
 
-export const useAddToCart = (itemId: number) => {
+export const useAddToCart = () => {
   const { showNotification } = useNotifications();
   const { trigger, ...rest } = useFetchMutation(cartKey, addToCart);
   return {
     ...rest,
-    trigger: async (item: { sku: string; quantity: number }) => {
+    trigger: async (
+      item: { sku: string; quantity: number },
+      trackingItem: BaseEcomEvent
+    ) => {
       return trigger(item)
         .then((data) => {
           if (data) {
@@ -68,7 +72,11 @@ export const useAddToCart = (itemId: number) => {
             //   message: `Item added to your cart.`,
             //   variant: "success",
             // });
-            trackCart({ item: itemId, quantity: item.quantity, type: "add" });
+            trackCart({
+              ...trackingItem,
+              quantity: item.quantity,
+              type: "add",
+            });
           }
           return data;
         })
@@ -87,10 +95,10 @@ export const useChangeQuantity = () => {
   const { trigger, ...rest } = useFetchMutation(cartKey, changeQuantity);
   return {
     ...rest,
-    trigger: async (item: { id: number; quantity: number }) => {
-      const data = await trigger(item);
+    trigger: async (id: number, quantity: number, item: BaseEcomEvent) => {
+      const data = await trigger({ id, quantity });
       if (data) {
-        trackCart({ item: item.id, quantity: item.quantity, type: "quantity" });
+        trackCart({ ...item, quantity, type: "quantity" });
       }
       return data;
     },
@@ -101,10 +109,10 @@ export const useRemoveFromCart = () => {
   const { trigger, ...rest } = useFetchMutation(cartKey, removeFromCart);
   return {
     ...rest,
-    trigger: async (item: { id: number }) => {
-      const data = await trigger(item);
+    trigger: async (id: number, item: BaseEcomEvent) => {
+      const data = await trigger({ id });
       if (data) {
-        trackCart({ item: item.id, quantity: 0, type: "remove" });
+        trackCart({ ...item, quantity: 0, type: "remove" });
       }
       return data;
     },

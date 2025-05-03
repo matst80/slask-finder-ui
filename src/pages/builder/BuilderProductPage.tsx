@@ -107,13 +107,14 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                               ]),
                         ]);
                         requestAnimationFrame(() => {
+                          const ecomItem = toEcomTrackingEvent(details, 1);
                           track({
                             type: "click",
-                            item: toEcomTrackingEvent(details, 1),
+                            item: ecomItem,
                           });
                           //trackClick(id, 1);
                           trackAction({
-                            item: id,
+                            item: ecomItem,
                             action: "select_component",
                             reason: `builder_${componentId}`,
                           });

@@ -81,10 +81,24 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                     <QuantityInput
                       value={item.qty}
                       onChange={(value) => {
-                        changeQuantity({
-                          id: item.id,
-                          quantity: value,
-                        });
+                        changeQuantity(
+                          item.id,
+
+                          value,
+                          {
+                            item_id: item.itemId,
+                            index: item.id,
+                            item_name: item.name,
+                            price: item.price,
+                            quantity: value,
+                            item_brand: item.brand,
+                            item_category: item.category,
+                            item_category2: item.category2,
+                            item_category3: item.category3,
+                            item_category4: item.category4,
+                            item_category5: item.category5,
+                          }
+                        );
                       }}
                       minQuantity={0}
                       maxQuantity={99}

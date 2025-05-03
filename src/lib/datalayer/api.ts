@@ -20,7 +20,6 @@ import {
   Funnel,
   FacetGroup,
   Rule,
-  KeyResult,
 } from "../types";
 
 export const baseUrl = "";

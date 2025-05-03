@@ -280,6 +280,7 @@ export type HistoryQuery = ItemsQuery & { key: string };
 
 export type CartItem = {
   id: number;
+  itemId: string; // maybe
   image: string;
   name: string;
   brand?: string;

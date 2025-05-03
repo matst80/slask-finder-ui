@@ -17,12 +17,11 @@ export const trackImpression = (impressions: BaseEcomEvent[]) =>
     JSON.stringify(impressions.map(toTrackingEvent))
   );
 
-export const trackAction = (
-  payload: BaseEcomEvent & {
-    action: string;
-    reason: string;
-  }
-) => globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload));
+export const trackAction = (payload: {
+  item?: BaseEcomEvent;
+  action: string;
+  reason: string;
+}) => globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload));
 
 export const trackSuggest = (payload: {
   value: string;
