@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 import { useQuery } from "./useQuery";
 import { Facet, KeyFacet, isKeyFacet } from "../types";
-import { queryToHash } from "../utils";
+import { filteringQueryToHash, queryToHash } from "../utils";
 import { FacetContext } from "./facetContext";
 import { toQuery } from "../../hooks/searchHooks";
 import * as api from "../datalayer/api";
@@ -42,7 +42,9 @@ export const FacetProvider = ({
 
   useEffect(() => {
     const { query: q, range, stock, string } = query;
-    const key = queryToHash({ query: q, range, stock, string });
+    const key = new URLSearchParams(
+      filteringQueryToHash({ query: q, range, stock, string })
+    ).toString();
     if (key !== facetsKey) {
       const to = setTimeout(() => {
         setFacetsKey(key);
