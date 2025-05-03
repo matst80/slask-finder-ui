@@ -212,6 +212,11 @@ export const swedish = {
         edge: "Edge",
       },
     },
+    emptyqueries: {
+      title: "Tomma sökningar",
+      description:
+        "Här är de mest populära sökningarna som inte gav några resultat. Klicka på en sökning för att se mer information.",
+    },
     items: {
       title: "Populära produkter",
     },

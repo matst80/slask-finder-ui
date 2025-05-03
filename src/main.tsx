@@ -50,6 +50,7 @@ import { TrackingProvider } from "./lib/hooks/TrackingContext.tsx";
 import { googleTracker } from "./tracking/google-tracking.ts";
 import { slaskTracker } from "./tracking/slaskTracker.ts";
 import { ProductConfigurator } from "./pages/ProductConfigurator.tsx";
+import { EmptyQueriesView } from "./pages/tracking/empty-queries.tsx";
 
 const router = createBrowserRouter([
   {
@@ -201,6 +202,10 @@ const router = createBrowserRouter([
       {
         path: "queries",
         element: <QueriesView />,
+      },
+      {
+        path: "empty",
+        element: <EmptyQueriesView />,
       },
       {
         path: "popular",

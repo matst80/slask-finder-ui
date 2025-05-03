@@ -227,6 +227,10 @@ const menu: NavigationItemType[] = [
         url: "/stats/queries",
       },
       {
+        translationKey: "tracking.emptyqueries.title",
+        url: "/stats/empty",
+      },
+      {
         translationKey: "tracking.menu.items",
         accessKey: "p",
         url: "/stats/popular",

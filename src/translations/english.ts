@@ -209,6 +209,11 @@ export const english = {
         edge: "Edge",
       },
     },
+    emptyqueries: {
+      title: "Queries with no results",
+      description:
+        "Queries that returned no results. Click on a query to see more information.",
+    },
     items: {
       title: "Popular products",
     },

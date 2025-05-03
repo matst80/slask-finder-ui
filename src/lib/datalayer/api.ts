@@ -20,6 +20,7 @@ import {
   Funnel,
   FacetGroup,
   Rule,
+  KeyResult,
 } from "../types";
 
 export const baseUrl = "";
@@ -467,6 +468,19 @@ export const getTrackingQueries = () =>
   fetch(`${baseUrl}/tracking/queries`).then((d) =>
     toJson<Record<string, number>>(d)
   );
+
+type EmptyQuery = {
+  ts: number;
+  query?: string;
+  session_id: number;
+  event: number;
+  string: { id: number; value: string | string[] }[];
+  range: { id: number; min: number; max: number }[];
+  noi: number;
+};
+
+export const getEmptyTrackingQueries = () =>
+  fetch(`${baseUrl}/tracking/no-results`).then((d) => toJson<EmptyQuery[]>(d));
 
 export const getTrackingSessions = () =>
   fetch(`${baseUrl}/tracking/sessions`).then((d) => toJson<SessionData[]>(d));
