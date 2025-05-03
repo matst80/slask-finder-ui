@@ -23,7 +23,7 @@ import {
   CustomDropdown,
   DropdownItem,
 } from "../../components/ui/custom-dropdown";
-import { Input } from "../../components/ui/input"
+import { Input } from "../../components/ui/input";
 
 type EditorProps<T extends Rule> = T & {
   onChange: (data: T) => void;
@@ -135,10 +135,7 @@ const InputWithLabel = ({
 > & { label: string }) => {
   return (
     <LabelFor label={label}>
-      <Input
-
-        {...inputProps}
-      />
+      <Input {...inputProps} />
     </LabelFor>
   );
 };
@@ -224,7 +221,12 @@ const NumberLimitRuleEditor = ({
           </label>
           <select
             value={rule.comparator || ">"}
-            onChange={(e) => onChange({ ...rule, comparator: e.target.value as NumberComparitor })}
+            onChange={(e) =>
+              onChange({
+                ...rule,
+                comparator: e.target.value as NumberComparitor,
+              })
+            }
             className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
           >
             <option value=">">Greater than (&gt;)</option>
@@ -515,8 +517,8 @@ export const RuleBuilder = () => {
 
   const updateRule = (index: number) => (rule: Rule) => {
     const payload = data?.map((r, i) => (i === index ? rule : r)) ?? [];
-    mutate(payload,{ revalidate: false });
-    update.trigger(payload);
+    //mutate(payload, { revalidate: false });
+    update.trigger(payload, { revalidate: false });
   };
 
   const addNewRule = () => {
@@ -530,7 +532,7 @@ export const RuleBuilder = () => {
     };
 
     const newRules = [...(data || []), newRule];
-    mutate(newRules,{ revalidate: false });
+    mutate(newRules, { revalidate: false });
     update.trigger(newRules);
   };
 
