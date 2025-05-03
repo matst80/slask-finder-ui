@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 import { useQuery } from "./useQuery";
 import { Facet, KeyFacet, isKeyFacet } from "../types";
-import { filteringQueryToHash, queryToHash } from "../utils";
+import { filteringQueryToHash } from "../utils";
 import { FacetContext } from "./facetContext";
 import { toQuery } from "../../hooks/searchHooks";
 import * as api from "../datalayer/api";
