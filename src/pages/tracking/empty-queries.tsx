@@ -1,8 +1,6 @@
 import useSWR from "swr";
 import { getEmptyTrackingQueries } from "../../lib/datalayer/api";
 import { useTranslations } from "../../lib/hooks/useTranslations";
-
-import { JsonView } from "./JsonView";
 import { useFacetMap } from "../../hooks/searchHooks";
 import { useMemo } from "react";
 import { isDefined } from "../../utils";
