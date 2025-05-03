@@ -41,11 +41,16 @@ export const Price = ({
   if (prc.isDiscounted) {
     return (
       <div className={cm("flex flex-col gap-1")}>
-        <PriceValue
-          value={prc.current}
-          className={cm("text-red-600 font-bold peer", sizes[size])}
-        />
-
+        <div className="relative peer">
+          <PriceValue
+            value={prc.current}
+            className={cm("text-red-600 font-bold", sizes[size])}
+          />
+          <div className="absolute text-xs -top-2 shadow-md left-4 px-1 py-0.5 bg-white/80 font-normal duration-500 transition-all rounded-md rotate-2 hover:scale-125 hover:rotate-0 hover:bg-white/80">
+            <span>Spara </span>
+            <PriceValue value={prc.original - prc.current} />
+          </div>
+        </div>
         {disclaimer != null && (
           <div className="hidden peer-hover:block absolute z-10 mt-11">
             <div className="bg-white transition-opacity opacity-0 group-hover:opacity-100 p-3 rounded-md shadow-lg border border-gray-200 max-w-xs">

@@ -217,7 +217,7 @@ export const ResultItemInner = ({
             />
           )}
           {lastUpdate != null && lastUpdate > 0 && (
-            <span className="text-sm inline-block align-top bg-amber-300 rounded-bl-none after:absolute after:left-0 after:box-content after:border-transparent forced-colors:border forced-colors:after:hidden after:border-l-amber-300 rounded-border px-2 py-0.5 after:-bottom-[7px] after:border-[7px] absolute left-0 top-0 z-1">
+            <span className="text-sm inline-block align-top bg-gray-100 rounded-bl-none after:absolute after:left-0 after:box-content after:border-transparent forced-colors:border forced-colors:after:hidden after:border-l-gray-100 rounded-border px-2 py-0.5 after:-bottom-[7px] after:border-[7px] absolute left-0 top-0 z-1">
               <TimeAgo ts={lastUpdate} />
             </span>
           )}

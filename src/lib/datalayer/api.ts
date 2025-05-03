@@ -19,6 +19,7 @@ import {
   RelationGroup,
   Funnel,
   FacetGroup,
+  Rule,
 } from "../types";
 
 export const baseUrl = "";
@@ -366,6 +367,16 @@ export const getItemIds = (query: ItemsQuery) =>
 
 export const getAdminItem = (id: number | string) =>
   fetch(`${baseUrl}/admin/item/${id}`).then((d) => toJson<ItemDetail>(d));
+
+export type ItemPopularity = {
+  popularity: number;
+  matches: { rule: Rule; score: number }[];
+};
+
+export const getAdminItemPopularity = (id: number | string) =>
+  fetch(`${baseUrl}/admin/item/${id}/popularity`).then((d) =>
+    toJson<ItemPopularity>(d)
+  );
 
 export const getPopularity = () =>
   fetch(`${baseUrl}/admin/sort/popular`).then((d) =>

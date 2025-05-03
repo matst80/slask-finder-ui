@@ -22,7 +22,11 @@ import { Price, PriceValue } from "./Price";
 import { QueryProvider } from "../lib/hooks/QueryProvider";
 import { Button } from "./ui/button";
 import { useAdmin } from "../hooks/appState";
-import { getAdminItem } from "../lib/datalayer/api";
+import {
+  getAdminItem,
+  getAdminItemPopularity,
+  ItemPopularity,
+} from "../lib/datalayer/api";
 import { useQuery } from "../lib/hooks/useQuery";
 import { trackAction } from "../lib/datalayer/beacons";
 import { StockList } from "./StockList";
@@ -33,6 +37,8 @@ import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 import { TrackingProvider } from "../lib/hooks/TrackingContext";
 import { googleTracker } from "../tracking/google-tracking";
 import { Loader } from "./Loader";
+import { UserCog } from "lucide-react";
+import { JsonView } from "../pages/tracking/JsonView";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -369,18 +375,24 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
 const PopulateAdminDetails = ({ id }: { id: number }) => {
   const [isAdmin] = useAdmin();
   const [item, setItem] = useState<ItemDetail | null>(null);
+  const [popularity, setPopularity] = useState<ItemPopularity | null>(null);
   if (!isAdmin) return null;
   if (item != null) {
     const mp = Math.max(item.mp ?? 0, 0);
     const possibleDiscount = item.values[4] * (mp / 100);
     return (
-      <div className="p-4 my-2 flex gap-2 items-center justify-between bg-amber-100 text-amber-800 rounded-lg">
-        <PriceValue
-          value={item.values[4] - possibleDiscount}
-          className="font-bold"
-        />
-        {mp > 0 && <span>{mp}%</span>}
-      </div>
+      <>
+        <div className="p-4 my-2 flex gap-2 items-center justify-between bg-amber-100 text-amber-800 rounded-lg">
+          <PriceValue
+            value={item.values[4] - possibleDiscount}
+            className="font-bold"
+          />
+          {mp > 0 && <span>{mp}%</span>}
+        </div>
+        <div className="my-2">
+          <JsonView data={popularity} />
+        </div>
+      </>
     );
   }
   return (
@@ -391,9 +403,10 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
       onClick={() => {
         trackAction({ action: "fetch_admin_details", reason: "admin_button" });
         getAdminItem(id).then(setItem);
+        getAdminItemPopularity(id).then(setPopularity);
       }}
     >
-      Fetch details
+      <UserCog className="size-5" />
     </Button>
   );
 };

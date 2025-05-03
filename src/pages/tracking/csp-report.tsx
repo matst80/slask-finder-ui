@@ -9,7 +9,7 @@ import {
 } from "../../components/ui/card";
 import { TimeAgo } from "../../components/TimeAgo";
 import { useState } from "react";
-import { useClipboard } from "../../lib/hooks/useClipboard";
+import { JsonView } from "./JsonView";
 
 type CspIssue = {
   firstSeen: number;
@@ -73,18 +73,6 @@ const CspIssueView = ({
         <JsonView data={firstBody} />
       </div>
     </li>
-  );
-};
-
-const JsonView = ({ data }: { data: unknown }) => {
-  const copy = useClipboard();
-  return (
-    <pre
-      className="bg-black text-white p-4 text-sm overflow-x-hidden rounded-md"
-      onClick={() => copy(JSON.stringify(data, null, 2))}
-    >
-      <code>{JSON.stringify(data, null, 2)}</code>
-    </pre>
   );
 };
 
