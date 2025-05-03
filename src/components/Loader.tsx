@@ -8,13 +8,13 @@ const sizes = {
 };
 
 const variants = {
-  overlay: "bg-gray-200/50 flex items-center justify-center",
-  default: "",
+  overlay: "bg-gray-200/50 flex w-full h-full items-center justify-center",
+  default: "flex w-full h-full items-center justify-center",
 };
 
 export const Loader = ({
   size,
-  variant,
+  variant = "default",
   show = true,
 }: {
   size: keyof typeof sizes;
@@ -26,8 +26,8 @@ export const Loader = ({
       <div className={cm(variant && variants[variant])}>
         <div
           className={cm(
-            sizes[size] &&
-              "border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"
+            sizes[size],
+            "border-4 border-gray-200 aspect-square border-t-blue-500 rounded-full animate-spin"
           )}
         />
       </div>
