@@ -18,6 +18,7 @@ import { Link, useLoaderData } from "react-router-dom";
 import { TimeAgo } from "./TimeAgo";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { Loader } from "./Loader";
+import { JsonView } from "../pages/tracking/JsonView";
 
 const SearchEventElement = ({ string, query }: SearchEvent) => {
   const { data } = useFacetList();
@@ -448,7 +449,7 @@ export const SessionView = () => {
       actions: 0,
       suggestions: 0,
     };
-    data.events.forEach((event) => {
+    data.events?.forEach((event) => {
       switch (event.event) {
         case 1:
           summary.searches++;
@@ -579,12 +580,14 @@ export const SessionView = () => {
           </div>
         </div>
       </div>
-
+      <div>
+        <JsonView data={{ groups: data.groups, variations: data.variations }} />
+      </div>
       <div className="bg-white rounded-lg shadow-xs md:p-6">
         <h2 className="text-xl font-semibold mb-4">
           {t("tracking.sessions.timeline")}
         </h2>
-        <EventList events={data.events} />
+        <EventList events={data.events ?? []} />
       </div>
     </div>
   );

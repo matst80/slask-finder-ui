@@ -430,7 +430,7 @@ export type SessionData = BaseEvent & {
   language?: string;
   variations?: Record<string, unknown>;
   groups?: Record<string, number>;
-  events: TrackedEvent[];
+  events?: TrackedEvent[];
 };
 
 export type MetricsData = [Date, number];
