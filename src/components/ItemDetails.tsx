@@ -16,7 +16,7 @@ import {
   relationValueConverters,
 } from "../lib/types";
 import { Store } from "../lib/datalayer/stores";
-import { ResultItem } from "./ResultItem";
+import { CompareButton, ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Price, PriceValue } from "./Price";
 import { QueryProvider } from "../lib/hooks/QueryProvider";
@@ -503,7 +503,7 @@ export const ItemDetails = (details: ItemDetail) => {
 
             {/* Price and Cart Section */}
             {(buyable || buyableInStore) && (
-              <div className="space-y-8">
+              <div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <span className="text-gray-500 text-sm">
@@ -535,7 +535,13 @@ export const ItemDetails = (details: ItemDetail) => {
                     showText={true}
                   />
                 )}
-                <PopulateAdminDetails id={id} />
+                <div className="flex items-center gap-2 justify-end">
+                  <CompareButton
+                    item={details}
+                    className="font-medium rounded-sm focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:cursor-not-allowed border border-gray-300 text-gray-700 hover:bg-gray-50 bg-white/20 px-3 py-1 text-sm my-2"
+                  />
+                  <PopulateAdminDetails id={id} />
+                </div>
                 <StockList stock={stock} stockLevel={stockLevel} />
               </div>
             )}

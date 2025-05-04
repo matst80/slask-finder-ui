@@ -11,7 +11,6 @@ import { useTranslations } from "../lib/hooks/useTranslations";
 import { toEcomTrackingEvent } from "./toImpression";
 import { useTracking } from "../lib/hooks/TrackingContext";
 import { useCompareContext } from "../lib/hooks/CompareProvider";
-import { Button } from "./ui/button";
 import { GitCompareArrows, X } from "lucide-react";
 
 const hasStock = (value?: string | null) => {
@@ -212,7 +211,7 @@ export const ResultItemInner = ({
     disclaimer,
     advertisingText,
   } = item;
-  const { setItems } = useCompareContext();
+
   const hasRating = values?.["6"] != null && values?.["7"] != null;
   const soldBy = values?.["9"];
   const isTransitioning = useViewTransitionState(
