@@ -266,7 +266,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           slaskTracker(),
         ]}
       >
-        <CompareProvider compareAllFacets={false}>
+        <CompareProvider compareAllFacets={true}>
           <TranslationProvider language={getBrowserTranslations()}>
             <QueryProvider initialQuery={{ page: 0, pageSize: 20 }}>
               <NotificationsProvider>
