@@ -20,7 +20,10 @@ const CartCompatible = ({ id }: { id: number }) => {
   const { data: cart } = useCart();
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
-  const { data, isLoading } = useCompatibleItems(id);
+  const { data, isLoading } = useCompatibleItems(
+    id,
+    cart?.items.map((c) => Number(c.itemId)).filter(isDefined) ?? []
+  );
   const productTypes = useMemo(() => {
     return Array.from(
       new Set(

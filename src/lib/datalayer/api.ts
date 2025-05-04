@@ -178,8 +178,13 @@ export const getFacetGroups = () =>
 export const getRelated = (id: number) =>
   fetch(`${baseUrl}/api/related/${id}`).then((d) => readStreamed<Item>(d));
 
-export const getCompatible = (id: number) =>
-  fetch(`${baseUrl}/api/compatible/${id}`).then((d) => readStreamed<Item>(d));
+export const getCompatible = (id: number, otherIds?: number[]) =>
+  fetch(
+    `${baseUrl}/api/compatible/${id}`,
+    otherIds != null && otherIds.length > 0
+      ? { method: "POST", body: JSON.stringify(otherIds ?? []) }
+      : { method: "GET" }
+  ).then((d) => readStreamed<Item>(d));
 
 export const getPopularQueries = (q: string) =>
   fetch(
