@@ -20,6 +20,7 @@ import {
   Funnel,
   FacetGroup,
   Rule,
+  SessionListData,
 } from "../types";
 
 export const baseUrl = "";
@@ -482,7 +483,9 @@ export const getEmptyTrackingQueries = () =>
   fetch(`${baseUrl}/tracking/no-results`).then((d) => toJson<EmptyQuery[]>(d));
 
 export const getTrackingSessions = () =>
-  fetch(`${baseUrl}/tracking/sessions`).then((d) => toJson<SessionData[]>(d));
+  fetch(`${baseUrl}/tracking/sessions`).then((d) =>
+    toJson<SessionListData[]>(d)
+  );
 
 export const getTrackingSession = (id: string | number) =>
   fetch(`${baseUrl}/tracking/session/${id}`).then((d) =>

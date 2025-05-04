@@ -10,6 +10,7 @@ import {
   ActionEvent,
   SuggestionEvent,
   CheckoutEvent,
+  BaseEvent,
 } from "../lib/types";
 import { cm, isDefined, makeImageUrl } from "../utils";
 import { useFacetList } from "../hooks/searchHooks";
@@ -385,7 +386,7 @@ const Session = (props: SessionData) => {
       <div className="text-lg font-medium mb-2" title={user_agent}>
         {trimLanguage(language)}, {getDeviceFromUserAgent(user_agent)}{" "}
         {getBrowserFromUserAgent(user_agent)}
-        {ip != null && ip.length ? ` (${ip.trim()})` : ""}
+        {ip != null && ip.length ? ` (${ip.trim()})` : ""}({id})
       </div>
       <div className="flex justify-between text-sm text-gray-600">
         <div className="flex flex-col">
@@ -405,7 +406,7 @@ const Session = (props: SessionData) => {
   );
 };
 
-const byLastUpdate = (a: SessionData, b: SessionData) => {
+const byLastUpdate = (a: BaseEvent, b: BaseEvent) => {
   return (b.last_update ?? b.ts) - (a.last_update ?? b.ts);
 };
 

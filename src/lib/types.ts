@@ -433,6 +433,13 @@ export type SessionData = BaseEvent & {
   events?: TrackedEvent[];
 };
 
+export type SessionListData = BaseEvent & {
+  user_agent?: string;
+  ip?: string;
+  language?: string;
+  events_count?: number;
+};
+
 export type MetricsData = [Date, number];
 
 export type Series = {
