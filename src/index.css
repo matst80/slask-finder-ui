@@ -292,7 +292,8 @@
     position: fixed;
     min-width: 0px;
     max-width: calc(100vw - 2rem);
-    max-height: calc(100vh - 2rem);
+    max-height: 100vh;
+    ;
   }
 
   dialog[open]::backdrop {
@@ -303,6 +304,7 @@
   dialog.dialog {
     left: 50%;
     top: 50%;
+    max-height: calc(100vh - 2rem);
     transform: translate(-50%, -50%);
     transition: display var(--dialog-duration) allow-discrete, overlay var(--dialog-duration) allow-discrete;
     animation: close-dialog var(--dialog-duration) forwards;
@@ -507,19 +509,12 @@ input[type="number"] {
 
   &::scroll-button(left) {
     left: 0rem;
-
     content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M15.41 7.41L10.83 12l4.58 4.59L14 18l-6-6 6-6z"/></svg>');
   }
 
   &::scroll-button(right) {
     content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M8.59 7.41L13.17 12l-4.58 4.59L10 18l6-6-6-6z"/></svg>');
-
-
     right: 0rem;
   }
-
-
-
-
 
 }

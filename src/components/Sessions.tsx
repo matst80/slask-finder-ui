@@ -429,6 +429,7 @@ export const Sessions = () => {
 
 export const SessionView = () => {
   const data = useLoaderData() as SessionData | null;
+  console.log("session data", data);
   const t = useTranslations();
   const eventSummary = useMemo(() => {
     if (!data)
@@ -449,7 +450,7 @@ export const SessionView = () => {
       actions: 0,
       suggestions: 0,
     };
-    data.events?.forEach((event) => {
+    data.events?.filter(isDefined).forEach((event) => {
       switch (event.event) {
         case 1:
           summary.searches++;
@@ -583,11 +584,11 @@ export const SessionView = () => {
       <div>
         <JsonView data={{ groups: data.groups, variations: data.variations }} />
       </div>
-      <div className="bg-white rounded-lg shadow-xs md:p-6">
+      <div className="bg-white rounded-lg md:shadow-xs md:p-6">
         <h2 className="text-xl font-semibold mb-4">
           {t("tracking.sessions.timeline")}
         </h2>
-        <EventList events={data.events ?? []} />
+        <EventList events={data.events?.filter(isDefined) ?? []} />
       </div>
     </div>
   );

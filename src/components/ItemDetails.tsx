@@ -422,6 +422,15 @@ export const ItemDetails = (details: ItemDetail) => {
               <h2 className="text-3xl font-bold text-gray-900 mb-6 product-name">
                 {title}
               </h2>
+              {hasRating && (
+                <div className="my-3">
+                  <Stars
+                    rating={Number(values?.["6"]) / 10}
+                    numberOfRatings={Number(values?.["7"])}
+                    showText={true}
+                  />
+                </div>
+              )}
               {bp && (
                 <ul className="space-y-3 text-gray-600">
                   {bp.split("\n").map((txt) => (
@@ -437,7 +446,7 @@ export const ItemDetails = (details: ItemDetail) => {
             {/* Price and Cart Section */}
             {(buyable || buyableInStore) && (
               <div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 items-end">
                   <div>
                     <span className="text-gray-500 text-sm">
                       {t("common.price")}
@@ -446,11 +455,9 @@ export const ItemDetails = (details: ItemDetail) => {
                       <Price values={values} disclaimer={disclaimer} />
                     </div>
                   </div>
-                  <button
-                    className={cm(
-                      "bg-blue-600 text-white px-4 py-2 text-center rounded-lg transition-all hover:bg-blue-700 items-center gap-3 text-lg",
-                      isMutating ? "animate-pulse" : ""
-                    )}
+
+                  <Button
+                    variant="default"
                     onClick={() =>
                       addToCart(
                         { sku: details.sku, quantity: 1 },
@@ -458,16 +465,14 @@ export const ItemDetails = (details: ItemDetail) => {
                       )
                     }
                   >
-                    {t("cart.add")}
-                  </button>
+                    {isMutating ? (
+                      <Loader size="sm" />
+                    ) : (
+                      <span>{t("cart.add")}</span>
+                    )}
+                  </Button>
                 </div>
-                {hasRating && (
-                  <Stars
-                    rating={Number(values?.["6"]) / 10}
-                    numberOfRatings={Number(values?.["7"])}
-                    showText={true}
-                  />
-                )}
+
                 <div className="flex items-center gap-2 justify-end">
                   <CompareButton
                     item={details}

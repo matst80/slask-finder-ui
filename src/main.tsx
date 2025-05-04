@@ -193,8 +193,10 @@ const router = createBrowserRouter([
       { path: "sessions", element: <SessionList /> },
       {
         path: "session/:id",
-        loader: ({ params: { id } }) =>
-          id != null ? getTrackingSession(id) : Promise.reject(),
+        loader: ({ params: { id } }) => {
+          console.log("session loader", id);
+          return id != null ? getTrackingSession(id) : Promise.reject();
+        },
         errorElement: <div>Session not found</div>,
         element: <SessionView />,
       },

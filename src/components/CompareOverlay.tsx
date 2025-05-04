@@ -65,7 +65,7 @@ export const CompareOverlay = () => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 w-full shadow-lg bg-gray-100/50 border-t border-gray-200 transition-all duration-300 z-50">
+    <div className="fixed bottom-0 left-0 w-full shadow-lg bg-gray-100/50 border-t border-gray-200 transition-all duration-300 z-40">
       <div className="container mx-auto flex justify-end">
         <ul className="flex w-full md:w-auto border-collapse overflow-auto">
           {items.map((item) => (
