@@ -105,7 +105,7 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
 
   return (
     <ProductCarouselContainer list_id="compatible" list_name="Compatible">
-      {isLoading && <p>Laddar...</p>}
+      {isLoading && <Loader size="md" />}
       {data?.map((item, idx) => (
         <CarouselItem key={item.id}>
           <ResultItem {...item} position={idx} />
