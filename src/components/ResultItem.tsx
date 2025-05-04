@@ -12,7 +12,7 @@ import { toEcomTrackingEvent } from "./toImpression";
 import { useTracking } from "../lib/hooks/TrackingContext";
 import { useCompareContext } from "../lib/hooks/CompareProvider";
 import { Button } from "./ui/button";
-import { GitCompareArrows } from "lucide-react";
+import { GitCompareArrows, X } from "lucide-react";
 
 const hasStock = (value?: string | null) => {
   return value != null && value != "0";
@@ -157,6 +157,43 @@ const ImageWithPlaceHolder = ({
   );
 };
 
+export const CompareButton = ({
+  item,
+  className = "text-gray-600 hover:text-blue-500 hover:bg-gray-100 p-1 rounded-sm text-shadow transition-all",
+}: {
+  item: Item;
+  className?: string;
+}) => {
+  const { id } = item;
+  const { setItems, items } = useCompareContext();
+  const selected = useMemo(() => items.some((i) => i.id === id), [items, id]);
+  return (
+    <button
+      className={className}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setItems((prev) => {
+          const newItems = [...prev];
+          const index = newItems.findIndex((item) => item.id === id);
+          if (index !== -1) {
+            newItems.splice(index, 1);
+          } else {
+            newItems.push(item);
+          }
+          return newItems;
+        });
+      }}
+    >
+      {selected ? (
+        <X className="size-5" />
+      ) : (
+        <GitCompareArrows className="size-5" />
+      )}
+    </button>
+  );
+};
+
 export const ResultItemInner = ({
   transitionUrl,
   ...item
@@ -261,25 +298,11 @@ export const ResultItemInner = ({
           </em>
         )}
       </div>
-      <button
+      <CompareButton
+        item={item}
         className="absolute top-3 right-3 text-blue-400 hover:bg-gray-100 p-1 rounded-sm text-shadow transition-all"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setItems((prev) => {
-            const newItems = [...prev];
-            const index = newItems.findIndex((item) => item.id === id);
-            if (index !== -1) {
-              newItems.splice(index, 1);
-            } else {
-              newItems.push(item);
-            }
-            return newItems;
-          });
-        }}
-      >
-        <GitCompareArrows className="size-5" />
-      </button>
+      />
+
       <div className="mb-0 mt-auto px-4 pb-3 flex gap-1 justify-between">
         <StockIndicator stock={stock} stockLevel={stockLevel} showOnlyInStock />
       </div>

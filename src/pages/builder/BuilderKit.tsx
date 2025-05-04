@@ -7,34 +7,11 @@ import { Component, ItemWithComponentId } from "./builder-types";
 import { useBuilderContext } from "./useBuilderContext";
 import { ImpressionProvider } from "../../lib/hooks/ImpressionProvider";
 import { SelectedComponentItem } from "./SelectedComponentItem";
+import { matchValue } from "../../lib/utils";
 
 const itemIds = [
   841468, 883821, 861201, 842510, 842804, 854270, 519763, 855844,
 ];
-
-const matchValue = (
-  itemValue: string[] | string | number | undefined,
-  filterValue: string[] | string | number
-): boolean => {
-  if (typeof itemValue === "string" && typeof filterValue === "string") {
-    return itemValue.toLowerCase() === filterValue.toLowerCase();
-  }
-  if (typeof itemValue === "number" && typeof filterValue === "number") {
-    return itemValue === filterValue;
-  }
-  if (Array.isArray(itemValue) && Array.isArray(filterValue)) {
-    return itemValue.some((value) =>
-      filterValue.some((filter) => matchValue(value, filter))
-    );
-  }
-  if (Array.isArray(itemValue) && typeof filterValue === "string") {
-    return itemValue.some((value) => matchValue(value, filterValue));
-  }
-  if (typeof itemValue === "string" && Array.isArray(filterValue)) {
-    return filterValue.some((value) => matchValue(itemValue, value));
-  }
-  return false;
-};
 
 const matchComponent = (
   item: Item,

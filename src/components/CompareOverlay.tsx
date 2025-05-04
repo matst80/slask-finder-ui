@@ -6,6 +6,7 @@ import { useFacetMap } from "../hooks/searchHooks";
 import { FacetListItem } from "../lib/types";
 import { ResultItemInner } from "./ResultItem";
 import { Dialog } from "./ui/dialog";
+import { matchValue } from "../lib/utils";
 
 const FacetCells = ({
   facet,
@@ -16,7 +17,7 @@ const FacetCells = ({
   showDifferances: boolean;
   values: (string | string[] | number | undefined)[];
 }) => {
-  const isSameValue = values.every((v) => v === values[0]);
+  const isSameValue = values.every((v) => matchValue(v, values[0] ?? ""));
   if (showDifferances && isSameValue) {
     return null;
   }
