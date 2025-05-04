@@ -274,6 +274,8 @@ export type Cart = {
   orderReference?: string;
   paymentStatus?: string;
   totalPrice: number;
+  totalTax: number;
+  totalDiscount: number;
 };
 
 export type HistoryQuery = ItemsQuery & { key: string };

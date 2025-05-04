@@ -20,6 +20,8 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
   const t = useTranslations();
   const items = cart?.items ?? [];
   const totalPrice = cart?.totalPrice ?? 0;
+  const totalTax = cart?.totalTax ?? 0;
+  const totalDiscount = cart?.totalDiscount ?? 0;
 
   return (
     <div
@@ -82,7 +84,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                       />
                       {item.orgPrice > 0 && item.orgPrice > item.price && (
                         <PriceValue
-                          className="line-through text-gray-400"
+                          className="line-through text-gray-400 text-xs"
                           value={item.orgPrice}
                         />
                       )}
@@ -118,8 +120,18 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
             </ul>
           )}
 
-          <div className="justify-end grow-0">
-            <div className="mt-4 flex justify-between items-center">
+          <div className="mt-4 justify-end grow-0">
+            <div className="flex justify-between items-center">
+              <span className="font-bold">{t("cart.totalTax")}:</span>
+              <PriceValue value={totalTax} />
+            </div>
+            {totalDiscount > 0 && (
+              <div className="flex justify-between items-center">
+                <span className="font-bold">{t("cart.totalDiscount")}:</span>
+                <PriceValue value={totalDiscount} />
+              </div>
+            )}
+            <div className="mt-2 pt-2 flex justify-between items-center border-t border-gray-200">
               <span className="text-lg font-bold">{t("cart.total")}:</span>
               <PriceValue className="text-lg font-bold" value={totalPrice} />
             </div>

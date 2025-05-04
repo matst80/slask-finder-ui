@@ -36,7 +36,7 @@ export const StockList = ({
   }, [stock, location]);
   if (stock == null) return null;
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden">
+    <div className="border border-gray-200 rounded-lg overflow-hidden flex flex-col flex-1">
       <div className="p-4 cursor-pointer hover:bg-gray-50 transition-colors">
         <h3 className="text-lg font-semibold">{t("stock.level")}</h3>
         {stockLevel != null && stockLevel !== "0" && (
@@ -46,7 +46,7 @@ export const StockList = ({
         )}
       </div>
 
-      <div className="overflow-y-auto max-h-48">
+      <div className="overflow-y-auto flex-1 max-h-80">
         <ul className="border-t border-gray-200 divide-y divide-gray-200">
           {storesWithStock.map((s) => (
             <StockLocation key={s.id} {...s} />

@@ -16,12 +16,14 @@ export const PriceValue = ({
   return value == null ? null : (
     <span className={className}>
       {new Intl.NumberFormat(getLocale(), {
-        minimumFractionDigits: 0,
+        minimumFractionDigits: 2,
         maximumFractionDigits: 2,
         currencySign: "standard",
         currencyDisplay: "symbol",
         currency: "SEK",
-      }).format(value / 100)}
+      })
+        .format(value / 100)
+        .replace(",00", "")}
     </span>
   );
 };

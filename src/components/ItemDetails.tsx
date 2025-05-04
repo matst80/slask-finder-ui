@@ -445,7 +445,7 @@ export const ItemDetails = (details: ItemDetail) => {
 
             {/* Price and Cart Section */}
             {(buyable || buyableInStore) && (
-              <div>
+              <div className="flex flex-col gap-2">
                 <div className="grid grid-cols-2 gap-4 items-end">
                   <div>
                     <span className="text-gray-500 text-sm">

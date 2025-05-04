@@ -68,6 +68,8 @@ export const english = {
     remove: "Remove",
     checkout: "Checkout",
     total: "Total",
+    totalTax: "Tax",
+    totalDiscount: "Discount",
     totalItems: "Number of items",
     added_to_cart: "Added to cart!",
     show_confirmation: "Show confirmation",

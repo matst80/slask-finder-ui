@@ -68,6 +68,8 @@ export const swedish = {
     remove: "Ta bort",
     checkout: "Till kassan",
     total: "Totalt",
+    totalTax: "Moms",
+    totalDiscount: "Rabatt",
     totalItems: "Antal artiklar",
     added_to_cart: "Tillagd i kundvagnen!",
     show_confirmation: "Visa bekräftelse",
