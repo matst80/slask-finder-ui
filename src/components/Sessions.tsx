@@ -11,6 +11,7 @@ import {
   SuggestionEvent,
   CheckoutEvent,
   BaseEvent,
+  ItemEvent,
 } from "../lib/types";
 import { cm, isDefined, makeImageUrl } from "../utils";
 import { useFacetList } from "../hooks/searchHooks";
@@ -55,28 +56,34 @@ const SearchEventElement = ({ string, query }: SearchEvent) => {
   );
 };
 
-const ItemPreview = ({ id }: { id: number }) => {
-  const { data } = useItemData(id);
+const ItemPreview = ({ id }: Partial<ItemEvent>) => {
+  const { data } = useItemData(id ?? 0);
   const t = useTranslations();
+  if (!id) {
+    return null;
+  }
   if (!data) {
     return <div>{t("tracking.sessions.loading")}</div>;
   }
   return (
-    <img
-      src={makeImageUrl(data.img)}
-      title={data.title}
-      className="object-contain size-28"
-    />
+    <div className="p-3 bg-white rounded-lg shadow-xs">
+      <img
+        src={makeImageUrl(data.img)}
+        title={data.title}
+        className="object-contain size-28"
+      />
+    </div>
   );
 };
 
 const ClickEventElement = (props: ClickEvent) => {
   const [open, setOpen] = useState(false);
   const t = useTranslations();
+
   return (
     <div onClick={() => setOpen((p) => !p)}>
-      {t("tracking.sessions.events.click")} ({props.item})
-      {open && <ItemPreview id={props.item} />}
+      {t("tracking.sessions.events.click")} ({props.item_name ?? props.id})
+      {open && <ItemPreview {...props} />}
     </div>
   );
 };
@@ -94,8 +101,9 @@ const CartEventElement = (props: CartEvent) => {
         </>
       ) : (
         <>
-          {t("tracking.sessions.events.addToCart")} ({props.item} -{" "}
-          {props.quantity}){open && <ItemPreview id={props.item} />}
+          {t("tracking.sessions.events.addToCart")} (
+          {props.item_name ?? props.id} - {props.quantity})
+          {open && <ItemPreview {...props} />}
         </>
       )}
     </div>
@@ -137,12 +145,12 @@ const useActionName = () => {
   };
 };
 
-const ActionEventElement = ({ action, reason }: ActionEvent) => {
+const ActionEventElement = ({ action, reason, item }: ActionEvent) => {
   const getActionName = useActionName();
   return (
     <div className="font-bold">
       <Flashlight className="size-5 inline-block" /> {getActionName(action)} (
-      {reason})
+      {reason}){item != null && <ItemPreview {...item} />}
     </div>
   );
 };
@@ -183,7 +191,7 @@ const CheckoutEventElement = (props: CheckoutEvent) => {
         <div className="p-4 rounded-lg bg-white">
           <div className="flex gap-2 flex-wrap">
             {props.items.map((item) => (
-              <ItemPreview key={item.item} id={item.item} />
+              <ItemPreview key={item.id} {...item} />
             ))}
           </div>
         </div>
@@ -386,7 +394,7 @@ const Session = (props: SessionData) => {
       <div className="text-lg font-medium mb-2" title={user_agent}>
         {trimLanguage(language)}, {getDeviceFromUserAgent(user_agent)}{" "}
         {getBrowserFromUserAgent(user_agent)}
-        {ip != null && ip.length ? ` (${ip.trim()})` : ""}({id})
+        {ip != null && ip.length ? ` (${ip.trim()})` : ""}
       </div>
       <div className="flex justify-between text-sm text-gray-600">
         <div className="flex flex-col">
@@ -430,7 +438,7 @@ export const Sessions = () => {
 
 export const SessionView = () => {
   const data = useLoaderData() as SessionData | null;
-  console.log("session data", data);
+
   const t = useTranslations();
   const eventSummary = useMemo(() => {
     if (!data)

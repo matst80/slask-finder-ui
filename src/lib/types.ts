@@ -386,23 +386,21 @@ export type TrackedEvent =
 
 export type ActionEvent = BaseEvent & {
   event: 6;
+  item?: ItemEvent;
   action: string;
   reason: string;
 };
 
-export type CartEvent = BaseEvent & {
-  event: 3 | 4 | 11 | 15;
-  type?: string;
-  item: number;
-  quantity: number;
-};
+export type CartEvent = BaseEvent &
+  ItemEvent & {
+    event: 3 | 4 | 11 | 15;
+    type?: string;
+    quantity: number;
+  };
 
 export type CheckoutEvent = BaseEvent & {
   event: 14;
-  items: {
-    item: number;
-    quantity: number;
-  }[];
+  items: ItemEvent[];
 };
 
 export type SearchEvent = BaseEvent & {
@@ -415,14 +413,28 @@ export type SearchEvent = BaseEvent & {
 
 export type ImpressionEvent = BaseEvent & {
   event: 5;
-  items: { id: number; position: number }[];
+  items: ItemEvent[];
 };
 
-export type ClickEvent = BaseEvent & {
-  event: 2;
-  item: number;
-  position: number;
+export type ItemEvent = {
+  id: number;
+  item_name: string;
+  item_brand?: string;
+  item_category?: string;
+  item_category2?: string;
+  item_category3?: string;
+  item_category4?: string;
+  item_category5?: string;
+  item_list_id?: string;
+  item_list_name?: string;
+  index: number;
+  price?: number;
 };
+
+export type ClickEvent = BaseEvent &
+  ItemEvent & {
+    event: 2;
+  };
 
 export type SessionData = BaseEvent & {
   user_agent?: string;
