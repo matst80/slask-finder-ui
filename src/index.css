@@ -483,31 +483,37 @@ input[type="number"] {
   &::scroll-button(*) {
 
     position: absolute;
-    top: calc(50% - 1.2rem);
+    top: calc(50% - 15px);
     font-weight: bold;
-    text-align: center;
+
     transition: all 0.3s ease;
-    font-size: 3rem;
-    line-height: 2.4rem;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.9);
+
+    transform: scale(1.3);
+    margin: 0;
+    padding: 0;
+    padding-top: 3px;
+    background-color: rgba(250, 250, 250, 0.9);
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
     z-index: 10;
 
     border: 0;
     text-shadow: 1px 1px 8px white;
     color: var(--color-black);
+    fill: var(--color-black);
 
     cursor: pointer;
   }
 
   &::scroll-button(left) {
     left: 0rem;
-    rotate: 180deg;
-    content: "›" / "Scroll Left";
+
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M15.41 7.41L10.83 12l4.58 4.59L14 18l-6-6 6-6z"/></svg>');
   }
 
   &::scroll-button(right) {
-    content: "›" / "Scroll Right";
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M8.59 7.41L13.17 12l-4.58 4.59L10 18l6-6-6-6z"/></svg>');
+
+
     right: 0rem;
   }
 
