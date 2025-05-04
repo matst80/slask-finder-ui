@@ -14,10 +14,40 @@ type CompareContextType = {
   matchingFacetIds: Set<number>;
 };
 
+const LoadCompareState = () => {
+  if (!globalThis.localStorage) {
+    return [];
+  }
+  const savedState = globalThis.localStorage.getItem("compareState");
+  if (savedState) {
+    return JSON.parse(savedState);
+  }
+  return [];
+};
+const SaveCompareState = (state: Item[]) => {
+  if (!globalThis.localStorage) {
+    return;
+  }
+  localStorage.setItem("compareState", JSON.stringify(state));
+};
+
+const ComparePersister = () => {
+  const { items } = useCompareContext();
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      SaveCompareState(items);
+    });
+  }, [items]);
+  return null;
+};
+
 const CompareContext = createContext<CompareContextType | null>(null);
 
-export const CompareProvider = ({ children }: PropsWithChildren) => {
-  const [items, setItems] = useState<Item[]>([]);
+export const CompareProvider = ({
+  children,
+  compareAllFacets,
+}: PropsWithChildren<{ compareAllFacets?: boolean }>) => {
+  const [items, setItems] = useState<Item[]>(LoadCompareState());
   const [matchingFacetIds, setMatchingFacetIds] = useState<Set<number>>(
     new Set()
   );
@@ -35,21 +65,31 @@ export const CompareProvider = ({ children }: PropsWithChildren) => {
     const itemFacets = items.map((item) => new Set(Object.keys(item.values)));
 
     const uniqueFacets = new Set<number>();
-
-    const first = itemFacets.pop();
-    if (first) {
-      first.forEach((id) => {
-        if (itemFacets.every((s) => s.has(id))) {
+    if (compareAllFacets) {
+      items.forEach((item) => {
+        Object.keys(item.values).forEach((id) => {
           uniqueFacets.add(Number(id));
-        }
+        });
       });
+    } else {
+      const first = itemFacets.pop();
+      if (first) {
+        first.forEach((id) => {
+          if (itemFacets.every((s) => s.has(id))) {
+            uniqueFacets.add(Number(id));
+          }
+        });
+      }
     }
 
     setMatchingFacetIds(uniqueFacets);
   }, [items]);
 
   return (
-    <CompareContext.Provider value={value}>{children}</CompareContext.Provider>
+    <CompareContext.Provider value={value}>
+      {children}
+      <ComparePersister />
+    </CompareContext.Provider>
   );
 };
 

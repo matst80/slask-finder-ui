@@ -9,12 +9,17 @@ import { Dialog } from "./ui/dialog";
 
 const FacetCells = ({
   facet,
+  showDifferances,
   values,
 }: {
   facet: FacetListItem;
+  showDifferances: boolean;
   values: (string | string[] | number | undefined)[];
 }) => {
   const isSameValue = values.every((v) => v === values[0]);
+  if (showDifferances && isSameValue) {
+    return null;
+  }
   return (
     <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
       <td className="px-3 py-1 lg:px-5 lg:py-3 font-medium text-gray-700 text-sm">
@@ -27,7 +32,7 @@ const FacetCells = ({
             isSameValue ? "text-gray-500" : "font-semibold text-gray-800"
           }`}
         >
-          {String(v) ?? "-"}
+          {v != null ? (Array.isArray(v) ? v.join(",") : String(v)) : ""}
         </td>
       ))}
     </tr>
@@ -40,13 +45,17 @@ export const CompareOverlay = () => {
   const { data } = useFacetMap();
   const { items, setItems, matchingFacetIds } = useCompareContext();
   const [open, setOpen] = useState(false);
+  const [showDifferances, setShowDifferences] = useState(false);
 
   const facets = useMemo(() => {
     return Array.from(matchingFacetIds)
       .filter((id) => !ignoredFacets.has(id))
       .map((id) => data?.[id])
       .filter(isDefined)
-      .filter((d) => !d.hide && !d.internal);
+      .filter((d) => !d.hide && !d.internal)
+      .sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
   }, [matchingFacetIds, data]);
 
   if (items.length === 0) {
@@ -54,25 +63,25 @@ export const CompareOverlay = () => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 w-full shadow-lg bg-gray-100 border-t border-gray-200 transition-all duration-300 z-50">
-      <div className="container mx-auto flex">
+    <div className="fixed bottom-0 left-0 w-full shadow-lg bg-gray-100/50 border-t border-gray-200 transition-all duration-300 z-50">
+      <div className="container mx-auto flex justify-end">
         <ul className="flex w-full md:w-auto border-collapse overflow-auto">
           {items.map((item) => (
             <li
               key={item.id}
-              className="p-2 bg-gradient-to-br border-collapse from-white to-gray-100 flex-1 min-w-[180px] border-l last:border-r border-gray-300"
+              className="p-1 lg:p-2 bg-gradient-to-br border-collapse from-white to-gray-100 flex-1 min-w-[180px] border-l last:border-r border-gray-300"
             >
               <div className="flex items-center gap-1 relative">
                 <img
                   src={makeImageUrl(item.img)}
                   alt={item.title}
-                  className="size-16 aspect-square object-contain bg-white p-1 rounded mix-blend-multiply"
+                  className="size-12 lg:size-16 aspect-square object-contain bg-white rounded mix-blend-multiply"
                 />
                 <span className="text-sm font-medium flex-1 line-clamp-2 overflow-ellipsis">
                   {item.title}
                 </span>
                 <button
-                  className="text-gray-600 transition-all hover:text-red-500 p-1 rounded-full hover:bg-gray-100 absolute top-1 right-1"
+                  className="text-gray-600 transition-all hover:text-red-500 p-1 rounded-full hover:bg-gray-100 absolute top-0 right-0"
                   onClick={() => {
                     setItems((prev) => prev.filter((i) => i.id !== item.id));
                   }}
@@ -85,13 +94,15 @@ export const CompareOverlay = () => {
           ))}
         </ul>
 
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 lg:px-6 py-2 font-medium transition-colors shadow-sm flex-shrink-0 flex gap-1 items-center justify-center"
-          onClick={() => setOpen(true)}
-        >
-          <MessageSquareMore className="size-5" />
-          <span className="hidden lg:block">Compare ({items.length})</span>
-        </button>
+        {items.length > 1 && (
+          <button
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 lg:px-6 py-2 font-medium transition-colors shadow-sm flex-shrink-0 flex gap-1 items-center justify-center"
+            onClick={() => setOpen(true)}
+          >
+            <MessageSquareMore className="size-5" />
+            <span className="hidden lg:block">Compare ({items.length})</span>
+          </button>
+        )}
       </div>
 
       {open && (
@@ -127,6 +138,7 @@ export const CompareOverlay = () => {
                   {facets.map((facet) => (
                     <FacetCells
                       facet={facet}
+                      showDifferances={showDifferances}
                       values={items.map((item) => item.values[facet.id])}
                       key={facet.id}
                     />
@@ -148,6 +160,14 @@ export const CompareOverlay = () => {
             </div>
 
             <div className="flex justify-end p-3 border-t border-gray-200">
+              <button
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md font-medium transition-colors mr-2"
+                onClick={() => {
+                  setShowDifferences((prev) => !prev);
+                }}
+              >
+                Toggle diff
+              </button>
               <button
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
                 onClick={() => {

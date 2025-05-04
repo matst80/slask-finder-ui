@@ -261,10 +261,8 @@ export const ResultItemInner = ({
           </em>
         )}
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute top-3 right-3"
+      <button
+        className="absolute top-3 right-3 text-blue-400 hover:bg-gray-100 p-1 rounded-sm text-shadow transition-all"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -281,7 +279,7 @@ export const ResultItemInner = ({
         }}
       >
         <GitCompareArrows className="size-5" />
-      </Button>
+      </button>
       <div className="mb-0 mt-auto px-4 pb-3 flex gap-1 justify-between">
         <StockIndicator stock={stock} stockLevel={stockLevel} showOnlyInStock />
       </div>
