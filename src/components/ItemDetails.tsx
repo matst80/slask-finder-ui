@@ -4,7 +4,7 @@ import {
   useRelatedItems,
   useRelationGroups,
 } from "../hooks/searchHooks";
-import { PropsWithChildren, useCallback, useMemo, useState } from "react";
+import { PropsWithChildren, useMemo, useState } from "react";
 import { cm, isDefined, makeImageUrl } from "../utils";
 import {
   ItemDetail,
@@ -47,72 +47,14 @@ export type StoreWithStock = Store & {
   distance: number | null;
 };
 
-const useSwiper = () => {
-  return useCallback((ref: HTMLDivElement | HTMLElement | null) => {
-    if (ref == null) return;
-    ref.querySelectorAll(".swiper-button").forEach((el) => {
-      el.remove();
-    });
-    new MutationObserver((list) => {
-      console.log("Mutation", list);
-    }).observe(ref, {
-      childList: true,
-    });
-    ref.addEventListener("scroll", (e) => {
-      const el = e.target as HTMLDivElement;
-      const scrollLeft = el.scrollLeft;
-      const maxScrollLeft = el.scrollWidth - el.clientWidth;
-      const scrollPercent = (scrollLeft / maxScrollLeft) * 100;
-
-      prevBtn.style.opacity = scrollPercent > 0 ? "1" : "0";
-      nextBtn.style.opacity = scrollPercent < 100 ? "1" : "0";
-    });
-    const scroll = (dir: "next" | "prev") => (e: MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const el = ref as HTMLDivElement;
-      const scrollAmount = el.clientWidth;
-      const scrollLeft = el.scrollLeft;
-      const maxScrollLeft = el.scrollWidth - el.clientWidth;
-      if (dir === "next") {
-        el.scrollTo({
-          left: Math.min(scrollLeft + scrollAmount, maxScrollLeft),
-          behavior: "smooth",
-        });
-      } else {
-        el.scrollTo({
-          left: Math.max(scrollLeft - scrollAmount, 0),
-          behavior: "smooth",
-        });
-      }
-    };
-    const [nextBtn, prevBtn] = ["next", "prev"].map((dir) => {
-      const btn = globalThis.document.createElement("button");
-      btn.className = `swiper-button-${dir}`;
-      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-${dir}"><polyline points="${
-        dir === "next" ? "9 18 15 12 9 6" : "15 6 9 12 15 18"
-      }"></polyline></svg>`;
-      btn.addEventListener("click", scroll(dir as "next" | "prev"));
-      btn.classList.add("swiper-button");
-      return btn;
-    });
-    ref.appendChild(nextBtn);
-    ref.appendChild(prevBtn);
-  }, []);
-};
-
 const ProductCarouselContainer = ({
   children,
   ...context
 }: PropsWithChildren<{ list_id: string; list_name: string }>) => {
-  const swiperRef = useSwiper();
   return (
     <TrackingProvider handlers={[googleTracker(context)]}>
       <ImpressionProvider>
-        <div
-          ref={swiperRef}
-          className="max-w-[100vw] w-[100vw] md:max-w-screen -mx-4 md:mx-0 md:w-full overflow-y-visible overflow-x-auto md:overflow-x-hidden snap-x"
-        >
+        <div className="max-w-[100vw] w-[100vw] md:max-w-screen -mx-4 md:mx-0 md:w-full carousel">
           {children}
         </div>
       </ImpressionProvider>
@@ -125,14 +67,12 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
 
   return (
     <ProductCarouselContainer list_id="related" list_name="Related">
-      <div className="flex w-fit">
-        {isLoading && <p>Laddar...</p>}
-        {data?.map((item, idx) => (
-          <CarouselItem key={item.id}>
-            <ResultItem {...item} position={idx} />
-          </CarouselItem>
-        ))}
-      </div>
+      {isLoading && <Loader size="md" />}
+      {data?.map((item, idx) => (
+        <CarouselItem key={item.id}>
+          <ResultItem {...item} position={idx} />
+        </CarouselItem>
+      ))}
     </ProductCarouselContainer>
   );
 };
@@ -145,14 +85,12 @@ export const ResultCarousel = (context: {
 
   return (
     <ProductCarouselContainer {...context}>
-      <div className="flex w-fit">
-        {isLoading && <Loader size="md" />}
-        {hits?.map((item, idx) => (
-          <CarouselItem key={item.id}>
-            <ResultItem {...item} position={idx} />
-          </CarouselItem>
-        ))}
-      </div>
+      {isLoading && <Loader size="md" />}
+      {hits?.map((item, idx) => (
+        <CarouselItem key={item.id}>
+          <ResultItem {...item} position={idx} />
+        </CarouselItem>
+      ))}
     </ProductCarouselContainer>
   );
 };
@@ -170,14 +108,12 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
 
   return (
     <ProductCarouselContainer list_id="compatible" list_name="Compatible">
-      <div className="flex w-fit">
-        {isLoading && <p>Laddar...</p>}
-        {data?.map((item, idx) => (
-          <CarouselItem key={item.id}>
-            <ResultItem {...item} position={idx} />
-          </CarouselItem>
-        ))}
-      </div>
+      {isLoading && <p>Laddar...</p>}
+      {data?.map((item, idx) => (
+        <CarouselItem key={item.id}>
+          <ResultItem {...item} position={idx} />
+        </CarouselItem>
+      ))}
     </ProductCarouselContainer>
   );
 };
