@@ -20,8 +20,9 @@ import { ComponentResultTable } from "./components/ComponentResultTable";
 import { useTranslations } from "../../lib/hooks/useTranslations";
 import { TranslationKey } from "../../translations/translations";
 import { toEcomTrackingEvent } from "../../components/toImpression";
-import { useTracking } from "../../lib/hooks/TrackingContext";
+import { TrackingProvider, useTracking } from "../../lib/hooks/TrackingContext";
 import { FacetProvider } from "../../lib/hooks/FacetProvider";
+import { googleTracker } from "../../tracking/google-tracking";
 
 const ComponentItem = (
   item: Item & {
@@ -182,57 +183,59 @@ export const BuilderComponentFilter = () => {
     return <div>Loading</div>;
   }
   return (
-    <QueryProvider initialQuery={requiredQuery}>
-      <BuilderQueryMerger query={requiredQuery} componentId={componentId} />
-      <div className="mb-24 md:mt-10 max-w-[1920px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-[288px_auto]">
-          <div className="border-b-1 py-1 px-4 md:pr-0 md:py-0 border-gray-300 md:border-none bg-gray-50 md:bg-white">
-            <FacetProvider ignoreFacets={facetsToHide}>
-              <Facets
-                facetsToHide={facetsToHide}
-                hideCategories
-                facetsToDisable={facetsToDisable}
-              />
-            </FacetProvider>
+    <TrackingProvider handlers={[googleTracker({ list_id: componentId })]}>
+      <QueryProvider initialQuery={requiredQuery}>
+        <BuilderQueryMerger query={requiredQuery} componentId={componentId} />
+        <div className="mb-24 md:mt-10 max-w-[1920px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-[288px_auto]">
+            <div className="border-b-1 py-1 px-4 md:pr-0 md:py-0 border-gray-300 md:border-none bg-gray-50 md:bg-white">
+              <FacetProvider ignoreFacets={facetsToHide}>
+                <Facets
+                  facetsToHide={facetsToHide}
+                  hideCategories
+                  facetsToDisable={facetsToDisable}
+                />
+              </FacetProvider>
+            </div>
+            <main className="px-4 md:px-10 container">
+              <ResultHeader>
+                <div className="flex space-x-2">
+                  {views.map((view) => (
+                    <button
+                      className={`px-2 md:px-3 py-1 rounded-md ${
+                        viewMode === view
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200"
+                      }`}
+                      onClick={() => setViewMode(view)}
+                    >
+                      {t(`common.view.${view}` as TranslationKey)}
+                    </button>
+                  ))}
+                </div>
+              </ResultHeader>
+
+              {viewMode === "grid" ? (
+                <ComponentResultList
+                  componentId={componentId}
+                  validator={component?.validator}
+                />
+              ) : (
+                <ComponentResultTable
+                  componentId={componentId}
+                  importantFacets={component?.importantFacets ?? []}
+                  validator={component?.validator}
+                />
+              )}
+
+              {/* <Paging /> */}
+            </main>
           </div>
-          <main className="px-4 md:px-10 container">
-            <ResultHeader>
-              <div className="flex space-x-2">
-                {views.map((view) => (
-                  <button
-                    className={`px-2 md:px-3 py-1 rounded-md ${
-                      viewMode === view
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200"
-                    }`}
-                    onClick={() => setViewMode(view)}
-                  >
-                    {t(`common.view.${view}` as TranslationKey)}
-                  </button>
-                ))}
-              </div>
-            </ResultHeader>
-
-            {viewMode === "grid" ? (
-              <ComponentResultList
-                componentId={componentId}
-                validator={component?.validator}
-              />
-            ) : (
-              <ComponentResultTable
-                componentId={componentId}
-                importantFacets={component?.importantFacets ?? []}
-                validator={component?.validator}
-              />
-            )}
-
-            {/* <Paging /> */}
-          </main>
         </div>
-      </div>
-      <BuilderFooterBar>
-        <NextComponentButton componentId={componentId} />
-      </BuilderFooterBar>
-    </QueryProvider>
+        <BuilderFooterBar>
+          <NextComponentButton componentId={componentId} />
+        </BuilderFooterBar>
+      </QueryProvider>
+    </TrackingProvider>
   );
 };

@@ -62,6 +62,7 @@ export const InfiniteHitList = ({
 
     canLoadMoreRef.current = true;
   }, [query]);
+
   return (
     <>
       {hits?.map((item, idx) => (

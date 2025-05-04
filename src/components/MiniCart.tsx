@@ -53,13 +53,22 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                     ) : (
                       <div></div>
                     )}
-
-                    <Link
-                      to={`/product/${item.sku}`}
-                      className="text-sm font-medium"
-                    >
-                      {item.name}
-                    </Link>
+                    <div className="flex flex-col">
+                      <Link
+                        to={`/product/${item.sku}`}
+                        className="text-sm font-medium"
+                      >
+                        {item.name}
+                      </Link>
+                      <span className="text-xs text-gray-500">
+                        {item.brand} - {item.category}
+                      </span>
+                      {item.outlet != null && (
+                        <span className="text-xs px-1 py-0.5 bg-amber-100 text-amber-800 rounded">
+                          {item.outlet}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex justify-end items-center gap-2">
                     <div className="flex items-center gap-2">

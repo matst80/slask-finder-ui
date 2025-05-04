@@ -195,8 +195,12 @@ export const CompareButton = ({
 
 export const ResultItemInner = ({
   transitionUrl,
+  hideCompare = false,
   ...item
-}: PropsWithChildren<Item> & { transitionUrl?: string }) => {
+}: PropsWithChildren<Item> & {
+  transitionUrl?: string;
+  hideCompare?: boolean;
+}) => {
   const {
     title,
     img,
@@ -297,10 +301,12 @@ export const ResultItemInner = ({
           </em>
         )}
       </div>
-      <CompareButton
-        item={item}
-        className="absolute top-3 right-3 text-blue-400 hover:bg-gray-100 p-1 rounded-sm text-shadow transition-all"
-      />
+      {!hideCompare && (
+        <CompareButton
+          item={item}
+          className="absolute top-3 right-3 text-blue-400 hover:bg-gray-100 p-1 rounded-sm text-shadow transition-all"
+        />
+      )}
 
       <div className="mb-0 mt-auto px-4 pb-3 flex gap-1 justify-between">
         <StockIndicator stock={stock} stockLevel={stockLevel} showOnlyInStock />

@@ -43,22 +43,10 @@ export const BuilderMain = () => {
       initialItems={items}
       initialOrder={order}
     >
-      <TrackingProvider
-        handlers={[
-          {
-            type: "builder",
-            context: {},
-            handle: function (evt) {
-              console.log("builder with context", { evt, this: this });
-            },
-          },
-        ]}
-      >
-        <PageContainer>
-          <SaveBuild />
-          <Outlet />
-        </PageContainer>
-      </TrackingProvider>
+      <PageContainer>
+        <SaveBuild />
+        <Outlet />
+      </PageContainer>
     </BuilderProvider>
   );
 };

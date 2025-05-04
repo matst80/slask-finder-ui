@@ -283,6 +283,7 @@ export type CartItem = {
   itemId: string; // maybe
   image: string;
   name: string;
+  outlet?: string;
   brand?: string;
   category?: string;
   category2?: string;

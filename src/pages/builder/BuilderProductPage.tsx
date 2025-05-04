@@ -13,8 +13,10 @@ import { Loader } from "../../components/Loader";
 import { useTracking } from "../../lib/hooks/TrackingContext";
 import { toEcomTrackingEvent } from "../../components/toImpression";
 import { GroupedProperties } from "../../components/GroupedProperties";
+import { useCompareContext } from "../../lib/hooks/CompareProvider";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
+  const { setItems } = useCompareContext();
   const { setSelectedItems, selectedItems } = useBuilderContext();
   const [unselectedComponents, nextComponent] = useBuilderStep(
     details.componentId
@@ -133,6 +135,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                         .map((item, i) => (
                           <ButtonLink
                             to={`/builder/${item.type}/${item.id}`}
+                            onClick={() => setItems([])}
                             variant={
                               item.id === nextComponent?.id
                                 ? "default"

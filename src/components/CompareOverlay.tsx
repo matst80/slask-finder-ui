@@ -179,6 +179,7 @@ export const CompareOverlay = () => {
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
                 onClick={() => {
                   // Add an action here if needed
+                  setItems([]);
                   setOpen(false);
                 }}
               >

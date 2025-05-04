@@ -16,7 +16,7 @@ export const googleTracker = (
     context: context || {},
     handle: (event, { list_id, list_name }) => {
       const w = globalThis?.window as WindowWithDataLayer;
-      console.log("google tracker", { event, context, dataLayer: w.gtag });
+      //console.log("google tracker", { event, context, dataLayer: w.gtag });
       if (w?.gtag) {
         switch (event.type) {
           case "impressions":
