@@ -19,6 +19,7 @@ type CartDialogProps = {
 const CartCompatible = ({ id }: { id: number }) => {
   const { data: cart } = useCart();
   const [open, setOpen] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [idx, setIdx] = useState(0);
   const { data, isLoading } = useCompatibleItems(
     id,
@@ -69,7 +70,7 @@ const CartCompatible = ({ id }: { id: number }) => {
         <div className="animate-pop bg-gray-50 border-y border-gray-300 overflow-hidden mt-2 -mx-6 grid grid-cols-[auto_1fr_auto] gap-x-4 gap-y-4 p-4 items-center">
           {data
             ?.filter((d) => !cart?.items?.some((c) => Number(c.itemId) == d.id))
-            .slice(undefined, 5)
+            .slice(undefined, showMore ? undefined : 4)
             .map((item) => {
               return (
                 <Fragment key={item.id}>
@@ -98,6 +99,18 @@ const CartCompatible = ({ id }: { id: number }) => {
                 </Fragment>
               );
             })}
+          <div className="flex flex-col col-span-3">
+            <button
+              className="text-xs text-gray-600 hover:text-gray-800"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setShowMore(!showMore);
+              }}
+            >
+              Show {showMore ? "less" : "more"}
+            </button>
+          </div>
         </div>
       )}
     </>
