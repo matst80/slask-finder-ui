@@ -1,6 +1,6 @@
 import { MessageSquareMore, X } from "lucide-react";
 import { useCompareContext } from "../lib/hooks/CompareProvider";
-import { isDefined, makeImageUrl } from "../utils";
+import { cm, isDefined, makeImageUrl } from "../utils";
 import { useMemo, useState } from "react";
 import { useFacetMap } from "../hooks/searchHooks";
 import { FacetListItem } from "../lib/types";
@@ -44,7 +44,8 @@ const ignoredFacets = new Set([1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14]);
 
 export const CompareOverlay = () => {
   const { data } = useFacetMap();
-  const { items, setItems, matchingFacetIds } = useCompareContext();
+  const { items, setItems, matchingFacetIds, diffWarning } =
+    useCompareContext();
   const [open, setOpen] = useState(false);
   const [showDifferances, setShowDifferences] = useState(false);
 
@@ -97,7 +98,12 @@ export const CompareOverlay = () => {
 
         {items.length > 1 && (
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 lg:px-6 py-2 font-medium transition-colors shadow-sm flex-shrink-0 flex gap-1 items-center justify-center"
+            className={cm(
+              "text-white px-4 lg:px-6 py-2 font-medium transition-colors shadow-sm flex-shrink-0 flex gap-1 items-center justify-center",
+              diffWarning
+                ? "bg-red-600 hover:bg-red-700"
+                : "bg-blue-600 hover:bg-blue-700"
+            )}
             onClick={() => setOpen(true)}
           >
             <MessageSquareMore className="size-5" />

@@ -11,6 +11,7 @@ import { Item } from "../types";
 type CompareContextType = {
   items: Item[];
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  diffWarning?: boolean;
   matchingFacetIds: Set<number>;
 };
 
@@ -48,6 +49,7 @@ export const CompareProvider = ({
   compareAllFacets,
 }: PropsWithChildren<{ compareAllFacets?: boolean }>) => {
   const [items, setItems] = useState<Item[]>(LoadCompareState());
+  const [diffWarning, setDiffWarning] = useState(false);
   const [matchingFacetIds, setMatchingFacetIds] = useState<Set<number>>(
     new Set()
   );
@@ -57,6 +59,7 @@ export const CompareProvider = ({
       items,
       setItems,
       matchingFacetIds,
+      diffWarning,
     }),
     [items, matchingFacetIds]
   );
@@ -65,24 +68,24 @@ export const CompareProvider = ({
     const itemFacets = items.map((item) => new Set(Object.keys(item.values)));
 
     const uniqueFacets = new Set<number>();
-    if (compareAllFacets) {
-      items.forEach((item) => {
-        Object.keys(item.values).forEach((id) => {
+    const allFacets = new Set<number>();
+    const first = itemFacets.pop();
+    if (first) {
+      first.forEach((id) => {
+        if (itemFacets.every((s) => s.has(id))) {
           uniqueFacets.add(Number(id));
-        });
+        }
       });
-    } else {
-      const first = itemFacets.pop();
-      if (first) {
-        first.forEach((id) => {
-          if (itemFacets.every((s) => s.has(id))) {
-            uniqueFacets.add(Number(id));
-          }
-        });
-      }
     }
 
-    setMatchingFacetIds(uniqueFacets);
+    items.forEach((item) => {
+      Object.keys(item.values).forEach((id) => {
+        allFacets.add(Number(id));
+      });
+    });
+    setDiffWarning(uniqueFacets.size < allFacets.size * 0.3);
+
+    setMatchingFacetIds(compareAllFacets ? allFacets : uniqueFacets);
   }, [items]);
 
   return (
