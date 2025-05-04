@@ -97,11 +97,7 @@ export const ResultCarousel = (context: {
 };
 
 const CarouselItem = ({ children }: PropsWithChildren) => {
-  return (
-    <div className="shrink-0 w-[300px] flex snap-start animating-element">
-      {children}
-    </div>
-  );
+  return <div className="shrink-0 w-[300px] flex snap-start">{children}</div>;
 };
 
 export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
