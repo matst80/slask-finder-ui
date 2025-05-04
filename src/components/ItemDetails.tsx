@@ -40,6 +40,7 @@ import { Loader } from "./Loader";
 import { UserCog } from "lucide-react";
 import { JsonView } from "../pages/tracking/JsonView";
 import { toEcomTrackingEvent } from "./toImpression";
+import { Stars } from "./Stars";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -467,6 +468,7 @@ export const ItemDetails = (details: ItemDetail) => {
     values,
     disclaimer,
   } = details;
+  const hasRating = values?.["6"] != null && values?.["7"] != null;
   return (
     <>
       <div className="max-w-7xl mx-auto">
@@ -526,6 +528,13 @@ export const ItemDetails = (details: ItemDetail) => {
                     {t("cart.add")}
                   </button>
                 </div>
+                {hasRating && (
+                  <Stars
+                    rating={Number(values?.["6"]) / 10}
+                    numberOfRatings={Number(values?.["7"])}
+                    showText={true}
+                  />
+                )}
                 <PopulateAdminDetails id={id} />
                 <StockList stock={stock} stockLevel={stockLevel} />
               </div>
