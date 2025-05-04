@@ -2,9 +2,7 @@ import { Item } from "../lib/types";
 import { makeImageUrl } from "../utils";
 import { Price } from "./Price";
 import { Stars } from "./Stars";
-
 import { PropsWithChildren, useMemo, useState } from "react";
-
 import { Link, useViewTransitionState } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
 import { useImpression } from "../lib/hooks/useImpression";
@@ -15,7 +13,6 @@ import { useTracking } from "../lib/hooks/TrackingContext";
 import { useCompareContext } from "../lib/hooks/CompareProvider";
 import { Button } from "./ui/button";
 import { GitCompareArrows } from "lucide-react";
-import { i } from "framer-motion/client";
 
 const hasStock = (value?: string | null) => {
   return value != null && value != "0";
