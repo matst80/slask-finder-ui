@@ -1,15 +1,16 @@
 import { ShoppingCartIcon, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
-import { makeImageUrl } from "../utils";
+import { cm, isDefined, makeImageUrl } from "../utils";
 import { useCart, useChangeQuantity } from "../hooks/cartHooks";
 import { ButtonLink } from "./ui/button";
 import { Link } from "react-router-dom";
 import { QuantityInput } from "../pages/builder/QuantityInput";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { Sidebar } from "./ui/sidebar";
-import { PriceValue } from "./Price";
+import { Price, PriceElement, PriceValue } from "./Price";
 import { useCompatibleItems } from "../hooks/searchHooks";
+import { CartItem, ItemPrice } from "../lib/types";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -17,39 +18,85 @@ type CartDialogProps = {
 
 const CartCompatible = ({ id }: { id: number }) => {
   const { data: cart } = useCart();
+  const [open, setOpen] = useState(false);
+  const [idx, setIdx] = useState(0);
   const { data, isLoading } = useCompatibleItems(id);
+  const productTypes = useMemo(() => {
+    return Array.from(
+      new Set(
+        data
+          ?.map((d) => d.values[31158])
+          .filter(isDefined)
+          .map((d) => String(d))
+      )
+    );
+  }, [data]);
+  useEffect(() => {
+    const to = setInterval(() => {
+      setIdx((p) => (productTypes != null ? (p + 1) % productTypes.length : 0));
+    }, 5000);
+    return () => {
+      clearInterval(to);
+    };
+  }, [productTypes]);
   if (!isLoading && data?.length === 0) {
     return null;
   }
+  const productType = useMemo(() => productTypes[idx], [idx, productTypes]);
   return (
-    <div className="group-hover:opacity-100 group-hover:max-h-24 max-h-0 bg-gray-50 left-0 right-0 border border-gray-300 rounded-md overflow-hidden mt-2 opacity-0 transition-all">
-      <div className="p-1 overflow-x-auto flex flex-nowrap gap-1 relative">
-        {data
-          ?.filter((d) => !cart?.items?.some((c) => c.id == d.id))
-          .map((item) => {
-            return (
-              <div
-                key={item.id}
-                className="flex w-16 shrink-0 items-center gap-2 bg-white rounded-md"
-              >
-                <Link
-                  to={`/product/${item.id}`}
-                  className="text-sm font-medium aspect-square"
-                >
+    <>
+      <button
+        className={cm(
+          "text-xs text-gray-600 line-clamp-1 -mb-2 mt-1 text-left animate-pop border-gray-200 pb-1",
+          open ? "" : "border-b"
+        )}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          setOpen(!open);
+        }}
+      >
+        Glömde du{" "}
+        <span key={productType ?? ""} className="text-black animate-acc">
+          {productType ?? ""}
+        </span>
+      </button>
+      {open && (
+        <div className="animate-pop bg-gray-50 border-y border-gray-300 overflow-hidden mt-2 -mx-6 grid grid-cols-[auto_1fr_auto] gap-x-4 gap-y-4 p-4 items-center">
+          {data
+            ?.filter((d) => !cart?.items?.some((c) => Number(c.itemId) == d.id))
+            .slice(undefined, 5)
+            .map((item) => {
+              return (
+                <Fragment key={item.id}>
                   <img
                     src={makeImageUrl(item.img)}
                     title={item.title}
                     alt={item.title}
-                    className="size-16 rounded-sm object-contain aspect-square mr-4"
+                    className="size-14 rounded-sm object-contain mix-blend-multiply aspect-square flex-shrink-0"
                   />
-
-                  {/* <span>{item.title}</span> */}
-                </Link>
-              </div>
-            );
-          })}
-      </div>
-    </div>
+                  <Link
+                    to={`/product/${item.id}`}
+                    className="text-xs flex-1 flex flex-col"
+                  >
+                    <span className="line-clamp-1 font-medium overflow-ellipsis">
+                      {item.title}
+                    </span>
+                    <div className="flex flex-col">
+                      {item.bp.split("\n").map((t) => (
+                        <span className="text-gray-600 text-2xs line-clamp-1 overflow-ellipsis">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </Link>
+                  <Price size="small" values={item.values} />
+                </Fragment>
+              );
+            })}
+        </div>
+      )}
+    </>
   );
 };
 
@@ -61,6 +108,24 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
   const totalPrice = cart?.totalPrice ?? 0;
   const totalTax = cart?.totalTax ?? 0;
   const totalDiscount = cart?.totalDiscount ?? 0;
+
+  function getCartItemPrice(item: CartItem): ItemPrice {
+    const price = item.price;
+    const orgPrice = item.orgPrice ?? 0;
+    const isDiscounted = orgPrice > price;
+    if (isDiscounted) {
+      return {
+        current: price,
+        original: orgPrice,
+        discount: orgPrice - price,
+        isDiscounted: true,
+      };
+    }
+    return {
+      current: price,
+      isDiscounted: false,
+    };
+  }
 
   return (
     <div
@@ -81,12 +146,11 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
           {isLoading ? (
             <div>{t("common.loading")}</div>
           ) : (
-            <div className="divide-y flex-1 divide-gray-200">
+            <ul className="flex-1">
               {items.map((item) => (
-                <Link
-                  to={`/product/${item.sku}`}
+                <li
                   key={item.id + item.sku}
-                  className="py-4 flex flex-col group relative"
+                  className="py-3 flex flex-col group relative"
                 >
                   <div className="flex items-start gap-2">
                     {item.image ? (
@@ -99,7 +163,12 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                       <div></div>
                     )}
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium">{item.name}</span>
+                      <Link
+                        to={`/product/${item.sku}`}
+                        className="text-sm font-medium"
+                      >
+                        {item.name}
+                      </Link>
                       <span className="text-xs text-gray-500">
                         {item.brand} - {item.category}
                       </span>
@@ -110,8 +179,10 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                       )}
                     </div>
                   </div>
+
                   <div className="flex justify-end items-center gap-2 pt-2">
-                    <div className="flex items-center gap-2">
+                    <PriceElement price={getCartItemPrice(item)} size="small" />
+                    {/* <div className="flex items-center gap-2">
                       {item.orgPrice > 0 && item.orgPrice > item.price && (
                         <PriceValue
                           className="line-through text-gray-400 text-xs"
@@ -126,7 +197,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                             : "font-bold"
                         }
                       />
-                    </div>
+                    </div> */}
                     <QuantityInput
                       value={item.qty}
                       onChange={(value) => {
@@ -148,10 +219,11 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                       maxQuantity={99}
                     />
                   </div>
+
                   <CartCompatible id={Number(item.itemId)} />
-                </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
 
           <div className="mt-4 justify-end grow-0">

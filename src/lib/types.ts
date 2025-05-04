@@ -301,7 +301,7 @@ export type CartItem = {
   type: string;
 };
 
-export type Price =
+export type ItemPrice =
   | {
       isDiscounted: false;
       current: number;

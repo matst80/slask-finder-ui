@@ -281,7 +281,7 @@ export const ResultItemInner = ({
           </ul>
         )}
 
-        <div className="pt-2">
+        <div className="pt-2 place-self-start">
           <Price size="large" values={values} disclaimer={disclaimer} />
           {advertisingText != null && (
             <em className="block text-xs text-gray-500 italic">

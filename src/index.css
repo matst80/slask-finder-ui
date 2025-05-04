@@ -9,7 +9,8 @@
   --animate-cart-add: cartAdd 1s ease-out;
   --animate-cart-open: cartAdd 0.5s ease-out;
   --animate-pop: pop 0.3s ease-out;
-  --animate-pop-fast: pop 0.15s ease-in;
+  --animate-pop-slow: pop 0.6s ease-in;
+  --animate-acc: acc 0.15s ease-in;
   --animate-suggestbox: suggestbox 0.3s ease-in-out;
   --animate-facets: facets 0.3s;
   --animate-focus: focus 0.8s ease;
@@ -91,6 +92,18 @@
     100% {
       opacity: 1;
       transform: scale(1, 1) translate(0, 0);
+    }
+  }
+
+  @keyframes acc {
+    0% {
+      opacity: 0;
+      transform: translate(0, -40px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translate(0, 0);
     }
   }
 }
