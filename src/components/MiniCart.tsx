@@ -39,10 +39,11 @@ const CartCompatible = ({ id }: { id: number }) => {
       clearInterval(to);
     };
   }, [productTypes]);
+  const productType = useMemo(() => productTypes[idx], [idx, productTypes]);
   if (!isLoading && data?.length === 0) {
     return null;
   }
-  const productType = useMemo(() => productTypes[idx], [idx, productTypes]);
+
   return (
     <>
       <button
