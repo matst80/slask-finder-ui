@@ -9,9 +9,48 @@ import { QuantityInput } from "../pages/builder/QuantityInput";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { Sidebar } from "./ui/sidebar";
 import { PriceValue } from "./Price";
+import { useCompatibleItems } from "../hooks/searchHooks";
 
 type CartDialogProps = {
   onClose: () => void;
+};
+
+const CartCompatible = ({ id }: { id: number }) => {
+  const { data: cart } = useCart();
+  const { data, isLoading } = useCompatibleItems(id);
+  if (!isLoading && data?.length === 0) {
+    return null;
+  }
+  return (
+    <div className="group-hover:opacity-100 group-hover:max-h-24 max-h-0 bg-gray-50 left-0 right-0 border border-gray-300 rounded-md overflow-hidden mt-2 opacity-0 transition-all">
+      <div className="p-1 overflow-x-auto flex flex-nowrap gap-1 relative">
+        {data
+          ?.filter((d) => !cart?.items?.some((c) => c.id == d.id))
+          .map((item) => {
+            return (
+              <div
+                key={item.id}
+                className="flex w-16 shrink-0 items-center gap-2 bg-white rounded-md"
+              >
+                <Link
+                  to={`/product/${item.id}`}
+                  className="text-sm font-medium aspect-square"
+                >
+                  <img
+                    src={makeImageUrl(item.img)}
+                    title={item.title}
+                    alt={item.title}
+                    className="size-16 rounded-sm object-contain aspect-square mr-4"
+                  />
+
+                  {/* <span>{item.title}</span> */}
+                </Link>
+              </div>
+            );
+          })}
+      </div>
+    </div>
+  );
 };
 
 const CartDialog = ({ onClose }: CartDialogProps) => {
@@ -42,9 +81,13 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
           {isLoading ? (
             <div>{t("common.loading")}</div>
           ) : (
-            <ul className="divide-y flex-1 divide-gray-200">
+            <div className="divide-y flex-1 divide-gray-200">
               {items.map((item) => (
-                <li key={item.id + item.sku} className="py-4 flex flex-col">
+                <Link
+                  to={`/product/${item.sku}`}
+                  key={item.id + item.sku}
+                  className="py-4 flex flex-col group relative"
+                >
                   <div className="flex items-start gap-2">
                     {item.image ? (
                       <img
@@ -56,12 +99,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                       <div></div>
                     )}
                     <div className="flex flex-col">
-                      <Link
-                        to={`/product/${item.sku}`}
-                        className="text-sm font-medium"
-                      >
-                        {item.name}
-                      </Link>
+                      <span className="text-sm font-medium">{item.name}</span>
                       <span className="text-xs text-gray-500">
                         {item.brand} - {item.category}
                       </span>
@@ -72,8 +110,14 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                       )}
                     </div>
                   </div>
-                  <div className="flex justify-end items-center gap-2">
+                  <div className="flex justify-end items-center gap-2 pt-2">
                     <div className="flex items-center gap-2">
+                      {item.orgPrice > 0 && item.orgPrice > item.price && (
+                        <PriceValue
+                          className="line-through text-gray-400 text-xs"
+                          value={item.orgPrice}
+                        />
+                      )}
                       <PriceValue
                         value={item.price}
                         className={
@@ -82,42 +126,32 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
                             : "font-bold"
                         }
                       />
-                      {item.orgPrice > 0 && item.orgPrice > item.price && (
-                        <PriceValue
-                          className="line-through text-gray-400 text-xs"
-                          value={item.orgPrice}
-                        />
-                      )}
                     </div>
                     <QuantityInput
                       value={item.qty}
                       onChange={(value) => {
-                        changeQuantity(
-                          item.id,
-
-                          value,
-                          {
-                            item_id: item.itemId,
-                            index: item.id,
-                            item_name: item.name,
-                            price: item.price,
-                            quantity: value,
-                            item_brand: item.brand,
-                            item_category: item.category,
-                            item_category2: item.category2,
-                            item_category3: item.category3,
-                            item_category4: item.category4,
-                            item_category5: item.category5,
-                          }
-                        );
+                        changeQuantity(item.id, value, {
+                          item_id: item.itemId,
+                          index: item.id,
+                          item_name: item.name,
+                          price: item.price,
+                          quantity: value,
+                          item_brand: item.brand,
+                          item_category: item.category,
+                          item_category2: item.category2,
+                          item_category3: item.category3,
+                          item_category4: item.category4,
+                          item_category5: item.category5,
+                        });
                       }}
                       minQuantity={0}
                       maxQuantity={99}
                     />
                   </div>
-                </li>
+                  <CartCompatible id={Number(item.itemId)} />
+                </Link>
               ))}
-            </ul>
+            </div>
           )}
 
           <div className="mt-4 justify-end grow-0">
