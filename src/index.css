@@ -316,12 +316,25 @@
     max-height: 100%;
     position: fixed;
     min-width: 0px;
-    max-width: calc(100% - 3em);
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
   }
 
   dialog[open]::backdrop {
     background-color: var(--dialog-bg);
     animation: backdrop-open var(--dialog-duration) forwards;
+  }
+
+  dialog.dialog {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: display var(--dialog-duration) allow-discrete, overlay var(--dialog-duration) allow-discrete;
+    animation: close-dialog var(--dialog-duration) forwards;
+
+    &[open] {
+      animation: open-dialog var(--dialog-duration) forwards;
+    }
   }
 
   dialog.left {
@@ -380,6 +393,36 @@
       translate: 0 0;
       opacity: 1;
     }
+  }
+
+  @keyframes open-dialog {
+    from {
+      box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.01);
+      translate: 0 100px;
+      opacity: 0;
+    }
+
+    to {
+      box-shadow: 4px 0px 50px rgba(0, 0, 0, 0.3);
+      translate: 0 0;
+      opacity: 1;
+    }
+  }
+
+  @keyframes close-dialog {
+    from {
+      box-shadow: 4px 0px 50px rgba(0, 0, 0, 0.3);
+      translate: 0 0;
+      opacity: 1;
+    }
+
+    to {
+      box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.01);
+      translate: 0 100px;
+      opacity: 0;
+    }
+
+
   }
 
   @keyframes close-left {

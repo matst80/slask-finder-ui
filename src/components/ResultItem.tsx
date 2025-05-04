@@ -12,6 +12,10 @@ import { TimeAgo } from "./TimeAgo";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { toEcomTrackingEvent } from "./toImpression";
 import { useTracking } from "../lib/hooks/TrackingContext";
+import { useCompareContext } from "../lib/hooks/CompareProvider";
+import { Button } from "./ui/button";
+import { GitCompareArrows } from "lucide-react";
+import { i } from "framer-motion/client";
 
 const hasStock = (value?: string | null) => {
   return value != null && value != "0";
@@ -157,20 +161,24 @@ const ImageWithPlaceHolder = ({
 };
 
 export const ResultItemInner = ({
-  title,
-  img,
-  badgeUrl,
-  values,
-  stock,
   transitionUrl,
-  id,
-  children,
-  bp,
-  stockLevel,
-  lastUpdate,
-  disclaimer,
-  advertisingText,
+  ...item
 }: PropsWithChildren<Item> & { transitionUrl?: string }) => {
+  const {
+    title,
+    img,
+    badgeUrl,
+    values,
+    stock,
+    id,
+    children,
+    bp,
+    stockLevel,
+    lastUpdate,
+    disclaimer,
+    advertisingText,
+  } = item;
+  const { setItems } = useCompareContext();
   const hasRating = values?.["6"] != null && values?.["7"] != null;
   const soldBy = values?.["9"];
   const isTransitioning = useViewTransitionState(
@@ -256,6 +264,27 @@ export const ResultItemInner = ({
           </em>
         )}
       </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-3 right-3"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setItems((prev) => {
+            const newItems = [...prev];
+            const index = newItems.findIndex((item) => item.id === id);
+            if (index !== -1) {
+              newItems.splice(index, 1);
+            } else {
+              newItems.push(item);
+            }
+            return newItems;
+          });
+        }}
+      >
+        <GitCompareArrows className="size-5" />
+      </Button>
       <div className="mb-0 mt-auto px-4 pb-3 flex gap-1 justify-between">
         <StockIndicator stock={stock} stockLevel={stockLevel} showOnlyInStock />
       </div>

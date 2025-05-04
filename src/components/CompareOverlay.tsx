@@ -1,0 +1,166 @@
+import { MessageSquareMore, X } from "lucide-react";
+import { useCompareContext } from "../lib/hooks/CompareProvider";
+import { isDefined, makeImageUrl } from "../utils";
+import { useMemo, useState } from "react";
+import { useFacetMap } from "../hooks/searchHooks";
+import { FacetListItem } from "../lib/types";
+import { ResultItemInner } from "./ResultItem";
+import { Dialog } from "./ui/dialog";
+
+const FacetCells = ({
+  facet,
+  values,
+}: {
+  facet: FacetListItem;
+  values: (string | string[] | number | undefined)[];
+}) => {
+  const isSameValue = values.every((v) => v === values[0]);
+  return (
+    <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+      <td className="px-3 py-1 lg:px-5 lg:py-3 font-medium text-gray-700 text-sm">
+        {facet.name}
+      </td>
+      {values.map((v, idx) => (
+        <td
+          key={idx}
+          className={`px-3 py-1 lg:py-3 ${
+            isSameValue ? "text-gray-500" : "font-semibold text-gray-800"
+          }`}
+        >
+          {String(v) ?? "-"}
+        </td>
+      ))}
+    </tr>
+  );
+};
+
+const ignoredFacets = new Set([1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14]);
+
+export const CompareOverlay = () => {
+  const { data } = useFacetMap();
+  const { items, setItems, matchingFacetIds } = useCompareContext();
+  const [open, setOpen] = useState(false);
+
+  const facets = useMemo(() => {
+    return Array.from(matchingFacetIds)
+      .filter((id) => !ignoredFacets.has(id))
+      .map((id) => data?.[id])
+      .filter(isDefined)
+      .filter((d) => !d.hide && !d.internal);
+  }, [matchingFacetIds, data]);
+
+  if (items.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="fixed bottom-0 left-0 w-full shadow-lg bg-gray-100 border-t border-gray-200 transition-all duration-300 z-50">
+      <div className="container mx-auto flex">
+        <ul className="flex w-full md:w-auto border-collapse overflow-auto">
+          {items.map((item) => (
+            <li
+              key={item.id}
+              className="p-2 bg-gradient-to-br border-collapse from-white to-gray-100 flex-1 min-w-[180px] border-l last:border-r border-gray-300"
+            >
+              <div className="flex items-center gap-1 relative">
+                <img
+                  src={makeImageUrl(item.img)}
+                  alt={item.title}
+                  className="size-16 aspect-square object-contain bg-white p-1 rounded mix-blend-multiply"
+                />
+                <span className="text-sm font-medium flex-1 line-clamp-2 overflow-ellipsis">
+                  {item.title}
+                </span>
+                <button
+                  className="text-gray-600 transition-all hover:text-red-500 p-1 rounded-full hover:bg-gray-100 absolute top-1 right-1"
+                  onClick={() => {
+                    setItems((prev) => prev.filter((i) => i.id !== item.id));
+                  }}
+                  aria-label="Remove item"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 lg:px-6 py-2 font-medium transition-colors shadow-sm flex-shrink-0 flex gap-1 items-center justify-center"
+          onClick={() => setOpen(true)}
+        >
+          <MessageSquareMore className="size-5" />
+          <span className="hidden lg:block">Compare ({items.length})</span>
+        </button>
+      </div>
+
+      {open && (
+        <Dialog open={open} setOpen={setOpen}>
+          <div className="bg-white min-w-[90vw] max-h-[90vh] rounded-lg overflow-hidden flex flex-col shadow-xl">
+            {/* <h2 className="text-xl font-bold text-gray-800">Comparison</h2> */}
+            <button
+              className="text-black hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 absolute top-3 right-3 z-50"
+              onClick={() => setOpen(false)}
+              aria-label="Close dialog"
+            >
+              <X className="size-5" />
+            </button>
+
+            <div className="overflow-auto flex-1">
+              <table className="w-full border-collapse">
+                <thead className="sticky top-0 bg-white shadow-sm z-40">
+                  <tr>
+                    <th className="px-3 py-1 lg:px-5 lg:py-3 text-left bg-gray-50 border-b border-gray-200"></th>
+                    {items.map((item) => (
+                      <th
+                        key={item.id}
+                        className="px-3 py-1 lg:py-3 text-left bg-gray-50 border-b border-gray-200"
+                      >
+                        <span className="line-clamp-1 overflow-ellipsis font-semibold">
+                          {item.title}
+                        </span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {facets.map((facet) => (
+                    <FacetCells
+                      facet={facet}
+                      values={items.map((item) => item.values[facet.id])}
+                      key={facet.id}
+                    />
+                  ))}
+                </tbody>
+                <tfoot className=" bg-white border-t border-gray-200">
+                  <tr>
+                    <td>&nbsp;</td>
+                    {items.map((item) => (
+                      <td key={item.id}>
+                        <div className="p-3 rounded-lg relative">
+                          <ResultItemInner {...item} />
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div className="flex justify-end p-3 border-t border-gray-200">
+              <button
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                onClick={() => {
+                  // Add an action here if needed
+                  setOpen(false);
+                }}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </Dialog>
+      )}
+    </div>
+  );
+};

@@ -51,6 +51,7 @@ import { googleTracker } from "./tracking/google-tracking.ts";
 import { slaskTracker } from "./tracking/slaskTracker.ts";
 import { ProductConfigurator } from "./pages/ProductConfigurator.tsx";
 import { EmptyQueriesView } from "./pages/tracking/empty-queries.tsx";
+import { CompareProvider } from "./lib/hooks/CompareProvider.tsx";
 
 const router = createBrowserRouter([
   {
@@ -265,15 +266,17 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           slaskTracker(),
         ]}
       >
-        <TranslationProvider language={getBrowserTranslations()}>
-          <QueryProvider initialQuery={{ page: 0, pageSize: 20 }}>
-            <NotificationsProvider>
-              <ImpressionProvider>
-                <RouterProvider router={router} />
-              </ImpressionProvider>
-            </NotificationsProvider>
-          </QueryProvider>
-        </TranslationProvider>
+        <CompareProvider>
+          <TranslationProvider language={getBrowserTranslations()}>
+            <QueryProvider initialQuery={{ page: 0, pageSize: 20 }}>
+              <NotificationsProvider>
+                <ImpressionProvider>
+                  <RouterProvider router={router} />
+                </ImpressionProvider>
+              </NotificationsProvider>
+            </QueryProvider>
+          </TranslationProvider>
+        </CompareProvider>
       </TrackingProvider>
     </SWRConfig>
   </React.StrictMode>
