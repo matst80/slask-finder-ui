@@ -41,6 +41,7 @@ import { UserCog } from "lucide-react";
 import { JsonView } from "../pages/tracking/JsonView";
 import { toEcomTrackingEvent } from "./toImpression";
 import { Stars } from "./Stars";
+import { QueryUpdater } from "./QueryMerger";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -272,7 +273,7 @@ const RelationGroupCarousel = ({
       </div>
       {open && (
         <QueryProvider initialQuery={query}>
-          {/* <QueryMerger query={query} /> */}
+          <QueryUpdater query={query} />
           <ResultCarousel
             list_id={String(group.groupId)}
             list_name={group.name}
