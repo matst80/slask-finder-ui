@@ -12,6 +12,7 @@ import { Price, PriceElement, PriceValue } from "./Price";
 import { useCompatibleItems } from "../hooks/searchHooks";
 import { CartItem, ItemPrice } from "../lib/types";
 import { toEcomTrackingEvent } from "./toImpression";
+import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -74,65 +75,69 @@ const CartCompatible = ({ id }: { id: number }) => {
         </span>
       </button>
       {open && (
-        <div className="animate-pop bg-gray-50 border-y border-gray-300 overflow-hidden mt-2 -mx-6 grid grid-cols-[auto_1fr_auto] gap-x-4 gap-y-4 p-4 items-center">
-          {data
-            ?.filter((d) => !cart?.items?.some((c) => Number(c.itemId) == d.id))
-            .slice(undefined, showMore ? undefined : 4)
-            .map((item, a) => {
-              return (
-                <Fragment key={item.id}>
-                  <img
-                    src={makeImageUrl(item.img)}
-                    title={item.title}
-                    alt={item.title}
-                    className="size-14 rounded-sm object-contain mix-blend-multiply aspect-square flex-shrink-0"
-                  />
-                  <Link
-                    to={`/product/${item.id}`}
-                    className="text-xs flex-1 flex flex-col"
-                  >
-                    <span className="line-clamp-1 font-medium overflow-ellipsis">
-                      {item.title}
-                    </span>
-                    <div className="flex flex-col">
-                      {item.bp.split("\n").map((t) => (
-                        <span className="text-gray-600 text-2xs line-clamp-1 overflow-ellipsis">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  </Link>
-                  <div className="flex flex-col items-end">
-                    <Price size="small" values={item.values} />
-                    <button
-                      disabled={isMutating}
-                      onClick={() =>
-                        addToCart(
-                          { ...item, quantity: 1 },
-                          toEcomTrackingEvent(item, a)
-                        )
-                      }
-                      className="underline text-xs text-gray-600 hover:text-gray-800"
+        <ImpressionProvider>
+          <div className="animate-pop bg-gray-50 border-y border-gray-300 overflow-hidden mt-2 -mx-6 grid grid-cols-[auto_1fr_auto] gap-x-4 gap-y-4 p-4 items-center">
+            {data
+              ?.filter(
+                (d) => !cart?.items?.some((c) => Number(c.itemId) == d.id)
+              )
+              .slice(undefined, showMore ? undefined : 4)
+              .map((item, a) => {
+                return (
+                  <Fragment key={item.id}>
+                    <img
+                      src={makeImageUrl(item.img)}
+                      title={item.title}
+                      alt={item.title}
+                      className="size-14 rounded-sm object-contain mix-blend-multiply aspect-square flex-shrink-0"
+                    />
+                    <Link
+                      to={`/product/${item.id}`}
+                      className="text-xs flex-1 flex flex-col"
                     >
-                      {t("cart.add")}
-                    </button>
-                  </div>
-                </Fragment>
-              );
-            })}
-          <div className="flex flex-col col-span-3">
-            <button
-              className="text-xs text-gray-600 hover:text-gray-800"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                setShowMore(!showMore);
-              }}
-            >
-              Show {showMore ? "less" : "more"}
-            </button>
+                      <span className="line-clamp-1 font-medium overflow-ellipsis">
+                        {item.title}
+                      </span>
+                      <div className="flex flex-col">
+                        {item.bp.split("\n").map((t) => (
+                          <span className="text-gray-600 text-2xs line-clamp-1 overflow-ellipsis">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </Link>
+                    <div className="flex flex-col items-end">
+                      <Price size="small" values={item.values} />
+                      <button
+                        disabled={isMutating}
+                        onClick={() =>
+                          addToCart(
+                            { ...item, quantity: 1 },
+                            toEcomTrackingEvent(item, a)
+                          )
+                        }
+                        className="underline text-xs text-gray-600 hover:text-gray-800"
+                      >
+                        {t("cart.add")}
+                      </button>
+                    </div>
+                  </Fragment>
+                );
+              })}
+            <div className="flex flex-col col-span-3">
+              <button
+                className="text-xs text-gray-600 hover:text-gray-800"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setShowMore(!showMore);
+                }}
+              >
+                Show {showMore ? "less" : "more"}
+              </button>
+            </div>
           </div>
-        </div>
+        </ImpressionProvider>
       )}
     </>
   );
@@ -304,6 +309,7 @@ export const MiniCart = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { data: cart, isLoading } = useCart();
   const ref = useRef<HTMLSpanElement>(null);
+  const [shouldOpen, setShouldOpen] = useState(false);
   const totalItems = useMemo(
     () =>
       isLoading
@@ -314,6 +320,10 @@ export const MiniCart = () => {
 
   useEffect(() => {
     if (ref.current) {
+      if (shouldOpen) {
+        setIsCartOpen(true);
+      }
+      setShouldOpen(true);
       const elm = ref.current;
       elm.classList.add("animate-ping");
       const to = setTimeout(() => {
