@@ -13,7 +13,6 @@ import {
   KeyField,
   NumberField,
   RelationGroup,
-  RelationMatch,
   relationValueConverters,
 } from "../lib/types";
 import { Store } from "../lib/datalayer/stores";
