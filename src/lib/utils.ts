@@ -67,8 +67,8 @@ export const filteringQueryToHash = ({
   // }
 
   const strs =
-    string?.map(({ id, value }) => {
-      return `${id}${ID_VALUE_SEPARATOR}${
+    string?.map(({ id, value, exclude = false }) => {
+      return `${id}${ID_VALUE_SEPARATOR}${exclude ? "!" : ""}${
         Array.isArray(value) ? value.join("||") : value
       }`;
     }) ?? [];

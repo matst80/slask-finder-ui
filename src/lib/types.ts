@@ -183,10 +183,11 @@ export type NumberValue = { min: number; max: number };
 
 export type NumberField = { id: number } & NumberValue;
 
-export type KeyField = { id: number; value: string[] };
+export type KeyField = { id: number; exclude?: boolean; value: string[] };
 
 export type RelationMatch = {
   facetId: number;
+  exclude?: boolean;
   value?: number | string | string[];
 };
 

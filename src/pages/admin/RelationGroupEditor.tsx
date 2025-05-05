@@ -228,7 +228,7 @@ const RelationMatchEditor = ({
   onChange,
   ...value
 }: RelationMatch & { onChange: (data: RelationMatch) => void }) => {
-  const { facetId, value: toMatch } = value;
+  const { facetId, value: toMatch, exclude } = value;
 
   return (
     <div className="flex flex-col gap-4 p-4 bg-white rounded-xs border border-gray-200">
@@ -252,6 +252,19 @@ const RelationMatchEditor = ({
                 : String(toMatch)
               : ""}
           </span>
+          <label className="text-sm font-medium text-gray-700">
+            <input
+              type="checkbox"
+              checked={exclude}
+              onChange={(e) => {
+                onChange({
+                  ...value,
+                  exclude: e.target.checked,
+                });
+              }}
+            />
+            <span className="ml-2">Exclude</span>
+          </label>
           {Array.isArray(toMatch) || typeof toMatch === "string" ? (
             <FacetValueTagEditor
               data={Array.isArray(toMatch) ? toMatch : [toMatch]}

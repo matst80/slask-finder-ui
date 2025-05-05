@@ -13,6 +13,7 @@ import {
   KeyField,
   NumberField,
   RelationGroup,
+  RelationMatch,
   relationValueConverters,
 } from "../lib/types";
 import { Store } from "../lib/datalayer/stores";
@@ -199,6 +200,7 @@ const makeQuery = (
     group.additionalQueries?.map((query) => {
       return {
         id: query.facetId,
+        exclude: query.exclude,
         value: Array.isArray(query.value)
           ? (query.value as string[])
           : [String(query.value)],

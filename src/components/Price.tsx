@@ -15,7 +15,7 @@ export const PriceValue = ({
 }) => {
   return value == null ? null : (
     <span className={className}>
-      {new Intl.NumberFormat(getLocale(), {
+      {new Intl.NumberFormat("sv-SE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
         currencySign: "standard",
