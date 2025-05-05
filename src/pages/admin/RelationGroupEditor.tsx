@@ -12,6 +12,7 @@ import { PlusIcon, TrashIcon, ChevronUp } from "lucide-react";
 import fuzzysort from "fuzzysort";
 import { Input } from "../../components/ui/input";
 import { QueryPreview } from "../../components/QueryPreview";
+import { cm } from "../../utils";
 
 const FacetValueTagEditor = ({
   data,
@@ -83,7 +84,12 @@ const FacetValueTagEditor = ({
           }}
         />
         {filteredData.length > 0 && (
-          <div className="absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto hidden peer-active:flex peer-hover:flex flex-col z-10 max-h-60">
+          <div
+            className={cm(
+              open ? "flex" : "hidden",
+              "absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex-col z-10 max-h-60"
+            )}
+          >
             {filteredData.map((text) => (
               <button
                 key={text}
