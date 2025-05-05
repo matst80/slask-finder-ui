@@ -244,27 +244,30 @@ const RelationMatchEditor = ({
         />
 
         <label className="flex flex-col gap-1">
-          <span className="text-sm font-medium text-gray-700">
-            Value{" "}
-            {toMatch != null
-              ? Array.isArray(toMatch)
-                ? toMatch.join(", ")
-                : String(toMatch)
-              : ""}
-          </span>
-          <label className="text-sm font-medium text-gray-700">
-            <input
-              type="checkbox"
-              checked={exclude}
-              onChange={(e) => {
-                onChange({
-                  ...value,
-                  exclude: e.target.checked,
-                });
-              }}
-            />
-            <span className="ml-2">Exclude</span>
-          </label>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-700">
+              Value{" "}
+              {toMatch != null
+                ? Array.isArray(toMatch)
+                  ? toMatch.join(", ")
+                  : String(toMatch)
+                : ""}
+            </span>
+            <label className="text-sm font-medium text-gray-700">
+              <input
+                type="checkbox"
+                checked={exclude}
+                onChange={(e) => {
+                  onChange({
+                    ...value,
+                    exclude: e.target.checked,
+                  });
+                }}
+              />
+              <span className="ml-2">Exclude</span>
+            </label>
+          </div>
+
           {Array.isArray(toMatch) || typeof toMatch === "string" ? (
             <FacetValueTagEditor
               data={Array.isArray(toMatch) ? toMatch : [toMatch]}
@@ -450,42 +453,44 @@ const GroupEditor = ({
             <h3 className="text-sm font-medium text-gray-700">
               Required on item level
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {value.requiredForItem?.map((relation, idx) => (
-                <div
-                  key={`${relation.facetId}-${relation.value}`}
-                  className="relative"
-                >
-                  <RelationMatchEditor
-                    {...relation}
-                    onChange={onArrayChange("requiredForItem", idx)}
-                  />
-                  <DeleteButton
-                    onClick={() => {
-                      onChange({
-                        ...value,
-                        requiredForItem: value.requiredForItem.filter(
-                          (d) => d.facetId != relation.facetId
-                        ),
-                      });
-                    }}
-                  />
-                </div>
-              ))}
-              <AddButton
-                onClick={() => {
-                  onChange({
-                    ...value,
-                    requiredForItem: [
-                      ...(value.requiredForItem ?? []),
-                      {
-                        facetId: 10,
-                        value: ["!nil"],
-                      },
-                    ],
-                  });
-                }}
-              />
+            <div className="w-full">
+              <div className="flex flex-col gap-4">
+                {value.requiredForItem?.map((relation, idx) => (
+                  <div
+                    key={`${relation.facetId}-${relation.value}`}
+                    className="relative"
+                  >
+                    <RelationMatchEditor
+                      {...relation}
+                      onChange={onArrayChange("requiredForItem", idx)}
+                    />
+                    <DeleteButton
+                      onClick={() => {
+                        onChange({
+                          ...value,
+                          requiredForItem: value.requiredForItem.filter(
+                            (d) => d.facetId != relation.facetId
+                          ),
+                        });
+                      }}
+                    />
+                  </div>
+                ))}
+                <AddButton
+                  onClick={() => {
+                    onChange({
+                      ...value,
+                      requiredForItem: [
+                        ...(value.requiredForItem ?? []),
+                        {
+                          facetId: 10,
+                          value: [""],
+                        },
+                      ],
+                    });
+                  }}
+                />
+              </div>
             </div>
             <QueryPreview matches={value.requiredForItem ?? []} />
           </div>
@@ -494,43 +499,46 @@ const GroupEditor = ({
             <h3 className="text-sm font-medium text-gray-700">
               Additional queries
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {value.additionalQueries?.map((relation, idx) => (
-                <div
-                  key={`${relation.facetId}-${relation.value}`}
-                  className="relative"
-                >
-                  <RelationMatchEditor
-                    {...relation}
-                    onChange={onArrayChange("additionalQueries", idx)}
-                  />
-                  <DeleteButton
-                    onClick={() => {
-                      onChange({
-                        ...value,
-                        additionalQueries:
-                          value.additionalQueries?.filter(
-                            (d) => d.facetId !== relation.facetId
-                          ) ?? [],
-                      });
-                    }}
-                  />
-                </div>
-              ))}
-              <AddButton
-                onClick={() => {
-                  onChange({
-                    ...value,
-                    additionalQueries: [
-                      ...(value.additionalQueries ?? []),
-                      {
-                        facetId: 10,
-                        value: ["!nil"],
-                      },
-                    ],
-                  });
-                }}
-              />
+            <div className="w-full ">
+              <div className="flex flex-col gap-4">
+                {value.additionalQueries?.map((relation, idx) => (
+                  <div
+                    key={`${relation.facetId}-${relation.value}`}
+                    className="relative"
+                  >
+                    <RelationMatchEditor
+                      {...relation}
+                      onChange={onArrayChange("additionalQueries", idx)}
+                    />
+                    <DeleteButton
+                      onClick={() => {
+                        onChange({
+                          ...value,
+                          additionalQueries:
+                            value.additionalQueries?.filter(
+                              (d) => d.facetId !== relation.facetId
+                            ) ?? [],
+                        });
+                      }}
+                    />
+                  </div>
+                ))}
+                <AddButton
+                  onClick={() => {
+                    onChange({
+                      ...value,
+                      additionalQueries: [
+                        ...(value.additionalQueries ?? []),
+                        {
+                          facetId: 10,
+                          exclude: false,
+                          value: [""],
+                        },
+                      ],
+                    });
+                  }}
+                />
+              </div>
             </div>
             <QueryPreview matches={value.additionalQueries ?? []} />
           </div>
