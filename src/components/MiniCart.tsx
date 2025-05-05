@@ -124,18 +124,20 @@ const CartCompatible = ({ id }: { id: number }) => {
                   </Fragment>
                 );
               })}
-            <div className="flex flex-col col-span-3">
-              <button
-                className="text-xs text-gray-600 hover:text-gray-800"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setShowMore(!showMore);
-                }}
-              >
-                Show {showMore ? "less" : "more"}
-              </button>
-            </div>
+            {data != null && data?.length > 4 && (
+              <div className="flex flex-col col-span-3">
+                <button
+                  className="text-xs text-gray-600 hover:text-gray-800"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setShowMore(!showMore);
+                  }}
+                >
+                  Show {showMore ? "less" : "more"}
+                </button>
+              </div>
+            )}
           </div>
         </ImpressionProvider>
       )}

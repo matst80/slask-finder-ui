@@ -59,7 +59,7 @@ export const PriceElement = ({
             )}
           >
             <span>Spara</span>
-            <PriceValue value={prc.original - prc.current} />
+            <PriceValue value={prc.discount} />
           </div>
         </div>
         {disclaimer != null && (
