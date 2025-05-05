@@ -68,7 +68,7 @@ const FacetValueTagEditor = ({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Add a tag"
-          className="border border-gray-300 rounded-md px-2 py-1"
+          className="border border-gray-300 rounded-md px-2 py-1 peer"
           onKeyDown={(e) => {
             if (e.key === "Enter" && value.trim() !== "") {
               setTags((prev) => [...prev, value]);
@@ -77,7 +77,7 @@ const FacetValueTagEditor = ({
           }}
         />
         {filteredData.length > 0 && (
-          <div className="absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex flex-col z-10 max-h-60">
+          <div className="absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto hidden peer-active:flex peer-hover:flex flex-col z-10 max-h-60">
             {filteredData.map((text) => (
               <button
                 key={text}
