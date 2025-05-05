@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAdminRelationGroups, useFacetMap } from "../../hooks/searchHooks";
 import {
   FacetListItem,
@@ -14,6 +14,22 @@ import { Input } from "../../components/ui/input";
 import { QueryPreview } from "../../components/QueryPreview";
 import { cm } from "../../utils";
 
+const useClickOutside = (fn: () => void) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        fn();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [fn]);
+  return ref;
+};
+
 const FacetValueTagEditor = ({
   data,
   facetId,
@@ -27,6 +43,9 @@ const FacetValueTagEditor = ({
   const [open, setOpen] = useState(false);
   const [tags, setTags] = useState<string[]>(data);
   const [value, setValue] = useState<string>("");
+  const ref = useClickOutside(() => {
+    setOpen(false);
+  });
 
   const filteredData = useMemo(() => {
     const keyData =
@@ -68,7 +87,7 @@ const FacetValueTagEditor = ({
           </button>
         </div>
       ))}
-      <div className="relative">
+      <div ref={ref} className="relative">
         <input
           type="text"
           value={value}
