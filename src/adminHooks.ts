@@ -125,11 +125,31 @@ export const useDeleteFacet = () => {
 };
 
 export const useRelationGroupsMutation = () => {
+  const { showNotification } = useNotifications();
   const { trigger } = useSWRMutation(
     "admin-relationGroups",
     (_: string, { arg }: { arg: RelationGroup[] }) => updateRelations(arg)
   );
-  return trigger;
+  return (data: RelationGroup[]) =>
+    trigger(data)
+      .then((res) => {
+        showNotification({
+          title: "Updated",
+          message: "Relations updated successfully",
+          variant: "success",
+        });
+        setTimeout(() => {
+          reloadSettings();
+        }, 500);
+        return res;
+      })
+      .catch((e) => {
+        showNotification({
+          title: "Error",
+          message: e.message,
+          variant: "error",
+        });
+      });
 };
 
 export const useIsAdmin = () => {

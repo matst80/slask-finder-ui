@@ -243,6 +243,11 @@ export const updateRelations = (data: RelationGroup[]) =>
     throw new Error("Failed to update relations");
   });
 
+export const reloadSettings = () =>
+  fetch(`${baseUrl}/api/reload-settings`).then((d) => {
+    return d.ok;
+  });
+
 const readStreamed = <T>(
   d: Response,
   afterSeparator?: (line: string) => void

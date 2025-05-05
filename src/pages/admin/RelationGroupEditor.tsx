@@ -599,7 +599,6 @@ export const RelationGroupEditor = () => {
   const onItemChange = (idx: number) => (group: RelationGroup) => {
     const newGroups = [...(groups ?? [])];
     newGroups[idx] = group;
-    console.log("newGroups", newGroups);
     mutate(newGroups, { revalidate: false });
   };
 
