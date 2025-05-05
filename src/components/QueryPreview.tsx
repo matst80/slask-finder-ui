@@ -22,6 +22,7 @@ export const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
     return {
       string: matches.filter(hasValue).map((match) => ({
         id: match.facetId,
+        exclude: match.exclude,
         value: Array.isArray(match.value) ? match.value : [match.value],
       })),
     };
