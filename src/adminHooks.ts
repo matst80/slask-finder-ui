@@ -7,6 +7,7 @@ import {
   getMissingFieldList,
   getPopularity,
   getStaticPositions,
+  reloadSettings,
   setStaticPositions,
   updatePopularity,
   updateRelations,
