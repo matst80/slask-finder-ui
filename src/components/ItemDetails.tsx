@@ -101,7 +101,7 @@ const CarouselItem = ({ children }: PropsWithChildren) => {
 };
 
 export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
-  const { data, isLoading } = useCompatibleItems(id);
+  const { data, isLoading } = useCompatibleItems(id, []);
 
   return (
     <ProductCarouselContainer list_id="compatible" list_name="Compatible">

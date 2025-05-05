@@ -442,12 +442,16 @@ export const useRelatedItems = (id: number) => {
   });
 };
 
-export const useCompatibleItems = (id: number) => {
-  return useSWR(`compatible-items-${id}`, () => getCompatible(id), {
-    revalidateOnFocus: false,
-    refreshInterval: 0,
-    focusThrottleInterval: 3600,
-  });
+export const useCompatibleItems = (id: number, otherIds: number[]) => {
+  return useSWR(
+    `compatible-items-${id}-${otherIds?.join("-") ?? ""}`,
+    () => getCompatible(id, otherIds),
+    {
+      revalidateOnFocus: false,
+      refreshInterval: 0,
+      focusThrottleInterval: 3600,
+    }
+  );
 };
 
 export const useYourPopularItems = () => {

@@ -2,7 +2,7 @@ import { ShoppingCartIcon, X } from "lucide-react";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 import { cm, isDefined, makeImageUrl } from "../utils";
-import { useCart, useChangeQuantity } from "../hooks/cartHooks";
+import { useAddToCart, useCart, useChangeQuantity } from "../hooks/cartHooks";
 import { ButtonLink } from "./ui/button";
 import { Link } from "react-router-dom";
 import { QuantityInput } from "../pages/builder/QuantityInput";
@@ -11,6 +11,7 @@ import { Sidebar } from "./ui/sidebar";
 import { Price, PriceElement, PriceValue } from "./Price";
 import { useCompatibleItems } from "../hooks/searchHooks";
 import { CartItem, ItemPrice } from "../lib/types";
+import { toEcomTrackingEvent } from "./toImpression";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -18,9 +19,15 @@ type CartDialogProps = {
 
 const CartCompatible = ({ id }: { id: number }) => {
   const { data: cart } = useCart();
+  const { isMutating, trigger: addToCart } = useAddToCart();
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [idx, setIdx] = useState(0);
-  const { data, isLoading } = useCompatibleItems(id);
+  const { data, isLoading } = useCompatibleItems(
+    id,
+    cart?.items.map((c) => Number(c.itemId)).filter(isDefined) ?? []
+  );
   const productTypes = useMemo(() => {
     return Array.from(
       new Set(
@@ -35,14 +42,16 @@ const CartCompatible = ({ id }: { id: number }) => {
     const to = setInterval(() => {
       setIdx((p) => (productTypes != null ? (p + 1) % productTypes.length : 0));
     }, 5000);
+    setIdx(0);
     return () => {
       clearInterval(to);
     };
   }, [productTypes]);
+  const productType = useMemo(() => productTypes[idx], [idx, productTypes]);
   if (!isLoading && data?.length === 0) {
     return null;
   }
-  const productType = useMemo(() => productTypes[idx], [idx, productTypes]);
+
   return (
     <>
       <button
@@ -57,7 +66,10 @@ const CartCompatible = ({ id }: { id: number }) => {
         }}
       >
         Glömde du{" "}
-        <span key={productType ?? ""} className="text-black animate-acc">
+        <span
+          key={productType ?? ""}
+          className="text-black animate-acc underline underline-indigo-500"
+        >
           {productType ?? ""}
         </span>
       </button>
@@ -65,8 +77,8 @@ const CartCompatible = ({ id }: { id: number }) => {
         <div className="animate-pop bg-gray-50 border-y border-gray-300 overflow-hidden mt-2 -mx-6 grid grid-cols-[auto_1fr_auto] gap-x-4 gap-y-4 p-4 items-center">
           {data
             ?.filter((d) => !cart?.items?.some((c) => Number(c.itemId) == d.id))
-            .slice(undefined, 5)
-            .map((item) => {
+            .slice(undefined, showMore ? undefined : 4)
+            .map((item, a) => {
               return (
                 <Fragment key={item.id}>
                   <img
@@ -90,10 +102,36 @@ const CartCompatible = ({ id }: { id: number }) => {
                       ))}
                     </div>
                   </Link>
-                  <Price size="small" values={item.values} />
+                  <div className="flex flex-col items-end">
+                    <Price size="small" values={item.values} />
+                    <button
+                      disabled={isMutating}
+                      onClick={() =>
+                        addToCart(
+                          { ...item, quantity: 1 },
+                          toEcomTrackingEvent(item, a)
+                        )
+                      }
+                      className="underline text-xs text-gray-600 hover:text-gray-800"
+                    >
+                      {t("cart.add")}
+                    </button>
+                  </div>
                 </Fragment>
               );
             })}
+          <div className="flex flex-col col-span-3">
+            <button
+              className="text-xs text-gray-600 hover:text-gray-800"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setShowMore(!showMore);
+              }}
+            >
+              Show {showMore ? "less" : "more"}
+            </button>
+          </div>
         </div>
       )}
     </>
