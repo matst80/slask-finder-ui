@@ -23,7 +23,7 @@ export const PriceValue = ({
         currency: "SEK",
       })
         .format(value / 100)
-        .replace(",00", "")}
+        .replace(/[,\.]00$/gi, "")}
     </span>
   );
 };
