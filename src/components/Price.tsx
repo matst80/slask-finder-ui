@@ -44,6 +44,7 @@ export const PriceElement = ({
   size?: keyof typeof sizes;
 }) => {
   if (prc.isDiscounted) {
+    //console.log("Discounted price", prc);
     return (
       <div className={cm("flex flex-col gap-1")}>
         <div className="relative peer place-self-start">

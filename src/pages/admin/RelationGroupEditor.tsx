@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAdminRelationGroups, useFacetMap } from "../../hooks/searchHooks";
 import {
   FacetListItem,
@@ -13,6 +13,101 @@ import fuzzysort from "fuzzysort";
 import { Input } from "../../components/ui/input";
 import { QueryPreview } from "../../components/QueryPreview";
 
+const FacetValueTagEditor = ({
+  data,
+  facetId,
+  onChange,
+}: {
+  facetId: number;
+  data: string[];
+  onChange: (data: string[]) => void;
+}) => {
+  const { data: facetValues } = useFieldValues(facetId);
+  const [tags, setTags] = useState<string[]>(data);
+  const [value, setValue] = useState<string>("");
+
+  const filteredData = useMemo(() => {
+    const keyData =
+      facetValues?.filter((d) => typeof d === "string").sort() ?? [];
+
+    const filtered = fuzzysort.go(value, keyData, {
+      limit: 20,
+      all: value.length < 1,
+      threshold: 0.4,
+    });
+    return [...filtered.map((f) => f.target)];
+  }, [facetValues, value]);
+
+  useEffect(() => {
+    if (tags !== data) {
+      onChange(tags);
+    }
+  }, [tags]);
+
+  return (
+    <div className="flex gap-2">
+      {tags.map((tag, idx) => (
+        <div
+          key={idx}
+          className="bg-gray-200 text-gray-800 px-2 py-1 rounded-full flex items-center gap-2"
+        >
+          <span>{tag}</span>
+          <button
+            onClick={() => {
+              setTags((prev) => prev.filter((_, i) => i !== idx));
+            }}
+            className="text-red-500 hover:text-red-700"
+          >
+            <TrashIcon className="size-4" />
+          </button>
+        </div>
+      ))}
+      <div className="relative">
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="Add a tag"
+          className="border border-gray-300 rounded-md px-2 py-1"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && value.trim() !== "") {
+              setTags((prev) => [...prev, value]);
+              setValue("");
+            }
+          }}
+        />
+        {filteredData.length > 0 && (
+          <div className="absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex flex-col z-10 max-h-60">
+            {filteredData.map((text) => (
+              <button
+                key={text}
+                onClick={() => {
+                  setTags((prev) => [...prev, text]);
+                  setValue("");
+                }}
+                className="text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-0"
+              >
+                {text}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <button
+        onClick={() => {
+          if (value.trim() !== "") {
+            setTags((prev) => [...prev, value]);
+            setValue("");
+          }
+        }}
+        className="bg-blue-500 text-white px-2 py-1 rounded-md"
+      >
+        Add
+      </button>
+    </div>
+  );
+};
+
 const FacetValueInput = ({
   value,
   facetId,
@@ -22,11 +117,12 @@ const FacetValueInput = ({
   facetId: number;
   onChange: (data: string | number | string[] | undefined) => void;
 }) => {
-  const { data } = useFieldValues(facetId);
+  const { data: facetValues } = useFieldValues(facetId);
   const [filter, setFilter] = useState("");
 
   const filteredData = useMemo(() => {
-    const keyData = data?.filter((d) => typeof d === "string").sort() ?? [];
+    const keyData =
+      facetValues?.filter((d) => typeof d === "string").sort() ?? [];
     const selected = keyData?.filter((v) =>
       Array.isArray(value) ? value.includes(v) : value === v
     );
@@ -39,7 +135,7 @@ const FacetValueInput = ({
       threshold: 0.4,
     });
     return [...selected, ...filtered.map((f) => f.target)];
-  }, [data, filter, value]);
+  }, [facetValues, filter, value]);
 
   return (
     <div className="relative group">
@@ -156,7 +252,31 @@ const RelationMatchEditor = ({
                 : String(toMatch)
               : ""}
           </span>
-          <FacetValueInput
+          {Array.isArray(toMatch) || typeof toMatch === "string" ? (
+            <FacetValueTagEditor
+              data={Array.isArray(toMatch) ? toMatch : [toMatch]}
+              facetId={facetId}
+              onChange={(v) => {
+                onChange({
+                  ...value,
+                  value: v,
+                });
+              }}
+            />
+          ) : (
+            <FacetValueInput
+              value={value.value}
+              facetId={facetId}
+              onChange={(v) => {
+                onChange({
+                  ...value,
+                  value: v,
+                });
+              }}
+            />
+          )}
+
+          {/* <FacetValueInput
             value={value.value}
             facetId={facetId}
             onChange={(v) => {
@@ -165,7 +285,7 @@ const RelationMatchEditor = ({
                 value: v,
               });
             }}
-          />
+          /> */}
         </label>
       </div>
     </div>

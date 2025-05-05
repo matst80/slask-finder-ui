@@ -4,6 +4,7 @@ import { QueryProvider } from "../lib/hooks/QueryProvider";
 import { ResultCarousel } from "./ItemDetails";
 import { TotalResultText } from "./ResultHeader";
 import { ItemsQuery, RelationMatch } from "../lib/types";
+import { QueryUpdater } from "./QueryMerger";
 
 const hasValue = (
   relation: RelationMatch
@@ -28,6 +29,7 @@ export const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
 
   return (
     <QueryProvider initialQuery={query}>
+      <QueryUpdater query={query} />
       <div
         onClick={() => setOpen((p) => !p)}
         className="cursor-pointer border-b border-gray-200 pb-3 mb-4"
