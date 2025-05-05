@@ -23,6 +23,7 @@ const FacetValueTagEditor = ({
   onChange: (data: string[]) => void;
 }) => {
   const { data: facetValues } = useFieldValues(facetId);
+  const [open, setOpen] = useState(false);
   const [tags, setTags] = useState<string[]>(data);
   const [value, setValue] = useState<string>("");
 
@@ -37,6 +38,10 @@ const FacetValueTagEditor = ({
     });
     return [...filtered.map((f) => f.target)];
   }, [facetValues, value]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [tags]);
 
   useEffect(() => {
     if (tags !== data) {
@@ -66,6 +71,7 @@ const FacetValueTagEditor = ({
         <input
           type="text"
           value={value}
+          onFocus={() => setOpen(true)}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Add a tag"
           className="border border-gray-300 rounded-md px-2 py-1 peer"
@@ -118,6 +124,7 @@ const FacetValueInput = ({
   onChange: (data: string | number | string[] | undefined) => void;
 }) => {
   const { data: facetValues } = useFieldValues(facetId);
+
   const [filter, setFilter] = useState("");
 
   const filteredData = useMemo(() => {
