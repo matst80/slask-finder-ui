@@ -13,6 +13,7 @@ import {
   KeyField,
   NumberField,
   RelationGroup,
+  RelationMatch,
   relationValueConverters,
 } from "../lib/types";
 import { Store } from "../lib/datalayer/stores";
@@ -164,13 +165,10 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
 
 type PossibleValue = string | string[] | number | undefined;
 
-const hasRequiredValue = (
-  requiredValue: PossibleValue,
-  value: PossibleValue
+const getMatch = (
+  requiredValue: string | number | string[],
+  value: string | number | string[]
 ) => {
-  if (value == null) return false;
-  if (requiredValue == null) return value != null;
-
   if (Array.isArray(requiredValue)) {
     return requiredValue.some((part) =>
       Array.isArray(value)
@@ -179,6 +177,21 @@ const hasRequiredValue = (
     );
   }
   return String(requiredValue) === String(value);
+};
+
+const hasRequiredValue = (
+  { value: requiredValue, exclude = false }: RelationMatch,
+  value: PossibleValue
+) => {
+  if (value == null) return false;
+  if (requiredValue == null) return value != null;
+
+  const match = getMatch(requiredValue, value);
+  console.log({ match, requiredValue, value, exclude });
+  if (exclude) {
+    return !match;
+  }
+  return match;
 };
 
 const isRangeFilter = (d: NumberField | KeyField): d is NumberField => {
@@ -287,7 +300,7 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
     return (
       data?.filter((group) =>
         group.requiredForItem.every((requirement) =>
-          hasRequiredValue(requirement.value, values[requirement.facetId])
+          hasRequiredValue(requirement, values[requirement.facetId])
         )
       ) ?? []
     );

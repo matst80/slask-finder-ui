@@ -44,9 +44,14 @@ export const queryFromHash = (hash: string): ItemsQuery => {
     ?.split(FIELD_SEPARATOR)
     .map((s) => {
       const [id, value] = s.split(ID_VALUE_SEPARATOR);
+      const exclude = value[0] === "!";
+      const valueWithoutExclude = exclude ? value.substring(1) : value;
       return {
         id: Number(id),
-        value: value.includes("||") ? value.split("||") : [value],
+        exclude,
+        value: valueWithoutExclude.includes("||")
+          ? valueWithoutExclude.split("||")
+          : [valueWithoutExclude],
       };
     });
   const query = hashData.q;
@@ -120,12 +125,12 @@ export const filteringQueryToHash = ({
   // }
 
   const strs =
-    string?.map(({ id, value }) => {
+    string?.map(({ id, exclude = false, value }) => {
       if (Array.isArray(value) && value.length === 0) {
         // console.log("Empty value for id:", id);
         return undefined;
       }
-      return `${id}${ID_VALUE_SEPARATOR}${
+      return `${id}${ID_VALUE_SEPARATOR}${exclude ? "!" : ""}${
         Array.isArray(value) ? value.join("||") : value
       }`;
     }) ?? [];
@@ -168,10 +173,12 @@ export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
 
   string
     ?.filter(({ value }) => Array.isArray(value) && value.length > 0)
-    .forEach(({ id, value }) => {
+    .forEach(({ id, exclude, value }) => {
       result.append(
         "str",
-        `${id}:${Array.isArray(value) ? value.join("||") : value}`
+        `${id}:${exclude ? "!" : ""}${
+          Array.isArray(value) ? value.join("||") : value
+        }`
       );
     });
   stock?.forEach((s) => {

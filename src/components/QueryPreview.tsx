@@ -20,11 +20,13 @@ export const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
   const [open, setOpen] = useState(false);
   const query = useMemo<ItemsQuery>(() => {
     return {
-      string: matches.filter(hasValue).map((match) => ({
-        id: match.facetId,
-        exclude: match.exclude,
-        value: Array.isArray(match.value) ? match.value : [match.value],
-      })),
+      string: matches
+        .filter(hasValue)
+        .map(({ facetId, exclude = false, value }) => ({
+          id: facetId,
+          exclude: exclude,
+          value: Array.isArray(value) ? value : [value],
+        })),
     };
   }, [matches]);
 

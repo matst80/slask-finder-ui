@@ -258,6 +258,7 @@ const RelationMatchEditor = ({
                 type="checkbox"
                 checked={exclude}
                 onChange={(e) => {
+                  console.log("exclude", e.target.checked);
                   onChange({
                     ...value,
                     exclude: e.target.checked,
@@ -399,11 +400,14 @@ const GroupEditor = ({
       idx: number
     ) =>
     (relation: RelationMatch | Relation) => {
-      const newRelations = [...(value[prop] ?? [])];
-      newRelations[idx] = relation;
       onChange({
         ...value,
-        [prop]: newRelations,
+        [prop]: value[prop]?.map((d, i) => {
+          if (i === idx) {
+            return relation;
+          }
+          return d;
+        }),
       });
     };
 
@@ -595,6 +599,7 @@ export const RelationGroupEditor = () => {
   const onItemChange = (idx: number) => (group: RelationGroup) => {
     const newGroups = [...(groups ?? [])];
     newGroups[idx] = group;
+    console.log("newGroups", newGroups);
     mutate(newGroups, { revalidate: false });
   };
 
