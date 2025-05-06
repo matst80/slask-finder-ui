@@ -200,6 +200,14 @@
     top: calc(anchor(bottom)-1px);
     left: anchor(left);
     right: anchor(right);
+
+    &[aria-hidden="true"] {
+      opacity: 0;
+    }
+
+    &[aria-hidden="false"] {
+      opacity: 1;
+    }
   }
 
 

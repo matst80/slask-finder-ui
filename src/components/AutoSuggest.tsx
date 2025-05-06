@@ -31,14 +31,14 @@ import { toEcomTrackingEvent } from "./toImpression";
 
 const TrieSuggestions = ({
   toShow,
-  open,
+  //open,
   left,
   onQueryChange,
   max = 10,
 }: {
   toShow: number;
   max?: number;
-  open: boolean;
+  //open: boolean;
   left: number;
   onQueryChange: (query: string) => void;
 }) => {
@@ -50,13 +50,16 @@ const TrieSuggestions = ({
     const hasMore = suggestions.length > l;
     return [visible, hasMore];
   }, [toShow, max, showMore, suggestions]);
+  if (visible.length === 0) {
+    return null;
+  }
   return (
     <div
       className={cm(
-        "transition-opacity border border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 absolute text-xs top-2 bottom-2 rounded-md z-20 flex gap-2 items-baseline",
-        open && suggestions.length > 0
-          ? "opacity-100 animate-pop"
-          : "opacity-0 pointer-events-none"
+        "trie transition-opacity border border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 absolute text-xs top-2 bottom-2 rounded-md z-20 flex gap-2 items-baseline"
+        // open && suggestions.length > 0
+        //   ? "opacity-100 animate-pop"
+        //   : "opacity-0 pointer-events-none"
       )}
       style={{ left: `${left + 22}px` }}
     >
@@ -122,23 +125,23 @@ export const AutoSuggest = () => {
     items,
   } = useSuggestions();
 
-  const [open, setOpen] = useState(false);
+  //const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      setTerm(value === "*" ? "" : value);
-      updatePosition();
-    });
-  }, [value, setTerm, updatePosition]);
+  // useEffect(() => {
+  //   requestAnimationFrame(() => {
+  //     setTerm(value === "*" ? "" : value);
+  //     updatePosition();
+  //   });
+  // }, [value, setTerm, updatePosition]);
 
   useEffect(() => {
     setItemLength(items.length);
   }, [items]);
 
-  const [hasResults, showItems] = useMemo(() => {
-    const a = items.length > 0;
-    return [a, open && a];
-  }, [items, open]);
+  // const [hasResults, showItems] = useMemo(() => {
+  //   const a = items.length > 0;
+  //   return [a, open && a];
+  // }, [items, open]);
 
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const input = e.target as HTMLInputElement;
@@ -152,7 +155,7 @@ export const AutoSuggest = () => {
           triggerClick();
           return;
         }
-        if (hasResults || input.value == null || input.value.length < 2) {
+        if (input.value == null || input.value.length < 2) {
           setQuery((prev) => ({
             ...prev,
             string: [],
@@ -168,40 +171,92 @@ export const AutoSuggest = () => {
       const query = [...bestSuggestion.other, bestSuggestion.match]
         .filter((d) => d != null && d.length > 0)
         .join(" ");
-      setValue(query);
+      //setValue(query);
+      input.value = query;
+      setTerm(query);
       //setGlobalTerm(query);
     }
-    setOpen(true);
+    //setOpen(true);
   };
 
-  useEffect(() => {
-    const close = () => setOpen(false);
-    globalThis.document.addEventListener("click", close);
-    return () => globalThis.document.removeEventListener("click", close);
-  }, []);
+  // useEffect(() => {
+  //   const close = () => setOpen(false);
+  //   globalThis.document.addEventListener("click", close);
+  //   return () => globalThis.document.removeEventListener("click", close);
+  // }, []);
 
-  useEffect(() => {
-    setOpen(false);
-  }, [globalQuery]);
+  // useEffect(() => {
+  //   setOpen(false);
+  // }, [globalQuery]);
 
   const { query } = globalQuery;
   useEffect(() => {
-    if (query != null) {
-      setValue(query);
+    if (query != null && inputRef.current != null) {
+      inputRef.current.value = query;
     }
   }, [query]);
+
+  useEffect(() => {
+    if (inputRef.current != null) {
+      const elm = inputRef.current;
+      const targetId = inputRef.current.getAttribute("aria-controls");
+      const targetElm =
+        targetId != null ? document.getElementById(targetId) : undefined;
+
+      const changeHandler = (e: Event) => {
+        const input = e.target as HTMLInputElement;
+        //setValue(input.value);
+        requestAnimationFrame(() => {
+          setTerm(input.value);
+          updatePosition();
+        });
+      };
+      const focusHandler = (e: FocusEvent) => {
+        //console.log("focusHandler", { targetElm, targetId });
+        targetElm?.setAttribute("aria-hidden", "false");
+        elm.setAttribute("aria-expanded", "true");
+      };
+      const blurHandler = (e: FocusEvent) => {
+        // console.log("blurHandler", e);
+        // const input = e.target as HTMLInputElement;
+        const focusElement = e.relatedTarget as HTMLElement;
+        const shouldClose =
+          focusElement == null ||
+          !focusElement.classList.contains("smart-query") ||
+          !focusElement.classList.contains("trie") ||
+          focusElement.parentElement != targetElm;
+        if (shouldClose) {
+          targetElm?.setAttribute("aria-hidden", "true");
+          elm.setAttribute("aria-expanded", "false");
+        }
+      };
+      //setValue(elm.value);
+      setTerm(elm.value);
+      elm.addEventListener("input", changeHandler);
+      elm.addEventListener("focus", focusHandler);
+      elm.addEventListener("blur", blurHandler);
+
+      return () => {
+        elm?.removeEventListener("input", changeHandler);
+        elm?.removeEventListener("focus", focusHandler);
+        elm?.removeEventListener("blur", blurHandler);
+        targetElm?.setAttribute("aria-hidden", "true");
+        elm?.setAttribute("aria-expanded", "false");
+      };
+    }
+  }, [inputRef, updatePosition, setTerm]);
 
   return (
     <>
       <div
         className={cm(
           "relative md:flex-1 flex flex-col md:block border-gray-200",
-          open && "border-b md:border-b-0"
+          "border-b md:border-b-0"
         )}
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen(true);
-        }}
+        // onClick={(e) => {
+        //   e.stopPropagation();
+        //   setOpen(true);
+        // }}
       >
         <input
           ref={inputRef}
@@ -212,18 +267,21 @@ export const AutoSuggest = () => {
           )}
           type="search"
           onKeyDown={onKeyDown}
-          value={value ?? ""}
+          //value={value ?? ""}
+          defaultValue={value ?? ""}
+          aria-autocomplete="list"
+          aria-controls="suggestion-results"
           placeholder="Search..."
-          onFocus={() => {
-            //e.target.select();
-            setOpen(true);
-          }}
+          // onFocus={() => {
+          //   //e.target.select();
+          //   setOpen(true);
+          // }}
           onKeyUp={onKeyUp}
-          onChange={(e) => setValue(e.target.value)}
+          //onChange={(e) => setValue(e.target.value)}
         />
         <TrieSuggestions
           onQueryChange={setValue}
-          open={open}
+          //open={open}
           left={left}
           toShow={1}
           max={5}
@@ -233,10 +291,10 @@ export const AutoSuggest = () => {
           <button
             onClick={() => smartQuery != null && setQuery(smartQuery)}
             className={cm(
-              "transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs",
-              open && possibleTriggers != null
-                ? "animate-pop"
-                : "opacity-0 pointer-events-none"
+              "smart-query transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs"
+              // open && possibleTriggers != null
+              //   ? "animate-pop"
+              //   : "opacity-0 pointer-events-none"
             )}
           >
             {possibleTriggers?.map(({ result }) =>
@@ -252,7 +310,12 @@ export const AutoSuggest = () => {
                 Sökning: <span className="font-bold">{smartQuery.query}</span>
               </span>
             )}
-            <span className="text-[10px] hidden md:block">⌥ + ↵</span>
+            <span
+              aria-label="option + enter to search"
+              className="text-[10px] hidden md:block"
+            >
+              ⌥ + ↵
+            </span>
           </button>
         )}
 
@@ -263,11 +326,51 @@ export const AutoSuggest = () => {
         />
       </div>
       <SuggestionResults
-        open={showItems}
+        //open={showItems}
         selectedIndex={selectedIndex}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          inputRef.current?.setAttribute("aria-expanded", "false");
+        }}
       />
     </>
+  );
+};
+
+const SuggestionResults = ({
+  //open,
+  onClose,
+  selectedIndex,
+}: {
+  //open: boolean;
+  selectedIndex: number;
+  onClose: () => void;
+}) => {
+  const { items } = useSuggestions();
+
+  return (
+    <div
+      id="suggestion-results"
+      className={cm(
+        "transition-all md:rounded-b md:border md:border-t-white md:border-gray-300 block bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
+        //open ? "opacity-100" : "opacity-0"
+      )}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {items.map((item, idx) => (
+        <SuggestSelector
+          {...item}
+          key={idx}
+          selected={idx == selectedIndex}
+          index={idx}
+        />
+      ))}
+      <button
+        onClick={onClose}
+        className="md:hidden absolute top-13 right-3 rounded-full bg-white p-1 z-20"
+      >
+        <ChevronUp className="size-6" />
+      </button>
+    </div>
   );
 };
 
@@ -511,44 +614,6 @@ const SuggestSelector = (
     default:
       return null;
   }
-};
-
-const SuggestionResults = ({
-  open,
-  onClose,
-  selectedIndex,
-}: {
-  open: boolean;
-  selectedIndex: number;
-  onClose: () => void;
-}) => {
-  const { items } = useSuggestions();
-
-  return (
-    <div
-      className={cm(
-        "transition-all md:rounded-b md:border md:border-t-white md:border-gray-300 block bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]",
-        open ? "opacity-100" : "opacity-0"
-      )}
-      onClick={(e) => e.stopPropagation()}
-    >
-      {open &&
-        items.map((item, idx) => (
-          <SuggestSelector
-            {...item}
-            key={idx}
-            selected={idx == selectedIndex}
-            index={idx}
-          />
-        ))}
-      <button
-        onClick={onClose}
-        className="md:hidden absolute top-13 right-3 rounded-full bg-white p-1 z-20"
-      >
-        <ChevronUp className="size-6" />
-      </button>
-    </div>
-  );
 };
 
 const ParsedImage = ({ picture }: { picture?: CmsPicture }) => {
