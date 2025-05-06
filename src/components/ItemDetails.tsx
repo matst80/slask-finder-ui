@@ -108,16 +108,18 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
       new Set(data?.map((item) => item.values[31158]).filter(isDefined))
     );
   }, [data]);
-
+  console.log({ productTypes });
   return (
-    <ProductCarouselContainer list_id="compatible" list_name="Compatible">
-      {isLoading && <Loader size="md" />}
-      {data?.map((item, idx) => (
-        <CarouselItem key={item.id}>
-          <ResultItem {...item} position={idx} />
-        </CarouselItem>
-      ))}
-    </ProductCarouselContainer>
+    <>
+      <ProductCarouselContainer list_id="compatible" list_name="Compatible">
+        {isLoading && <Loader size="md" />}
+        {data?.map((item, idx) => (
+          <CarouselItem key={item.id}>
+            <ResultItem {...item} position={idx} />
+          </CarouselItem>
+        ))}
+      </ProductCarouselContainer>
+    </>
   );
 };
 
