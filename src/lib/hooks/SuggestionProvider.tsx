@@ -21,6 +21,7 @@ import {
   SuggestionContext,
   SuggestResultItem,
 } from "./suggestionContext";
+import { useThrottle } from "./useThrottle";
 
 export const MIN_FUZZY_SCORE = 0.85;
 
@@ -38,6 +39,7 @@ export const SuggestionProvider = ({
     ContentRecord[] | undefined
   >(undefined);
   const [value, setValue] = useState<string | null>(null);
+  const searchValue = useThrottle(value, 70);
   const [popularQueries, setPopularQueries] = useState<SuggestQuery[]>([]);
   const includeContent = useMemo(
     () => config.some((d) => d.type === "content" && d.maxAmount > 0),
@@ -99,7 +101,6 @@ export const SuggestionProvider = ({
         }
       );
 
-      //console.log("reslt total", word, result.total);
       return { word, result };
     });
 
@@ -142,23 +143,27 @@ export const SuggestionProvider = ({
   }, [parts, facets]);
 
   useEffect(() => {
-    if (value == null || value.length < 2 || !includeContent) {
+    if (searchValue == null || searchValue.length < 2 || !includeContent) {
       return;
     }
-    getContentResults(value).then((d) => setContentResults(d.splice(0, 10)));
-  }, [value, includeContent]);
+    getContentResults(searchValue).then((d) =>
+      setContentResults(d.splice(0, 10))
+    );
+  }, [searchValue, includeContent]);
 
   useEffect(() => {
-    if (value == null) {
+    if (searchValue == null) {
       return;
     }
-    const { cancel, promise } = autoSuggestResponse(value === "*" ? "" : value);
+    const { cancel, promise } = autoSuggestResponse(
+      searchValue === "*" ? "" : searchValue
+    );
 
     promise.then(handleSuggestResponse).then((state) => {
       setData((prev) => {
         const hasFacets = state.facets.length > 0;
         const canMerge =
-          !hasFacets && value.length > 0 && prev.items.length > 0;
+          !hasFacets && searchValue.length > 0 && prev.items.length > 0;
 
         return {
           facets: canMerge ? prev.facets : state.facets,
@@ -169,11 +174,11 @@ export const SuggestionProvider = ({
       trackSuggest({
         results: state.items.length,
         suggestions: state.suggestions.length,
-        value,
+        value: searchValue,
       });
     });
     return cancel;
-  }, [value]);
+  }, [searchValue]);
 
   // const hasSuggestions = useMemo(
   //   () =>
@@ -277,11 +282,7 @@ export const SuggestionProvider = ({
       value={{
         suggestions,
         items,
-        //facets,
-        //content: contentResults,
         setValue,
-        //popularQueries,
-        //hasSuggestions,
         value,
         possibleTriggers,
         smartQuery,

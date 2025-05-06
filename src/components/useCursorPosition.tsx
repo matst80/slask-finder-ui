@@ -43,8 +43,8 @@ export const useCursorPosition = (
       return;
     }
 
-    input.addEventListener("focus", updatePosition);
-    input.addEventListener("change", updatePosition);
+    input.addEventListener("focus", updatePosition, { passive: true });
+    input.addEventListener("change", updatePosition, { passive: true });
     return () => {
       input.removeEventListener("focus", updatePosition);
       input.removeEventListener("change", updatePosition);

@@ -6,7 +6,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { ChevronUp, Lightbulb, Search, SearchIcon } from "lucide-react";
@@ -28,17 +27,17 @@ import type {
 import { useKeyFacetValuePopularity } from "../hooks/popularityHooks";
 import { useTracking } from "../lib/hooks/TrackingContext";
 import { toEcomTrackingEvent } from "./toImpression";
+import { useDropdownFocus } from "./useDropdownFocus";
+import { useArrowKeyNavigation } from "./useArrowKeyNavigation";
 
 const TrieSuggestions = ({
   toShow,
-  //open,
   left,
   onQueryChange,
   max = 10,
 }: {
   toShow: number;
   max?: number;
-  //open: boolean;
   left: number;
   onQueryChange: (query: string) => void;
 }) => {
@@ -55,12 +54,9 @@ const TrieSuggestions = ({
   }
   return (
     <div
-      className={cm(
+      className={
         "trie transition-opacity border border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 absolute text-xs top-2 bottom-2 rounded-md z-20 flex gap-2 items-baseline"
-        // open && suggestions.length > 0
-        //   ? "opacity-100 animate-pop"
-        //   : "opacity-0 pointer-events-none"
-      )}
+      }
       style={{ left: `${left + 22}px` }}
     >
       {visible.map(({ hits, match, other }) => (
@@ -79,296 +75,167 @@ const TrieSuggestions = ({
   );
 };
 
-// const useSelectedIndex = () => {
-//   const [itemLength, setItemLength] = useState(0);
-//   const [selectedIndex, setSelectedIndex] = useState(-1);
-//   const onKeyDown = useCallback(
-//     (e: React.KeyboardEvent) => {
-//       if (e.key === "ArrowDown") {
-//         setSelectedIndex((prev) => Math.min(prev + 1, itemLength));
-//       } else if (e.key === "ArrowUp") {
-//         setSelectedIndex((prev) => Math.max(prev - 1, -1));
-//       }
-//     },
-//     [setSelectedIndex, itemLength]
-//   );
-//   const triggerClick = useCallback(() => {
-//     const item = document.querySelector(
-//       `.suggest-result [aria-selected="true"]`
-//     ) as HTMLElement;
-//     console.log("triggerClick", item);
-//     if (item != null) {
-//       item.click();
-//     }
-//   }, []);
-//   useEffect(() => {
-//     setSelectedIndex(-1);
-//   }, [itemLength]);
-//   return { selectedIndex, onKeyDown, setItemLength, triggerClick };
-// };
-
 export const AutoSuggest = () => {
   const { query: globalQuery, setQuery } = useQuery();
-  const parentRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+
+  const { inputRef, close } = useDropdownFocus();
+  const parentRef = useArrowKeyNavigation<HTMLFieldSetElement>(
+    ".suggest-result button",
+    {
+      onEscape: close,
+      onNotFound: () => inputRef.current?.focus(),
+    }
+  );
   const { left, updatePosition } = useCursorPosition(inputRef, {
     useCursorPosition: false,
   });
-  const [value, setValue] = useState<string | null>(globalQuery.query ?? "");
-  // const { onKeyDown, selectedIndex, setItemLength, triggerClick } =
-  //   useSelectedIndex();
 
   const {
     suggestions,
     setValue: setTerm,
     possibleTriggers,
     smartQuery,
-    //items,
   } = useSuggestions();
 
-  //const [open, setOpen] = useState(false);
-
-  // useEffect(() => {
-  //   requestAnimationFrame(() => {
-  //     setTerm(value === "*" ? "" : value);
-  //     updatePosition();
-  //   });
-  // }, [value, setTerm, updatePosition]);
-
-  // useEffect(() => {
-  //   setItemLength(items.length);
-  // }, [items]);
-
-  // const [hasResults, showItems] = useMemo(() => {
-  //   const a = items.length > 0;
-  //   return [a, open && a];
-  // }, [items, open]);
-
-  const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const input = e.target as HTMLInputElement;
-    const isAtEnd = input.selectionEnd == input.value.length;
-    const bestSuggestion = suggestions[0];
-    if (e.key === "Enter") {
-      if ((e.ctrlKey || e.altKey || e.metaKey) && smartQuery?.string?.length) {
-        setQuery(smartQuery);
-      } else {
-        console.log("onKeyUp", { e });
-        // if (selectedIndex > -1) {
-        //   triggerClick();
-        //   return;
-        // }
-        if (input.value != null) {
-          setQuery((prev) => ({
-            ...prev,
-            string: [],
-            range: [],
-            page: 0,
-            query: input.value,
-          }));
+  const onKeyUp = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      const input = e.currentTarget;
+      const isAtEnd = input.selectionEnd == input.value.length;
+      const bestSuggestion = suggestions[0];
+      if (e.key === "Enter" && (e.altKey || e.metaKey) && smartQuery != null) {
+        e.preventDefault();
+        if (smartQuery != null) {
+          setQuery(smartQuery);
         }
       }
+      if (isAtEnd && e.key === "ArrowRight" && bestSuggestion != null) {
+        const query = [...bestSuggestion.other, bestSuggestion.match]
+          .filter((d) => d != null && d.length > 0)
+          .join(" ");
 
-      return;
-    } else if (isAtEnd && e.key === "ArrowRight" && bestSuggestion != null) {
-      const query = [...bestSuggestion.other, bestSuggestion.match]
-        .filter((d) => d != null && d.length > 0)
-        .join(" ");
-      //setValue(query);
-      input.value = query;
-      setTerm(query);
-      //setGlobalTerm(query);
-    }
-    //setOpen(true);
-  };
-
-  // useEffect(() => {
-  //   const close = () => setOpen(false);
-  //   globalThis.document.addEventListener("click", close);
-  //   return () => globalThis.document.removeEventListener("click", close);
-  // }, []);
-
-  // useEffect(() => {
-  //   setOpen(false);
-  // }, [globalQuery]);
-
-  const { query } = globalQuery;
-  useEffect(() => {
-    if (query != null && inputRef.current != null) {
-      inputRef.current.value = query;
-    }
-  }, [query]);
+        input.value = query;
+        setTerm(query);
+      }
+    },
+    [suggestions, setTerm, smartQuery]
+  );
 
   useEffect(() => {
-    if (parentRef.current != null) {
-      const ref = parentRef.current;
-      const clickHandler = (e: MouseEvent) => {
-        e.stopPropagation();
-        inputRef.current?.focus();
-      };
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") {
-          inputRef.current?.blur();
-        } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-          const step = e.key === "ArrowDown" ? 1 : -1;
-          e.stopPropagation();
-          e.preventDefault();
-
-          const possible: HTMLButtonElement[] = Array.from(
-            document.querySelectorAll(".suggest-result button")
-          );
-          const index = possible.findIndex((d) => d === document.activeElement);
-          possible[index + step]?.focus();
-          return false;
-        }
-      };
-
-      ref.addEventListener("click", clickHandler);
-      ref.addEventListener("keydown", handleKeyDown);
-      return () => {
-        ref.removeEventListener("click", clickHandler);
-        ref.removeEventListener("keydown", handleKeyDown);
-      };
+    if (globalQuery.query != null && inputRef.current != null) {
+      inputRef.current.value = globalQuery.query;
     }
-  }, [parentRef]);
+    close();
+  }, [globalQuery, inputRef]);
 
   useEffect(() => {
-    if (inputRef.current != null) {
-      const elm = inputRef.current;
-      const targetId = inputRef.current.getAttribute("aria-controls");
-      const targetElm =
-        targetId != null ? document.getElementById(targetId) : undefined;
-
+    const elm = inputRef.current;
+    if (elm != null) {
       const changeHandler = (e: Event) => {
-        const input = e.target as HTMLInputElement;
-        //setValue(input.value);
+        const term = (e.target as HTMLInputElement)?.value;
+
         requestAnimationFrame(() => {
-          setTerm(input.value);
+          if (term != null) {
+            setTerm(term);
+          }
           updatePosition();
         });
       };
-      const focusHandler = (e: FocusEvent) => {
-        //console.log("focusHandler", { targetElm, targetId });
-        targetElm?.setAttribute("aria-hidden", "false");
-        elm.setAttribute("aria-expanded", "true");
-      };
-      const blurHandler = (e: FocusEvent) => {
-        // console.log("blurHandler", e);
-        // const input = e.target as HTMLInputElement;
-        const focusElement = e.relatedTarget as HTMLElement;
-        const shouldClose =
-          focusElement == null ||
-          !(
-            focusElement.classList.contains("smart-query") ||
-            focusElement.classList.contains("trie") ||
-            focusElement.parentElement == targetElm
-          );
-        if (shouldClose) {
-          requestAnimationFrame(() => {
-            targetElm?.setAttribute("aria-hidden", "true");
-            elm.setAttribute("aria-expanded", "false");
-          });
-        }
-      };
-      //setValue(elm.value);
+
       setTerm(elm.value);
       elm.addEventListener("input", changeHandler);
-      elm.addEventListener("focus", focusHandler);
-      elm.addEventListener("blur", blurHandler);
 
       return () => {
-        elm?.removeEventListener("input", changeHandler);
-        elm?.removeEventListener("focus", focusHandler);
-        elm?.removeEventListener("blur", blurHandler);
-        targetElm?.setAttribute("aria-hidden", "true");
-        elm?.setAttribute("aria-expanded", "false");
+        elm.removeEventListener("input", changeHandler);
       };
     }
   }, [inputRef, updatePosition, setTerm]);
 
   return (
-    <div ref={parentRef}>
-      <div
-        className={cm(
-          "relative md:flex-1 flex flex-col md:block border-gray-200"
-          //"border-b md:border-b-0"
-        )}
-      >
-        <input
-          ref={inputRef}
-          accessKey="f"
-          className={cm(
-            "w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden",
-            "md:rounded-md suggest-input"
-          )}
-          type="search"
-          id="autosuggest-input"
-          autoComplete="none"
-          //onKeyDown={onKeyDown}
-          //value={value ?? ""}
-          defaultValue={value ?? ""}
-          aria-controls="suggestion-results"
-          placeholder="Search..."
-          // onFocus={() => {
-          //   //e.target.select();
-          //   setOpen(true);
-          // }}
-          onKeyUp={onKeyUp}
-          //onChange={(e) => setValue(e.target.value)}
-        />
-        <TrieSuggestions
-          onQueryChange={setValue}
-          //open={open}
-          left={left}
-          toShow={1}
-          max={5}
-        />
+    <form
+      onSubmit={(e) => {
+        const { query } = Object.fromEntries(
+          new FormData(e.target as HTMLFormElement)
+        );
+        e.preventDefault();
 
-        {smartQuery != null && (
-          <button
-            onClick={() => smartQuery != null && setQuery(smartQuery)}
-            className={cm(
-              "smart-query transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs"
-              // open && possibleTriggers != null
-              //   ? "animate-pop"
-              //   : "opacity-0 pointer-events-none"
-            )}
-          >
-            {possibleTriggers?.map(({ result }) =>
-              result[0]?.score > MIN_FUZZY_SCORE ? (
-                <span key={result[0].obj.value}>
-                  {result[0].obj.name}{" "}
-                  <span className="font-bold">{result[0].obj.value}</span>
-                </span>
-              ) : null
-            )}
-            {smartQuery?.query != null && smartQuery.query.length > 1 && (
-              <span className="hidden md:block">
-                Sökning: <span className="font-bold">{smartQuery.query}</span>
-              </span>
-            )}
-            <span
-              aria-label="option + enter to search"
-              className="text-[10px] hidden md:block"
+        if (query != null && typeof query === "string" && query.length > 0) {
+          setQuery((prev) => ({
+            ...prev,
+            string: [],
+            range: [],
+            page: 0,
+            query: query,
+          }));
+        }
+      }}
+    >
+      <fieldset ref={parentRef}>
+        <div className="relative md:flex-1 flex flex-col md:block border-gray-200">
+          <input
+            ref={inputRef}
+            accessKey="f"
+            className="w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden md:rounded-md suggest-input"
+            type="search"
+            onKeyUp={onKeyUp}
+            name="query"
+            id="autosuggest-input"
+            autoComplete="off"
+            defaultValue={globalQuery.query ?? ""}
+            aria-controls="suggestion-results"
+            placeholder="Search..."
+          />
+          <TrieSuggestions
+            onQueryChange={(v) => {
+              if (inputRef.current != null) {
+                inputRef.current.value = v;
+              }
+            }}
+            //open={open}
+            left={left}
+            toShow={1}
+            max={5}
+          />
+
+          {smartQuery != null && (
+            <button
+              onClick={() => smartQuery != null && setQuery(smartQuery)}
+              className="smart-query transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs"
             >
-              ⌥ + ↵
-            </span>
-          </button>
-        )}
+              {possibleTriggers?.map(({ result }) =>
+                result[0]?.score > MIN_FUZZY_SCORE ? (
+                  <span key={result[0].obj.value}>
+                    {result[0].obj.name}{" "}
+                    <span className="font-bold">{result[0].obj.value}</span>
+                  </span>
+                ) : null
+              )}
+              {smartQuery?.query != null && smartQuery.query.length > 1 && (
+                <span className="hidden md:block">
+                  Sökning: <span className="font-bold">{smartQuery.query}</span>
+                </span>
+              )}
+              <span
+                aria-label="option + enter to search"
+                className="text-[10px] hidden md:block"
+              >
+                ⌥ + ↵
+              </span>
+            </button>
+          )}
 
-        <Search
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          aria-hidden="true"
-          size={20}
+          <Search
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            aria-hidden="true"
+            size={20}
+          />
+        </div>
+        <SuggestionResults
+          //open={showItems}
+          //selectedIndex={selectedIndex}
+          onClose={close}
         />
-      </div>
-      <SuggestionResults
-        //open={showItems}
-        //selectedIndex={selectedIndex}
-        onClose={() => {
-          inputRef.current?.setAttribute("aria-expanded", "false");
-        }}
-      />
-    </div>
+      </fieldset>
+    </form>
   );
 };
 
@@ -388,11 +255,7 @@ const SuggestionResults = ({
       id="suggestion-results"
       aria-labelledby="autosuggest-input"
       aria-label="Suggestion results"
-      className={cm(
-        "transition-opacity md:rounded-md md:border md:border-gray-300 bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
-        //open ? "opacity-100" : "opacity-0"
-      )}
-      onClick={(e) => e.stopPropagation()}
+      className="transition-opacity md:rounded-md md:border md:border-gray-300 bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
     >
       {items.map((item, idx) => (
         <SuggestSelector
@@ -417,14 +280,12 @@ const SuggestedProduct = (item: SuggestedProduct & { index: number }) => {
   const { track } = useTracking();
   const navigate = useNavigate();
   return (
-    <ItemContainer
-      as="button"
-      //selected={item.selected}
+    <button
       onClick={() => {
         track({ type: "click", item: toEcomTrackingEvent(item, item.index) });
         navigate(`/product/${id}`);
       }}
-      className="items-center relative"
+      className="p-2 flex gap-2 w-full text-left items-center relative"
     >
       <img
         src={makeImageUrl(img)}
@@ -448,7 +309,7 @@ const SuggestedProduct = (item: SuggestedProduct & { index: number }) => {
           </em>
         )}
       </div>
-    </ItemContainer>
+    </button>
   );
 };
 
@@ -513,7 +374,6 @@ QueryRefinement) => {
   return (
     <ItemContainer
       as="button"
-      //selected={selected}
       className="items-center"
       onClick={() => {
         const first = items?.[0];
@@ -528,7 +388,7 @@ QueryRefinement) => {
       <span>{query}</span> i
       <div className="flex gap-2 flex-nowrap overflow-x-auto items-center flex-1">
         {items?.slice(0, 3).map(({ value, hits }) => (
-          <button
+          <span
             key={value}
             className="shrink-0 border line-clamp-1 text-ellipsis border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
             onClick={() => {
@@ -541,7 +401,7 @@ QueryRefinement) => {
             }}
           >
             {value} ({hits})
-          </button>
+          </span>
         ))}
       </div>
     </ItemContainer>
@@ -550,12 +410,11 @@ QueryRefinement) => {
 
 const ItemContainer = <T extends keyof HTMLElementTagNameMap>({
   children,
-  //selected,
+
   as,
   className,
   ...props
 }: {
-  //selected: boolean;
   children: ReactNode[];
   as: T;
 } & Omit<HTMLAttributes<T>, "children">) => {
@@ -574,15 +433,9 @@ const ItemContainer = <T extends keyof HTMLElementTagNameMap>({
   );
 };
 
-const SuggestedQuery = ({
-  query,
-  fields,
-}: //selected,
-SuggestQuery) => {
+const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
   const { setQuery } = useQuery();
-  // if (fields == null || fields.length === 0) {
-  //   return null;
-  // }
+
   const updateQuery =
     (id?: number, value?: string): MouseEventHandler<unknown> =>
     (e) => {
@@ -599,7 +452,6 @@ SuggestQuery) => {
     <ItemContainer
       as="button"
       className={"items-center"}
-      //  selected={selected}
       onClick={updateQuery(fields[0]?.id, fields[0]?.values?.[0]?.value)}
     >
       <SearchIcon className="size-5 shrink-0" />
