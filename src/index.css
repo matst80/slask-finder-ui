@@ -201,6 +201,32 @@
 
   }
 
+  .dropdown {
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .dropdown[aria-hidden="false"] {
+    display: block;
+    opacity: 1;
+  }
+
+  .dropdown[aria-hidden="true"] {
+    display: none;
+    opacity: 0;
+  }
+
+  .dropdown-item {
+    padding: 0.5rem 1rem;
+    width: 100%;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .dropdown-item:focus,
+  .dropdown-item:active {
+    background-color: var(--color-gray-300);
+    outline: none;
+  }
+
   .suggest-result *:focus,
   .suggest-result *:active {
     background-color: var(--color-gray-300);

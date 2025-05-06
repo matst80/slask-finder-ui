@@ -1,10 +1,17 @@
 import React from "react";
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  ref?: React.Ref<HTMLInputElement>;
+}
 
-export const Input: React.FC<InputProps> = ({ className = "", ...props }) => {
+export const Input: React.FC<InputProps> = ({
+  className = "",
+  ref,
+  ...props
+}) => {
   return (
     <input
+      ref={ref}
       className={`
         w-full px-3 py-2
         bg-white

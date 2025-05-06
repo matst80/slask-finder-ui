@@ -195,6 +195,8 @@ export type RelationGroup = {
   key: string;
   groupId: number;
   name: string;
+  include_ids: number[];
+  exclude_ids: number[];
   requiredForItem: RelationMatch[];
   additionalQueries?: RelationMatch[];
   relations: Relation[];

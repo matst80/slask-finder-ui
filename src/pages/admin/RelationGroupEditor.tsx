@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useAdminRelationGroups, useFacetMap } from "../../hooks/searchHooks";
 import {
   FacetListItem,
@@ -13,34 +13,9 @@ import fuzzysort from "fuzzysort";
 import { Input } from "../../components/ui/input";
 import { QueryPreview } from "../../components/QueryPreview";
 import { cm } from "../../utils";
-
-const useClickOutside = (fn: () => void) => {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        fn();
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [fn]);
-  return ref;
-};
-
-const keyboardNavigation = (e: React.KeyboardEvent) => {
-  if (e.key === "ArrowDown") {
-    e.preventDefault();
-    const current = document.activeElement;
-    console.log("current", current);
-  } else if (e.key === "ArrowUp") {
-    e.preventDefault();
-    const current = document.activeElement;
-    console.log("current", current);
-  }
-};
+import { useDropdownFocus } from "../../components/useDropdownFocus";
+import { useArrowKeyNavigation } from "../../components/useArrowKeyNavigation";
+import { i } from "framer-motion/client";
 
 const FacetValueTagEditor = ({
   data,
@@ -51,12 +26,17 @@ const FacetValueTagEditor = ({
   data: string[];
   onChange: (data: string[]) => void;
 }) => {
+  const id = useId();
   const { data: facetValues } = useFieldValues(facetId);
-  const [open, setOpen] = useState(false);
+
   const [tags, setTags] = useState<string[]>(data);
   const [value, setValue] = useState<string>("");
-  const ref = useClickOutside(() => {
-    setOpen(false);
+  const { inputRef, open, close } = useDropdownFocus();
+  const parentRef = useArrowKeyNavigation<HTMLDivElement>(`#${id} button`, {
+    onEscape: close,
+    onNotFound: (activeElement) => {
+      inputRef.current?.focus();
+    },
   });
 
   const filteredData = useMemo(() => {
@@ -70,10 +50,6 @@ const FacetValueTagEditor = ({
     });
     return [...filtered.map((f) => f.target)];
   }, [facetValues, value]);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [tags]);
 
   useEffect(() => {
     if (tags !== data) {
@@ -99,14 +75,14 @@ const FacetValueTagEditor = ({
           </button>
         </div>
       ))}
-      <div ref={ref} className="relative">
+      <div ref={parentRef} className="relative">
         <input
-          type="text"
+          ref={inputRef}
           value={value}
-          onFocus={() => setOpen(true)}
           onChange={(e) => setValue(e.target.value)}
-          onKeyUp={keyboardNavigation}
-          placeholder="Add a tag"
+          type="search"
+          aria-controls={id}
+          placeholder="Search for a value"
           className="border border-gray-300 rounded-md px-2 py-1 peer"
           onKeyDown={(e) => {
             if (e.key === "Enter" && value.trim() !== "") {
@@ -115,27 +91,27 @@ const FacetValueTagEditor = ({
             }
           }}
         />
-        {filteredData.length > 0 && (
-          <div
-            className={cm(
-              open ? "flex" : "hidden",
-              "absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex-col z-10 max-h-60"
-            )}
-          >
-            {filteredData.map((text) => (
-              <button
-                key={text}
-                onClick={() => {
-                  setTags((prev) => [...prev, text]);
-                  setValue("");
-                }}
-                className="text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-0"
-              >
-                {text}
-              </button>
-            ))}
-          </div>
-        )}
+
+        <div
+          id={id}
+          aria-hidden="true"
+          className={
+            "absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex-col z-10 max-h-60 dropdown"
+          }
+        >
+          {filteredData.map((text) => (
+            <button
+              key={text}
+              onClick={() => {
+                setTags((prev) => [...prev, text]);
+                setValue("");
+              }}
+              className="text-left px-3 py-2 border-b border-gray-100 last:border-0 dropdown-item"
+            >
+              {text}
+            </button>
+          ))}
+        </div>
       </div>
       <button
         onClick={() => {
@@ -226,6 +202,12 @@ const FacetInput = ({
   onChange: (id: number) => void;
   labelFormatter?: (facet: FacetListItem | undefined) => string;
 }) => {
+  const id = useId();
+  const { inputRef, close } = useDropdownFocus();
+  const parentRef = useArrowKeyNavigation<HTMLDivElement>(`#${id} button`, {
+    onEscape: close,
+    onNotFound: () => inputRef.current?.focus(),
+  });
   const { data } = useFacetMap();
   const [filter, setFilter] = useState("");
   const facet = useMemo(() => {
@@ -236,6 +218,7 @@ const FacetInput = ({
       key: "name",
       limit: 20,
       threshold: 0.4,
+      all: filter.length < 1,
     });
   }, [data, filter]);
 
@@ -244,26 +227,31 @@ const FacetInput = ({
       <span className="text-sm font-medium text-gray-700">
         {labelFormatter?.(facet) ?? facet?.name ?? `Loading (${facetId})`}
       </span>
-      <div className="relative">
+      <div className="relative" ref={parentRef}>
         <Input
           value={filter}
+          aria-controls={id}
+          ref={inputRef}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Filter facets"
           className="w-full"
         />
-        {filteredData.length > 0 && (
-          <div className="absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex flex-col z-10 max-h-60">
-            {filteredData.map((facet) => (
-              <button
-                key={facet.obj.id}
-                onClick={() => onChange(facet.obj.id)}
-                className="text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-0"
-              >
-                {facet.target}
-              </button>
-            ))}
-          </div>
-        )}
+
+        <div
+          id={id}
+          aria-hidden="true"
+          className="absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto z-10 max-h-60 dropdown"
+        >
+          {filteredData.map((facet) => (
+            <button
+              key={facet.obj.id}
+              onClick={() => onChange(facet.obj.id)}
+              className="text-left px-3 py-2 dropdown-item border-b border-gray-100 last:border-0"
+            >
+              {facet.target}
+            </button>
+          ))}
+        </div>
       </div>
     </label>
   );
@@ -288,7 +276,7 @@ const RelationMatchEditor = ({
           }}
         />
 
-        <label className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700">
               Value{" "}
@@ -348,7 +336,7 @@ const RelationMatchEditor = ({
               });
             }}
           /> */}
-        </label>
+        </div>
       </div>
     </div>
   );
