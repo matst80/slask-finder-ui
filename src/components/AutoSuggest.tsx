@@ -2,7 +2,6 @@ import {
   createElement,
   HTMLAttributes,
   MouseEventHandler,
-  PropsWithChildren,
   ReactNode,
   useCallback,
   useEffect,
@@ -12,7 +11,7 @@ import {
 } from "react";
 import { ChevronUp, Lightbulb, Search, SearchIcon } from "lucide-react";
 import { cm, makeImageUrl } from "../utils";
-import { Link, useNavigate, useNavigation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
 import { StockBalloon } from "./ResultItem";
 import { useSuggestions } from "../lib/hooks/useSuggestions";
