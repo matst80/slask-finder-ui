@@ -12,10 +12,8 @@ import { PlusIcon, TrashIcon, ChevronUp } from "lucide-react";
 import fuzzysort from "fuzzysort";
 import { Input } from "../../components/ui/input";
 import { QueryPreview } from "../../components/QueryPreview";
-import { cm } from "../../utils";
 import { useDropdownFocus } from "../../components/useDropdownFocus";
 import { useArrowKeyNavigation } from "../../components/useArrowKeyNavigation";
-import { i } from "framer-motion/client";
 
 const FacetValueTagEditor = ({
   data,
@@ -31,10 +29,10 @@ const FacetValueTagEditor = ({
 
   const [tags, setTags] = useState<string[]>(data);
   const [value, setValue] = useState<string>("");
-  const { inputRef, open, close } = useDropdownFocus();
+  const { inputRef, close } = useDropdownFocus();
   const parentRef = useArrowKeyNavigation<HTMLDivElement>(`#${id} button`, {
     onEscape: close,
-    onNotFound: (activeElement) => {
+    onNotFound: () => {
       inputRef.current?.focus();
     },
   });
@@ -265,7 +263,7 @@ const RelationMatchEditor = ({
 
   return (
     <div className="flex flex-col gap-4 p-4 bg-white rounded-xs border border-gray-200">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="flex gap-4">
         <FacetInput
           id={facetId}
           onChange={(id) => {
@@ -418,6 +416,52 @@ const AddButton = ({ onClick }: { onClick: () => void }) => {
   );
 };
 
+const ArticleIdSelector = ({
+  value = [],
+  onChange,
+}: {
+  value: number[];
+  onChange: (data: number[]) => void;
+}) => {
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (inputRef.current != null) {
+      const ids = value.join("\n");
+      inputRef.current.value = ids;
+    }
+    const changeHandler = (e: Event) => {
+      console.log("changeHandler", e);
+      const text = (e.target as HTMLTextAreaElement).value;
+      const ids = text
+        .split("\n")
+        .map((d) => d.trim())
+        .filter((d) => d.length > 0)
+        .map((d) => parseInt(d, 10))
+        .filter((d) => !isNaN(d));
+      onChange(ids);
+    };
+    inputRef.current?.addEventListener("change", changeHandler);
+    return () => {
+      inputRef.current?.removeEventListener("change", changeHandler);
+    };
+  }, [value]);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">Article IDs</label>
+        <textarea
+          ref={inputRef}
+          className="w-full px-3 py-2 border border-gray-200 rounded-xs text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          rows={6}
+          defaultValue={""}
+          placeholder="Article ids, one per line"
+        />
+      </div>
+    </div>
+  );
+};
+
 const GroupEditor = ({
   group: value,
   onChange,
@@ -482,6 +526,25 @@ const GroupEditor = ({
                   });
                 }}
                 placeholder="Group name"
+              />
+            </div>
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-gray-700">Include</h3>
+            <div className="w-full">
+              <ArticleIdSelector
+                value={value.include_ids}
+                onChange={(include_ids) => onChange({ ...value, include_ids })}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-gray-700">Exclude</h3>
+            <div className="w-full">
+              <ArticleIdSelector
+                value={value.exclude_ids}
+                onChange={(exclude_ids) => onChange({ ...value, exclude_ids })}
               />
             </div>
           </div>
@@ -658,6 +721,8 @@ export const RelationGroupEditor = () => {
                     name: "New group",
                     key: `new-${groups.length}`,
                     groupId: groups.length + 1,
+                    include_ids: [],
+                    exclude_ids: [],
                     additionalQueries: [],
                     relations: [],
                     requiredForItem: [],
