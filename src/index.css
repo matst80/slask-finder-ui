@@ -197,17 +197,19 @@
   .suggest-result {
     position: absolute;
     position-anchor: --suggestfield;
-    top: calc(anchor(bottom)-1px);
+    top: calc(anchor(bottom) - 1px);
     left: anchor(left);
     right: anchor(right);
+  }
 
-    &[aria-hidden="true"] {
-      opacity: 0;
-    }
+  .suggest-result[aria-hidden="true"] {
+    display: none;
+    opacity: 0;
+  }
 
-    &[aria-hidden="false"] {
-      opacity: 1;
-    }
+  .suggest-result[aria-hidden="false"] {
+    display: block;
+    opacity: 1;
   }
 
 

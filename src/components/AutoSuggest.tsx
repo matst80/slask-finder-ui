@@ -222,12 +222,16 @@ export const AutoSuggest = () => {
         const focusElement = e.relatedTarget as HTMLElement;
         const shouldClose =
           focusElement == null ||
-          !focusElement.classList.contains("smart-query") ||
-          !focusElement.classList.contains("trie") ||
-          focusElement.parentElement != targetElm;
+          !(
+            focusElement.classList.contains("smart-query") ||
+            focusElement.classList.contains("trie") ||
+            focusElement.parentElement == targetElm
+          );
         if (shouldClose) {
-          targetElm?.setAttribute("aria-hidden", "true");
-          elm.setAttribute("aria-expanded", "false");
+          requestAnimationFrame(() => {
+            targetElm?.setAttribute("aria-hidden", "true");
+            elm.setAttribute("aria-expanded", "false");
+          });
         }
       };
       //setValue(elm.value);
@@ -250,8 +254,8 @@ export const AutoSuggest = () => {
     <>
       <div
         className={cm(
-          "relative md:flex-1 flex flex-col md:block border-gray-200",
-          "border-b md:border-b-0"
+          "relative md:flex-1 flex flex-col md:block border-gray-200"
+          //"border-b md:border-b-0"
         )}
         // onClick={(e) => {
         //   e.stopPropagation();
@@ -266,10 +270,10 @@ export const AutoSuggest = () => {
             "md:rounded-md focus:md:rounded-b-none suggest-input"
           )}
           type="search"
+          id="autosuggest-input"
           onKeyDown={onKeyDown}
           //value={value ?? ""}
           defaultValue={value ?? ""}
-          aria-autocomplete="list"
           aria-controls="suggestion-results"
           placeholder="Search..."
           // onFocus={() => {
@@ -350,8 +354,10 @@ const SuggestionResults = ({
   return (
     <div
       id="suggestion-results"
+      aria-labelledby="autosuggest-input"
+      aria-label="Suggestion results"
       className={cm(
-        "transition-all md:rounded-b md:border md:border-t-white md:border-gray-300 block bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
+        "transition-opacity md:rounded-b md:border md:border-t-white md:border-gray-300 bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
         //open ? "opacity-100" : "opacity-0"
       )}
       onClick={(e) => e.stopPropagation()}
@@ -534,7 +540,7 @@ const ItemContainer = <T extends keyof HTMLElementTagNameMap>({
     {
       ...props,
       className: cm(
-        "p-2 flex gap-2 cursor-pointer w-full",
+        "p-2 flex gap-2 cursor-pointer w-full text-left",
         className,
         selected ? "bg-blue-200 hover:bg-blue-400" : "hover:bg-gray-100"
       ),
