@@ -81,13 +81,13 @@ const TrieSuggestions = ({
 
 const useSelectedIndex = () => {
   const [itemLength, setItemLength] = useState(0);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "ArrowDown") {
         setSelectedIndex((prev) => Math.min(prev + 1, itemLength));
       } else if (e.key === "ArrowUp") {
-        setSelectedIndex((prev) => Math.max(prev - 1, 0));
+        setSelectedIndex((prev) => Math.max(prev - 1, -1));
       }
     },
     [setSelectedIndex, itemLength]
@@ -102,7 +102,7 @@ const useSelectedIndex = () => {
     }
   }, []);
   useEffect(() => {
-    setSelectedIndex(0);
+    setSelectedIndex(-1);
   }, [itemLength]);
   return { selectedIndex, onKeyDown, setItemLength, triggerClick };
 };
@@ -151,11 +151,12 @@ export const AutoSuggest = () => {
       if ((e.ctrlKey || e.altKey || e.metaKey) && smartQuery?.string?.length) {
         setQuery(smartQuery);
       } else {
-        if (selectedIndex > 0) {
+        console.log("onKeyUp", { selectedIndex, value: input.value });
+        if (selectedIndex > -1) {
           triggerClick();
           return;
         }
-        if (input.value == null || input.value.length < 2) {
+        if (input.value != null) {
           setQuery((prev) => ({
             ...prev,
             string: [],
