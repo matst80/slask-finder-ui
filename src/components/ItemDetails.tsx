@@ -103,6 +103,11 @@ const CarouselItem = ({ children }: PropsWithChildren) => {
 
 export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
   const { data, isLoading } = useCompatibleItems(id, []);
+  const productTypes = useMemo(() => {
+    return Array.from(
+      new Set(data?.map((item) => item.values[31158]).filter(isDefined))
+    );
+  }, [data]);
 
   return (
     <ProductCarouselContainer list_id="compatible" list_name="Compatible">
@@ -294,7 +299,7 @@ const RelationGroupCarousel = ({
   );
 };
 
-const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
+const RelationGroups = ({ values, id }: Pick<ItemDetail, "values" | "id">) => {
   const { data } = useRelationGroups();
   const validGroups = useMemo(() => {
     return (
@@ -305,6 +310,7 @@ const RelationGroups = ({ values }: Pick<ItemDetail, "values">) => {
       ) ?? []
     );
   }, [values, data]);
+  if (validGroups.length === 0) return <CompatibleItems id={id} />;
   return (
     <div>
       {validGroups.map((group, idx) => {
@@ -503,7 +509,7 @@ export const ItemDetails = (details: ItemDetail) => {
         {/* Bottom Sections */}
         <div className="mt-6 space-y-6 md:mt-16 md:space-y-16">
           <BreadCrumbs values={values} />
-          <RelationGroups values={values} />
+          <RelationGroups values={values} id={id} />
 
           <div className="animating-element">
             <GroupedProperties values={details.values} />

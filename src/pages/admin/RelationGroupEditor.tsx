@@ -426,7 +426,7 @@ const ArticleIdSelector = ({
   const inputRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     if (inputRef.current != null) {
-      const ids = value.join("\n");
+      const ids = (value ?? []).join("\n");
       inputRef.current.value = ids;
     }
     const changeHandler = (e: Event) => {
