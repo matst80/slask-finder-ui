@@ -2,14 +2,14 @@ import { useMemo } from "react";
 import { X } from "lucide-react";
 import { FacetListItem, Field, isNumberValue } from "../lib/types";
 import { stores } from "../lib/datalayer/stores";
-import { useFacetList } from "../hooks/searchHooks";
+import { useFacetMap } from "../hooks/searchHooks";
 import { useQuery } from "../lib/hooks/useQuery";
 import { isDefined } from "../utils";
 
-function toFilter(facets?: FacetListItem[]) {
+function toFilter(facets?: Record<number, FacetListItem>) {
   return (data: Field) => {
-    const field = facets?.find((field) => field.id === data?.id);
-    if (field == null) return null;
+    const field = facets?.[data?.id];
+    if (field == null || field.hide) return null;
 
     const value = isNumberValue(data)
       ? field.valueType === "currency"
@@ -42,7 +42,7 @@ const FilterItem = ({ name, value, onClick }: FilterItemProps) => {
 };
 
 export const CurrentFilters = () => {
-  const { data } = useFacetList();
+  const { data } = useFacetMap();
   const {
     query: { stock },
     setStock,

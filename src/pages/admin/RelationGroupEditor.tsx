@@ -30,6 +30,18 @@ const useClickOutside = (fn: () => void) => {
   return ref;
 };
 
+const keyboardNavigation = (e: React.KeyboardEvent) => {
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    const current = document.activeElement;
+    console.log("current", current);
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    const current = document.activeElement;
+    console.log("current", current);
+  }
+};
+
 const FacetValueTagEditor = ({
   data,
   facetId,
@@ -93,6 +105,7 @@ const FacetValueTagEditor = ({
           value={value}
           onFocus={() => setOpen(true)}
           onChange={(e) => setValue(e.target.value)}
+          onKeyUp={keyboardNavigation}
           placeholder="Add a tag"
           className="border border-gray-300 rounded-md px-2 py-1 peer"
           onKeyDown={(e) => {

@@ -1,7 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createElement,
+  HTMLAttributes,
+  MouseEventHandler,
+  PropsWithChildren,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ChevronUp, Lightbulb, Search, SearchIcon } from "lucide-react";
 import { cm, makeImageUrl } from "../utils";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useNavigation } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
 import { StockBalloon } from "./ResultItem";
 import { useSuggestions } from "../lib/hooks/useSuggestions";
@@ -66,6 +77,34 @@ const TrieSuggestions = ({
   );
 };
 
+const useSelectedIndex = () => {
+  const [itemLength, setItemLength] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "ArrowDown") {
+        setSelectedIndex((prev) => Math.min(prev + 1, itemLength));
+      } else if (e.key === "ArrowUp") {
+        setSelectedIndex((prev) => Math.max(prev - 1, 0));
+      }
+    },
+    [setSelectedIndex, itemLength]
+  );
+  const triggerClick = useCallback(() => {
+    const item = document.querySelector(
+      `.suggest-result [aria-selected="true"]`
+    ) as HTMLElement;
+    console.log("triggerClick", item);
+    if (item != null) {
+      item.click();
+    }
+  }, []);
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [itemLength]);
+  return { selectedIndex, onKeyDown, setItemLength, triggerClick };
+};
+
 export const AutoSuggest = () => {
   const { query: globalQuery, setQuery } = useQuery();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -73,6 +112,8 @@ export const AutoSuggest = () => {
     useCursorPosition: false,
   });
   const [value, setValue] = useState<string | null>(globalQuery.query ?? "");
+  const { onKeyDown, selectedIndex, setItemLength, triggerClick } =
+    useSelectedIndex();
 
   const {
     suggestions,
@@ -91,46 +132,48 @@ export const AutoSuggest = () => {
     });
   }, [value, setTerm, updatePosition]);
 
+  useEffect(() => {
+    setItemLength(items.length);
+  }, [items]);
+
   const [hasResults, showItems] = useMemo(() => {
     const a = items.length > 0;
     return [a, open && a];
   }, [items, open]);
 
-  const onKeyUp = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      const input = e.target as HTMLInputElement;
-      const isAtEnd = input.selectionEnd == input.value.length;
-      const bestSuggestion = suggestions[0];
-      if (e.key === "Enter") {
-        if (
-          (e.ctrlKey || e.altKey || e.metaKey) &&
-          smartQuery?.string?.length
-        ) {
-          setQuery(smartQuery);
-        } else {
-          if (hasResults || input.value == null || input.value.length < 2) {
-            setQuery((prev) => ({
-              ...prev,
-              string: [],
-              range: [],
-              page: 0,
-              query: input.value,
-            }));
-          }
+  const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const input = e.target as HTMLInputElement;
+    const isAtEnd = input.selectionEnd == input.value.length;
+    const bestSuggestion = suggestions[0];
+    if (e.key === "Enter") {
+      if ((e.ctrlKey || e.altKey || e.metaKey) && smartQuery?.string?.length) {
+        setQuery(smartQuery);
+      } else {
+        if (selectedIndex > 0) {
+          triggerClick();
+          return;
         }
-
-        return;
-      } else if (isAtEnd && e.key === "ArrowRight" && bestSuggestion != null) {
-        const query = [...bestSuggestion.other, bestSuggestion.match]
-          .filter((d) => d != null && d.length > 0)
-          .join(" ");
-        setValue(query);
-        //setGlobalTerm(query);
+        if (hasResults || input.value == null || input.value.length < 2) {
+          setQuery((prev) => ({
+            ...prev,
+            string: [],
+            range: [],
+            page: 0,
+            query: input.value,
+          }));
+        }
       }
-      setOpen(true);
-    },
-    [suggestions, smartQuery, setQuery, hasResults]
-  );
+
+      return;
+    } else if (isAtEnd && e.key === "ArrowRight" && bestSuggestion != null) {
+      const query = [...bestSuggestion.other, bestSuggestion.match]
+        .filter((d) => d != null && d.length > 0)
+        .join(" ");
+      setValue(query);
+      //setGlobalTerm(query);
+    }
+    setOpen(true);
+  };
 
   useEffect(() => {
     const close = () => setOpen(false);
@@ -169,6 +212,7 @@ export const AutoSuggest = () => {
             "md:rounded-md focus:md:rounded-b-none suggest-input"
           )}
           type="search"
+          onKeyDown={onKeyDown}
           value={value ?? ""}
           placeholder="Search..."
           onFocus={() => {
@@ -186,51 +230,63 @@ export const AutoSuggest = () => {
           max={5}
         />
 
-        <button
-          onClick={() => smartQuery != null && setQuery(smartQuery)}
-          className={cm(
-            "transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs",
-            open && possibleTriggers != null
-              ? "animate-pop"
-              : "opacity-0 pointer-events-none"
-          )}
-        >
-          {possibleTriggers?.map(({ result }) =>
-            result[0]?.score > MIN_FUZZY_SCORE ? (
-              <span key={result[0].obj.value}>
-                {result[0].obj.name}{" "}
-                <span className="font-bold">{result[0].obj.value}</span>
+        {smartQuery != null && (
+          <button
+            onClick={() => smartQuery != null && setQuery(smartQuery)}
+            className={cm(
+              "transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs",
+              open && possibleTriggers != null
+                ? "animate-pop"
+                : "opacity-0 pointer-events-none"
+            )}
+          >
+            {possibleTriggers?.map(({ result }) =>
+              result[0]?.score > MIN_FUZZY_SCORE ? (
+                <span key={result[0].obj.value}>
+                  {result[0].obj.name}{" "}
+                  <span className="font-bold">{result[0].obj.value}</span>
+                </span>
+              ) : null
+            )}
+            {smartQuery?.query != null && smartQuery.query.length > 1 && (
+              <span className="hidden md:block">
+                Sökning: <span className="font-bold">{smartQuery.query}</span>
               </span>
-            ) : null
-          )}
-          {smartQuery?.query != null && smartQuery.query.length > 1 && (
-            <span className="hidden md:block">
-              Sökning: <span className="font-bold">{smartQuery.query}</span>
-            </span>
-          )}
-          <span className="text-[10px] hidden md:block">⌥ + ↵</span>
-        </button>
+            )}
+            <span className="text-[10px] hidden md:block">⌥ + ↵</span>
+          </button>
+        )}
 
         <Search
           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+          aria-hidden="true"
           size={20}
         />
       </div>
-      <SuggestionResults open={showItems} onClose={() => setOpen(false)} />
+      <SuggestionResults
+        open={showItems}
+        selectedIndex={selectedIndex}
+        onClose={() => setOpen(false)}
+      />
     </>
   );
 };
 
-const SuggestedProduct = (item: SuggestedProduct & { index: number }) => {
+const SuggestedProduct = (
+  item: SuggestedProduct & { index: number; selected: boolean }
+) => {
   const { id, title, img, values, stock, stockLevel } = item;
   const { track } = useTracking();
+  const navigate = useNavigate();
   return (
-    <Link
-      to={`/product/${id}`}
-      onClick={() =>
-        track({ type: "click", item: toEcomTrackingEvent(item, item.index) })
-      }
-      className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full relative"
+    <ItemContainer
+      as="button"
+      selected={item.selected}
+      onClick={() => {
+        track({ type: "click", item: toEcomTrackingEvent(item, item.index) });
+        navigate(`/product/${id}`);
+      }}
+      className="items-center relative"
     >
       <img
         src={makeImageUrl(img)}
@@ -254,7 +310,7 @@ const SuggestedProduct = (item: SuggestedProduct & { index: number }) => {
           </em>
         )}
       </div>
-    </Link>
+    </ItemContainer>
   );
 };
 
@@ -278,12 +334,19 @@ const ContentHit = ({ name, description, picture, url }: SuggestedContent) => {
   );
 };
 
-const FlatRefinement = ({ facetId, facetName, values }: QueryRefinement) => {
+const FlatRefinement = ({
+  facetId,
+  facetName,
+  values,
+  selected,
+}: QueryRefinement & { selected: boolean }) => {
   const { setQuery } = useQuery();
   const { value } = values[0];
   return (
-    <button
-      className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full"
+    <ItemContainer
+      as="button"
+      selected={selected}
+      className="items-center"
       onClick={() => setQuery({ string: [{ id: facetId, value: [value] }] })}
     >
       <Lightbulb className="size-5" />
@@ -291,11 +354,16 @@ const FlatRefinement = ({ facetId, facetName, values }: QueryRefinement) => {
       <span>
         {facetName} {value}
       </span>
-    </button>
+    </ItemContainer>
   );
 };
 
-const PopularRefinement = ({ facetId, query, values }: QueryRefinement) => {
+const PopularRefinement = ({
+  facetId,
+  query,
+  values,
+  selected,
+}: QueryRefinement & { selected: boolean }) => {
   const { setQuery } = useQuery();
   const { data } = useKeyFacetValuePopularity(facetId);
   const items = useMemo(() => {
@@ -311,7 +379,19 @@ const PopularRefinement = ({ facetId, query, values }: QueryRefinement) => {
       .sort((a, b) => b.popularity - a.popularity);
   }, [data, values]);
   return (
-    <div className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full">
+    <ItemContainer
+      as="button"
+      selected={selected}
+      className="items-center"
+      onClick={() => {
+        const first = items?.[0];
+
+        setQuery({
+          query,
+          string: first != null ? [{ id: facetId, value: [first.value] }] : [],
+        });
+      }}
+    >
       <Lightbulb className="size-5 shrink-0" />
       <span>{query}</span> i
       <div className="flex gap-2 flex-nowrap overflow-x-auto items-center flex-1">
@@ -332,20 +412,47 @@ const PopularRefinement = ({ facetId, query, values }: QueryRefinement) => {
           </button>
         ))}
       </div>
-    </div>
+    </ItemContainer>
   );
 };
 
-const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
+const ItemContainer = <T extends keyof HTMLElementTagNameMap>({
+  children,
+  selected,
+  as,
+  className,
+  ...props
+}: {
+  selected: boolean;
+  children: ReactNode[];
+  as: T;
+} & Omit<HTMLAttributes<T>, "children">) => {
+  return createElement(
+    as,
+    {
+      ...props,
+      className: cm(
+        "p-2 flex gap-2 cursor-pointer w-full",
+        className,
+        selected ? "bg-blue-200 hover:bg-blue-400" : "hover:bg-gray-100"
+      ),
+      "aria-selected": selected,
+    },
+    children
+  );
+};
+
+const SuggestedQuery = ({
+  query,
+  fields,
+  selected,
+}: SuggestQuery & { selected: boolean }) => {
   const { setQuery } = useQuery();
   // if (fields == null || fields.length === 0) {
   //   return null;
   // }
   const updateQuery =
-    (
-      id?: number,
-      value?: string
-    ): React.MouseEventHandler<HTMLButtonElement | HTMLDivElement> =>
+    (id?: number, value?: string): MouseEventHandler<unknown> =>
     (e) => {
       e.stopPropagation();
       e.preventDefault();
@@ -357,8 +464,10 @@ const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
       });
     };
   return (
-    <button
-      className="p-2 hover:bg-gray-100 flex gap-2 cursor-pointer items-center w-full"
+    <ItemContainer
+      as="button"
+      className={"items-center"}
+      selected={selected}
       onClick={updateQuery(fields[0]?.id, fields[0]?.values?.[0]?.value)}
     >
       <SearchIcon className="size-5 shrink-0" />
@@ -380,11 +489,13 @@ const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
           );
         })}
       </div>
-    </button>
+    </ItemContainer>
   );
 };
 
-const SuggestSelector = (props: SuggestResultItem & { index: number }) => {
+const SuggestSelector = (
+  props: SuggestResultItem & { index: number; selected: boolean }
+) => {
   const { type } = props;
   switch (type) {
     case "product":
@@ -406,8 +517,10 @@ const SuggestSelector = (props: SuggestResultItem & { index: number }) => {
 const SuggestionResults = ({
   open,
   onClose,
+  selectedIndex,
 }: {
   open: boolean;
+  selectedIndex: number;
   onClose: () => void;
 }) => {
   const { items } = useSuggestions();
@@ -421,7 +534,14 @@ const SuggestionResults = ({
       onClick={(e) => e.stopPropagation()}
     >
       {open &&
-        items.map((item, idx) => <SuggestSelector {...item} index={idx} />)}
+        items.map((item, idx) => (
+          <SuggestSelector
+            {...item}
+            key={idx}
+            selected={idx == selectedIndex}
+            index={idx}
+          />
+        ))}
       <button
         onClick={onClose}
         className="md:hidden absolute top-13 right-3 rounded-full bg-white p-1 z-20"
