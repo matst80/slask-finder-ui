@@ -79,50 +79,51 @@ const TrieSuggestions = ({
   );
 };
 
-const useSelectedIndex = () => {
-  const [itemLength, setItemLength] = useState(0);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const onKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "ArrowDown") {
-        setSelectedIndex((prev) => Math.min(prev + 1, itemLength));
-      } else if (e.key === "ArrowUp") {
-        setSelectedIndex((prev) => Math.max(prev - 1, -1));
-      }
-    },
-    [setSelectedIndex, itemLength]
-  );
-  const triggerClick = useCallback(() => {
-    const item = document.querySelector(
-      `.suggest-result [aria-selected="true"]`
-    ) as HTMLElement;
-    console.log("triggerClick", item);
-    if (item != null) {
-      item.click();
-    }
-  }, []);
-  useEffect(() => {
-    setSelectedIndex(-1);
-  }, [itemLength]);
-  return { selectedIndex, onKeyDown, setItemLength, triggerClick };
-};
+// const useSelectedIndex = () => {
+//   const [itemLength, setItemLength] = useState(0);
+//   const [selectedIndex, setSelectedIndex] = useState(-1);
+//   const onKeyDown = useCallback(
+//     (e: React.KeyboardEvent) => {
+//       if (e.key === "ArrowDown") {
+//         setSelectedIndex((prev) => Math.min(prev + 1, itemLength));
+//       } else if (e.key === "ArrowUp") {
+//         setSelectedIndex((prev) => Math.max(prev - 1, -1));
+//       }
+//     },
+//     [setSelectedIndex, itemLength]
+//   );
+//   const triggerClick = useCallback(() => {
+//     const item = document.querySelector(
+//       `.suggest-result [aria-selected="true"]`
+//     ) as HTMLElement;
+//     console.log("triggerClick", item);
+//     if (item != null) {
+//       item.click();
+//     }
+//   }, []);
+//   useEffect(() => {
+//     setSelectedIndex(-1);
+//   }, [itemLength]);
+//   return { selectedIndex, onKeyDown, setItemLength, triggerClick };
+// };
 
 export const AutoSuggest = () => {
   const { query: globalQuery, setQuery } = useQuery();
+  const parentRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { left, updatePosition } = useCursorPosition(inputRef, {
     useCursorPosition: false,
   });
   const [value, setValue] = useState<string | null>(globalQuery.query ?? "");
-  const { onKeyDown, selectedIndex, setItemLength, triggerClick } =
-    useSelectedIndex();
+  // const { onKeyDown, selectedIndex, setItemLength, triggerClick } =
+  //   useSelectedIndex();
 
   const {
     suggestions,
     setValue: setTerm,
     possibleTriggers,
     smartQuery,
-    items,
+    //items,
   } = useSuggestions();
 
   //const [open, setOpen] = useState(false);
@@ -134,9 +135,9 @@ export const AutoSuggest = () => {
   //   });
   // }, [value, setTerm, updatePosition]);
 
-  useEffect(() => {
-    setItemLength(items.length);
-  }, [items]);
+  // useEffect(() => {
+  //   setItemLength(items.length);
+  // }, [items]);
 
   // const [hasResults, showItems] = useMemo(() => {
   //   const a = items.length > 0;
@@ -151,11 +152,11 @@ export const AutoSuggest = () => {
       if ((e.ctrlKey || e.altKey || e.metaKey) && smartQuery?.string?.length) {
         setQuery(smartQuery);
       } else {
-        console.log("onKeyUp", { selectedIndex, value: input.value });
-        if (selectedIndex > -1) {
-          triggerClick();
-          return;
-        }
+        console.log("onKeyUp", { e });
+        // if (selectedIndex > -1) {
+        //   triggerClick();
+        //   return;
+        // }
         if (input.value != null) {
           setQuery((prev) => ({
             ...prev,
@@ -196,6 +197,39 @@ export const AutoSuggest = () => {
       inputRef.current.value = query;
     }
   }, [query]);
+
+  useEffect(() => {
+    if (parentRef.current != null) {
+      const ref = parentRef.current;
+      const clickHandler = (e: MouseEvent) => {
+        e.stopPropagation();
+        inputRef.current?.focus();
+      };
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          inputRef.current?.blur();
+        } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          const step = e.key === "ArrowDown" ? 1 : -1;
+          e.stopPropagation();
+          e.preventDefault();
+
+          const possible: HTMLButtonElement[] = Array.from(
+            document.querySelectorAll(".suggest-result button")
+          );
+          const index = possible.findIndex((d) => d === document.activeElement);
+          possible[index + step]?.focus();
+          return false;
+        }
+      };
+
+      ref.addEventListener("click", clickHandler);
+      ref.addEventListener("keydown", handleKeyDown);
+      return () => {
+        ref.removeEventListener("click", clickHandler);
+        ref.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [parentRef]);
 
   useEffect(() => {
     if (inputRef.current != null) {
@@ -252,27 +286,24 @@ export const AutoSuggest = () => {
   }, [inputRef, updatePosition, setTerm]);
 
   return (
-    <>
+    <div ref={parentRef}>
       <div
         className={cm(
           "relative md:flex-1 flex flex-col md:block border-gray-200"
           //"border-b md:border-b-0"
         )}
-        // onClick={(e) => {
-        //   e.stopPropagation();
-        //   setOpen(true);
-        // }}
       >
         <input
           ref={inputRef}
           accessKey="f"
           className={cm(
             "w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden",
-            "md:rounded-md focus:md:rounded-b-none suggest-input"
+            "md:rounded-md suggest-input"
           )}
           type="search"
           id="autosuggest-input"
-          onKeyDown={onKeyDown}
+          autoComplete="none"
+          //onKeyDown={onKeyDown}
           //value={value ?? ""}
           defaultValue={value ?? ""}
           aria-controls="suggestion-results"
@@ -332,22 +363,22 @@ export const AutoSuggest = () => {
       </div>
       <SuggestionResults
         //open={showItems}
-        selectedIndex={selectedIndex}
+        //selectedIndex={selectedIndex}
         onClose={() => {
           inputRef.current?.setAttribute("aria-expanded", "false");
         }}
       />
-    </>
+    </div>
   );
 };
 
 const SuggestionResults = ({
   //open,
   onClose,
-  selectedIndex,
-}: {
+}: //selectedIndex,
+{
   //open: boolean;
-  selectedIndex: number;
+  //selectedIndex: number;
   onClose: () => void;
 }) => {
   const { items } = useSuggestions();
@@ -358,7 +389,7 @@ const SuggestionResults = ({
       aria-labelledby="autosuggest-input"
       aria-label="Suggestion results"
       className={cm(
-        "transition-opacity md:rounded-b md:border md:border-t-white md:border-gray-300 bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
+        "transition-opacity md:rounded-md md:border md:border-gray-300 bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
         //open ? "opacity-100" : "opacity-0"
       )}
       onClick={(e) => e.stopPropagation()}
@@ -367,7 +398,7 @@ const SuggestionResults = ({
         <SuggestSelector
           {...item}
           key={idx}
-          selected={idx == selectedIndex}
+          //selected={idx == selectedIndex}
           index={idx}
         />
       ))}
@@ -381,16 +412,14 @@ const SuggestionResults = ({
   );
 };
 
-const SuggestedProduct = (
-  item: SuggestedProduct & { index: number; selected: boolean }
-) => {
+const SuggestedProduct = (item: SuggestedProduct & { index: number }) => {
   const { id, title, img, values, stock, stockLevel } = item;
   const { track } = useTracking();
   const navigate = useNavigate();
   return (
     <ItemContainer
       as="button"
-      selected={item.selected}
+      //selected={item.selected}
       onClick={() => {
         track({ type: "click", item: toEcomTrackingEvent(item, item.index) });
         navigate(`/product/${id}`);
@@ -443,18 +472,12 @@ const ContentHit = ({ name, description, picture, url }: SuggestedContent) => {
   );
 };
 
-const FlatRefinement = ({
-  facetId,
-  facetName,
-  values,
-  selected,
-}: QueryRefinement & { selected: boolean }) => {
+const FlatRefinement = ({ facetId, facetName, values }: QueryRefinement) => {
   const { setQuery } = useQuery();
   const { value } = values[0];
   return (
     <ItemContainer
       as="button"
-      selected={selected}
       className="items-center"
       onClick={() => setQuery({ string: [{ id: facetId, value: [value] }] })}
     >
@@ -471,8 +494,8 @@ const PopularRefinement = ({
   facetId,
   query,
   values,
-  selected,
-}: QueryRefinement & { selected: boolean }) => {
+}: //selected,
+QueryRefinement) => {
   const { setQuery } = useQuery();
   const { data } = useKeyFacetValuePopularity(facetId);
   const items = useMemo(() => {
@@ -490,7 +513,7 @@ const PopularRefinement = ({
   return (
     <ItemContainer
       as="button"
-      selected={selected}
+      //selected={selected}
       className="items-center"
       onClick={() => {
         const first = items?.[0];
@@ -527,12 +550,12 @@ const PopularRefinement = ({
 
 const ItemContainer = <T extends keyof HTMLElementTagNameMap>({
   children,
-  selected,
+  //selected,
   as,
   className,
   ...props
 }: {
-  selected: boolean;
+  //selected: boolean;
   children: ReactNode[];
   as: T;
 } & Omit<HTMLAttributes<T>, "children">) => {
@@ -542,10 +565,10 @@ const ItemContainer = <T extends keyof HTMLElementTagNameMap>({
       ...props,
       className: cm(
         "p-2 flex gap-2 cursor-pointer w-full text-left",
-        className,
-        selected ? "bg-blue-200 hover:bg-blue-400" : "hover:bg-gray-100"
+        className
+        //"hover:bg-gray-100" //selected ? "bg-blue-200 hover:bg-blue-400" :
       ),
-      "aria-selected": selected,
+      //"aria-selected": selected,
     },
     children
   );
@@ -554,8 +577,8 @@ const ItemContainer = <T extends keyof HTMLElementTagNameMap>({
 const SuggestedQuery = ({
   query,
   fields,
-  selected,
-}: SuggestQuery & { selected: boolean }) => {
+}: //selected,
+SuggestQuery) => {
   const { setQuery } = useQuery();
   // if (fields == null || fields.length === 0) {
   //   return null;
@@ -576,7 +599,7 @@ const SuggestedQuery = ({
     <ItemContainer
       as="button"
       className={"items-center"}
-      selected={selected}
+      //  selected={selected}
       onClick={updateQuery(fields[0]?.id, fields[0]?.values?.[0]?.value)}
     >
       <SearchIcon className="size-5 shrink-0" />
@@ -602,9 +625,7 @@ const SuggestedQuery = ({
   );
 };
 
-const SuggestSelector = (
-  props: SuggestResultItem & { index: number; selected: boolean }
-) => {
+const SuggestSelector = (props: SuggestResultItem & { index: number }) => {
   const { type } = props;
   switch (type) {
     case "product":

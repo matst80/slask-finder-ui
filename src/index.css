@@ -192,14 +192,19 @@
     anchor-name: --suggestfield;
   }
 
-
-
   .suggest-result {
     position: absolute;
     position-anchor: --suggestfield;
-    top: calc(anchor(bottom) - 1px);
+    top: calc(anchor(bottom) + 1px);
     left: anchor(left);
     right: anchor(right);
+
+  }
+
+  .suggest-result *:focus,
+  .suggest-result *:active {
+    background-color: var(--color-gray-300);
+    outline: none;
   }
 
   .suggest-result[aria-hidden="true"] {
