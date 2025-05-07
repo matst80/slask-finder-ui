@@ -190,6 +190,7 @@ export const BuilderComponentFilter = () => {
             <FacetProvider ignoreFacets={facetsToHide}>
               <Facets
                 facetsToHide={facetsToHide}
+                hideFacetsWithSingleValue={true}
                 hideCategories
                 facetsToDisable={facetsToDisable}
               />

@@ -90,10 +90,12 @@ const CategoryResult = ({ categories }: { categories: KeyFacet[] }) => {
 type FacetListProps = {
   facetsToHide?: number[];
   facetsToDisable?: number[];
+  hideFacetsWithSingleValue?: boolean;
 };
 export const FacetList = ({
   facetsToHide,
   facetsToDisable = [],
+  hideFacetsWithSingleValue = false,
 }: FacetListProps) => {
   const { facets } = useFacets();
   const allFacets = useMemo(
@@ -124,6 +126,10 @@ export const FacetList = ({
             />
           );
         }
+        if (hideFacetsWithSingleValue && facet.result.values.length <= 1) {
+          return null;
+        }
+
         return (
           <KeyFacetSelector
             {...facet}
@@ -139,9 +145,11 @@ export const FacetList = ({
 export const Facets = ({
   facetsToHide,
   facetsToDisable,
+  hideFacetsWithSingleValue = false,
   hideCategories = false,
 }: FacetListProps & {
   hideCategories?: boolean;
+  hideFacetsWithSingleValue?: boolean;
 }) => {
   const { facets, categoryFacets, isLoadingFacets: isLoading } = useFacets();
   const t = useTranslations();
@@ -185,6 +193,7 @@ export const Facets = ({
           <div>
             <FacetList
               facetsToHide={facetsToHide}
+              hideFacetsWithSingleValue={hideFacetsWithSingleValue}
               facetsToDisable={facetsToDisable}
             />
           </div>
