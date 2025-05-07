@@ -47,7 +47,6 @@ import { CspReport } from "./pages/tracking/csp-report.tsx";
 import { SessionList } from "./components/SessionList.tsx";
 import { Banner } from "./components/SearchResultList.tsx";
 import { TrackingProvider } from "./lib/hooks/TrackingContext.tsx";
-import { googleTracker } from "./tracking/google-tracking.ts";
 import { slaskTracker } from "./tracking/slaskTracker.ts";
 import { ProductConfigurator } from "./pages/ProductConfigurator.tsx";
 import { EmptyQueriesView } from "./pages/tracking/empty-queries.tsx";
@@ -287,12 +286,7 @@ const getBrowserTranslations = () => {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <SWRConfig value={{ keepPreviousData: true }}>
-      <TrackingProvider
-        handlers={[
-          googleTracker({ list_id: "main", list_name: "search" }),
-          slaskTracker(),
-        ]}
-      >
+      <TrackingProvider handlers={[slaskTracker()]}>
         <GroupDesignerProvider>
           <CompareProvider compareAllFacets={true}>
             <TranslationProvider language={getBrowserTranslations()}>

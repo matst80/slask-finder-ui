@@ -35,8 +35,6 @@ import { Link } from "react-router-dom";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { GroupedProperties } from "./GroupedProperties";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
-import { TrackingProvider } from "../lib/hooks/TrackingContext";
-import { googleTracker } from "../tracking/google-tracking";
 import { Loader } from "./Loader";
 import { UserCog } from "lucide-react";
 import { JsonView } from "../pages/tracking/JsonView";
@@ -53,16 +51,13 @@ export type StoreWithStock = Store & {
 
 const ProductCarouselContainer = ({
   children,
-  ...context
 }: PropsWithChildren<{ list_id: string; list_name: string }>) => {
   return (
-    <TrackingProvider handlers={[googleTracker(context)]}>
-      <ImpressionProvider>
-        <div className="max-w-[100vw] w-[100vw] md:max-w-screen -mx-4 md:mx-0 md:w-full carousel">
-          {children}
-        </div>
-      </ImpressionProvider>
-    </TrackingProvider>
+    <ImpressionProvider>
+      <div className="max-w-[100vw] w-[100vw] md:max-w-screen -mx-4 md:mx-0 md:w-full carousel">
+        {children}
+      </div>
+    </ImpressionProvider>
   );
 };
 
