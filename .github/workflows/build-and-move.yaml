@@ -27,5 +27,6 @@ jobs:
       - name: Copy dist folder to /srv/slask-finder-web
         run: |
           #sudo rm -rf /srv/slask-finder-web/*
+          cp robots.txt /srv/shared/slask-finder-web/
           cp dist/index.html /srv/shared/slask-finder-web/
           cp dist/assets/* /srv/shared/slask-finder-web/assets/
