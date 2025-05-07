@@ -60,9 +60,11 @@ const BubbleError = () => {
   return (
     <PageContainer>
       <SidebarMenu />
-      <div>
-        <h1>Något gick snett...</h1>
-        <JsonView data={error} />
+      <div className="flex flex-col items-center justify-center h-full w-full p-4">
+        <div>
+          <h1 className="text-xl font-bold my-6">Något gick snett...</h1>
+          <JsonView data={error} />
+        </div>
       </div>
     </PageContainer>
   );
