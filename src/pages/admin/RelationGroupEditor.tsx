@@ -14,6 +14,7 @@ import { Input } from "../../components/ui/input";
 import { QueryPreview } from "../../components/QueryPreview";
 import { useDropdownFocus } from "../../components/useDropdownFocus";
 import { useArrowKeyNavigation } from "../../components/useArrowKeyNavigation";
+import { useGroupDesigner } from "../../lib/hooks/GroupDesignerProvider";
 
 const FacetValueTagEditor = ({
   data,
@@ -689,12 +690,15 @@ const GroupEditor = ({
 };
 
 export const RelationGroupEditor = () => {
+  const { group, setGroup } = useGroupDesigner();
   const { data: groups, mutate } = useAdminRelationGroups();
   const updateRelationGroups = useRelationGroupsMutation();
+  const [dirty, setDirty] = useState(false);
 
   const onItemChange = (idx: number) => (group: RelationGroup) => {
     const newGroups = [...(groups ?? [])];
     newGroups[idx] = group;
+    setDirty(true);
     mutate(newGroups, { revalidate: false });
   };
 
@@ -702,11 +706,26 @@ export const RelationGroupEditor = () => {
     <div className="p-4 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Relation Groups</h1>
+      </div>
+
+      <div className="space-y-4">
+        {groups?.map((group, idx) => (
+          <GroupEditor
+            key={group.key}
+            group={group}
+            onChange={onItemChange(idx)}
+          />
+        ))}
+      </div>
+      <div className="flex justify-end bottom-0 sticky bg-white p-4 border-t border-gray-200">
         <div className="flex gap-2">
           <Button
+            disabled={!dirty}
             onClick={() => {
               if (groups == null) return;
-              updateRelationGroups(groups);
+              updateRelationGroups(groups).then(() => {
+                setDirty(false);
+              });
             }}
           >
             Save Changes
@@ -735,17 +754,20 @@ export const RelationGroupEditor = () => {
           >
             Add Group
           </Button>
+          {group != null &&
+            (group.requiredForItem?.length ||
+              group.additionalQueries?.length) && (
+              <Button
+                onClick={() => {
+                  if (groups == null) return;
+                  mutate([...groups, group], { revalidate: false });
+                }}
+                variant="outline"
+              >
+                Paste group
+              </Button>
+            )}
         </div>
-      </div>
-
-      <div className="space-y-4">
-        {groups?.map((group, idx) => (
-          <GroupEditor
-            key={group.key}
-            group={group}
-            onChange={onItemChange(idx)}
-          />
-        ))}
       </div>
     </div>
   );

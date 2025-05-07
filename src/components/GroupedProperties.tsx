@@ -161,20 +161,18 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
             >
               <Search className="size-5" />
             </Link>
-            <Link
+            <button
               title={"Set as item requirement"}
               onClick={setInGroup("requiredForItem")}
-              to="/"
             >
               <PlugZapIcon className="size-5" />
-            </Link>
-            <Link
+            </button>
+            <button
               title={"Set as item requirement"}
               onClick={setInGroup("additionalQueries")}
-              to="/"
             >
               <ListFilterPlus className="size-5" />
-            </Link>
+            </button>
           </div>
         </div>
       )}

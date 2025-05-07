@@ -252,10 +252,17 @@
       background-color: var(--color-blue-300);
       transition: all 0.2s ease-in-out;
       padding: 0.5rem;
+      border-color: var(--color-blue-400);
       border-right: var(--color-blue-400) 1px solid;
 
       &:last-child {
         border-right: none;
+      }
+
+      &:focus {
+        background-color: var(--color-blue-500);
+        color: var(--color-white);
+        outline: none;
       }
 
       &:hover {
