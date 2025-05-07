@@ -5,7 +5,6 @@ import { stores } from "../lib/datalayer/stores";
 import { useFacetMap } from "../hooks/searchHooks";
 import { useQuery } from "../lib/hooks/useQuery";
 import { isDefined } from "../utils";
-import { useIsAdmin } from "../adminHooks";
 import { useAdmin } from "../hooks/appState";
 
 function toFilter(facets?: Record<number, FacetListItem>, hideHidden = true) {

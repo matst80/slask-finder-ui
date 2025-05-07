@@ -1,6 +1,6 @@
 import { Item, StockData } from "../lib/types";
 import { makeImageUrl } from "../utils";
-import { Price, PriceElement } from "./Price";
+import { PriceElement } from "./Price";
 import { Stars } from "./Stars";
 import { PropsWithChildren, useMemo, useState } from "react";
 import { Link, useViewTransitionState } from "react-router-dom";
