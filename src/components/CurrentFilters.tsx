@@ -5,11 +5,13 @@ import { stores } from "../lib/datalayer/stores";
 import { useFacetMap } from "../hooks/searchHooks";
 import { useQuery } from "../lib/hooks/useQuery";
 import { isDefined } from "../utils";
+import { useIsAdmin } from "../adminHooks";
+import { useAdmin } from "../hooks/appState";
 
-function toFilter(facets?: Record<number, FacetListItem>) {
+function toFilter(facets?: Record<number, FacetListItem>, hideHidden = true) {
   return (data: Field) => {
     const field = facets?.[data?.id];
-    if (field == null || field.hide) return null;
+    if (field == null || (hideHidden && field.hide)) return null;
 
     const value = isNumberValue(data)
       ? field.valueType === "currency"
@@ -43,6 +45,7 @@ const FilterItem = ({ name, value, onClick }: FilterItemProps) => {
 
 export const CurrentFilters = () => {
   const { data } = useFacetMap();
+  const [isAdmin] = useAdmin();
   const {
     query: { stock },
     setStock,
@@ -55,8 +58,8 @@ export const CurrentFilters = () => {
 
   const selectedFilters = useMemo(() => {
     return [
-      ...(keyFilters?.map(toFilter(data)) ?? []),
-      ...(numberFilters?.map(toFilter(data)) ?? []),
+      ...(keyFilters?.map(toFilter(data, !isAdmin)) ?? []),
+      ...(numberFilters?.map(toFilter(data, !isAdmin)) ?? []),
     ].filter(isDefined);
   }, [keyFilters, numberFilters, data]);
   return (

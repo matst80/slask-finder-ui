@@ -29,6 +29,7 @@ import { useTracking } from "../lib/hooks/TrackingContext";
 import { toEcomTrackingEvent } from "./toImpression";
 import { useDropdownFocus } from "./useDropdownFocus";
 import { useArrowKeyNavigation } from "./useArrowKeyNavigation";
+import { useProductData } from "../lib/utils";
 
 const TrieSuggestions = ({
   toShow,
@@ -276,7 +277,8 @@ const SuggestionResults = ({
 };
 
 const SuggestedProduct = (item: SuggestedProduct & { index: number }) => {
-  const { id, title, img, values, stock, stockLevel } = item;
+  const { id, title, img, values, stock } = item;
+  const { stockLevel, soldBy, isOutlet, grade, isOwn } = useProductData(values);
   const { track } = useTracking();
   const navigate = useNavigate();
   return (
@@ -300,12 +302,12 @@ const SuggestedProduct = (item: SuggestedProduct & { index: number }) => {
           <span>{title}</span>
         </div>
 
-        {values?.["10"] == "Outlet" && values?.["20"] != null && (
-          <em className="block text-xs text-gray-500 italic">{values["20"]}</em>
+        {isOutlet && grade != null && (
+          <em className="block text-xs text-gray-500 italic">{grade}</em>
         )}
-        {values?.["9"] != null && values?.["9"] != "Elgiganten" && (
+        {!isOwn && (
           <em className="block text-xs text-gray-500 italic">
-            Säljs av: {values["9"]}
+            Säljs av: {soldBy}
           </em>
         )}
       </div>

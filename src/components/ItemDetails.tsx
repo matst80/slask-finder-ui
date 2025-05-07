@@ -44,6 +44,7 @@ import { toEcomTrackingEvent } from "./toImpression";
 import { Stars } from "./Stars";
 import { QueryUpdater } from "./QueryMerger";
 import { useSwitching } from "../lib/hooks/useSwitching";
+import { useProductData } from "../lib/utils";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -120,15 +121,13 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
   if (!data || data.length === 0) return null;
   return (
     <div className="relative">
-      <div>
-        <span className="text-2xl pb-6 mb-8">
-          Har du glömt{" "}
-          <span
-            key={productType ?? ""}
-            className="text-black font-bold animate-pop underline underline-indigo-500"
-          >
-            {productType ?? ""}
-          </span>
+      <div className="text-2xl pt-6 mb-8">
+        Har du glömt{" "}
+        <span
+          key={"slask-" + productType}
+          className="text-black font-bold animate-pop underline underline-indigo-500"
+        >
+          {productType ?? ""}
         </span>
       </div>
       <ProductCarouselContainer list_id="compatible" list_name="Compatible">
@@ -323,16 +322,18 @@ const RelationGroupCarousel = ({
 
 const RelationGroups = ({ values, id }: Pick<ItemDetail, "values" | "id">) => {
   const { data } = useRelationGroups();
-  const validGroups = useMemo(() => {
-    return (
+  const validGroups = useMemo(
+    () =>
       data?.filter((group) =>
         group.requiredForItem.every((requirement) =>
           hasRequiredValue(requirement, values[requirement.facetId])
         )
-      ) ?? []
-    );
-  }, [values, data]);
-  if (validGroups.length === 0) return <CompatibleItems id={id} />;
+      ) ?? [],
+    [values, data]
+  );
+  if (validGroups.length === 0) {
+    return <CompatibleItems id={id} />;
+  }
   return (
     <div>
       {validGroups.map((group, idx) => {
@@ -435,27 +436,29 @@ export const ItemDetails = (details: ItemDetail) => {
     title,
     img,
     bp,
-    stockLevel,
     stock,
     buyable,
+    description,
     buyableInStore,
     id,
     values,
     disclaimer,
   } = details;
-  const hasRating = values?.["6"] != null && values?.["7"] != null;
+  const { stockLevel, rating } = useProductData(values);
+
   return (
     <>
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
           {/* Image Section */}
 
-          <div className="flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center">
             <img
               className="max-w-full mix-blend-multiply h-auto object-contain product-image"
               src={makeImageUrl(img)}
               alt={title}
             />
+            <p className="leading-7">{description}</p>
           </div>
 
           {/* Details Section */}
@@ -464,11 +467,11 @@ export const ItemDetails = (details: ItemDetail) => {
               <h2 className="text-3xl font-bold text-gray-900 mb-6 product-name">
                 {title}
               </h2>
-              {hasRating && (
+              {rating != null && (
                 <div className="my-3">
                   <Stars
-                    rating={Number(values?.["6"]) / 10}
-                    numberOfRatings={Number(values?.["7"])}
+                    rating={rating.rating}
+                    numberOfRatings={rating.numberOfRatings}
                     showText={true}
                   />
                 </div>

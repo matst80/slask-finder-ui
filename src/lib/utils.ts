@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useMemo } from "react";
+import { getPrice } from "../utils";
 import {
   BaseTranslationType,
   FacetQuery,
   FilteringQuery,
+  Item,
+  ItemDetail,
   ItemsQuery,
   PathInto,
+  ValueMap,
 } from "./types";
 
 const FIELD_SEPARATOR = ":";
@@ -195,4 +200,37 @@ export const matchValue = (
     return filterValue.some((value) => matchValue(itemValue, value));
   }
   return false;
+};
+export const getRating = (values: ItemDetail["values"]) => {
+  const rating = values[6];
+  const numberOfRatings = values[7];
+  if (rating == null || numberOfRatings == null) {
+    return null;
+  }
+  return {
+    rating: Number(rating) / 10,
+    numberOfRatings: Number(numberOfRatings),
+  };
+};
+export const useProductData = (values: Item["values"]) => {
+  return useMemo(() => {
+    const rating = getRating(values);
+
+    const soldBy = values[ValueMap.SoldBy];
+    const isOutlet = values?.[ValueMap.Category1] == "Outlet";
+    const grade = values[ValueMap.Grade];
+    const price = getPrice(values);
+    const stockLevel = values[ValueMap.StockLevel];
+    const isOwn = soldBy == null || soldBy == "Elgiganten";
+
+    return {
+      isOwn,
+      rating,
+      soldBy,
+      isOutlet,
+      grade,
+      price,
+      stockLevel,
+    };
+  }, [values]);
 };

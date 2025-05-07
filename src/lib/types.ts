@@ -24,14 +24,17 @@ export type Suggestion = {
 export type ItemValues = {
   [key: string]: string | string[] | number | undefined;
   "2": string;
+  "3"?: string;
   "4": number;
   "5"?: number;
   "8"?: number;
+  "9"?: string;
   "10"?: string;
   "11"?: string;
   "12"?: string;
   "13"?: string;
   "14"?: string;
+  "20"?: string;
 };
 
 export const Sort = {
@@ -62,6 +65,21 @@ export type Item = ItemProps & {
   values: ItemValues;
   stock?: Stock;
 };
+
+export const ValueMap = {
+  StockLevel: 3,
+  Price: 4,
+  OrgPrice: 5,
+  Rating: 6,
+  NumberOfRatings: 7,
+  SoldBy: 9,
+  ProductType: 31158,
+  Category1: 10,
+  Category2: 11,
+  Category3: 12,
+  Category4: 13,
+  Grade: 20,
+} as const;
 
 export type ItemProperties = ItemValues;
 
@@ -95,7 +113,8 @@ export type ItemProps = {
   buyable: boolean;
   disclaimer?: string;
   buyableInStore: boolean;
-  stockLevel?: string;
+  description?: string;
+  //stockLevel?: string;
   badgeUrl: string;
   bp: string;
   mp?: number;
@@ -692,4 +711,8 @@ export type PathInto<T extends BaseTranslationType> = keyof {
     : T[K] extends BaseTranslationType
     ? `${K & string}.${PathInto<T[K]> & string}`
     : never]: string;
+};
+export type StockData = {
+  stock?: Stock;
+  stockLevel?: string;
 };

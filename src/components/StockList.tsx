@@ -1,16 +1,13 @@
 import { useMemo } from "react";
 import { stores } from "../lib/datalayer/stores";
-import { ItemDetail } from "../lib/types";
+import { StockData } from "../lib/types";
 import { isDefined } from "../utils";
 import { StockLocation } from "./StockLocation";
 import { useGeoLocation } from "./useGeoLocation";
 import { calculateDistance } from "./map-utils";
 import { useTranslations } from "../lib/hooks/useTranslations";
 
-export const StockList = ({
-  stock,
-  stockLevel,
-}: Pick<ItemDetail, "stock" | "stockLevel">) => {
+export const StockList = ({ stock, stockLevel }: StockData) => {
   const location = useGeoLocation();
   const t = useTranslations();
   const storesWithStock = useMemo(() => {

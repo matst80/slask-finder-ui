@@ -19,6 +19,10 @@ type CartDialogProps = {
   onClose: () => void;
 };
 
+const hasLength = (value?: string | null) => {
+  return value != null && value.length > 0;
+};
+
 const CartCompatible = ({ id }: { id: number }) => {
   const { data: cart } = useCart();
   const { isMutating, trigger: addToCart } = useAddToCart();
@@ -63,62 +67,63 @@ const CartCompatible = ({ id }: { id: number }) => {
       >
         Glömde du{" "}
         <span
-          key={productType ?? ""}
+          key={productType}
           className="text-black animate-acc underline underline-indigo-500"
         >
-          {productType ?? ""}
+          {productType}
         </span>
       </button>
       {open && (
         <ImpressionProvider>
           <div className="animate-pop bg-gray-50 border-y border-gray-300 overflow-hidden mt-2 -mx-6 grid grid-cols-[auto_1fr_auto] gap-x-4 gap-y-4 p-4 items-center">
-            {data
-              ?.filter(
-                (d) => !cart?.items?.some((c) => Number(c.itemId) == d.id)
-              )
-              .slice(undefined, showMore ? undefined : 4)
-              .map((item, a) => {
-                return (
-                  <Fragment key={item.id}>
-                    <img
-                      src={makeImageUrl(item.img)}
-                      title={item.title}
-                      alt={item.title}
-                      className="size-14 rounded-sm object-contain mix-blend-multiply aspect-square flex-shrink-0"
-                    />
-                    <Link
-                      to={`/product/${item.id}`}
-                      className="text-xs flex-1 flex flex-col"
-                    >
-                      <span className="line-clamp-1 font-medium overflow-ellipsis">
-                        {item.title}
-                      </span>
-                      <div className="flex flex-col">
-                        {item.bp.split("\n").map((t) => (
-                          <span className="text-gray-600 text-2xs line-clamp-1 overflow-ellipsis">
-                            {t}
+            {data?.slice(undefined, showMore ? undefined : 4).map((item, a) => {
+              return (
+                <Fragment key={item.id}>
+                  <img
+                    src={makeImageUrl(item.img)}
+                    title={item.title}
+                    alt={item.title}
+                    className="size-14 rounded-sm object-contain mix-blend-multiply aspect-square flex-shrink-0"
+                  />
+                  <Link
+                    to={`/product/${item.id}`}
+                    className="text-xs flex-1 flex flex-col"
+                  >
+                    <span className="line-clamp-1 font-medium overflow-ellipsis">
+                      {item.title}
+                    </span>
+                    <div className="flex flex-col">
+                      {item.bp
+                        .split("\n")
+                        .filter(hasLength)
+                        .map((s) => (
+                          <span
+                            key={s}
+                            className="text-gray-600 text-2xs line-clamp-1 overflow-ellipsis"
+                          >
+                            {s}
                           </span>
                         ))}
-                      </div>
-                    </Link>
-                    <div className="flex flex-col items-end">
-                      <Price size="small" values={item.values} />
-                      <button
-                        disabled={isMutating}
-                        onClick={() =>
-                          addToCart(
-                            { ...item, quantity: 1 },
-                            toEcomTrackingEvent(item, a)
-                          )
-                        }
-                        className="underline text-xs text-gray-600 hover:text-gray-800"
-                      >
-                        {t("cart.add")}
-                      </button>
                     </div>
-                  </Fragment>
-                );
-              })}
+                  </Link>
+                  <div className="flex flex-col items-end">
+                    <Price size="small" values={item.values} />
+                    <button
+                      disabled={isMutating}
+                      onClick={() =>
+                        addToCart(
+                          { ...item, quantity: 1 },
+                          toEcomTrackingEvent(item, a)
+                        )
+                      }
+                      className="underline text-xs text-gray-600 hover:text-gray-800"
+                    >
+                      {t("cart.add")}
+                    </button>
+                  </div>
+                </Fragment>
+              );
+            })}
             {data != null && data?.length > 4 && (
               <div className="flex flex-col col-span-3">
                 <button
@@ -140,32 +145,117 @@ const CartCompatible = ({ id }: { id: number }) => {
   );
 };
 
+function getCartItemPrice(item: CartItem): ItemPrice {
+  const price = item.price;
+  const orgPrice = item.orgPrice ?? 0;
+  const isDiscounted = orgPrice > price;
+  if (isDiscounted) {
+    return {
+      current: price,
+      original: orgPrice,
+      discount: orgPrice - price,
+      isDiscounted: true,
+    };
+  }
+  return {
+    current: price,
+    isDiscounted: false,
+  };
+}
+
+const useCartItemData = (item: CartItem) => {
+  return useMemo(() => {
+    return {
+      price: getCartItemPrice(item),
+      trackingItem: (value?: number) => ({
+        item_id: item.itemId,
+        index: item.id,
+        item_name: item.name,
+        price: item.price,
+        quantity: value ?? item.qty,
+        item_brand: item.brand,
+        item_category: item.category,
+        item_category2: item.category2,
+        item_category3: item.category3,
+        item_category4: item.category4,
+        item_category5: item.category5,
+      }),
+    };
+  }, [item]);
+};
+
+const CartItemElement = ({ item }: { item: CartItem }) => {
+  const { trigger: changeQuantity } = useChangeQuantity();
+  const { price, trackingItem } = useCartItemData(item);
+  return (
+    <li key={item.id + item.sku} className="py-3 flex flex-col group relative">
+      <div className="flex items-start gap-2">
+        {item.image ? (
+          <img
+            src={makeImageUrl(item.image)}
+            alt={item.name}
+            className="size-16 rounded-sm object-contain aspect-square mr-4"
+          />
+        ) : (
+          <div></div>
+        )}
+        <div className="flex flex-col">
+          <Link to={`/product/${item.sku}`} className="text-sm font-medium">
+            {item.name}
+          </Link>
+          <span className="text-xs text-gray-500">
+            {item.brand} - {item.category}
+          </span>
+          {item.outlet != null && (
+            <span className="text-xs px-1 py-0.5 bg-amber-100 text-amber-800 rounded">
+              {item.outlet}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-end items-center gap-2 pt-2">
+        <PriceElement price={price} size="small" />
+        {/* <div className="flex items-center gap-2">
+                      {item.orgPrice > 0 && item.orgPrice > item.price && (
+                        <PriceValue
+                          className="line-through text-gray-400 text-xs"
+                          value={item.orgPrice}
+                        />
+                      )}
+                      <PriceValue
+                        value={item.price}
+                        className={
+                          item.orgPrice > 0 && item.orgPrice > item.price
+                            ? "text-red-600 font-bold"
+                            : "font-bold"
+                        }
+                      />
+                    </div> */}
+        <QuantityInput
+          value={item.qty}
+          onChange={(value) => {
+            changeQuantity(item.id, value, trackingItem(value));
+          }}
+          minQuantity={0}
+          maxQuantity={99}
+        />
+      </div>
+
+      <CartCompatible id={Number(item.itemId)} />
+    </li>
+  );
+};
+
 const CartDialog = ({ onClose }: CartDialogProps) => {
   const { data: cart, isLoading } = useCart();
-  const { trigger: changeQuantity } = useChangeQuantity();
+
   const t = useTranslations();
+
   const items = cart?.items ?? [];
   const totalPrice = cart?.totalPrice ?? 0;
   const totalTax = cart?.totalTax ?? 0;
   const totalDiscount = cart?.totalDiscount ?? 0;
-
-  function getCartItemPrice(item: CartItem): ItemPrice {
-    const price = item.price;
-    const orgPrice = item.orgPrice ?? 0;
-    const isDiscounted = orgPrice > price;
-    if (isDiscounted) {
-      return {
-        current: price,
-        original: orgPrice,
-        discount: orgPrice - price,
-        isDiscounted: true,
-      };
-    }
-    return {
-      current: price,
-      isDiscounted: false,
-    };
-  }
 
   return (
     <div
@@ -188,80 +278,7 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
           ) : (
             <ul className="flex-1">
               {items.map((item) => (
-                <li
-                  key={item.id + item.sku}
-                  className="py-3 flex flex-col group relative"
-                >
-                  <div className="flex items-start gap-2">
-                    {item.image ? (
-                      <img
-                        src={makeImageUrl(item.image)}
-                        alt={item.name}
-                        className="size-16 rounded-sm object-contain aspect-square mr-4"
-                      />
-                    ) : (
-                      <div></div>
-                    )}
-                    <div className="flex flex-col">
-                      <Link
-                        to={`/product/${item.sku}`}
-                        className="text-sm font-medium"
-                      >
-                        {item.name}
-                      </Link>
-                      <span className="text-xs text-gray-500">
-                        {item.brand} - {item.category}
-                      </span>
-                      {item.outlet != null && (
-                        <span className="text-xs px-1 py-0.5 bg-amber-100 text-amber-800 rounded">
-                          {item.outlet}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end items-center gap-2 pt-2">
-                    <PriceElement price={getCartItemPrice(item)} size="small" />
-                    {/* <div className="flex items-center gap-2">
-                      {item.orgPrice > 0 && item.orgPrice > item.price && (
-                        <PriceValue
-                          className="line-through text-gray-400 text-xs"
-                          value={item.orgPrice}
-                        />
-                      )}
-                      <PriceValue
-                        value={item.price}
-                        className={
-                          item.orgPrice > 0 && item.orgPrice > item.price
-                            ? "text-red-600 font-bold"
-                            : "font-bold"
-                        }
-                      />
-                    </div> */}
-                    <QuantityInput
-                      value={item.qty}
-                      onChange={(value) => {
-                        changeQuantity(item.id, value, {
-                          item_id: item.itemId,
-                          index: item.id,
-                          item_name: item.name,
-                          price: item.price,
-                          quantity: value,
-                          item_brand: item.brand,
-                          item_category: item.category,
-                          item_category2: item.category2,
-                          item_category3: item.category3,
-                          item_category4: item.category4,
-                          item_category5: item.category5,
-                        });
-                      }}
-                      minQuantity={0}
-                      maxQuantity={99}
-                    />
-                  </div>
-
-                  <CartCompatible id={Number(item.itemId)} />
-                </li>
+                <CartItemElement key={item.id + item.sku} item={item} />
               ))}
             </ul>
           )}

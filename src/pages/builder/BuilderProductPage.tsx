@@ -14,6 +14,7 @@ import { useTracking } from "../../lib/hooks/TrackingContext";
 import { toEcomTrackingEvent } from "../../components/toImpression";
 import { GroupedProperties } from "../../components/GroupedProperties";
 import { useCompareContext } from "../../lib/hooks/CompareProvider";
+import { useProductData } from "../../lib/utils";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
   const { setItems } = useCompareContext();
@@ -29,7 +30,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
     componentId,
     img,
     bp,
-    stockLevel,
+
     stock,
     buyable,
     buyableInStore,
@@ -43,6 +44,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
   const parentId = isParentId(queryParentId) ? queryParentId : itemParentId;
   const isSelected = selectedItems.some((d) => d.id === id);
   const { track } = useTracking();
+  const { stockLevel } = useProductData(values);
 
   return (
     <>

@@ -1,6 +1,6 @@
-import { Item } from "../lib/types";
+import { Item, StockData } from "../lib/types";
 import { makeImageUrl } from "../utils";
-import { Price } from "./Price";
+import { Price, PriceElement } from "./Price";
 import { Stars } from "./Stars";
 import { PropsWithChildren, useMemo, useState } from "react";
 import { Link, useViewTransitionState } from "react-router-dom";
@@ -12,15 +12,13 @@ import { toEcomTrackingEvent } from "./toImpression";
 import { useTracking } from "../lib/hooks/TrackingContext";
 import { useCompareContext } from "../lib/hooks/CompareProvider";
 import { GitCompareArrows, X } from "lucide-react";
+import { useProductData } from "../lib/utils";
 
 const hasStock = (value?: string | null) => {
   return value != null && value != "0";
 };
 
-export const StockBalloon = ({
-  stock,
-  stockLevel,
-}: Pick<Item, "stock" | "stockLevel">) => {
+export const StockBalloon = ({ stock, stockLevel }: StockData) => {
   const hasStoreStock = Object.entries(stock ?? {}).length > 0;
   const hasOnlineStock = hasStock(stockLevel);
   return (
@@ -36,7 +34,7 @@ export const StockIndicator = ({
   stock,
   stockLevel,
   showOnlyInStock = false,
-}: Pick<Item, "stock" | "stockLevel"> & { showOnlyInStock?: boolean }) => {
+}: StockData & { showOnlyInStock?: boolean }) => {
   const t = useTranslations();
   const {
     query: { stock: stockQuery },
@@ -210,14 +208,13 @@ export const ResultItemInner = ({
     id,
     children,
     bp,
-    stockLevel,
     lastUpdate,
     disclaimer,
     advertisingText,
   } = item;
+  const { price, rating, grade, isOwn, isOutlet, soldBy, stockLevel } =
+    useProductData(values);
 
-  const hasRating = values?.["6"] != null && values?.["7"] != null;
-  const soldBy = values?.["9"];
   const isTransitioning = useViewTransitionState(
     transitionUrl ?? `/product/${id}`
   );
@@ -237,7 +234,7 @@ export const ResultItemInner = ({
             className="size-16 object-contain absolute top-4 right-4 drop-shadow-lg"
           />
         )}
-        {values?.["10"] == "Outlet" && (
+        {isOutlet && (
           <img
             className="size-16 object-contain absolute top-4 left-4 drop-shadow-lg"
             src="https://www.elgiganten.se/content/SE/outlet/outlet.svg"
@@ -255,12 +252,7 @@ export const ResultItemInner = ({
         </h2>
 
         <div className="flex flex-wrap justify-between gap-2">
-          {hasRating && (
-            <Stars
-              rating={Number(values?.["6"]) / 10}
-              numberOfRatings={Number(values?.["7"])}
-            />
-          )}
+          {rating != null && <Stars {...rating} />}
           {lastUpdate != null && lastUpdate > 0 && (
             <span className="text-sm inline-block align-top bg-gray-100 rounded-bl-none after:absolute after:left-0 after:box-content after:border-transparent forced-colors:border forced-colors:after:hidden after:border-l-gray-100 rounded-border px-2 py-0.5 after:-bottom-[7px] after:border-[7px] absolute left-0 top-0 z-1">
               <TimeAgo ts={lastUpdate} />
@@ -282,7 +274,7 @@ export const ResultItemInner = ({
         )}
 
         <div className="pt-2 place-self-start">
-          <Price size="large" values={values} disclaimer={disclaimer} />
+          <PriceElement size="large" price={price} disclaimer={disclaimer} />
           {advertisingText != null && (
             <em className="block text-xs text-gray-500 italic">
               {advertisingText}
@@ -292,10 +284,10 @@ export const ResultItemInner = ({
 
         {children}
 
-        {values?.["10"] == "Outlet" && values?.["20"] != null && (
-          <em className="block text-xs text-gray-500 italic">{values["20"]}</em>
+        {isOutlet && grade != null && (
+          <em className="block text-xs text-gray-500 italic">{grade}</em>
         )}
-        {soldBy != null && soldBy != "Elgiganten" && (
+        {soldBy != null && !isOwn && (
           <em className="block text-xs text-gray-500 italic">
             Säljs av: {soldBy}
           </em>

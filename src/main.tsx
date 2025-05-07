@@ -3,12 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./pages/App.tsx";
 import "./index.css";
 import { RouterProvider } from "react-router/dom";
-import {
-  createBrowserRouter,
-  isRouteErrorResponse,
-  Outlet,
-  useRouteError,
-} from "react-router";
+import { createBrowserRouter, Outlet, useRouteError } from "react-router";
 import { Admin } from "./pages/Admin.tsx";
 import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
 import { SWRConfig } from "swr";
