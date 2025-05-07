@@ -3,7 +3,12 @@ import ReactDOM from "react-dom/client";
 import App from "./pages/App.tsx";
 import "./index.css";
 import { RouterProvider } from "react-router/dom";
-import { createBrowserRouter, Outlet } from "react-router";
+import {
+  createBrowserRouter,
+  isRouteErrorResponse,
+  Outlet,
+  useRouteError,
+} from "react-router";
 import { Admin } from "./pages/Admin.tsx";
 import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
 import { SWRConfig } from "swr";
@@ -53,16 +58,22 @@ import { ProductConfigurator } from "./pages/ProductConfigurator.tsx";
 import { EmptyQueriesView } from "./pages/tracking/empty-queries.tsx";
 import { CompareProvider } from "./lib/hooks/CompareProvider.tsx";
 import { GroupDesignerProvider } from "./lib/hooks/GroupDesignerProvider.tsx";
+import { SidebarMenu } from "./components/SidebarMenu.tsx";
+import { JsonView } from "./pages/tracking/JsonView.tsx";
+
+const BubbleError = () => {
+  const error = useRouteError();
+  return (
+    <PageContainer>
+      <SidebarMenu />
+      <div>
+        <JsonView data={error} />
+      </div>
+    </PageContainer>
+  );
+};
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: (
-      <PageContainer>
-        <App />
-      </PageContainer>
-    ),
-  },
   {
     path: "test",
     element: (
@@ -70,6 +81,7 @@ const router = createBrowserRouter([
         <Banner />
       </PageContainer>
     ),
+    errorElement: <BubbleError />,
   },
   {
     path: "config",
@@ -78,6 +90,7 @@ const router = createBrowserRouter([
         <ProductConfigurator />
       </PageContainer>
     ),
+    errorElement: <BubbleError />,
   },
   {
     path: "dashboard",
@@ -86,10 +99,12 @@ const router = createBrowserRouter([
         <DashboardView />
       </PageContainer>
     ),
+    errorElement: <BubbleError />,
   },
   {
     path: "builder",
     element: <BuilderMain />,
+    errorElement: <BubbleError />,
     children: [
       {
         index: true,
@@ -140,6 +155,7 @@ const router = createBrowserRouter([
         <Admin />
       </PageContainer>
     ),
+    errorElement: <BubbleError />,
     children: [
       {
         path: "rules",
@@ -182,6 +198,7 @@ const router = createBrowserRouter([
         <ScrollToTop />
       </PageContainer>
     ),
+    errorElement: <BubbleError />,
   },
   {
     path: "stats",
@@ -221,6 +238,7 @@ const router = createBrowserRouter([
         element: <FunnelsView />,
       },
     ],
+    errorElement: <BubbleError />,
   },
   {
     path: "checkout",
@@ -230,13 +248,14 @@ const router = createBrowserRouter([
         <ScrollToTop />
       </PageContainer>
     ),
+    errorElement: <BubbleError />,
   },
   {
     path: "confirmation/:id",
 
     loader: ({ params: { id } }) =>
       id != null ? getConfirmation(id) : Promise.reject(),
-    errorElement: <div>Confirmation not found</div>,
+    errorElement: <BubbleError />,
     element: (
       <PageContainer>
         <Confirmation />
@@ -245,6 +264,7 @@ const router = createBrowserRouter([
   },
   {
     path: "updated",
+    errorElement: <BubbleError />,
     element: (
       <PageContainer>
         <UpdatedItems />
