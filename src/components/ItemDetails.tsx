@@ -4,7 +4,7 @@ import {
   useRelatedItems,
   useRelationGroups,
 } from "../hooks/searchHooks";
-import { PropsWithChildren, useMemo, useState } from "react";
+import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { cm, isDefined, makeImageUrl } from "../utils";
 import {
   ItemDetail,
@@ -43,6 +43,7 @@ import { JsonView } from "../pages/tracking/JsonView";
 import { toEcomTrackingEvent } from "./toImpression";
 import { Stars } from "./Stars";
 import { QueryUpdater } from "./QueryMerger";
+import { useSwitching } from "../lib/hooks/useSwitching";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -103,14 +104,33 @@ const CarouselItem = ({ children }: PropsWithChildren) => {
 
 export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
   const { data, isLoading } = useCompatibleItems(id, []);
-  const productTypes = useMemo(() => {
-    return Array.from(
-      new Set(data?.map((item) => item.values[31158]).filter(isDefined))
+  const [productType, setProductTypes] = useSwitching<string>(5000);
+  useEffect(() => {
+    setProductTypes(
+      Array.from(
+        new Set(
+          data
+            ?.map((d) => d.values[31158])
+            .filter(isDefined)
+            .map((d) => String(d))
+        )
+      )
     );
   }, [data]);
-  console.log({ productTypes });
+  if (!data || data.length === 0) return null;
   return (
     <>
+      <div>
+        <span>
+          Har du glömt{" "}
+          <span
+            key={productType ?? ""}
+            className="text-black animate-acc underline underline-indigo-500"
+          >
+            {productType ?? ""}
+          </span>
+        </span>
+      </div>
       <ProductCarouselContainer list_id="compatible" list_name="Compatible">
         {isLoading && <Loader size="md" />}
         {data?.map((item, idx) => (

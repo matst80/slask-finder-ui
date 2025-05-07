@@ -13,6 +13,7 @@ import { useCompatibleItems } from "../hooks/searchHooks";
 import { CartItem, ItemPrice } from "../lib/types";
 import { toEcomTrackingEvent } from "./toImpression";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
+import { useSwitching } from "../lib/hooks/useSwitching";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -24,31 +25,25 @@ const CartCompatible = ({ id }: { id: number }) => {
   const t = useTranslations();
   const [open, setOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
-  const [idx, setIdx] = useState(0);
+  const [productType, setProductTypes] = useSwitching<string>(5000);
+
   const { data, isLoading } = useCompatibleItems(
     id,
     cart?.items.map((c) => Number(c.itemId)).filter(isDefined) ?? []
   );
-  const productTypes = useMemo(() => {
-    return Array.from(
-      new Set(
-        data
-          ?.map((d) => d.values[31158])
-          .filter(isDefined)
-          .map((d) => String(d))
+  useEffect(() => {
+    setProductTypes(
+      Array.from(
+        new Set(
+          data
+            ?.map((d) => d.values[31158])
+            .filter(isDefined)
+            .map((d) => String(d))
+        )
       )
     );
   }, [data]);
-  useEffect(() => {
-    const to = setInterval(() => {
-      setIdx((p) => (productTypes != null ? (p + 1) % productTypes.length : 0));
-    }, 5000);
-    setIdx(0);
-    return () => {
-      clearInterval(to);
-    };
-  }, [productTypes]);
-  const productType = useMemo(() => productTypes[idx], [idx, productTypes]);
+
   if (!isLoading && data?.length === 0) {
     return null;
   }

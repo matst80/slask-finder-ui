@@ -243,6 +243,27 @@
     opacity: 1;
   }
 
+  .button-group {
+    border-radius: 3px;
+    overflow: hidden;
+    border: var(--color-blue-400) 1px solid;
+
+    &>* {
+      background-color: var(--color-blue-300);
+      transition: all 0.2s ease-in-out;
+      padding: 0.5rem;
+      border-right: var(--color-blue-400) 1px solid;
+
+      &:last-child {
+        border-right: none;
+      }
+
+      &:hover {
+        background-color: var(--color-blue-400);
+      }
+    }
+  }
+
 
   @keyframes animate-in {
     0% {

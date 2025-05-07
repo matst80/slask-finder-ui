@@ -8,16 +8,24 @@ import {
   FacetListItem,
   ItemDetail,
   ItemsQuery,
+  RelationGroup,
+  RelationMatch,
 } from "../lib/types";
 import { isDefined, byPriority, cm } from "../utils";
-import { InfoIcon, PlusIcon } from "lucide-react";
+import {
+  InfoIcon,
+  ListFilterPlus,
+  PlugZapIcon,
+  PlusIcon,
+  Search,
+} from "lucide-react";
 import { QueryProvider } from "../lib/hooks/QueryProvider";
 import { TotalResultText } from "./ResultHeader";
 import { QueryUpdater } from "./QueryMerger";
-import { ButtonLink } from "./ui/button";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { useClipboard } from "../lib/hooks/useClipboard";
 import { Tooltip } from "./Tooltip";
+import { useGroupDesigner } from "../lib/hooks/GroupDesignerProvider";
 
 const ignoreFaceIds = [
   3, 4, 5, 6, 10, 11, 12, 13, 20, 1, 30, 31, 32, 33, 35, 36, 23, 9, 24,
@@ -78,6 +86,7 @@ const byGroup =
 export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
   const { setQuery } = useQuery();
   const [selected, setSelected] = useState<SelectedFacet[]>([]);
+  const { setGroup } = useGroupDesigner();
   const { data: groups } = useFacetGroups();
   const { data } = useFacetMap();
   const [isAdmin] = useAdmin();
@@ -113,6 +122,25 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
       .sort(byPriority)
       .reduce<GroupedFacets>(byGroup(groups), {});
   }, [values, data, groups, isAdmin]);
+  const setInGroup =
+    (
+      group: keyof Pick<RelationGroup, "additionalQueries" | "requiredForItem">
+    ) =>
+    () => {
+      setGroup((prev) => {
+        const newGroup = {
+          ...prev,
+          [group]: selected.map(
+            ({ id, value }): RelationMatch => ({
+              facetId: id,
+              exclude: false,
+              value,
+            })
+          ),
+        };
+        return newGroup;
+      });
+    };
   return (
     <div className="md:bg-white md:rounded-lg md:shadow-xs md:border border-gray-100 md:p-4 relative">
       <h3 className="text-2xl font-bold text-gray-900 mb-4">
@@ -125,9 +153,29 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
             <QueryUpdater query={customQuery} />
             <TotalResultText className="text-sm" />
           </QueryProvider>
-          <ButtonLink onClick={() => setQuery(customQuery)} to="/">
-            {t("common.search")}
-          </ButtonLink>
+          <div className="flex button-group">
+            <Link
+              aria-label={t("common.search")}
+              onClick={() => setQuery(customQuery)}
+              to="/"
+            >
+              <Search className="size-5" />
+            </Link>
+            <Link
+              title={"Set as item requirement"}
+              onClick={setInGroup("requiredForItem")}
+              to="/"
+            >
+              <PlugZapIcon className="size-5" />
+            </Link>
+            <Link
+              title={"Set as item requirement"}
+              onClick={setInGroup("additionalQueries")}
+              to="/"
+            >
+              <ListFilterPlus className="size-5" />
+            </Link>
+          </div>
         </div>
       )}
       <div className="flex flex-col gap-4">
