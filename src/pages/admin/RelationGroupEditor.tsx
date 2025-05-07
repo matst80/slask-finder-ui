@@ -471,6 +471,7 @@ const GroupEditor = ({
   onChange: (data: RelationGroup) => void;
 }) => {
   const [open, setOpen] = useState(false);
+  const { group, setGroup } = useGroupDesigner();
 
   const onArrayChange =
     (
@@ -489,29 +490,73 @@ const GroupEditor = ({
       });
     };
 
+  const hasValues = useMemo(() => {
+    return (
+      (group.additionalQueries?.length ?? 0) > 0 ||
+      (group.requiredForItem?.length ?? 0) > 0
+    );
+  }, [group]);
+
   return (
     <div className="border border-gray-200 rounded-xs bg-gray-50">
-      <div className="p-4 flex items-center justify-between border-b border-gray-200">
+      <div
+        onClick={() => setOpen((p) => !p)}
+        className="p-4 flex items-center justify-between border-b border-gray-200"
+      >
         <div className="flex-1">
           <h2 className="text-lg font-medium text-gray-900">{value.name}</h2>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => setOpen((p) => !p)}
-          className="flex items-center gap-2"
-        >
-          {open ? (
-            <>
-              <ChevronUp className="size-4" />
-              <span>Close</span>
-            </>
-          ) : (
-            <>
-              <span>Edit</span>
-            </>
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" size="sm" onClick={() => setGroup(value)}>
+            Copy
+          </Button>
+          {group.groupId === value.groupId && (
+            <Button size="sm" onClick={() => onChange(group)}>
+              Paste
+            </Button>
           )}
-        </Button>
+          {group.groupId !== value.groupId && hasValues && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() =>
+                onChange({
+                  ...value,
+                  additionalQueries: [
+                    ...(value.additionalQueries ?? []),
+                    ...(group.additionalQueries ?? []),
+                  ],
+                  requiredForItem: [
+                    ...(value.requiredForItem ?? []),
+                    ...(group.requiredForItem ?? []),
+                  ],
+                })
+              }
+            >
+              Merge
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen((p) => !p);
+            }}
+            className="flex items-center gap-2"
+          >
+            {open ? (
+              <>
+                <ChevronUp className="size-4" />
+                <span>Close</span>
+              </>
+            ) : (
+              <>
+                <span>Edit</span>
+              </>
+            )}
+          </Button>
+        </div>
       </div>
       {open && (
         <div className="p-4 space-y-6">
@@ -690,7 +735,7 @@ const GroupEditor = ({
 };
 
 export const RelationGroupEditor = () => {
-  const { group, setGroup } = useGroupDesigner();
+  const { group } = useGroupDesigner();
   const { data: groups, mutate } = useAdminRelationGroups();
   const updateRelationGroups = useRelationGroupsMutation();
   const [dirty, setDirty] = useState(false);
