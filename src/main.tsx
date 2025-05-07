@@ -67,6 +67,7 @@ const BubbleError = () => {
     <PageContainer>
       <SidebarMenu />
       <div>
+        <h1>Något gick snett...</h1>
         <JsonView data={error} />
       </div>
     </PageContainer>
@@ -74,6 +75,15 @@ const BubbleError = () => {
 };
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <PageContainer>
+        <App />
+      </PageContainer>
+    ),
+    errorElement: <BubbleError />,
+  },
   {
     path: "test",
     element: (

@@ -253,4 +253,8 @@ export const swedish = {
     update_error: "Det gick inte att uppdatera facetgrupper",
     list: "Lista",
   },
+  groupDesigner: {
+    groupSaved: "Sparad",
+    groupSavedMessage: "Fråga sparad till grupp",
+  },
 } satisfies BaseTranslationType;

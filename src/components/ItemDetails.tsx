@@ -119,13 +119,13 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
   }, [data]);
   if (!data || data.length === 0) return null;
   return (
-    <>
+    <div className="relative">
       <div>
-        <span>
+        <span className="text-2xl pb-6 mb-8">
           Har du glömt{" "}
           <span
             key={productType ?? ""}
-            className="text-black animate-acc underline underline-indigo-500"
+            className="text-black font-bold animate-pop underline underline-indigo-500"
           >
             {productType ?? ""}
           </span>
@@ -139,7 +139,7 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
           </CarouselItem>
         ))}
       </ProductCarouselContainer>
-    </>
+    </div>
   );
 };
 

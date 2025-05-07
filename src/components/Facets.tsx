@@ -168,7 +168,9 @@ export const Facets = ({
       >
         <span>
           {t("facets.title")}{" "}
-          <span className="text-gray-500">({facets.length})</span>
+          {facets.length > 0 && (
+            <span className="text-gray-500">({facets.length})</span>
+          )}
         </span>
         <ChevronUp
           className={cm(

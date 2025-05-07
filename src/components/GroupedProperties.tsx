@@ -26,6 +26,7 @@ import { useTranslations } from "../lib/hooks/useTranslations";
 import { useClipboard } from "../lib/hooks/useClipboard";
 import { Tooltip } from "./Tooltip";
 import { useGroupDesigner } from "../lib/hooks/GroupDesignerProvider";
+import { useNotifications } from "./ui-notifications/useNotifications";
 
 const ignoreFaceIds = [
   3, 4, 5, 6, 10, 11, 12, 13, 20, 1, 30, 31, 32, 33, 35, 36, 23, 9, 24,
@@ -53,17 +54,17 @@ const isValidKeyFilter = (
 };
 
 type Facet = FacetListItem & {
+  ignore?: boolean;
   value: string[] | string | number;
 };
 
 type GroupedFacets = Record<string, Facet[]>;
 
 const byGroup =
-  (groups?: FacetGroup[]) =>
+  (groups: FacetGroup[] | undefined, defaultGroupName: string) =>
   (acc: GroupedFacets, item: Facet): GroupedFacets => {
     const group: string =
-      groups?.find((g) => g.id === item.groupId)?.name ??
-      "Funktioner och egenskaper";
+      groups?.find((g) => g.id === item.groupId)?.name ?? defaultGroupName;
     const addKey: GroupedFacets = item.isKey
       ? {
           Nyckelspecifikationer: [...(acc.Nyckelspecifikationer ?? []), item],
@@ -86,6 +87,7 @@ const byGroup =
 export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
   const { setQuery } = useQuery();
   const [selected, setSelected] = useState<SelectedFacet[]>([]);
+  const { showNotification } = useNotifications();
   const { setGroup } = useGroupDesigner();
   const { data: groups } = useFacetGroups();
   const { data } = useFacetMap();
@@ -109,18 +111,28 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
     return Object.entries(values)
       .map(([id, value]) => {
         const facet = data?.[id];
-        if (!facet || value == null || ignoreFaceIds.includes(facet.id)) {
+        if (!facet || value == null) {
           return null;
         }
-
+        if (ignoreFaceIds.includes(facet.id)) {
+          if (!isAdmin) {
+            return null;
+          }
+          return {
+            ...facet,
+            ignore: true,
+            value,
+          };
+        }
         return {
           ...facet,
+          ignore: false,
           value,
-        } satisfies Facet;
+        } satisfies Facet & { ignore: boolean };
       })
       .filter(isDefined)
       .sort(byPriority)
-      .reduce<GroupedFacets>(byGroup(groups), {});
+      .reduce<GroupedFacets>(byGroup(groups, "Funktioner och egenskaper"), {});
   }, [values, data, groups, isAdmin]);
   const setInGroup =
     (
@@ -140,6 +152,11 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
         };
         return newGroup;
       });
+      showNotification({
+        title: t("groupDesigner.groupSaved"),
+        message: t("groupDesigner.groupSavedMessage"),
+        variant: "success",
+      });
     };
   return (
     <div className="md:bg-white md:rounded-lg md:shadow-xs md:border border-gray-100 md:p-4 relative">
@@ -148,12 +165,8 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
         {/* <span className="ml-2 text-gray-500 text-lg">({fields.length})</span> */}
       </h3>
       {customQuery != null && (
-        <div className="bg-slate-100 absolute z-10 top-1 right-1 rounded-md p-3 flex flex-col gap-2 items-center">
-          <QueryProvider initialQuery={customQuery}>
-            <QueryUpdater query={customQuery} />
-            <TotalResultText className="text-sm" />
-          </QueryProvider>
-          <div className="flex button-group">
+        <div className="absolute z-10 top-1 right-1 max-w-[400px] p-3 flex flex-col gap-2 items-center animate-pop">
+          <div className="button-group">
             <Link
               aria-label={t("common.search")}
               onClick={() => setQuery(customQuery)}
@@ -168,12 +181,16 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
               <PlugZapIcon className="size-5" />
             </button>
             <button
-              title={"Set as item requirement"}
+              title={"Set as additional query"}
               onClick={setInGroup("additionalQueries")}
             >
               <ListFilterPlus className="size-5" />
             </button>
           </div>
+          <QueryProvider initialQuery={customQuery}>
+            <QueryUpdater query={customQuery} />
+            <TotalResultText className="text-sm" />
+          </QueryProvider>
         </div>
       )}
       <div className="flex flex-col gap-4">
@@ -188,8 +205,9 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                     <div
                       key={`prop-${field.id}-${field.valueType}`}
                       className={cm(
-                        "py-2 md:p-3 md:rounded-lg md:hover:bg-gray-50 transition-colors relative"
-                        //field.hide && "opacity-50"
+                        "py-2 md:p-3 md:rounded-lg md:hover:bg-gray-50 transition-all relative",
+                        (field.hide || field.ignore || field.internal) &&
+                          "opacity-50 hover:opacity-100"
                       )}
                     >
                       {isValidKeyFilter(field.value) && (

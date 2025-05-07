@@ -249,4 +249,8 @@ export const english = {
     update_error: "Failed to update facet groups",
     list: "Facet groups",
   },
+  groupDesigner: {
+    groupSaved: "Saved",
+    groupSavedMessage: "Query saved to group",
+  },
 } satisfies BaseTranslationType;
