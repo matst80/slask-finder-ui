@@ -350,7 +350,7 @@ export const MiniCart = () => {
     }
   }, [totalItems, ref]);
 
-  if (cart == null || cart.items.length === 0) {
+  if (cart?.items == null || cart.items.length === 0) {
     return null;
   }
 
