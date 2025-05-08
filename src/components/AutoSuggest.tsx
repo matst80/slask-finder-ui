@@ -63,7 +63,10 @@ const TrieSuggestions = ({
       {visible.map(({ hits, match, other }) => (
         <button
           key={match}
-          onClick={() => onQueryChange([...other, match].join(" "))}
+          onClick={(e) => {
+            e.preventDefault();
+            onQueryChange([...other, match].join(" "));
+          }}
         >
           {match}
           <span className="ml-2 hidden md:inline-flex items-center justify-center px-2 h-4 rounded-full bg-blue-200 text-blue-500">
@@ -71,7 +74,16 @@ const TrieSuggestions = ({
           </span>
         </button>
       ))}
-      {hasMore && <button onClick={() => setShowMore((p) => !p)}>...</button>}
+      {hasMore && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowMore((p) => !p);
+          }}
+        >
+          ...
+        </button>
+      )}
     </div>
   );
 };
@@ -79,7 +91,12 @@ const TrieSuggestions = ({
 export const AutoSuggest = () => {
   const { query: globalQuery, setQuery } = useQuery();
 
-  const { inputRef, close } = useDropdownFocus();
+  const { inputRef, close } = useDropdownFocus({
+    onOpen: () => {
+      updatePosition();
+    },
+    onClose: () => {},
+  });
   const parentRef = useArrowKeyNavigation<HTMLFieldSetElement>(
     ".suggest-result button",
     {
@@ -105,6 +122,7 @@ export const AutoSuggest = () => {
       const bestSuggestion = suggestions[0];
       if (e.key === "Enter" && (e.altKey || e.metaKey) && smartQuery != null) {
         e.preventDefault();
+        e.stopPropagation();
         if (smartQuery != null) {
           setQuery(smartQuery);
         }
@@ -115,8 +133,10 @@ export const AutoSuggest = () => {
           .join(" ");
 
         input.value = query;
+
         setTerm(query);
       }
+      updatePosition();
     },
     [suggestions, setTerm, smartQuery]
   );
@@ -125,38 +145,19 @@ export const AutoSuggest = () => {
     if (globalQuery.query != null && inputRef.current != null) {
       inputRef.current.value = globalQuery.query;
     }
-    close();
+    requestAnimationFrame(() => {
+      updatePosition();
+      close();
+    });
   }, [globalQuery, inputRef]);
-
-  useEffect(() => {
-    const elm = inputRef.current;
-    if (elm != null) {
-      const changeHandler = (e: Event) => {
-        const term = (e.target as HTMLInputElement)?.value;
-
-        requestAnimationFrame(() => {
-          if (term != null) {
-            setTerm(term);
-          }
-          updatePosition();
-        });
-      };
-
-      setTerm(elm.value);
-      elm.addEventListener("input", changeHandler);
-
-      return () => {
-        elm.removeEventListener("input", changeHandler);
-      };
-    }
-  }, [inputRef, updatePosition, setTerm]);
 
   return (
     <form
       onSubmit={(e) => {
-        const { query } = Object.fromEntries(
+        const { query, ...rest } = Object.fromEntries(
           new FormData(e.target as HTMLFormElement)
         );
+        console.log("submit", { query, rest });
         e.preventDefault();
 
         if (query != null && typeof query === "string" && query.length > 0) {
@@ -178,6 +179,10 @@ export const AutoSuggest = () => {
             className="w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden md:rounded-md suggest-input"
             type="search"
             onKeyUp={onKeyUp}
+            onInput={(e) => {
+              setTerm(e.currentTarget.value);
+              updatePosition();
+            }}
             name="query"
             id="autosuggest-input"
             autoComplete="off"
@@ -199,7 +204,10 @@ export const AutoSuggest = () => {
 
           {smartQuery != null && (
             <button
-              onClick={() => smartQuery != null && setQuery(smartQuery)}
+              onClick={(e) => {
+                e.preventDefault();
+                smartQuery != null && setQuery(smartQuery);
+              }}
               className="smart-query transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs"
             >
               {possibleTriggers?.map(({ result }) =>
@@ -223,18 +231,14 @@ export const AutoSuggest = () => {
               </span>
             </button>
           )}
-
-          <Search
+          <button
+            type="submit"
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            aria-hidden="true"
-            size={20}
-          />
+          >
+            <Search aria-hidden="true" size={20} />
+          </button>
         </div>
-        <SuggestionResults
-          //open={showItems}
-          //selectedIndex={selectedIndex}
-          onClose={close}
-        />
+        <SuggestionResults onClose={close} />
       </fieldset>
     </form>
   );

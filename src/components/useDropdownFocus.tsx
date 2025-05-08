@@ -1,6 +1,11 @@
 import { useRef, useCallback, useEffect } from "react";
 
-export const useDropdownFocus = () => {
+type FocusOptions = {
+  onOpen?: () => void;
+  onClose?: () => void;
+};
+
+export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const targetRef = useRef<HTMLElement>(null);
   const close = useCallback(() => {
@@ -9,6 +14,7 @@ export const useDropdownFocus = () => {
     if (elm != null && targetElm != null) {
       targetElm.setAttribute("aria-hidden", "true");
       elm.setAttribute("aria-expanded", "false");
+      onClose?.();
     }
   }, [inputRef, targetRef]);
   const open = useCallback(() => {
@@ -17,6 +23,7 @@ export const useDropdownFocus = () => {
     if (elm != null && targetElm != null) {
       targetElm.setAttribute("aria-hidden", "false");
       elm.setAttribute("aria-expanded", "true");
+      onOpen?.();
     }
   }, [inputRef, targetRef]);
   useEffect(() => {

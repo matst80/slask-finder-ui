@@ -453,7 +453,9 @@ export const ItemDetails = (details: ItemDetail) => {
               src={makeImageUrl(img)}
               alt={title}
             />
-            <p className="leading-7">{description}</p>
+            {description != null && description.length > 1 && (
+              <p className="leading-7 mt-6">{description}</p>
+            )}
           </div>
 
           {/* Details Section */}

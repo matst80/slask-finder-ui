@@ -2,6 +2,7 @@ import { useRef, useEffect } from "react";
 
 export type ArrowKeyNavigationOptions = {
   onEscape?: () => void;
+  onOpen?: () => void;
   onNotFound?: (activeElement: Element | null) => void;
 };
 
