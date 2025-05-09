@@ -154,10 +154,10 @@ export const AutoSuggest = () => {
   return (
     <form
       onSubmit={(e) => {
-        const { query, ...rest } = Object.fromEntries(
+        const { query } = Object.fromEntries(
           new FormData(e.target as HTMLFormElement)
         );
-        console.log("submit", { query, rest });
+
         e.preventDefault();
 
         if (query != null && typeof query === "string" && query.length > 0) {
@@ -181,6 +181,10 @@ export const AutoSuggest = () => {
             onKeyUp={onKeyUp}
             onInput={(e) => {
               setTerm(e.currentTarget.value);
+              if (e.currentTarget.value.length === 0) {
+                // console.log("cleared");
+                setQuery((prev) => ({ ...prev, query: "" }));
+              }
               updatePosition();
             }}
             name="query"
