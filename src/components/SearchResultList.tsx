@@ -186,7 +186,7 @@ export const SearchResultList = () => {
   const {
     isLoading,
     hits,
-    query: { pageSize },
+    query: { pageSize, filter },
   } = useQuery();
 
   if (isLoading && hits.length < 1) {
@@ -201,8 +201,8 @@ export const SearchResultList = () => {
       </div>
     );
   }
-
-  if (!hits.length && (hits == null || hits.length < 1)) {
+  console.log("filter", !!filter);
+  if (!hits.length && hits == null && !!filter) {
     return <NoResults />;
   }
 

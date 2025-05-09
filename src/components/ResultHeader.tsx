@@ -36,9 +36,10 @@ export const ResultHeader = ({ children }: PropsWithChildren) => {
     }
     return queryHistory[idx - 1] ?? null;
   }, [queryHistory, currentKey]);
-  if (totalHits === 0) {
+  if (totalHits === 0 && !query.filter) {
     return null;
   }
+
   return (
     <>
       <header className="flex justify-end pt-4 md:pt-0 md:justify-between gap-2 items-center mb-2">
@@ -70,7 +71,7 @@ export const ResultHeader = ({ children }: PropsWithChildren) => {
           <Sorting />
         </div>
       </header>
-      <FilterQuery show={(totalHits ?? 0) > 40} />
+      <FilterQuery show={!!query.filter || (totalHits ?? 0) > 40} />
     </>
   );
 };
