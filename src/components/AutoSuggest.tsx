@@ -91,7 +91,7 @@ const TrieSuggestions = ({
 export const AutoSuggest = () => {
   const { query: globalQuery, setQuery } = useQuery();
 
-  const { inputRef, close } = useDropdownFocus({
+  const { inputRef, close, open } = useDropdownFocus({
     onOpen: () => {
       updatePosition();
     },
@@ -137,6 +137,7 @@ export const AutoSuggest = () => {
         setTerm(query);
       }
       updatePosition();
+      open();
     },
     [suggestions, setTerm, smartQuery]
   );
@@ -186,10 +187,6 @@ export const AutoSuggest = () => {
                 // console.log("cleared");
                 setQuery((prev) => ({ ...prev, query: "" }));
               }
-              requestAnimationFrame(() => {
-                updatePosition();
-                open();
-              });
             }}
             name="query"
             id="autosuggest-input"
