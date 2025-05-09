@@ -181,11 +181,15 @@ export const AutoSuggest = () => {
             onKeyUp={onKeyUp}
             onInput={(e) => {
               setTerm(e.currentTarget.value);
+
               if (e.currentTarget.value.length === 0) {
                 // console.log("cleared");
                 setQuery((prev) => ({ ...prev, query: "" }));
               }
-              updatePosition();
+              requestAnimationFrame(() => {
+                updatePosition();
+                open();
+              });
             }}
             name="query"
             id="autosuggest-input"
