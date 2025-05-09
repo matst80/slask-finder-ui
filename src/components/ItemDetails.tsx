@@ -533,9 +533,7 @@ export const ItemDetails = (details: ItemDetail) => {
           <BreadCrumbs values={values} />
           <RelationGroups values={values} id={id} />
 
-          <div className="animating-element">
-            <GroupedProperties values={details.values} />
-          </div>
+          <GroupedProperties values={details.values} />
 
           <div className="animating-element">
             <h3 className="text-2xl font-bold text-gray-900 pb-6 mb-8">

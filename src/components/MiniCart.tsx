@@ -17,6 +17,7 @@ import { useSwitching } from "../lib/hooks/useSwitching";
 
 type CartDialogProps = {
   onClose: () => void;
+  open: boolean;
 };
 
 const hasLength = (value?: string | null) => {
@@ -184,7 +185,7 @@ const useCartItemData = (item: CartItem) => {
   }, [item]);
 };
 
-const CartItemElement = ({ item }: { item: CartItem }) => {
+const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   const { trigger: changeQuantity } = useChangeQuantity();
   const { price, trackingItem } = useCartItemData(item);
   return (
@@ -214,9 +215,11 @@ const CartItemElement = ({ item }: { item: CartItem }) => {
         </div>
       </div>
 
-      <div className="flex justify-end items-center gap-2 pt-2">
-        <PriceElement price={price} size="small" />
-        {/* <div className="flex items-center gap-2">
+      {open && (
+        <>
+          <div className="flex justify-end items-center gap-2 pt-2 animate-pop">
+            <PriceElement price={price} size="small" />
+            {/* <div className="flex items-center gap-2">
                       {item.orgPrice > 0 && item.orgPrice > item.price && (
                         <PriceValue
                           className="line-through text-gray-400 text-xs"
@@ -232,22 +235,24 @@ const CartItemElement = ({ item }: { item: CartItem }) => {
                         }
                       />
                     </div> */}
-        <QuantityInput
-          value={item.qty}
-          onChange={(value) => {
-            changeQuantity(item.id, value, trackingItem(value));
-          }}
-          minQuantity={0}
-          maxQuantity={99}
-        />
-      </div>
+            <QuantityInput
+              value={item.qty}
+              onChange={(value) => {
+                changeQuantity(item.id, value, trackingItem(value));
+              }}
+              minQuantity={0}
+              maxQuantity={99}
+            />
+          </div>
 
-      <CartCompatible id={Number(item.itemId)} />
+          <CartCompatible id={Number(item.itemId)} />
+        </>
+      )}
     </li>
   );
 };
 
-const CartDialog = ({ onClose }: CartDialogProps) => {
+const CartDialog = ({ onClose, open }: CartDialogProps) => {
   const { data: cart, isLoading } = useCart();
 
   const t = useTranslations();
@@ -278,7 +283,11 @@ const CartDialog = ({ onClose }: CartDialogProps) => {
           ) : (
             <ul className="flex-1">
               {items.map((item) => (
-                <CartItemElement key={item.id + item.sku} item={item} />
+                <CartItemElement
+                  key={item.id + item.sku}
+                  item={item}
+                  open={open}
+                />
               ))}
             </ul>
           )}
@@ -370,7 +379,7 @@ export const MiniCart = () => {
         </span>
       </button>
       <Sidebar open={isCartOpen} setOpen={setIsCartOpen} side="right">
-        <CartDialog onClose={() => setIsCartOpen(false)} />
+        <CartDialog onClose={() => setIsCartOpen(false)} open={isCartOpen} />
       </Sidebar>
     </>
   );
