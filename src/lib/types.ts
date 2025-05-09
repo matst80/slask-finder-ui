@@ -281,6 +281,7 @@ export type FilteringQuery = {
 };
 
 export type ItemsQuery = FilteringQuery & {
+  filter?: string;
   page?: number;
   sort?: string;
   pageSize?: number;

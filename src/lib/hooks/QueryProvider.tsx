@@ -74,13 +74,13 @@ export const QueryProvider = ({
     setQuery((prev) => ({ ...prev, sort, page: 0 }));
   }, []);
   const setStock = useCallback((stock: string[]) => {
-    setQuery((prev) => ({ ...prev, stock, page: 0 }));
+    setQuery(({ filter, ...prev }) => ({ ...prev, stock, page: 0 }));
   }, []);
   const setTerm = useCallback((term: string) => {
-    setQuery((prev) => ({ ...prev, query: term, page: 0 }));
+    setQuery(({ filter, ...prev }) => ({ ...prev, query: term, page: 0 }));
   }, []);
   const removeFilter = useCallback((id: number) => {
-    setQuery((prev) => ({
+    setQuery(({ filter, ...prev }) => ({
       ...prev,
       string: prev.string?.filter((f) => f.id !== id),
       range: prev.range?.filter((f) => f.id !== id),
@@ -92,7 +92,7 @@ export const QueryProvider = ({
     ref,
     () => ({
       mergeQuery: (query: ItemsQuery) => {
-        setQuery((prev) => ({
+        setQuery(({ filter, ...prev }) => ({
           ...prev,
           ...mergeFilters(prev, query),
           page: 0,
@@ -115,7 +115,7 @@ export const QueryProvider = ({
           ],
         }));
       } else {
-        setQuery((prev) => ({
+        setQuery(({ filter, ...prev }) => ({
           ...prev,
           page: 0,
           string: [
@@ -126,6 +126,17 @@ export const QueryProvider = ({
       }
     },
     []
+  );
+
+  const setFilterTerm = useCallback(
+    (filter: string) => {
+      setQuery((prev) => ({
+        ...prev,
+        page: 0,
+        filter,
+      }));
+    },
+    [setQuery]
   );
 
   useEffect(() => {
@@ -206,7 +217,7 @@ export const QueryProvider = ({
         setStock,
         addPage,
         queryHistory,
-
+        setFilterTerm,
         setTerm,
         removeFilter,
         setFilter,

@@ -1,7 +1,7 @@
 import { BaseTranslationType } from "../lib/types";
 
 export const swedish = {
-  app_name: "dash",
+  app_name: "s10r",
   menu: {
     search: "Sök",
     builder: "Komponentbyggare",

@@ -75,6 +75,7 @@ export const queryToHash = ({
   pageSize,
   query,
   stock,
+  filter,
   string,
 }: ItemsQuery): string => {
   const filterObj = filteringQueryToHash({
@@ -91,6 +92,9 @@ export const queryToHash = ({
   }
   if (pageSize != null && pageSize !== 40) {
     filterObj.size = pageSize.toString();
+  }
+  if (filter != null && filter.length > 0) {
+    filterObj.filter = filter;
   }
   return new URLSearchParams(filterObj).toString();
 };
@@ -155,7 +159,7 @@ const itemsKey = (data: ItemsQuery) => `items-` + queryToHash(data);
 //const facetsKey = (data: FacetQuery) => "facets-" + facetQueryToHash(data);
 
 export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
-  const { range, sort, page, pageSize, query, stock, string } = data;
+  const { range, sort, page, pageSize, query, stock, string, filter } = data;
 
   const result = new URLSearchParams({
     page: (page ?? 0).toString(),
@@ -181,6 +185,9 @@ export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
         }`
       );
     });
+  if (filter?.length) {
+    result.append("filter", filter);
+  }
   stock?.forEach((s) => {
     result.append("stock", s);
   });

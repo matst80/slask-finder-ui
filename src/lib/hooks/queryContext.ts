@@ -20,6 +20,7 @@ type QueryContextType = {
   setSort: (sort: string) => void;
   setStock: (stock: string[]) => void;
   setTerm: (term: string) => void;
+  setFilterTerm: (filter: string) => void;
   removeFilter: (id: number) => void;
   setFilter: (id: number, value: string[] | Omit<NumberField, "id">) => void;
 };
