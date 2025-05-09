@@ -117,6 +117,7 @@ export const AutoSuggest = () => {
 
   const onKeyUp = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
+      open();
       const input = e.currentTarget;
       const isAtEnd = input.selectionEnd == input.value.length;
       const bestSuggestion = suggestions[0];
@@ -137,7 +138,6 @@ export const AutoSuggest = () => {
         setTerm(query);
       }
       updatePosition();
-      open();
     },
     [suggestions, setTerm, smartQuery]
   );
