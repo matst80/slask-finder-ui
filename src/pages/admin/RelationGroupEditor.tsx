@@ -1,4 +1,11 @@
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  PropsWithChildren,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useAdminRelationGroups, useFacetMap } from "../../hooks/searchHooks";
 import {
   FacetListItem,
@@ -465,11 +472,14 @@ const ArticleIdSelector = ({
 
 const GroupEditor = ({
   group: value,
+  children,
+  onDelete,
   onChange,
-}: {
+}: PropsWithChildren<{
   group: RelationGroup;
+  onDelete: () => void;
   onChange: (data: RelationGroup) => void;
-}) => {
+}>) => {
   const [open, setOpen] = useState(false);
   const { group, setGroup } = useGroupDesigner();
 
@@ -498,7 +508,8 @@ const GroupEditor = ({
   }, [group]);
 
   return (
-    <div className="border border-gray-200 rounded-xs bg-gray-50">
+    <div className="border border-gray-200 rounded-xs bg-gray-50 relative">
+      {children}
       <div
         onClick={() => setOpen((p) => !p)}
         className="p-4 flex items-center justify-between border-b border-gray-200"
@@ -507,6 +518,9 @@ const GroupEditor = ({
           <h2 className="text-lg font-medium text-gray-900">{value.name}</h2>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="danger" size="sm" onClick={() => onDelete()}>
+            Delete
+          </Button>
           <Button variant="secondary" size="sm" onClick={() => setGroup(value)}>
             Copy
           </Button>
@@ -747,6 +761,15 @@ export const RelationGroupEditor = () => {
     mutate(newGroups, { revalidate: false });
   };
 
+  const onDeleteItem = (idx: number) => () => {
+    if (groups == null) return;
+
+    mutate(
+      groups.filter((_, i) => i !== idx),
+      { revalidate: false }
+    );
+  };
+
   return (
     <div className="p-4 space-y-6">
       <div className="flex items-center justify-between">
@@ -759,6 +782,7 @@ export const RelationGroupEditor = () => {
             key={group.key}
             group={group}
             onChange={onItemChange(idx)}
+            onDelete={onDeleteItem(idx)}
           />
         ))}
       </div>
