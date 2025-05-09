@@ -378,6 +378,8 @@ export const useFacetMap = () => {
   return useSWR("facet-map", getFacetMap, {
     revalidateOnFocus: false,
     refreshInterval: 0,
+    keepPreviousData: true,
+    revalidateIfStale: false,
     focusThrottleInterval: 3600,
   });
 };
@@ -402,6 +404,8 @@ export const useRelationGroups = () => {
     {
       revalidateOnFocus: false,
       refreshInterval: 0,
+      keepPreviousData: true,
+      revalidateIfStale: false,
       focusThrottleInterval: 3600,
     }
   );
