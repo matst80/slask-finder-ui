@@ -201,7 +201,7 @@ export const SearchResultList = () => {
       </div>
     );
   }
-  console.log("filter", !!filter);
+
   if (!hits.length && hits == null && !!filter) {
     return <NoResults />;
   }
