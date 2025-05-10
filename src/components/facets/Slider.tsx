@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { cm } from "../../utils";
 import ReactRangeSliderInput from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
