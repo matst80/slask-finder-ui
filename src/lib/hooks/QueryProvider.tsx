@@ -12,7 +12,6 @@ import {
   isNumberValue,
   NumberField,
   HistoryQuery,
-  ResultTransformer,
 } from "../types";
 import {
   facetQueryToHash,
