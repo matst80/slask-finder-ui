@@ -1,13 +1,8 @@
-import { PropsWithChildren, useMemo } from "react";
+import { PropsWithChildren } from "react";
 import { Sorting } from "./Sorting";
 import { useQuery } from "../lib/hooks/useQuery";
 import { FilterQuery } from "./FilterQuery";
-import { facetQueryToHash } from "../hooks/searchHooks";
-import { Button } from "./ui/button";
-import { ArrowLeftIcon, CopyIcon } from "lucide-react";
-import { queryToHash } from "../lib/utils";
 import { useTranslations } from "../lib/hooks/useTranslations";
-import { useClipboard } from "../lib/hooks/useClipboard";
 
 export const TotalResultText = ({
   className = "md:text-2xl font-bold",
