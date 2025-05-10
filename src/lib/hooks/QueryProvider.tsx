@@ -12,6 +12,7 @@ import {
   isNumberValue,
   NumberField,
   HistoryQuery,
+  ResultTransformer,
 } from "../types";
 import {
   facetQueryToHash,
@@ -194,7 +195,7 @@ export const QueryProvider = ({
     setIsLoading(true);
     api.streamItems(toQuery(query)).then((data) => {
       itemsCache.set(itemsKey, data?.items);
-      setHits(data?.items);
+      setHits(data?.items ?? []);
       setQuery((prev) => ({
         ...prev,
         page: data?.page ?? prev.page,

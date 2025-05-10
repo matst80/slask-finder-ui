@@ -5,6 +5,7 @@ import { InfiniteHitList } from "./InfiniteHitList";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useYourPopularItems } from "../hooks/searchHooks";
+import { ItemsQuery } from "../lib/types";
 
 export const Banner = () => {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -168,12 +169,16 @@ export const Banner = () => {
 
 const NoResults = () => {
   const { data } = useYourPopularItems();
+
   return (
     <ImpressionProvider>
       <div
         id="results"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0 scroll-snap-y"
       >
+        <div className="col-span-full text-center text-2xl font-bold mb-4">
+          Popular products
+        </div>
         {data?.map((item, idx) => (
           <ResultItem key={item.id} {...item} position={idx} />
         ))}
@@ -182,27 +187,34 @@ const NoResults = () => {
   );
 };
 
-export const SearchResultList = () => {
-  const {
-    isLoading,
-    hits,
-    query: { pageSize, filter },
-  } = useQuery();
+const useIsEmptyQuery = (query: ItemsQuery) => {
+  const { string, range, filter, query: term } = query;
+  const isEmpty =
+    (string?.length ?? 0) === 0 &&
+    (range?.length ?? 0) === 0 &&
+    (term?.length ?? 0) === 0 &&
+    (filter?.length ?? 0) === 0;
 
-  if (isLoading && hits.length < 1) {
+  return isEmpty;
+};
+
+export const SearchResultList = () => {
+  const { isLoading, hits, query } = useQuery();
+  const isEmpty = useIsEmptyQuery(query);
+  if (isLoading && !isEmpty) {
     return (
       <div
         id="results"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0"
       >
-        {new Array(pageSize)?.map((_, idx) => (
+        {new Array(query.pageSize)?.map((_, idx) => (
           <PlaceholderItem key={`p-${idx}`} />
         ))}
       </div>
     );
   }
 
-  if (!hits.length && hits == null && !!filter) {
+  if (!hits.length && isEmpty) {
     return <NoResults />;
   }
 

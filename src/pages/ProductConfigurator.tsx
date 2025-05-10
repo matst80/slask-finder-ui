@@ -1,7 +1,7 @@
 import { QueryProvider } from "../lib/hooks/QueryProvider";
 import { useQuery } from "../lib/hooks/useQuery";
 import { useMemo } from "react";
-import { isKeyFacet, KeyFacet } from "../lib/types";
+import { isKeyFacet, KeyFacet, ValueMap } from "../lib/types";
 import { useQueryKeyFacet } from "../lib/hooks/useQueryKeyFacet";
 
 import { Button } from "../components/ui/button";
@@ -102,8 +102,11 @@ export const ProductConfigurator = () => {
       <QueryProvider
         initialQuery={{
           string: [
-            { id: 30879, value: ["Apple Watch S10"] },
-            { id: 10, value: ["Mobiler, Tablets & Smartklockor"] },
+            { id: ValueMap.Model, value: ["Apple Watch S10"] },
+            {
+              id: ValueMap.Category1,
+              value: ["Mobiler, Tablets & Smartklockor"],
+            },
           ],
         }}
       >

@@ -47,8 +47,7 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
         const shouldClose =
           focusElement == null ||
           !(
-            focusElement.classList.contains("smart-query") ||
-            focusElement.classList.contains("trie") ||
+            focusElement.classList.contains("attachment") ||
             focusElement.parentElement == targetElm
           );
         if (shouldClose) {

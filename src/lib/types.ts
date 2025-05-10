@@ -74,6 +74,7 @@ export const ValueMap = {
   NumberOfRatings: 7,
   SoldBy: 9,
   ProductType: 31158,
+  Model: 30879,
   Category1: 10,
   Category2: 11,
   Category3: 12,
@@ -286,6 +287,8 @@ export type ItemsQuery = FilteringQuery & {
   sort?: string;
   pageSize?: number;
 };
+
+export type ResultTransformer<Input, Output> = (input: Input) => Output;
 
 export type FacetQuery = FilteringQuery;
 

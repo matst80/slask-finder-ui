@@ -25,4 +25,4 @@ type QueryContextType = {
   setFilter: (id: number, value: string[] | Omit<NumberField, "id">) => void;
 };
 
-export const QueryContext = createContext({} as QueryContextType);
+export const QueryContext = createContext<QueryContextType | null>(null);

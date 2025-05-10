@@ -312,6 +312,20 @@
 
   }
 
+  .has-attachments:has(input[aria-expanded="true"]) {
+    .attachment {
+      display: block;
+      opacity: 1;
+    }
+  }
+
+  .has-attachments:has(input[aria-expanded="false"]) {
+    .attachment {
+      display: none;
+      opacity: 0;
+    }
+  }
+
   /* Vertical button group variant */
   .button-group.vertical {
     flex-direction: column;

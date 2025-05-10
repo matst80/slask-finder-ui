@@ -56,7 +56,7 @@ const TrieSuggestions = ({
   return (
     <div
       className={
-        "trie transition-opacity border border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 absolute text-xs top-2 bottom-2 rounded-md z-20 flex gap-2 items-baseline"
+        "trie attachment transition-opacity border border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 absolute text-xs top-2 bottom-2 rounded-md z-20 flex gap-2 items-baseline"
       }
       style={{ left: `${left + 22}px` }}
     >
@@ -89,7 +89,7 @@ const TrieSuggestions = ({
 };
 
 export const AutoSuggest = () => {
-  const { query: globalQuery, setQuery } = useQuery();
+  const { query: globalQuery, setQuery, hits } = useQuery();
 
   const { inputRef, close, open } = useDropdownFocus({
     onOpen: () => {
@@ -100,7 +100,9 @@ export const AutoSuggest = () => {
   const parentRef = useArrowKeyNavigation<HTMLFieldSetElement>(
     ".suggest-result button",
     {
-      onEscape: close,
+      onEscape: () => {
+        inputRef.current?.value === "";
+      },
       onNotFound: () => inputRef.current?.focus(),
     }
   );
@@ -148,9 +150,26 @@ export const AutoSuggest = () => {
     }
     requestAnimationFrame(() => {
       updatePosition();
-      close();
     });
   }, [globalQuery, inputRef]);
+
+  useEffect(() => {
+    if (hits.length > 0) {
+      open();
+    }
+    requestAnimationFrame(() => {
+      const results = document.getElementById("results");
+      if (results != null) {
+        (results.children[0] as HTMLElement)?.focus({ preventScroll: false });
+        // results.scrollIntoView({
+        //   behavior: "smooth",
+        //   block: "start",
+        //   inline: "start",
+        // });
+        //close();
+      }
+    });
+  }, [hits]);
 
   return (
     <form
@@ -173,7 +192,7 @@ export const AutoSuggest = () => {
       }}
     >
       <fieldset ref={parentRef}>
-        <div className="relative md:flex-1 flex flex-col md:block border-gray-200">
+        <div className="relative md:flex-1 flex flex-col md:block border-gray-200 has-attachments">
           <input
             ref={inputRef}
             accessKey="f"
@@ -219,7 +238,7 @@ export const AutoSuggest = () => {
                 e.preventDefault();
                 smartQuery != null && setQuery(smartQuery);
               }}
-              className="smart-query transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs"
+              className="attachment transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs"
             >
               {possibleTriggers?.map(({ result }) =>
                 result[0]?.score > MIN_FUZZY_SCORE ? (
@@ -383,9 +402,8 @@ QueryRefinement) => {
       .sort((a, b) => b.popularity - a.popularity);
   }, [data, values]);
   return (
-    <ItemContainer
-      as="button"
-      className="items-center"
+    <button
+      className="items-center p-2 flex gap-2 cursor-pointer w-full text-left"
       onClick={() => {
         const first = items?.[0];
 
@@ -396,13 +414,17 @@ QueryRefinement) => {
       }}
     >
       <Lightbulb className="size-5 shrink-0" />
-      <span>{query}</span> i
+      <span>{query}</span>
       <div className="flex gap-2 flex-nowrap overflow-x-auto items-center flex-1">
         {items?.slice(0, 3).map(({ value, hits }) => (
-          <span
+          <div
             key={value}
+            aria-label="Filter with"
+            role="button"
             className="shrink-0 border line-clamp-1 text-ellipsis border-gray-100 bg-gray-50 hover:bg-gray-100/20 px-2 py-1 text-xs rounded-md z-20 flex gap-2 items-center"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
               setQuery({
                 string: [{ id: facetId, value: [value] }],
                 query,
@@ -411,11 +433,11 @@ QueryRefinement) => {
               });
             }}
           >
-            {value} ({hits})
-          </span>
+            {value} <span aria-label="Number of hits">{hits}</span>
+          </div>
         ))}
       </div>
-    </ItemContainer>
+    </button>
   );
 };
 
