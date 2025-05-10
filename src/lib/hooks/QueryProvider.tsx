@@ -48,9 +48,11 @@ const loadQueryFromHash = (): ItemsQuery => {
 export const QueryProvider = ({
   initialQuery,
   children,
+  attachToHash = false,
   ref,
 }: PropsWithChildren<{
   initialQuery?: ItemsQuery;
+  attachToHash?: boolean;
   ref?: React.Ref<QueryProviderRef>;
 }>) => {
   const [virtualPage, setVirtualPage] = useState(0);
@@ -62,7 +64,7 @@ export const QueryProvider = ({
   const [hits, setHits] = useState<Item[]>([]);
   const [totalHits, setTotalHits] = useState<number>(0);
   const [query, setQuery] = useState<ItemsQuery>(
-    initialQuery ?? loadQueryFromHash()
+    initialQuery ?? attachToHash ? loadQueryFromHash() : {}
   );
   const setPage = useCallback((page: number) => {
     setQuery((prev) => ({ ...prev, page }));
@@ -182,12 +184,30 @@ export const QueryProvider = ({
         };
       });
   }, [query, virtualPage]);
+  useEffect(() => {
+    if (!attachToHash) {
+      return;
+    }
+    const hashListener = (e: HashChangeEvent) => {
+      const hash = window.location.hash.substring(1);
+      if (hash) {
+        setQuery(queryFromHash(hash));
+      }
+    };
+    addEventListener("hashchange", hashListener, false);
+    return () => {
+      removeEventListener("hashchange", hashListener, false);
+    };
+  }, [attachToHash]);
 
   useEffect(() => {
     if (itemsKey == null) {
       return;
     }
-
+    if (attachToHash) {
+      window.history.pushState(null, "hash", `#${itemsKey}`);
+    }
+    //window.location.hash = itemsKey;
     if (itemsCache.has(itemsKey)) {
       setHits(itemsCache.get(itemsKey) ?? []);
     }
