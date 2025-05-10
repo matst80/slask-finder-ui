@@ -92,7 +92,7 @@ export const Slider = ({
               clamp(minValue, absoluteMin, absoluteMax),
               clamp(maxValue, absoluteMin, absoluteMax)
             );
-            console.log("onInput", newMin, newMax);
+            // console.log("onInput", newMin, newMax);
             if (minRef.current && maxRef.current) {
               minRef.current.value = newMin.toString();
               maxRef.current.value = newMax.toString();
