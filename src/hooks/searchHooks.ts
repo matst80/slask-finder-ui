@@ -391,11 +391,8 @@ export const useFacetMap = () => {
   });
 };
 
-const getKey = (group: RelationGroup) => {
-  return (
-    group.groupId +
-    group.requiredForItem.map((r) => `${r.facetId}+${r.value}`).join(",")
-  );
+const getKey = (group: RelationGroup, idx: number) => {
+  return `${group.groupId}-${idx}`;
 };
 
 export const useRelationGroups = () => {
@@ -403,9 +400,9 @@ export const useRelationGroups = () => {
     "relationGroups",
     () =>
       getRelations().then((data) =>
-        data.map((d) => ({
+        data.map((d, i) => ({
           ...d,
-          key: getKey(d),
+          key: getKey(d, i),
         }))
       ),
     {
@@ -423,9 +420,9 @@ export const useAdminRelationGroups = () => {
     "admin-relationGroups",
     () =>
       getAdminRelations().then((data) =>
-        data.map((d) => ({
+        data.map((d, i) => ({
           ...d,
-          key: getKey(d),
+          key: getKey(d, i),
         }))
       ),
     {
