@@ -23,7 +23,6 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
     const elm = inputRef.current;
     const targetElm = targetRef.current;
     if (elm != null && targetElm != null) {
-      console.trace("open", { elm, targetElm });
       targetElm.setAttribute("aria-hidden", "false");
       elm.setAttribute("aria-expanded", "true");
       onOpen?.();
