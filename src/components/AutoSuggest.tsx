@@ -158,7 +158,9 @@ export const AutoSuggest = () => {
       requestAnimationFrame(() => {
         const results = document.getElementById("results");
         const firstChild = results?.children[0] as HTMLElement;
+
         if (firstChild) {
+          close();
           firstChild.focus({ preventScroll: false });
         }
       });
@@ -354,7 +356,11 @@ const FlatRefinement = ({ facetId, facetName, values }: QueryRefinement) => {
     <ItemContainer
       as="button"
       className="items-center"
-      onClick={() => setQuery({ string: [{ id: facetId, value: [value] }] })}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setQuery({ string: [{ id: facetId, value: [value] }] });
+      }}
     >
       <Lightbulb className="size-5" />
 
@@ -388,7 +394,9 @@ QueryRefinement) => {
   return (
     <button
       className="items-center p-2 flex gap-2 cursor-pointer w-full text-left"
-      onClick={() => {
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
         const first = items?.[0];
 
         setQuery({
