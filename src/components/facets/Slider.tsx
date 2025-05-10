@@ -35,7 +35,6 @@ export const Slider = ({
   const maxRef = useRef<HTMLInputElement>(null);
 
   const updateValues = useCallback(() => {
-    console.log("updateValues");
     if (minRef.current && maxRef.current) {
       const minValue = parseInt(minRef.current.value);
       const maxValue = parseInt(maxRef.current.value);
@@ -86,7 +85,7 @@ export const Slider = ({
       </div>
       <div className="flex items-center gap-2 my-4">
         <ReactRangeSliderInput
-          min={0}
+          min={absoluteMin}
           max={absoluteMax}
           onInput={([minValue, maxValue]) => {
             const [newMin, newMax] = orderMinMax(
