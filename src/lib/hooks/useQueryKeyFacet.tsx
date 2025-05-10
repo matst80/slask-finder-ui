@@ -4,7 +4,7 @@ import { useFacets } from "./useFacets";
 
 export const useQueryKeyFacet = (id: number) => {
   const context = useContext(QueryContext);
-  if (context === undefined) {
+  if (context == null) {
     throw new Error("useQuery must be used within a QueryProvider");
   }
   const { facets } = useFacets();
