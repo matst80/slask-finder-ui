@@ -188,7 +188,7 @@ export const QueryProvider = ({
     if (!attachToHash) {
       return;
     }
-    const hashListener = (e: HashChangeEvent) => {
+    const hashListener = () => {
       const hash = window.location.hash.substring(1);
       if (hash) {
         setQuery(queryFromHash(hash));
