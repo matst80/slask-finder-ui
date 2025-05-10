@@ -189,6 +189,7 @@ export const AutoSuggest = () => {
             accessKey="f"
             className="w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden md:rounded-md suggest-input"
             type="search"
+            aria-expanded={false}
             onKeyUp={onKeyUp}
             onInput={(e) => {
               setTerm(e.currentTarget.value);
@@ -259,15 +260,7 @@ export const AutoSuggest = () => {
   );
 };
 
-const SuggestionResults = ({
-  //open,
-  onClose,
-}: //selectedIndex,
-{
-  //open: boolean;
-  //selectedIndex: number;
-  onClose: () => void;
-}) => {
+const SuggestionResults = ({ onClose }: { onClose: () => void }) => {
   const { items } = useSuggestions();
 
   return (
@@ -275,15 +268,11 @@ const SuggestionResults = ({
       id="suggestion-results"
       aria-labelledby="autosuggest-input"
       aria-label="Suggestion results"
+      aria-hidden="true"
       className="transition-opacity md:rounded-md md:border md:border-gray-300 bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
     >
       {items.map((item, idx) => (
-        <SuggestSelector
-          {...item}
-          key={idx}
-          //selected={idx == selectedIndex}
-          index={idx}
-        />
+        <SuggestSelector {...item} key={idx} index={idx} />
       ))}
       <button
         onClick={onClose}
