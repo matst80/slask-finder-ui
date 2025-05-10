@@ -154,19 +154,10 @@ export const AutoSuggest = () => {
   }, [globalQuery, inputRef]);
 
   useEffect(() => {
-    if (hits.length > 0) {
-      open();
-    }
     requestAnimationFrame(() => {
       const results = document.getElementById("results");
       if (results != null) {
         (results.children[0] as HTMLElement)?.focus({ preventScroll: false });
-        // results.scrollIntoView({
-        //   behavior: "smooth",
-        //   block: "start",
-        //   inline: "start",
-        // });
-        //close();
       }
     });
   }, [hits]);
