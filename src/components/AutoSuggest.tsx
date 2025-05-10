@@ -154,13 +154,16 @@ export const AutoSuggest = () => {
   }, [globalQuery, inputRef]);
 
   useEffect(() => {
-    requestAnimationFrame(() => {
-      const results = document.getElementById("results");
-      if (results != null && isOpen) {
-        (results.children[0] as HTMLElement)?.focus({ preventScroll: false });
-      }
-    });
-  }, [hits, isOpen]);
+    if (isOpen) {
+      requestAnimationFrame(() => {
+        const results = document.getElementById("results");
+        const firstChild = results?.children[0] as HTMLElement;
+        if (firstChild) {
+          firstChild.focus({ preventScroll: false });
+        }
+      });
+    }
+  }, [hits]);
 
   return (
     <form
