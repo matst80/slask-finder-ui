@@ -91,7 +91,7 @@ const TrieSuggestions = ({
 export const AutoSuggest = () => {
   const { query: globalQuery, setQuery, hits } = useQuery();
 
-  const { inputRef, close, open } = useDropdownFocus({
+  const { inputRef, close, open, isOpen } = useDropdownFocus({
     onOpen: () => {
       updatePosition();
     },
@@ -156,11 +156,11 @@ export const AutoSuggest = () => {
   useEffect(() => {
     requestAnimationFrame(() => {
       const results = document.getElementById("results");
-      if (results != null) {
+      if (results != null && isOpen) {
         (results.children[0] as HTMLElement)?.focus({ preventScroll: false });
       }
     });
-  }, [hits]);
+  }, [hits, isOpen]);
 
   return (
     <form

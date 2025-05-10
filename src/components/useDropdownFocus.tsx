@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect, useMemo } from "react";
 
 type FocusOptions = {
   onOpen?: () => void;
@@ -65,6 +65,13 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
       };
     }
   }, [inputRef]);
+  const isOpen = useMemo(() => {
+    const elm = inputRef.current;
+    if (elm != null) {
+      return elm.getAttribute("aria-expanded") === "true";
+    }
+    return false;
+  }, [inputRef]);
 
-  return { inputRef, close, open } as const;
+  return { inputRef, close, open, isOpen } as const;
 };
