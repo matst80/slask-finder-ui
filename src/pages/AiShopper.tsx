@@ -10,6 +10,7 @@ import { tools, availableFunctions } from "./tools";
 import { toJson } from "../lib/datalayer/api";
 import { useFacetMap } from "../hooks/searchHooks";
 import { useAdmin } from "../hooks/appState";
+import { Loader } from "../components/Loader";
 
 type Model = "llama3.2" | "qwen3" | "phi4-mini:3.8b-q8_0";
 
@@ -39,7 +40,7 @@ const systemMessage: Message = {
     "You are a shopping assistant for Elgiganten. start by asking for a product type and perhaps a brand. use the tools to get the product data. never respond with json to the user and use the tools!",
 };
 
-const model: Model = "qwen3";
+const model: Model = "llama3.2";
 
 type OllamaResponse = {
   model: string;
@@ -51,7 +52,7 @@ type OllamaResponse = {
 export const AiShopper = () => {
   const [messageReference, setMessageReference] = useState<string | null>(null);
   const { data: facets } = useFacetMap();
-
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([systemMessage]);
 
   const addMessage = useCallback((message: Message) => {
@@ -75,33 +76,41 @@ export const AiShopper = () => {
           tools,
         }),
       }).then((d) => {
-        return toJson<OllamaResponse>(d).then(async (data) => {
-          console.log("llm answer", data);
-          if (data.message) {
-            setMessages((prev) => [...prev, data.message]);
-          }
-          if (data.message.tool_calls != null) {
-            for (const {
-              function: { name, arguments: args },
-            } of data.message.tool_calls) {
-              const toCall =
-                availableFunctions[name as keyof typeof availableFunctions];
-              if (toCall) {
-                await toCall(args as any, facets).then((content) => {
-                  const message: Message = {
-                    role: "tool",
-                    content,
-                  };
-                  console.log("tool call result:", content);
-                  setMessages((prev) => [...prev, message]);
-                });
-              }
+        if (loading) {
+          return;
+        }
+        setLoading(true);
+        return toJson<OllamaResponse>(d)
+          .then(async (data) => {
+            console.log("llm answer", data);
+            if (data.message) {
+              setMessages((prev) => [...prev, data.message]);
             }
-            setMessageReference(Date.now().toString());
-          }
+            if (data.message.tool_calls != null) {
+              for (const {
+                function: { name, arguments: args },
+              } of data.message.tool_calls) {
+                const toCall =
+                  availableFunctions[name as keyof typeof availableFunctions];
+                if (toCall) {
+                  await toCall(args as any, facets).then((content) => {
+                    const message: Message = {
+                      role: "tool",
+                      content,
+                    };
+                    console.log("tool call result:", content);
+                    setMessages((prev) => [...prev, message]);
+                  });
+                }
+              }
+              setMessageReference(Date.now().toString());
+            }
 
-          return data;
-        });
+            return data;
+          })
+          .finally(() => {
+            setLoading(false);
+          });
       });
     }
   }, [messageReference]);
@@ -131,9 +140,14 @@ export const AiShopper = () => {
 
           <div className="flex-1 overflow-auto">
             <MessageList messages={messages} />
+            {loading && (
+              <div className="my-4">
+                <Loader size={"sm"} />
+              </div>
+            )}
           </div>
 
-          <QueryInput />
+          <QueryInput loading={loading} />
         </div>
       </div>
     </AiShopperContext.Provider>
@@ -148,7 +162,7 @@ const useAiContext = () => {
   return context;
 };
 
-const QueryInput = () => {
+const QueryInput = ({ loading }: { loading: boolean }) => {
   const { addMessage } = useAiContext();
   const [query, setQuery] = useState("can you find me a gaming headset?");
 
@@ -157,6 +171,9 @@ const QueryInput = () => {
     if (query.trim()) {
       addMessage({ role: "user", content: query });
       setQuery("");
+      setTimeout(() => {
+        e.currentTarget.scrollTo({ behavior: "smooth", top: 0 });
+      }, 300);
     }
   };
 
@@ -174,6 +191,7 @@ const QueryInput = () => {
       />
       <button
         type="submit"
+        disabled={loading}
         className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 font-medium transition-colors"
       >
         Send
@@ -202,14 +220,14 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
           );
         }
 
-        if (message.role === "system") {
+        if (message.role === "system" || message.content == null) {
           return null; // Hide system messages
         }
 
         return (
           <div
             key={index}
-            className={`flex ${
+            className={`flex animate-pop ${
               message.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
