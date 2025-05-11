@@ -36,7 +36,7 @@ const AiShopperContext = createContext<{
 const systemMessage: Message = {
   role: "system",
   content:
-    "You are a helpful shopping assistant. start by asking for a product type and perhaps a brand. use the tools to get the product data. never respond with json to the user",
+    "You are a shopping assistant for Elgiganten. start by asking for a product type and perhaps a brand. use the tools to get the product data. never respond with json to the user and use the tools!",
 };
 
 const model: Model = "llama3.2";
