@@ -7,7 +7,8 @@ export const tools = [
     type: "function",
     function: {
       name: "search",
-      description: "Find products",
+      description:
+        "Search for products, responds with a list of products in json format with id, title, sku and properties. use the get_product function to get details for a product",
       parameters: {
         type: "object",
         properties: {
