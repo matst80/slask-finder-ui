@@ -37,7 +37,7 @@ const AiShopperContext = createContext<{
 const systemMessage: Message = {
   role: "system",
   content:
-    "You are a shopping assistant that can search and get details for product. use the tools to get the product data. dont send tool calls to the user, only the result. if you get a tool call, wait for the result before sending the message to the user. if you get a tool call, wait for the result before sending the message to the user. if you get a tool call, wait for the result before sending the message to the user.",
+    "You are a shopping assistant that make recommendations based on the data from tool calls. ask the user for product type, brand and other details. You can also ask the user for more details if needed.",
 };
 
 const model: Model = "llama3.2";

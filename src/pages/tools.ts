@@ -1,6 +1,7 @@
 import fuzzysort from "fuzzysort";
 import { getRawData } from "../lib/datalayer/api";
 import { FacetListItem } from "../lib/types";
+import { isDefined } from "../utils";
 
 export const tools = [
   {
@@ -109,6 +110,18 @@ const getProduct = async (
     const { values, ...rest } = data;
     const properties = Object.entries(values)
       .map(([id, value]) => {
+        if (id === "2") {
+          return {
+            name: "brand",
+            value: value,
+          };
+        }
+        if (id === "31158") {
+          return {
+            name: "product_type",
+            value: value,
+          };
+        }
         const facet = facets?.[id];
         if (facet && !facet.hide) {
           return {
@@ -192,17 +205,30 @@ const searchProducts = async (
 
     const properties = Object.entries(values)
       .map(([id, value]) => {
-        const facet = facets?.[id];
-        if (facet && facet.isKey) {
+        if (id === "2") {
           return {
-            name: facet.name,
-            //id: facet.id,
+            name: "brand",
             value: value,
           };
         }
+        if (id === "31158") {
+          return {
+            name: "product_type",
+            value: value,
+          };
+        }
+        //const facet = facets?.[id];
+
+        // if (facet && facet.isKey) {
+        //   return {
+        //     name: facet.name,
+        //     //id: facet.id,
+        //     value: value,
+        //   };
+        // }
         return null;
       })
-      .filter(Boolean);
+      .filter(isDefined);
 
     items.push({ title, id, sku, properties, bulletPoints: bp });
   }
