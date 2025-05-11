@@ -223,7 +223,9 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
               {message.role === "assistant" && (
                 <div className="text-xs text-gray-500 mb-1">Assistant</div>
               )}
-              <div className="whitespace-pre-wrap">{message.content}</div>
+              <div className="whitespace-pre-wrap overflow-hidden">
+                {message.content}
+              </div>
             </div>
           </div>
         );
