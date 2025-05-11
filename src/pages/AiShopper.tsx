@@ -37,7 +37,7 @@ const AiShopperContext = createContext<{
 const systemMessage: Message = {
   role: "system",
   content:
-    "You are a shopping assistant that can search and get details for product. use the tools to get the product data. never send json to the user! Use the tools!",
+    "You are a shopping assistant that can search and get details for product. use the tools to get the product data. dont send tool calls to the user, only the result. if you get a tool call, wait for the result before sending the message to the user. if you get a tool call, wait for the result before sending the message to the user. if you get a tool call, wait for the result before sending the message to the user.",
 };
 
 const model: Model = "llama3.2";
@@ -66,6 +66,10 @@ export const AiShopper = () => {
 
   useEffect(() => {
     if (messageReference) {
+      if (loading) {
+        return;
+      }
+      setLoading(true);
       fetch("/api/chat", {
         method: "POST",
         headers: { accept: "application/json" },
@@ -76,10 +80,6 @@ export const AiShopper = () => {
           tools,
         }),
       }).then((d) => {
-        if (loading) {
-          return;
-        }
-        setLoading(true);
         return toJson<OllamaResponse>(d)
           .then(async (data) => {
             console.log("llm answer", data);
@@ -220,14 +220,21 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
           );
         }
 
-        if (message.role === "system" || message.content == null) {
+        if (
+          message.role === "system" ||
+          message.content == null ||
+          message.content === ""
+        ) {
           return null; // Hide system messages
         }
 
         return (
           <div
             key={index}
-            className={`flex animate-pop ${
+            onClick={() => {
+              console.log("clicked message", message);
+            }}
+            className={`flex ${
               message.role === "user" ? "justify-end" : "justify-start"
             }`}
           >

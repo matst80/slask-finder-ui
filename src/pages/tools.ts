@@ -18,10 +18,9 @@ export const tools = [
               "query to search for products. use broad terms, never natural language",
           },
           maxResults: {
-            type: "integer",
+            type: "number",
             description: "Maximum number of results to return",
           },
-
           brand: {
             type: "string",
             description: `possible values found with get_brands, dont make up values for this!!`,
