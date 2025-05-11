@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect, useState } from "react";
 
 type FocusOptions = {
   onOpen?: () => void;
@@ -8,6 +8,7 @@ type FocusOptions = {
 export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const targetRef = useRef<HTMLElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const close = useCallback(() => {
     const elm = inputRef.current;
     const targetElm = targetRef.current;
@@ -15,6 +16,7 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
       targetElm.setAttribute("aria-hidden", "true");
       elm.setAttribute("aria-expanded", "false");
       onClose?.();
+      setIsOpen(false);
     }
   }, [inputRef, targetRef]);
   const open = useCallback(() => {
@@ -24,6 +26,7 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
       targetElm.setAttribute("aria-hidden", "false");
       elm.setAttribute("aria-expanded", "true");
       onOpen?.();
+      setIsOpen(true);
     }
   }, [inputRef, targetRef]);
   useEffect(() => {
@@ -34,10 +37,6 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
         targetId != null ? document.getElementById(targetId) : undefined;
 
       if (targetElm == null) {
-        console.warn("No target element found for aria-controls", {
-          targetId,
-          targetElm,
-        });
         return;
       }
       targetRef.current = targetElm;
@@ -50,6 +49,7 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
             focusElement.classList.contains("attachment") ||
             focusElement.parentElement == targetElm
           );
+
         if (shouldClose) {
           requestAnimationFrame(close);
         }
@@ -66,5 +66,5 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
     }
   }, [inputRef]);
 
-  return { inputRef, close, open } as const;
+  return { inputRef, close, open, isOpen } as const;
 };

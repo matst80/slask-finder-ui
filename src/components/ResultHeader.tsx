@@ -1,13 +1,8 @@
-import { PropsWithChildren, useMemo } from "react";
+import { PropsWithChildren } from "react";
 import { Sorting } from "./Sorting";
 import { useQuery } from "../lib/hooks/useQuery";
 import { FilterQuery } from "./FilterQuery";
-import { facetQueryToHash } from "../hooks/searchHooks";
-import { Button } from "./ui/button";
-import { ArrowLeftIcon, CopyIcon } from "lucide-react";
-import { queryToHash } from "../lib/utils";
 import { useTranslations } from "../lib/hooks/useTranslations";
-import { useClipboard } from "../lib/hooks/useClipboard";
 
 export const TotalResultText = ({
   className = "md:text-2xl font-bold",
@@ -24,18 +19,8 @@ export const TotalResultText = ({
 };
 
 export const ResultHeader = ({ children }: PropsWithChildren) => {
-  const { totalHits, queryHistory, query, setQuery } = useQuery();
-  const currentKey = useMemo(() => facetQueryToHash(query), [query]);
-  const copyToClipboard = useClipboard();
-  const t = useTranslations();
+  const { totalHits, query } = useQuery();
 
-  const prevQuery = useMemo(() => {
-    const idx = queryHistory.findIndex((d) => d.key === currentKey);
-    if (idx === -1) {
-      return null;
-    }
-    return queryHistory[idx - 1] ?? null;
-  }, [queryHistory, currentKey]);
   if (totalHits === 0 && !query.filter) {
     return null;
   }
@@ -47,29 +32,8 @@ export const ResultHeader = ({ children }: PropsWithChildren) => {
           <TotalResultText />
         </div>
         {children}
-        <div className="relative flex gap-2 items-center justify-end">
-          {prevQuery != null && (
-            <Button
-              size="icon"
-              title={t("result.back")}
-              variant="ghost"
-              onClick={() => setQuery(prevQuery)}
-            >
-              <ArrowLeftIcon className="size-5 m-1" />
-            </Button>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            title={t("result.copy")}
-            onClick={() =>
-              copyToClipboard(`${location.origin}/#${queryToHash(query)}`)
-            }
-          >
-            <CopyIcon className="size-5 m-1" />
-          </Button>
-          <Sorting />
-        </div>
+
+        <Sorting />
       </header>
       <FilterQuery show={!!query.filter || (totalHits ?? 0) > 40} />
     </>
