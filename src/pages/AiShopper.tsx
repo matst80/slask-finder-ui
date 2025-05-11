@@ -1,5 +1,6 @@
 import {
   createContext,
+  PropsWithChildren,
   useCallback,
   useContext,
   useEffect,
@@ -37,6 +38,7 @@ type Message = {
 const AiShopperContext = createContext<{
   model: Model;
   messages: Message[];
+  loading: boolean;
   addMessage: (message: Message) => void;
   restart?: () => void;
 } | null>(null);
@@ -56,12 +58,14 @@ type OllamaResponse = {
   done: boolean;
 };
 
-export const AiShopper = () => {
-  const [messageReference, setMessageReference] = useState<string | null>(null);
+export const AiShoppingProvider = ({
+  children,
+  messages: startMessages,
+}: PropsWithChildren<{ messages: Message[] }>) => {
   const { data: facets } = useFacetMap();
+  const [messageReference, setMessageReference] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([systemMessage]);
-
+  const [messages, setMessages] = useState<Message[]>(startMessages);
   const addMessage = useCallback((message: Message) => {
     setMessages((prev) => [...prev, message]);
     setMessageReference(message.content);
@@ -70,7 +74,6 @@ export const AiShopper = () => {
     setMessages([systemMessage]);
     setMessageReference(null);
   }, []);
-
   useEffect(() => {
     if (messageReference) {
       if (loading) {
@@ -83,6 +86,7 @@ export const AiShopper = () => {
         body: JSON.stringify({
           model,
           messages,
+          prompt,
           stream: false,
           tools,
         }),
@@ -123,7 +127,40 @@ export const AiShopper = () => {
   }, [messageReference]);
 
   return (
-    <AiShopperContext.Provider value={{ messages, model, addMessage, restart }}>
+    <AiShopperContext.Provider
+      value={{ messages, model, addMessage, restart, loading }}
+    >
+      {children}
+    </AiShopperContext.Provider>
+  );
+};
+
+export const useAiContext = () => {
+  const context = useContext(AiShopperContext);
+  if (!context) {
+    throw new Error("useAiContext must be used within an AiShoppingProvider");
+  }
+  return context;
+};
+
+const ChatResetButton = () => {
+  const { restart, messages } = useAiContext();
+  if (messages.length <= 1) {
+    return null; // Hide button if there are no messages
+  }
+  return (
+    <button
+      onClick={restart}
+      className="text-sm text-gray-600 hover:text-red-500 flex items-center gap-1"
+    >
+      <span>New conversation</span>
+    </button>
+  );
+};
+
+export const AiShopper = () => {
+  return (
+    <AiShoppingProvider messages={[systemMessage]}>
       <div className="container mx-auto p-6 max-w-3xl">
         <div className="flex flex-col gap-6">
           <div className="flex justify-between items-center border-b pb-4">
@@ -135,42 +172,22 @@ export const AiShopper = () => {
                 I can help you find the perfect products for your needs.
               </p>
             </div>
-            {messages.length > 1 && (
-              <button
-                onClick={restart}
-                className="text-sm text-gray-600 hover:text-red-500 flex items-center gap-1"
-              >
-                <span>New conversation</span>
-              </button>
-            )}
+            <ChatResetButton />
           </div>
 
           <div className="flex-1 overflow-auto">
-            <MessageList messages={messages} />
-            {loading && (
-              <div className="my-4">
-                <Loader size={"sm"} />
-              </div>
-            )}
+            <MessageList />
           </div>
 
-          <QueryInput loading={loading} />
+          <QueryInput />
         </div>
       </div>
-    </AiShopperContext.Provider>
+    </AiShoppingProvider>
   );
 };
 
-const useAiContext = () => {
-  const context = useContext(AiShopperContext);
-  if (!context) {
-    throw new Error("useAiContext must be used within an AiShopperProvider");
-  }
-  return context;
-};
-
-const QueryInput = ({ loading }: { loading: boolean }) => {
-  const { addMessage } = useAiContext();
+export const QueryInput = () => {
+  const { addMessage, loading } = useAiContext();
   const [query, setQuery] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -178,9 +195,6 @@ const QueryInput = ({ loading }: { loading: boolean }) => {
     if (query.trim()) {
       addMessage({ role: "user", content: query });
       setQuery("");
-      setTimeout(() => {
-        e.currentTarget.scrollTo({ behavior: "smooth", top: 0 });
-      }, 300);
     }
   };
 
@@ -199,7 +213,7 @@ const QueryInput = ({ loading }: { loading: boolean }) => {
       <button
         type="submit"
         disabled={loading}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 font-medium transition-colors"
+        className="absolute disabled:opacity-50 right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 font-medium transition-colors"
       >
         Send
       </button>
@@ -207,8 +221,10 @@ const QueryInput = ({ loading }: { loading: boolean }) => {
   );
 };
 
-const MessageList = ({ messages }: { messages: Message[] }) => {
+export const MessageList = () => {
+  const { loading, messages } = useAiContext();
   const [isAdmin] = useAdmin();
+
   return (
     <div className="flex flex-col gap-6">
       {messages.map((message, index) => {
@@ -224,13 +240,13 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
                       <Link
                         to={`/product/${d.id}`}
                         key={d.id}
-                        className="flex flex-col items-center justify-center"
+                        className="flex flex-col justify-center"
                       >
                         <span>{d.title}</span>
                         <img
                           src={d.img}
                           alt={d.title}
-                          className="w-16 h-16 object-contain"
+                          className="size-32 object-contain"
                         />
                         <ul>
                           {d.bulletPoints.split("\n").map((value: string) => (
@@ -298,6 +314,11 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
           </div>
         );
       })}
+      {loading && (
+        <div className="my-4">
+          <Loader size={"sm"} />
+        </div>
+      )}
     </div>
   );
 };

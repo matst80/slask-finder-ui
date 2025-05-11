@@ -195,7 +195,9 @@ const convertProperties =
     };
   };
 
-const convertItemSimple = (facets: Record<string | number, FacetListItem>) => {
+export const convertItemSimple = (
+  facets: Record<string | number, FacetListItem>
+) => {
   const convertProps = convertProperties(facets, false);
   return ({ values, bp, id, sku, title, img }: Item) => {
     const { properties, product_type, brand, price } = convertProps(values);
@@ -214,7 +216,9 @@ const convertItemSimple = (facets: Record<string | number, FacetListItem>) => {
   };
 };
 
-const convertDetails = (facets: Record<string | number, FacetListItem>) => {
+export const convertDetails = (
+  facets: Record<string | number, FacetListItem>
+) => {
   const convertProps = convertProperties(facets, true);
   return ({ values, bp, id, sku, title, img, description }: Item) => {
     const { properties, product_type, brand, price } = convertProps(values);
