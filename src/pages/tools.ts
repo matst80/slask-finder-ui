@@ -1,7 +1,7 @@
 import fuzzysort from "fuzzysort";
 import { getRawData } from "../lib/datalayer/api";
-import { FacetListItem } from "../lib/types";
-import { isDefined } from "../utils";
+import { FacetListItem, Item } from "../lib/types";
+import { isDefined, makeImageUrl } from "../utils";
 
 export const tools = [
   {
@@ -201,7 +201,7 @@ const searchProducts = async (
     if (line === "") {
       break;
     }
-    const { values, bp, id, sku, title } = JSON.parse(line);
+    const { values, bp, id, sku, title, img } = JSON.parse(line) as Item;
 
     const properties = Object.entries(values)
       .map(([id, value]) => {
@@ -230,7 +230,14 @@ const searchProducts = async (
       })
       .filter(isDefined);
 
-    items.push({ title, id, sku, properties, bulletPoints: bp });
+    items.push({
+      title,
+      id,
+      sku,
+      properties,
+      bulletPoints: bp,
+      img: makeImageUrl(img),
+    });
   }
   return JSON.stringify(items);
 };
