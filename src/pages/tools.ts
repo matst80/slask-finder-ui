@@ -165,7 +165,7 @@ const searchProducts = async (
       const items = await res.json();
       const matchingBrand = fuzzysort.go(brand, items, {
         limit: 1,
-        threshold: 0.6,
+        threshold: 0.9,
       })[0]?.target;
       if (!matchingBrand) {
         console.log("no matching brand found", brand);
@@ -179,7 +179,7 @@ const searchProducts = async (
       const items = await res.json();
       const matchingProductType = fuzzysort.go(product_type, items, {
         limit: 1,
-        threshold: 0.6,
+        threshold: 0.9,
       })[0]?.target;
       if (!matchingProductType) {
         console.log("no matching brand found", brand);

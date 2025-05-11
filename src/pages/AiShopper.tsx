@@ -12,6 +12,7 @@ import { useFacetMap } from "../hooks/searchHooks";
 import { useAdmin } from "../hooks/appState";
 import { Loader } from "../components/Loader";
 import { Link } from "react-router-dom";
+import Markdown from "react-markdown";
 
 type Model =
   | "llama3.2"
@@ -291,7 +292,7 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
                 <div className="text-xs text-gray-500 mb-1">Assistant</div>
               )}
               <div className="whitespace-pre-wrap overflow-hidden">
-                {message.content}
+                <Markdown>{message.content}</Markdown>
               </div>
             </div>
           </div>
