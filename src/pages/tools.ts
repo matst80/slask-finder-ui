@@ -21,7 +21,7 @@ export const tools = [
           query: {
             type: "string",
             description:
-              "query to search for products. use broad terms, never natural language",
+              "query to search for. Not natural language, example: 'tv', 'headset', 'cpu' or 'iphone.",
           },
           maxResults: {
             type: "number",
@@ -29,11 +29,11 @@ export const tools = [
           },
           brand: {
             type: "string",
-            description: `possible values found with get_brands, dont make up values for this!!`,
+            description: `possible values found with get_brands, dont make up values!`,
           },
           product_type: {
             type: "string",
-            description: `possible values found with get_product_types, dont make up values for this!!`,
+            description: `possible values found with get_product_types, dont make up values!`,
           },
         },
         required: ["query", "maxResults"],

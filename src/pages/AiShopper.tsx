@@ -237,14 +237,13 @@ export const MessageList = () => {
             const parsed = JSON.parse(message.content);
             if (parsed && Array.isArray(parsed)) {
               if (parsed?.[0].title != null) {
-                console.log("parsed", parsed);
                 return (
                   <div className="grid grid-cols-2 gap-4" key={index}>
                     {parsed.map((d) => (
                       <Link
                         to={`/product/${d.id}`}
                         key={d.id}
-                        className="flex flex-col justify-center"
+                        className="flex flex-col items-center"
                       >
                         <span>{d.title}</span>
                         <img
