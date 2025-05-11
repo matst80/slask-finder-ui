@@ -54,6 +54,7 @@ import { CompareProvider } from "./lib/hooks/CompareProvider.tsx";
 import { GroupDesignerProvider } from "./lib/hooks/GroupDesignerProvider.tsx";
 import { SidebarMenu } from "./components/SidebarMenu.tsx";
 import { JsonView } from "./pages/tracking/JsonView.tsx";
+import { AiShopper } from "./pages/AiShopper.tsx";
 
 const BubbleError = () => {
   const error = useRouteError();
@@ -85,6 +86,15 @@ const router = createBrowserRouter([
     element: (
       <PageContainer>
         <Banner />
+      </PageContainer>
+    ),
+    errorElement: <BubbleError />,
+  },
+  {
+    path: "ai",
+    element: (
+      <PageContainer>
+        <AiShopper />
       </PageContainer>
     ),
     errorElement: <BubbleError />,
