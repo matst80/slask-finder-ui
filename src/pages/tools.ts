@@ -188,23 +188,7 @@ const searchProducts = async (
     if (line === "") {
       break;
     }
-    const {
-      stock,
-      values,
-      aItem,
-      boxSize,
-      bItem,
-      bp,
-      advertisingText,
-      id,
-      sku,
-      title,
-      description,
-      releaseDate,
-      saleStatus,
-      onlineSaleStatus,
-      ...rest
-    } = JSON.parse(line);
+    const { values, bp, id, sku, title } = JSON.parse(line);
 
     const properties = Object.entries(values)
       .map(([id, value]) => {

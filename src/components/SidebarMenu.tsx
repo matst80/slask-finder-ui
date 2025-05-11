@@ -43,6 +43,7 @@ const menuColors = {
   tracking: "from-emerald-500 to-green-500",
   checkout: "from-amber-500 to-orange-500",
   updated: "from-orange-500 to-rose-500",
+  ai: "from-rose-500 to-pink-500",
 };
 
 const NavigationItem = ({
@@ -172,13 +173,13 @@ const menu: NavigationItemType[] = [
     url: "/config",
     accessKey: "c",
     icon: <Search size={20} />,
-    color: menuColors.search,
+    color: menuColors.config,
   },
   {
     translationKey: "menu.ai",
     url: "/ai",
     icon: <BotMessageSquare size={20} />,
-    color: menuColors.search,
+    color: menuColors.ai,
   },
   {
     translationKey: "admin_menu.edit",
