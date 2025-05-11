@@ -49,14 +49,12 @@ const AiChatForResults = () => {
         },
       ]}
     >
-      <div className="container mx-auto p-6 max-w-3xl">
-        <div className="flex flex-col gap-6">
-          <div className="flex-1 overflow-auto">
-            <MessageList />
-          </div>
-
-          <QueryInput />
+      <div className="flex flex-col gap-6 flex-1">
+        <div className="flex-1 overflow-auto">
+          <MessageList />
         </div>
+
+        <QueryInput />
       </div>
     </AiShoppingProvider>
   );
@@ -86,9 +84,7 @@ export const ResultHeader = ({ children }: PropsWithChildren) => {
         {children}
         <Sidebar side="right" open={open} setOpen={setOpen}>
           <div className="bg-white flex flex-col overflow-y-auto py-6 px-4 h-full w-full max-w-full md:max-w-lg">
-            <div className="flex flex-col gap-2 gap-4">
-              {open && <AiChatForResults />}
-            </div>
+            {open && <AiChatForResults />}
           </div>
         </Sidebar>
         <Sorting />

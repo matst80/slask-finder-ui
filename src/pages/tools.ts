@@ -90,7 +90,7 @@ export const tools = [
           id: {
             type: "number",
             description:
-              "the product id to get details for, can be found in the search results",
+              "the product id to get details for, must come from the product answer",
           },
         },
         required: ["id"],

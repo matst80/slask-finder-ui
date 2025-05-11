@@ -86,7 +86,11 @@ export const AiShoppingProvider = ({
         body: JSON.stringify({
           model,
           messages,
-          prompt,
+          options: {
+            num_ctx: 4096,
+            temperature: 0.3,
+            repeat_penalty: 1.2,
+          },
           stream: false,
           tools,
         }),
