@@ -11,6 +11,7 @@ import { toJson } from "../lib/datalayer/api";
 import { useFacetMap } from "../hooks/searchHooks";
 import { useAdmin } from "../hooks/appState";
 import { Loader } from "../components/Loader";
+import { Link } from "react-router-dom";
 
 type Model = "llama3.2" | "qwen3" | "phi4-mini:3.8b-q8_0";
 
@@ -206,6 +207,42 @@ const MessageList = ({ messages }: { messages: Message[] }) => {
     <div className="flex flex-col gap-6">
       {messages.map((message, index) => {
         if (message.role === "tool") {
+          try {
+            const parsed = JSON.parse(message.content);
+            if (parsed && Array.isArray(parsed)) {
+              if (parsed?.[0].title != null) {
+                console.log("parsed", parsed);
+                return (
+                  <div className="grid grid-cols-2 gap-4" key={index}>
+                    {parsed.map((d) => (
+                      <Link
+                        to={`/product/${d.id}`}
+                        key={d.id}
+                        className="flex flex-col items-center justify-center"
+                      >
+                        <span>{d.title}</span>
+                        <img
+                          src={d.img}
+                          alt={d.title}
+                          className="w-16 h-16 object-contain"
+                        />
+                        <ul>
+                          {d.bulletPoints.split("\n").map((value: string) => (
+                            <li key={value} className="text-sm text-gray-500">
+                              {value}
+                            </li>
+                          ))}
+                        </ul>
+                      </Link>
+                    ))}
+                  </div>
+                );
+              }
+            }
+          } catch (e) {
+            // Ignore parsing errors
+          }
+
           if (!isAdmin) {
             return null;
           }
