@@ -7,7 +7,7 @@ export const tools = [
     type: "function",
     function: {
       name: "search",
-      description: "Find products based on a query",
+      description: "Find products",
       parameters: {
         type: "object",
         properties: {
@@ -44,7 +44,26 @@ export const tools = [
         type: "object",
         properties: {
           id: {
-            type: "string",
+            type: "number",
+            description:
+              "the product id to get details for, can be found in the search results",
+          },
+        },
+        required: ["id"],
+        $schema: "http://json-schema.org/draft-07/schema#",
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "open_product",
+      description: "Open product details",
+      parameters: {
+        type: "object",
+        properties: {
+          id: {
+            type: "number",
             description:
               "the product id to get details for, can be found in the search results",
           },
@@ -122,10 +141,10 @@ const searchProducts = async (
   facets?: Record<string | number, FacetListItem>
 ) => {
   const { query, maxResults = 20, brand, product_type } = args;
-  console.log("searchProducts", args);
+
   const qs = new URLSearchParams({
     page: "0",
-    query,
+    query: query.length > 0 ? query : "*",
     size: String(maxResults),
   });
   if (brand) {
@@ -211,4 +230,8 @@ export const availableFunctions = {
   get_product: getProduct,
   get_brands: getPropertyValues("2", "possible brands: "),
   get_product_types: getPropertyValues("31158", "possible product types: "),
+  open_product: async ({ id }: { id: string }) => {
+    window.open("/product/" + id, "_blank");
+    return "ok";
+  },
 };

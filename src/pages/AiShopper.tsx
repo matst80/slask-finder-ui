@@ -9,6 +9,7 @@ import { JsonView } from "./tracking/JsonView";
 import { tools, availableFunctions } from "./tools";
 import { toJson } from "../lib/datalayer/api";
 import { useFacetMap } from "../hooks/searchHooks";
+import { useAdmin } from "../hooks/appState";
 
 type Model = "llama3.2" | "qwen3" | "phi4-mini:3.8b-q8_0";
 
@@ -35,7 +36,7 @@ const AiShopperContext = createContext<{
 const systemMessage: Message = {
   role: "system",
   content:
-    "You are a helpful shopping assistant. start by asking for a product type and perhaps a brand.",
+    "You are a helpful shopping assistant. start by asking for a product type and perhaps a brand. use the tools to get the product data. never respond with json to the user",
 };
 
 const model: Model = "llama3.2";
@@ -107,14 +108,31 @@ export const AiShopper = () => {
 
   return (
     <AiShopperContext.Provider value={{ messages, model, addMessage, restart }}>
-      <div className="container mx-auto p-4">
-        <div className="flex flex-col gap-4">
-          <div className="text-2xl font-bold">Ai Shopper</div>
-          <div className="text-sm text-gray-500">
-            This is a simple AI shopper that can help you find products.
+      <div className="container mx-auto p-6 max-w-3xl">
+        <div className="flex flex-col gap-6">
+          <div className="flex justify-between items-center border-b pb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-blue-600">
+                AI Shopping Assistant
+              </h1>
+              <p className="text-sm text-gray-500">
+                I can help you find the perfect products for your needs.
+              </p>
+            </div>
+            {messages.length > 1 && (
+              <button
+                onClick={restart}
+                className="text-sm text-gray-600 hover:text-red-500 flex items-center gap-1"
+              >
+                <span>New conversation</span>
+              </button>
+            )}
           </div>
 
-          <MessageList messages={messages} />
+          <div className="flex-1 overflow-auto">
+            <MessageList messages={messages} />
+          </div>
+
           <QueryInput />
         </div>
       </div>
@@ -132,7 +150,6 @@ const useAiContext = () => {
 
 const QueryInput = () => {
   const { addMessage } = useAiContext();
-
   const [query, setQuery] = useState("can you find me a gaming headset?");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -144,15 +161,21 @@ const QueryInput = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form
+      onSubmit={handleSubmit}
+      className="relative border rounded-lg shadow-sm overflow-hidden"
+    >
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="border border-gray-300 rounded p-2 flex-grow"
+        className="w-full p-4 pr-20 border-0 focus:ring-2 focus:ring-blue-300 focus:outline-none"
         placeholder="Ask me anything..."
       />
-      <button type="submit" className="bg-blue-500 text-white rounded p-2">
+      <button
+        type="submit"
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 font-medium transition-colors"
+      >
         Send
       </button>
     </form>
@@ -160,26 +183,47 @@ const QueryInput = () => {
 };
 
 const MessageList = ({ messages }: { messages: Message[] }) => {
+  const [isAdmin] = useAdmin();
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       {messages.map((message, index) => {
         if (message.role === "tool") {
+          if (!isAdmin) {
+            return null;
+          }
           return (
-            <div key={index} className="max-h-[400px] overflow-y-auto">
+            <div
+              key={index}
+              className="bg-gray-50 rounded-lg border p-3 max-h-[400px] overflow-y-auto"
+            >
+              <div className="text-xs text-gray-500 mb-2">Tool Response:</div>
               <JsonView data={message.content} />
             </div>
           );
         }
+
+        if (message.role === "system") {
+          return null; // Hide system messages
+        }
+
         return (
           <div
             key={index}
-            className={`p-2 rounded ${
-              message.role === "user" ? "bg-blue-100" : "bg-green-100"
+            className={`flex ${
+              message.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
-            <div>
-              <strong>{message.role}:</strong>
-              <pre>{message.content}</pre>
+            <div
+              className={`max-w-[85%] p-4 rounded-2xl shadow-sm ${
+                message.role === "user"
+                  ? "bg-blue-500 text-white rounded-br-none"
+                  : "bg-white border rounded-bl-none"
+              }`}
+            >
+              {message.role === "assistant" && (
+                <div className="text-xs text-gray-500 mb-1">Assistant</div>
+              )}
+              <div className="whitespace-pre-wrap">{message.content}</div>
             </div>
           </div>
         );
