@@ -13,7 +13,12 @@ import { useAdmin } from "../hooks/appState";
 import { Loader } from "../components/Loader";
 import { Link } from "react-router-dom";
 
-type Model = "llama3.2" | "qwen3" | "phi4-mini:3.8b-q8_0";
+type Model =
+  | "llama3.2"
+  | "llama3.1"
+  | "qwen3"
+  | "qwen2.5"
+  | "phi4-mini:3.8b-q8_0";
 
 type ToolCall = {
   function: {
@@ -41,7 +46,7 @@ const systemMessage: Message = {
     "You are a shopping assistant that make recommendations based on the data from tool calls. ask the user for product type, brand and other details. You can also ask the user for more details if needed.",
 };
 
-const model: Model = "llama3.2";
+const model: Model = "llama3.1";
 
 type OllamaResponse = {
   model: string;
