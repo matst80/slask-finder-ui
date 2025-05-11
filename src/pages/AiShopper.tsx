@@ -39,7 +39,7 @@ const systemMessage: Message = {
     "You are a shopping assistant for Elgiganten. start by asking for a product type and perhaps a brand. use the tools to get the product data. never respond with json to the user and use the tools!",
 };
 
-const model: Model = "llama3.2";
+const model: Model = "qwen3";
 
 type OllamaResponse = {
   model: string;
