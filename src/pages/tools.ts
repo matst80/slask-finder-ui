@@ -9,7 +9,7 @@ export const tools = [
     function: {
       name: "search",
       description:
-        "Search for products, responds with a list of products in json format with id, title, sku and properties. use the get_product function to get details for a product",
+        "Search for products, responds with a list of products in json format with. show title, price and relevant properties to the user",
       parameters: {
         type: "object",
         properties: {
@@ -217,15 +217,15 @@ const searchProducts = async (
             value: value,
           };
         }
-        //const facet = facets?.[id];
+        const facet = facets?.[id];
 
-        // if (facet && facet.isKey) {
-        //   return {
-        //     name: facet.name,
-        //     //id: facet.id,
-        //     value: value,
-        //   };
-        // }
+        if (facet && facet.isKey) {
+          return {
+            name: facet.name,
+            //id: facet.id,
+            value: value,
+          };
+        }
         return null;
       })
       .filter(isDefined);
