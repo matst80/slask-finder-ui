@@ -164,7 +164,7 @@ const useAiContext = () => {
 
 const QueryInput = ({ loading }: { loading: boolean }) => {
   const { addMessage } = useAiContext();
-  const [query, setQuery] = useState("can you find me a gaming headset?");
+  const [query, setQuery] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
