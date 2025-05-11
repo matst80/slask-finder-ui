@@ -12,6 +12,7 @@ export const english = {
     checkout: "Checkout",
     updated: "Updated",
     config: "Config",
+    ai: "AI Shopper",
   },
   admin_menu: {
     edit: "Edit",

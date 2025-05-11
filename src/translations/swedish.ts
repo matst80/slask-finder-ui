@@ -12,6 +12,7 @@ export const swedish = {
     checkout: "Kassan",
     updated: "Uppdaterade",
     config: "Konfigurera",
+    ai: "AI Shopper",
   },
   admin_menu: {
     edit: "Redigera",
