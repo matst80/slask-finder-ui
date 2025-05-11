@@ -1,3 +1,5 @@
+import fuzzysort from "fuzzysort";
+import { getRawData } from "../lib/datalayer/api";
 import { FacetListItem } from "../lib/types";
 
 export const tools = [
@@ -12,7 +14,7 @@ export const tools = [
           query: {
             type: "string",
             description:
-              "Query to search for, keep short and simple, you can make multiple queries is needed, request a higher number of results if needed",
+              "query to search for products. use broad terms, never natural language",
           },
           maxResults: {
             type: "integer",
@@ -21,11 +23,11 @@ export const tools = [
 
           brand: {
             type: "string",
-            description: `can be found in the result properties with id 2`,
+            description: `possible values found with get_brands, dont make up values for this!!`,
           },
           product_type: {
             type: "string",
-            description: `can be found in the result properties with id 31158`,
+            description: `possible values found with get_product_types, dont make up values for this!!`,
           },
         },
         required: ["query", "maxResults"],
@@ -33,19 +35,127 @@ export const tools = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "get_product",
+      description: "Get product details",
+      parameters: {
+        type: "object",
+        properties: {
+          id: {
+            type: "string",
+            description:
+              "the product id to get details for, can be found in the search results",
+          },
+        },
+        required: ["id"],
+        $schema: "http://json-schema.org/draft-07/schema#",
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_brands",
+      description: "Get available brands",
+      parameters: {
+        type: "object",
+        properties: {},
+        required: [],
+        $schema: "http://json-schema.org/draft-07/schema#",
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_product_types",
+      description: "Get available product types",
+      parameters: {
+        type: "object",
+        properties: {},
+        required: [],
+        $schema: "http://json-schema.org/draft-07/schema#",
+      },
+    },
+  },
 ];
 
-const searchProducts = async (
-  args: { query: string; maxResults?: number },
+const getProduct = async (
+  { id }: { id: string },
   facets?: Record<string | number, FacetListItem>
 ) => {
-  const { query, maxResults = 50 } = args;
+  return await getRawData(id).then((data) => {
+    const { values, ...rest } = data;
+    const properties = Object.entries(values)
+      .map(([id, value]) => {
+        const facet = facets?.[id];
+        if (facet && !facet.hide) {
+          return {
+            name: facet.name,
+            //id: facet.id,
+            value: value,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+    return JSON.stringify({ ...rest, properties });
+  });
+};
+
+const getPropertyValues = (id: string, description: string) => async () => {
+  return await fetch("/api/values/" + id).then(async (res) => {
+    const items = await res.json();
+    return `${description} ${items.join("; ")}`;
+  });
+};
+
+const searchProducts = async (
+  args: {
+    query: string;
+    maxResults?: number;
+    brand?: string;
+    product_type?: string;
+  },
+  facets?: Record<string | number, FacetListItem>
+) => {
+  const { query, maxResults = 20, brand, product_type } = args;
   console.log("searchProducts", args);
   const qs = new URLSearchParams({
     page: "0",
     query,
     size: String(maxResults),
   });
+  if (brand) {
+    await fetch("/api/values/2").then(async (res) => {
+      const items = await res.json();
+      const matchingBrand = fuzzysort.go(brand, items, {
+        limit: 1,
+        threshold: 0.6,
+      })[0]?.target;
+      if (!matchingBrand) {
+        console.log("no matching brand found", brand);
+      } else {
+        qs.append("str", `2:${matchingBrand}`);
+      }
+    });
+  }
+  if (product_type) {
+    await fetch("/api/values/31158").then(async (res) => {
+      const items = await res.json();
+      const matchingProductType = fuzzysort.go(product_type, items, {
+        limit: 1,
+        threshold: 0.6,
+      })[0]?.target;
+      if (!matchingProductType) {
+        console.log("no matching brand found", brand);
+      } else {
+        qs.append("str", `31158:${matchingProductType}`);
+      }
+    });
+  }
   console.log("qs", qs.toString());
   const data = await fetch(`/api/stream?${qs}`).then((res) => {
     if (res.ok) {
@@ -59,20 +169,31 @@ const searchProducts = async (
     if (line === "") {
       break;
     }
-    const { stock, values, aItem, boxSize, bItem, bp, ...rest } =
-      JSON.parse(line);
+    const {
+      stock,
+      values,
+      aItem,
+      boxSize,
+      bItem,
+      bp,
+      advertisingText,
+      id,
+      sku,
+      title,
+      description,
+      releaseDate,
+      saleStatus,
+      onlineSaleStatus,
+      ...rest
+    } = JSON.parse(line);
 
     const properties = Object.entries(values)
       .map(([id, value]) => {
         const facet = facets?.[id];
-        if (
-          facet &&
-          !facet.hide &&
-          (facet.categoryLevel == null || facet.categoryLevel === 0)
-        ) {
+        if (facet && facet.isKey) {
           return {
             name: facet.name,
-            id: facet.id,
+            //id: facet.id,
             value: value,
           };
         }
@@ -80,13 +201,14 @@ const searchProducts = async (
       })
       .filter(Boolean);
 
-    items.push({ ...rest, properties, bulletPoints: bp });
+    items.push({ title, id, sku, properties, bulletPoints: bp });
   }
-  return `Here is the resuls in json: \n${JSON.stringify(
-    items
-  )}\nUse the information to give the user relevant results based on the query. be sure to include the product title, price`;
+  return JSON.stringify(items);
 };
 
 export const availableFunctions = {
   search: searchProducts,
+  get_product: getProduct,
+  get_brands: getPropertyValues("2", "possible brands: "),
+  get_product_types: getPropertyValues("31158", "possible product types: "),
 };

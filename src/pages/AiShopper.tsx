@@ -10,7 +10,7 @@ import { tools, availableFunctions } from "./tools";
 import { toJson } from "../lib/datalayer/api";
 import { useFacetMap } from "../hooks/searchHooks";
 
-type Model = "llama3.2" | "qwen3";
+type Model = "llama3.2" | "qwen3" | "phi4-mini:3.8b-q8_0";
 
 type ToolCall = {
   function: {
@@ -35,10 +35,10 @@ const AiShopperContext = createContext<{
 const systemMessage: Message = {
   role: "system",
   content:
-    "You are a helpful shopping assistant. tool search responses is json data, process the search tool answer in json with the following keys products, explanation, recommendations. Follow up with a questions to guide the user.",
+    "You are a helpful shopping assistant. start by asking for a product type and perhaps a brand.",
 };
 
-const model: Model = "qwen3";
+const model: Model = "llama3.2";
 
 type OllamaResponse = {
   model: string;
@@ -75,6 +75,10 @@ export const AiShopper = () => {
         }),
       }).then((d) => {
         return toJson<OllamaResponse>(d).then(async (data) => {
+          console.log("llm answer", data);
+          if (data.message) {
+            setMessages((prev) => [...prev, data.message]);
+          }
           if (data.message.tool_calls != null) {
             for (const {
               function: { name, arguments: args },
@@ -87,15 +91,14 @@ export const AiShopper = () => {
                     role: "tool",
                     content,
                   };
+                  console.log("tool call result:", content);
                   setMessages((prev) => [...prev, message]);
-                  setMessageReference(content);
                 });
               }
             }
+            setMessageReference(Date.now().toString());
           }
-          if (data.message) {
-            setMessages((prev) => [...prev, data.message]);
-          }
+
           return data;
         });
       });
@@ -130,7 +133,7 @@ const useAiContext = () => {
 const QueryInput = () => {
   const { addMessage } = useAiContext();
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("can you find me a gaming headset?");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
