@@ -359,11 +359,7 @@ const searchProducts = async (
 
     items.push(item);
   }
-  return (
-    "Here is the found products, use the information to guide the user, make new queryies if needed\n```json\n" +
-    JSON.stringify(items) +
-    "\n```"
-  );
+  return JSON.stringify(items);
 };
 
 const getCompatibleItems = async (
