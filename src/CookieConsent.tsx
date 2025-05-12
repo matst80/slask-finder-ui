@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { MouseEvent, useState } from "react";
 import { cookieObject, setCookie } from "./utils";
 import { Dialog } from "./components/ui/dialog";
 import { atom, useAtom } from "jotai";
@@ -12,16 +12,16 @@ export const useCookieAcceptance = () => {
   const [accepted, setAccepted] = useAtom(cookieAcceptanceAtom);
   const updateAccept = (value: CookieAcceptanceLevel | null) => {
     if (value === "none") {
-      setCookie("ca", "", -1);
-      setCookie("sfadmin", "", -1);
-      setCookie("locale", "", -1);
-      setCookie("cartid", "", -1);
+      setCookie("ca", "", -10);
+      setCookie("sfadmin", "", -10);
+      setCookie("locale", "", -10);
+      setCookie("cartid", "", -10);
       return;
     }
     if (value === "essential") {
       setCookie("sid", "", -1);
     }
-    setCookie("ca", value ?? "", value == null ? -1 : 365);
+    setCookie("ca", value ?? "", value == null ? -10 : 365 * 5);
     setAccepted(value);
   };
   if (accepted == null) {
@@ -42,11 +42,15 @@ export const CookieConsent = () => {
   const { accepted, updateAccept } = useCookieAcceptance();
 
   const [open, setOpen] = useState<boolean>(accepted == null);
-  const handleAccept = (value: CookieAcceptanceLevel) => () => {
+  const handleAccept = (value: CookieAcceptanceLevel) => (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     updateAccept(value);
     setOpen(false);
   };
-  const handleReject = () => {
+  const handleReject = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     updateAccept("none");
     setOpen(false);
   };
@@ -66,18 +70,25 @@ export const CookieConsent = () => {
               also choose to reject cookies.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" onClick={handleReject}>
-              Reject
-            </Button>
-
-            <Button variant="outline" onClick={handleAccept("essential")}>
-              Accept essential
-            </Button>
-            <Button variant="default" onClick={handleAccept("all")}>
+          <form className="flex items-center gap-2" method="dialog">
+            <Button
+              variant="default"
+              onClick={handleAccept("all")}
+              tabIndex={1}
+            >
               Accept all
             </Button>
-          </div>
+            <Button
+              variant="outline"
+              onClick={handleAccept("essential")}
+              tabIndex={2}
+            >
+              Accept essential
+            </Button>
+            <Button variant="secondary" onClick={handleReject} tabIndex={3}>
+              Reject
+            </Button>
+          </form>
         </div>
       </div>
     </Dialog>
