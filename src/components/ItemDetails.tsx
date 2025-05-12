@@ -583,7 +583,7 @@ const AiChatForCurrentProduct = (item: ItemDetail) => {
         {
           role: "system",
           content:
-            "The user needs some help, this is the product i'm looking at\n```json\n" +
+            "The user needs some help, details for the product: \n```json\n" +
             JSON.stringify(convertItem(item)) +
             "\n```",
         },
