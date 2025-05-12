@@ -5,7 +5,6 @@ import { ItemWithComponentId, RuleId } from "./builder-types";
 import { PageContainer } from "../../PageContainer";
 import { useBuilderContext } from "./useBuilderContext";
 import { useEffect } from "react";
-import { QueryProvider } from "../../lib/hooks/QueryProvider";
 
 type LocalStorageData = {
   items: ItemWithComponentId[];
