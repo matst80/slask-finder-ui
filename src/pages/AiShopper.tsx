@@ -239,9 +239,15 @@ function splitTinking(content: string): { content: any; think: any } {
 export const MessageList = () => {
   const { loading, messages } = useAiContext();
   const [isAdmin] = useAdmin();
-
+  useEffect(() => {
+    document.querySelector(".item-list > div:last-child")?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "nearest",
+    });
+  }, [messages]);
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 item-list">
       {messages.map((message, index) => {
         if (message.role === "tool") {
           try {
