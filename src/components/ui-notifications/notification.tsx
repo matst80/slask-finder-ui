@@ -82,11 +82,11 @@ export const Notification = ({
         globalThis.navigator.clipboard.writeText(message ?? title);
       }}
     >
-      <div className="flex-shrink-0 mt-0.5">
+      <div className="flex-shrink-0 mt-0.5" aria-hidden>
         <Icon className="h-5 w-5" />
       </div>
 
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0" role="status" aria-live="polite">
         <h3 className="font-medium text-sm">{title}</h3>
         {message && <p className="text-sm opacity-90 mt-1">{message}</p>}
       </div>
