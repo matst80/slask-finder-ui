@@ -12,6 +12,7 @@ export const useQueryRangeFacet = (id: number) => {
   const {
     query: { range },
     setFilter,
+    removeFilter,
   } = context;
   const facet = useMemo(
     () => facets.find((f) => isNumberFacet(f) && f.id === id),
@@ -28,5 +29,5 @@ export const useQueryRangeFacet = (id: number) => {
     [id, setFilter]
   );
 
-  return { facet, filter, updateValue };
+  return { facet, filter, updateValue, removeFilter };
 };

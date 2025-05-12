@@ -11,6 +11,7 @@ import { cm } from "../utils";
 import { useScreenWidth } from "../lib/hooks/useScreenWidth";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { useFacets } from "../lib/hooks/useFacets";
+import { StarRatingFacetSelector } from "./facets/RatingFacet";
 
 const CategoryLevel = ({
   id,
@@ -110,6 +111,15 @@ export const FacetList = ({
     <>
       {allFacets.map((facet) => {
         if (isNumberFacet(facet)) {
+          if (facet.valueType === "rating") {
+            return (
+              <StarRatingFacetSelector
+                {...facet}
+                defaultOpen={!facet.disabled && facet.selected != null}
+                key={`fld-${facet.id}-${facet.name}`}
+              />
+            );
+          }
           return (
             <NumberFacetSelector
               {...facet}

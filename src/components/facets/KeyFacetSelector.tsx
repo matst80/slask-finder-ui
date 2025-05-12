@@ -4,6 +4,7 @@ import { KeyFacet } from "../../lib/types";
 import { useQueryKeyFacet } from "../../lib/hooks/useQueryKeyFacet";
 import { cm } from "../../utils";
 import { useKeyFacetValuePopularity } from "../../hooks/popularityHooks";
+import fuzzysort from "fuzzysort";
 
 const toSorted = (values: Record<string, number>, selected: Set<string>) =>
   Object.entries(values)
@@ -23,27 +24,22 @@ export const KeyFacetSelector = ({
 }: KeyFacet & { defaultOpen: boolean; disabled?: boolean }) => {
   const { values } = result;
   const { filter: filterValue, addValue, removeValue } = useQueryKeyFacet(id);
-
-  const [filter, setFilter] = useState("");
-  const allSorted = useMemo(
-    () => toSorted(values, filterValue),
-    [values, filterValue]
-  );
-  const filtered = useMemo(() => {
-    return filter.length > 2
-      ? allSorted.filter(
-          ({ value }) =>
-            value.toLowerCase().includes(filter.toLowerCase()) ||
-            filterValue.has(value)
-        )
-      : allSorted;
-  }, [allSorted, filter, filterValue]);
   const [open, setOpen] = useState(defaultOpen);
   const [expanded, setExpanded] = useState(false);
   const { data: popularValues } = useKeyFacetValuePopularity(
     open ? id : undefined
   );
-  const toShow = expanded ? filtered : filtered.slice(0, 10);
+  const totalCount = useMemo(() => Object.keys(values).length, [values]);
+  const [filter, setFilter] = useState("");
+
+  const toShow = useMemo(() => {
+    return fuzzysort.go(filter, toSorted(values, filterValue), {
+      all: filter.length < 1,
+      limit: expanded ? 100 : 10,
+      keys: ["value"],
+      threshold: 0.5,
+    });
+  }, [values, filter, filterValue]);
 
   return (
     <div
@@ -58,7 +54,9 @@ export const KeyFacetSelector = ({
       >
         <span>
           {name}{" "}
-          <span className="text-gray-500 text-sm">({allSorted.length})</span>
+          <span className="text-gray-500 text-sm">
+            ({Object.keys(values).length})
+          </span>
         </span>
 
         <ChevronUp
@@ -70,7 +68,7 @@ export const KeyFacetSelector = ({
       </button>
       {open && (
         <fieldset className="space-y-2" disabled={disabled}>
-          {allSorted.length > 25 && (
+          {totalCount > 10 && (
             <input
               type="text"
               className="w-full px-2 py-1 border border-gray-200 rounded-sm text-sm"
@@ -79,7 +77,7 @@ export const KeyFacetSelector = ({
               onChange={(e) => setFilter(e.target.value)}
             />
           )}
-          {toShow.map(({ value, count }) => {
+          {toShow.map(({ obj: { value, count } }) => {
             const popularityIndex =
               popularValues?.findIndex((d) => d.value === value) ?? -1;
             return (
@@ -117,7 +115,7 @@ export const KeyFacetSelector = ({
             );
           })}
 
-          {allSorted.length > 9 && (
+          {totalCount > 9 && (
             <button
               className="underline text-sm"
               onClick={() => setExpanded((p) => !p)}

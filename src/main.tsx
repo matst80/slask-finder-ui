@@ -302,10 +302,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <GroupDesignerProvider>
           <CompareProvider compareAllFacets={true}>
             <TranslationProvider language={getBrowserTranslations()}>
-              <QueryProvider
-                initialQuery={{ page: 0, pageSize: 20 }}
-                attachToHash
-              >
+              <QueryProvider attachToHash>
                 <NotificationsProvider>
                   <ImpressionProvider>
                     <RouterProvider router={router} />
