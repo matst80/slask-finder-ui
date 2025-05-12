@@ -64,7 +64,7 @@ export const QueryProvider = ({
   const [hits, setHits] = useState<Item[]>([]);
   const [totalHits, setTotalHits] = useState<number>(0);
   const [query, setQuery] = useState<ItemsQuery>(
-    initialQuery ?? attachToHash ? loadQueryFromHash() : {}
+    initialQuery ?? (attachToHash ? loadQueryFromHash() : {})
   );
   const setPage = useCallback((page: number) => {
     setQuery((prev) => ({ ...prev, page }));
