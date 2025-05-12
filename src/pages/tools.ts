@@ -156,32 +156,38 @@ const convertProperties =
     let product_type = "";
     let brand = "";
     let price = "";
-    const properties = Object.entries(values)
-      .map(([id, value]) => {
-        if (id === "2") {
-          brand = String(value);
-        }
-        if (id === "31158") {
-          product_type = String(value);
-        }
-        if (id === "4") {
-          price = `${Number(value) / 100} SEK`;
-        }
-        const facet = facets?.[id];
-
-        if (facet && (facet.isKey || all)) {
-          if (facet.fieldType == "fps" || facet.hide) {
-            return null;
+    const properties = Object.fromEntries(
+      Object.entries(values)
+        .map(([id, value]) => {
+          if (id === "2") {
+            brand = String(value);
           }
-          return {
-            name: facet.name,
-            //id: facet.id,
-            value: value,
-          };
-        }
-        return null;
-      })
-      .filter(isDefined);
+          if (id === "31158") {
+            product_type = String(value);
+          }
+          if (id === "4") {
+            price = `${Number(value) / 100} SEK`;
+          }
+          const facet = facets?.[id];
+
+          if ((facet && (facet.isKey || all)) || value == null) {
+            if (facet.fieldType == "fps" || facet.hide) {
+              return null;
+            }
+            return [
+              facet.name,
+              Array.isArray(value) ? value.join(", ") : String(value),
+            ];
+            // return {
+            //   name: facet.name,
+            //   //id: facet.id,
+            //   value: value,
+            // };
+          }
+          return null;
+        })
+        .filter(isDefined)
+    );
     return {
       properties,
       price,
