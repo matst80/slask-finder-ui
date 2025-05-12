@@ -33,7 +33,7 @@ const AiChatForResults = () => {
   const { data: facets } = useFacetMap();
   const convertItem = useCallback(convertItemSimple(facets ?? {}), [facets]);
   const contextItems = useMemo(() => {
-    return hits.map(convertItem);
+    return hits.map(convertItem).slice(0, 10);
   }, [hits, facets]);
   if (contextItems.length === 0) {
     return null;
