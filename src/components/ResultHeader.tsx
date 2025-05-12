@@ -77,6 +77,7 @@ export const ResultHeader = ({ children }: PropsWithChildren) => {
             variant="outline"
             size="sm"
             className="shrink-1"
+            title="Ask AI for help"
             onClick={() => setOpen((p) => !p)}
           >
             <BotMessageSquare className="size-5" />

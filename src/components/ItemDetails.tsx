@@ -538,6 +538,7 @@ export const ItemDetails = (details: ItemDetail) => {
                     variant="outline"
                     size="sm"
                     className="shrink-1"
+                    title="Ask AI assistant"
                     onClick={() => setOpen((p) => !p)}
                   >
                     <BotMessageSquare className="size-5" />
