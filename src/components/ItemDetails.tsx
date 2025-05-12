@@ -555,7 +555,7 @@ export const ItemDetails = (details: ItemDetail) => {
           </div>
         </Sidebar>
         {/* Bottom Sections */}
-        <div className="mt-6 space-y-6 md:mt-16 md:space-y-16">
+        <div className="mt-6 space-y-6 md:mt-6 md:space-y-16">
           <BreadCrumbs values={values} />
           <RelationGroups values={values} id={id} />
 
