@@ -11,6 +11,7 @@ import { trackCart } from "../lib/datalayer/beacons";
 import { BaseEcomEvent, Item } from "../lib/types";
 import { useNotifications } from "../components/ui-notifications/useNotifications";
 import { toEcomTrackingEvent } from "../components/toImpression";
+import { useCookieAcceptance } from "../CookieConsent";
 
 const cartKey = "/cart";
 
@@ -56,6 +57,7 @@ export const useAddMultipleToCart = () => {
 };
 
 export const useAddToCart = () => {
+  const { accepted } = useCookieAcceptance();
   const { showNotification } = useNotifications();
   const { trigger, ...rest } = useFetchMutation(cartKey, addToCart);
   return {
@@ -64,6 +66,14 @@ export const useAddToCart = () => {
       item: { sku: string; quantity: number },
       trackingItem: BaseEcomEvent
     ) => {
+      if (accepted === "none" || accepted === null) {
+        showNotification({
+          title: "Error",
+          message: `No use in adding to cart if you don't accept essential cookies.`,
+          variant: "error",
+        });
+        return;
+      }
       return trigger(item)
         .then((data) => {
           if (data) {

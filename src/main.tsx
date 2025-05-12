@@ -55,6 +55,7 @@ import { GroupDesignerProvider } from "./lib/hooks/GroupDesignerProvider.tsx";
 import { SidebarMenu } from "./components/SidebarMenu.tsx";
 import { JsonView } from "./pages/tracking/JsonView.tsx";
 import { AiShopper } from "./pages/AiShopper.tsx";
+import { CookieConsent } from "./CookieConsent.tsx";
 
 const BubbleError = () => {
   const error = useRouteError();
@@ -306,6 +307,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 <NotificationsProvider>
                   <ImpressionProvider>
                     <RouterProvider router={router} />
+                    <CookieConsent />
                   </ImpressionProvider>
                 </NotificationsProvider>
               </QueryProvider>

@@ -23,6 +23,7 @@ import { useUser } from "../adminHooks";
 import { useAdmin } from "../hooks/appState";
 import { Button } from "./ui/button";
 import { cm } from "../utils";
+import { useCookieAcceptance } from "../CookieConsent";
 
 type NavigationItemType = {
   translationKey: TranslationKey;
@@ -298,6 +299,7 @@ const menu: NavigationItemType[] = [
 ];
 
 const UserButton = () => {
+  const { accepted } = useCookieAcceptance();
   const { data, isLoading } = useUser();
   const [, setIsAdmin] = useAdmin();
   const loggedIn = data?.role != null;
@@ -307,6 +309,9 @@ const UserButton = () => {
       setIsAdmin(data?.role != null);
     }
   }, [data, setIsAdmin]);
+  if (accepted === "none" || accepted === null) {
+    return null;
+  }
   return (
     <a href={loggedIn ? "/admin/logout" : "/admin/login"}>
       <Button
@@ -328,7 +333,7 @@ export const NavMenu = () => {
   return (
     <div className="flex flex-col justify-between gap-2 h-full bg-white">
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-6 px-6 mb-4">
-        <h2 className="text-2xl font-bold">Slask Finder</h2>
+        <h2 className="text-2xl font-bold">s10r</h2>
         <p className="text-blue-100 text-sm mt-1">Admin Dashboard</p>
       </div>
       <nav className="flex-1 overflow-y-auto flex flex-col justify-between px-3 md:px-6 py-2">
@@ -343,7 +348,7 @@ export const NavMenu = () => {
         </div>
       </nav>
       <div className="pt-4 border-t border-gray-100 mt-auto p-4 bg-gray-50">
-        <div className="text-xs text-gray-500">Slask Finder UI © 2025</div>
+        <div className="text-xs text-gray-500">s10r UI (dev)</div>
       </div>
     </div>
   );

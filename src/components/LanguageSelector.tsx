@@ -1,3 +1,4 @@
+import { useCookieAcceptance } from "../CookieConsent";
 import { getLocale, setCookie } from "../utils";
 
 const regions = ["sv-SE", "sv-FI", "en-US", "en-GB"];
@@ -6,7 +7,11 @@ const regionNamesInEnglish = new Intl.DisplayNames(["en"], {
 });
 
 export const LanguageSelector = () => {
+  const { accepted } = useCookieAcceptance();
   const locale = getLocale();
+  if (accepted === "none" || accepted === null) {
+    return null;
+  }
   return (
     <select
       onChange={(e) => {

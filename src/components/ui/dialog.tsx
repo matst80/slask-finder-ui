@@ -1,14 +1,16 @@
 import { PropsWithChildren, useEffect, useRef } from "react";
+import { cm } from "../../utils";
 
 type DialogProps = {
   open: boolean;
-
+  attached?: "dialog" | "bottom" | "left" | "right";
   setOpen: (open: boolean) => void;
 };
 
 export const Dialog = ({
   open,
   setOpen,
+  attached = "dialog",
   children,
 }: PropsWithChildren<DialogProps>) => {
   const ref = useRef<HTMLDialogElement>(null);
@@ -43,7 +45,7 @@ export const Dialog = ({
     }
   }, [ref]);
   return (
-    <dialog ref={ref} className={"dialog"}>
+    <dialog ref={ref} className={cm(attached)}>
       {children}
     </dialog>
   );

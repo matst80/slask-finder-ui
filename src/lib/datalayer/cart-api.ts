@@ -6,15 +6,16 @@ type AddToCartArgs = {
   quantity: number;
 };
 
+type ChangeQuantityArgs = {
+  id: number;
+  quantity: number;
+};
+
 export const addToCart = (payload: AddToCartArgs) =>
   fetch(`${baseUrl}/cart/`, {
     method: "POST",
     body: JSON.stringify(payload),
   }).then((d) => toJson<Cart>(d));
-type ChangeQuantityArgs = {
-  id: number;
-  quantity: number;
-};
 
 export const changeQuantity = (payload: ChangeQuantityArgs) =>
   fetch(`${baseUrl}/cart/`, {

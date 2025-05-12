@@ -1,5 +1,6 @@
 import React, { createContext, PropsWithChildren, useCallback } from "react";
 import { BaseEcomEvent } from "../types";
+import { useCookieAcceptance } from "../../CookieConsent";
 
 export type TrackingEvent = ImpressionEvent | ClickEvent;
 
@@ -75,12 +76,18 @@ export const useTrackingHandlers = () => {
 
 export const useTracking = () => {
   const context = React.useContext(TrackingContext);
+  const { accepted } = useCookieAcceptance();
+
   if (!context) {
     throw new Error("useTracking must be used within a TrackingProvider");
   }
   const { handlers } = context;
   const track = useCallback(
     (event: TrackingEvent) => {
+      if (accepted !== "all") {
+        console.warn("Tracking not allowed");
+        return;
+      }
       context.handlers.forEach((handler) => {
         handler.handle.apply(handler, [event, handler.context]);
       });
