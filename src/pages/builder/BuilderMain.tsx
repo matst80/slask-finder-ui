@@ -5,6 +5,7 @@ import { ItemWithComponentId, RuleId } from "./builder-types";
 import { PageContainer } from "../../PageContainer";
 import { useBuilderContext } from "./useBuilderContext";
 import { useEffect } from "react";
+import { QueryProvider } from "../../lib/hooks/QueryProvider";
 
 type LocalStorageData = {
   items: ItemWithComponentId[];
@@ -37,15 +38,17 @@ export const BuilderMain = () => {
   const { items, order } = loadBuildFromLocalStorage();
 
   return (
-    <BuilderProvider
-      initialRules={componentRules}
-      initialItems={items}
-      initialOrder={order}
-    >
-      <PageContainer>
-        <SaveBuild />
-        <Outlet />
-      </PageContainer>
-    </BuilderProvider>
+    <QueryProvider attachToHash={false}>
+      <BuilderProvider
+        initialRules={componentRules}
+        initialItems={items}
+        initialOrder={order}
+      >
+        <PageContainer>
+          <SaveBuild />
+          <Outlet />
+        </PageContainer>
+      </BuilderProvider>
+    </QueryProvider>
   );
 };
