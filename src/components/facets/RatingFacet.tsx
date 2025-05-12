@@ -7,7 +7,7 @@ import { useQueryRangeFacet } from "../../lib/hooks/useQueryRangeFacet";
 export const StarRatingFacetSelector = ({
   id,
   name,
-  result: { min, max },
+  result: { max },
   selected,
   disabled,
   defaultOpen,
