@@ -18,7 +18,7 @@ export const tools = [
       parameters: {
         type: "object",
         properties: {
-          query: {
+          q: {
             type: "string",
             description:
               "query to search for. Not natural language, example: 'tv', 'headset', 'cpu' or 'iphone.",
@@ -36,8 +36,7 @@ export const tools = [
             description: `possible values found with get_product_types, dont make up values!`,
           },
         },
-        required: ["query", "maxResults"],
-        //$schema: "http://json-schema.org/draft-07/schema#",
+        required: ["q", "maxResults"],
       },
     },
   },
@@ -56,7 +55,6 @@ export const tools = [
           },
         },
         required: ["id"],
-        //$schema: "http://json-schema.org/draft-07/schema#",
       },
     },
   },
@@ -75,7 +73,6 @@ export const tools = [
           },
         },
         required: ["id"],
-        //$schema: "http://json-schema.org/draft-07/schema#",
       },
     },
   },
@@ -94,7 +91,6 @@ export const tools = [
           },
         },
         required: ["id"],
-        //$schema: "http://json-schema.org/draft-07/schema#",
       },
     },
   },
@@ -113,7 +109,6 @@ export const tools = [
           },
         },
         required: ["id"],
-        $schema: "http://json-schema.org/draft-07/schema#",
       },
     },
   },
@@ -126,7 +121,6 @@ export const tools = [
         type: "object",
         properties: {},
         required: [],
-        $schema: "http://json-schema.org/draft-07/schema#",
       },
     },
   },
@@ -139,7 +133,6 @@ export const tools = [
         type: "object",
         properties: {},
         required: [],
-        $schema: "http://json-schema.org/draft-07/schema#",
       },
     },
   },
@@ -152,7 +145,6 @@ export const tools = [
         type: "object",
         properties: {},
         required: [],
-        $schema: "http://json-schema.org/draft-07/schema#",
       },
     },
   },
@@ -255,46 +247,96 @@ const getPropertyValues = (id: string, description: string) => async () => {
   });
 };
 
+type SearchArgs = {
+  q: string;
+  maxResults?: number;
+  brand?: string;
+  product_type?: string;
+};
+
+const getSearchArguments = (args: unknown): SearchArgs => {
+  if (args == null) {
+    return {
+      q: "*",
+      maxResults: 20,
+    };
+  }
+  if (typeof args === "string") {
+    return {
+      q: args,
+      maxResults: 20,
+    };
+  }
+  if (typeof args === "object" && !Array.isArray(args)) {
+    if ("properties" in args) {
+      console.log("props", args.properties);
+      const { q, product_type, maxResults } = args.properties as {
+        [key: string]: { value: any };
+      };
+      return {
+        q: q.value ?? "*",
+        product_type: product_type.value,
+        maxResults: maxResults.value ?? 20,
+      };
+    }
+    const { q, maxResults, brand, product_type } = args as SearchArgs;
+    return {
+      q: q ?? "*",
+      maxResults: maxResults ?? 20,
+      brand,
+      product_type,
+    };
+  }
+
+  return {
+    q: "*",
+    maxResults: 20,
+  };
+};
+
 const searchProducts = async (
-  args: {
-    query: string;
-    maxResults?: number;
-    brand?: string;
-    product_type?: string;
-  },
+  args: unknown,
   facets?: Record<string | number, FacetListItem>
 ) => {
-  const { query, maxResults = 20, brand, product_type } = args;
+  const { q, maxResults = 20, brand, product_type } = getSearchArguments(args);
 
   const qs = new URLSearchParams({
     page: "0",
-    query: query.length > 0 ? query : "*",
+    query: q.length > 0 ? q : "*",
     size: String(maxResults),
   });
   if (brand) {
     await fetch("/api/values/2").then(async (res) => {
-      const items = await res.json();
+      const items = (await res.json()) as string[];
       const matchingBrand = fuzzysort.go(brand, items, {
-        limit: 1,
-        threshold: 0.9,
+        limit: 3,
+        threshold: 0.8,
       })[0]?.target;
       if (!matchingBrand) {
         console.log("no matching brand found", brand);
       } else {
+        console.log("matching brand", matchingBrand, "for", brand);
         qs.append("str", `2:${matchingBrand}`);
       }
     });
   }
   if (product_type) {
     await fetch("/api/values/31158").then(async (res) => {
-      const items = await res.json();
+      const items = (await res.json()) as string[];
+
       const matchingProductType = fuzzysort.go(product_type, items, {
-        limit: 1,
-        threshold: 0.9,
+        limit: 3,
+        threshold: 0.8,
       })[0]?.target;
       if (!matchingProductType) {
         console.log("no matching brand found", brand);
       } else {
+        console.log(
+          "matching product type",
+          matchingProductType,
+          "for",
+          product_type
+        );
         qs.append("str", `31158:${matchingProductType}`);
       }
     });
@@ -317,7 +359,11 @@ const searchProducts = async (
 
     items.push(item);
   }
-  return JSON.stringify(items);
+  return (
+    "Here is the found products, use the information to guide the user, make new queryies if needed\n```json\n" +
+    JSON.stringify(items) +
+    "\n```"
+  );
 };
 
 const getCompatibleItems = async (

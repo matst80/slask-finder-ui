@@ -49,7 +49,7 @@ const systemMessage: Message = {
     "You are a shopping assistant that make recommendations based on the data from tool calls. ask the user for product type, brand and other details. You can also ask the user for more details if needed.",
 };
 
-const model: Model = "llama3.1";
+const model: Model = "qwen3";
 
 type OllamaResponse = {
   model: string;
@@ -225,6 +225,17 @@ export const QueryInput = () => {
   );
 };
 
+function splitTinking(content: string): { content: any; think: any } {
+  const startIndex = content.indexOf("<think>");
+  const endIndex = content.indexOf("</think>");
+  if (startIndex !== -1 && endIndex !== -1) {
+    const think = content.substring(startIndex + 7, endIndex);
+    const contentWithoutThink = content.substring(endIndex + 8);
+    return { content: contentWithoutThink, think };
+  }
+  return { content, think: null };
+}
+
 export const MessageList = () => {
   const { loading, messages } = useAiContext();
   const [isAdmin] = useAdmin();
@@ -289,7 +300,7 @@ export const MessageList = () => {
         ) {
           return null; // Hide system messages
         }
-
+        const { content, think } = splitTinking(message.content);
         return (
           <div
             key={index}
@@ -310,8 +321,13 @@ export const MessageList = () => {
               {message.role === "assistant" && (
                 <div className="text-xs text-gray-500 mb-1">Assistant</div>
               )}
+              {think && (
+                <div className="text-xs text-gray-500 mb-1">
+                  <span className="font-bold">Thinking:</span> {think}
+                </div>
+              )}
               <div className="whitespace-pre-wrap overflow-hidden">
-                <Markdown>{message.content}</Markdown>
+                <Markdown>{content}</Markdown>
               </div>
             </div>
           </div>

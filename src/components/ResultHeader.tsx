@@ -44,8 +44,9 @@ const AiChatForResults = () => {
         {
           role: "system",
           content:
-            "The user needs some help, use primarly the items listed here dont search for new ones!\n\n" +
-            JSON.stringify(contextItems),
+            "The user needs some help, use items listed here dont search for new ones!\n```json\n" +
+            JSON.stringify(contextItems) +
+            "\n```",
         },
       ]}
     >
