@@ -170,6 +170,9 @@ const convertProperties =
         const facet = facets?.[id];
 
         if (facet && (facet.isKey || all)) {
+          if (facet.fieldType == "fps" || facet.hide) {
+            return null;
+          }
           return {
             name: facet.name,
             //id: facet.id,
