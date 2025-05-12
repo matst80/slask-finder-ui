@@ -159,7 +159,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
         </div>
 
         {/* Bottom Sections */}
-        <div className="mt-6 space-y-6 md:mt-16 md:space-y-16 animating-element">
+        <div className="mt-6 space-y-6 md:mt-6 md:space-y-16 animating-element">
           <GroupedProperties values={details.values} />
         </div>
       </div>
