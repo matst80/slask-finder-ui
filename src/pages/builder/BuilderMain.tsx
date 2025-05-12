@@ -38,17 +38,15 @@ export const BuilderMain = () => {
   const { items, order } = loadBuildFromLocalStorage();
 
   return (
-    <QueryProvider attachToHash={false}>
-      <BuilderProvider
-        initialRules={componentRules}
-        initialItems={items}
-        initialOrder={order}
-      >
-        <PageContainer>
-          <SaveBuild />
-          <Outlet />
-        </PageContainer>
-      </BuilderProvider>
-    </QueryProvider>
+    <BuilderProvider
+      initialRules={componentRules}
+      initialItems={items}
+      initialOrder={order}
+    >
+      <PageContainer>
+        <SaveBuild />
+        <Outlet />
+      </PageContainer>
+    </BuilderProvider>
   );
 };
