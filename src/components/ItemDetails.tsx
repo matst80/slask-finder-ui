@@ -4,7 +4,13 @@ import {
   useRelatedItems,
   useRelationGroups,
 } from "../hooks/searchHooks";
-import { PropsWithChildren, useEffect, useMemo, useState } from "react";
+import {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { cm, isDefined, makeImageUrl } from "../utils";
 import {
   ItemDetail,
@@ -36,13 +42,20 @@ import { useTranslations } from "../lib/hooks/useTranslations";
 import { GroupedProperties } from "./GroupedProperties";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 import { Loader } from "./Loader";
-import { UserCog } from "lucide-react";
+import { BotMessageSquare, UserCog } from "lucide-react";
 import { JsonView } from "../pages/tracking/JsonView";
 import { toEcomTrackingEvent } from "./toImpression";
 import { Stars } from "./Stars";
 import { QueryUpdater } from "./QueryMerger";
 import { useSwitching } from "../lib/hooks/useSwitching";
 import { useProductData } from "../lib/utils";
+import {
+  AiShoppingProvider,
+  MessageList,
+  QueryInput,
+} from "../pages/AiShopper";
+import { convertDetails, convertItemSimple } from "../pages/tools";
+import { Sidebar } from "./ui/sidebar";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -423,7 +436,7 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
 
 export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart, isMutating } = useAddToCart();
-
+  const [open, setOpen] = useState(false);
   const t = useTranslations();
 
   if (!details) return null;
@@ -521,13 +534,25 @@ export const ItemDetails = (details: ItemDetail) => {
                     className="font-medium rounded-sm focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:cursor-not-allowed border border-gray-300 text-gray-700 hover:bg-gray-50 bg-white/20 px-3 py-1 text-sm my-2"
                   />
                   <PopulateAdminDetails id={id} />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="shrink-1"
+                    onClick={() => setOpen((p) => !p)}
+                  >
+                    <BotMessageSquare className="size-5" />
+                  </Button>
                 </div>
                 <StockList stock={stock} stockLevel={stockLevel} />
               </div>
             )}
           </div>
         </div>
-
+        <Sidebar side="right" open={open} setOpen={setOpen}>
+          <div className="bg-white flex flex-col overflow-y-auto py-6 px-4 h-full w-full max-w-full md:max-w-lg">
+            {open && <AiChatForCurrentProduct {...details} />}
+          </div>
+        </Sidebar>
         {/* Bottom Sections */}
         <div className="mt-6 space-y-6 md:mt-16 md:space-y-16">
           <BreadCrumbs values={values} />
@@ -544,5 +569,33 @@ export const ItemDetails = (details: ItemDetail) => {
         </div>
       </div>
     </>
+  );
+};
+
+const AiChatForCurrentProduct = (item: ItemDetail) => {
+  const { hits } = useQuery();
+  const { data: facets } = useFacetMap();
+  const convertItem = useCallback(convertDetails(facets ?? {}), [facets]);
+
+  return (
+    <AiShoppingProvider
+      messages={[
+        {
+          role: "system",
+          content:
+            "The user needs some help, this is the product i'm looking at\n```json\n" +
+            JSON.stringify(item) +
+            "\n```",
+        },
+      ]}
+    >
+      <div className="flex flex-col gap-6 flex-1">
+        <div className="flex-1 overflow-auto">
+          <MessageList />
+        </div>
+
+        <QueryInput />
+      </div>
+    </AiShoppingProvider>
   );
 };
