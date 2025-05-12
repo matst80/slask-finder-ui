@@ -54,7 +54,7 @@ import {
   MessageList,
   QueryInput,
 } from "../pages/AiShopper";
-import { convertDetails, convertItemSimple } from "../pages/tools";
+import { convertDetails } from "../pages/tools";
 import { Sidebar } from "./ui/sidebar";
 
 export type StoreWithStock = Store & {
@@ -574,10 +574,9 @@ export const ItemDetails = (details: ItemDetail) => {
 };
 
 const AiChatForCurrentProduct = (item: ItemDetail) => {
-  const { hits } = useQuery();
   const { data: facets } = useFacetMap();
   const convertItem = useCallback(convertDetails(facets ?? {}), [facets]);
-
+  if (!item || !facets) return null;
   return (
     <AiShoppingProvider
       messages={[
@@ -585,7 +584,7 @@ const AiChatForCurrentProduct = (item: ItemDetail) => {
           role: "system",
           content:
             "The user needs some help, this is the product i'm looking at\n```json\n" +
-            JSON.stringify(item) +
+            JSON.stringify(convertItem(item)) +
             "\n```",
         },
       ]}
