@@ -315,6 +315,7 @@
   .has-attachments:has(input[aria-expanded="true"]) {
     .attachment {
       display: block;
+      pointer-events: all;
       opacity: 1;
     }
   }
