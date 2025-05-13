@@ -157,14 +157,17 @@ export const Words = () => {
 
   const onChange =
     (key: keyof WordConfig) => (value: WordConfig[typeof key]) => {
-      mutate((prev) => {
-        return {
-          splitWords: [],
-          wordMappings: {},
-          ...prev,
-          [key]: value,
-        };
-      });
+      mutate(
+        (prev) => {
+          return {
+            splitWords: [],
+            wordMappings: {},
+            ...prev,
+            [key]: value,
+          };
+        },
+        { revalidate: false }
+      );
     };
 
   const { splitWords, wordMappings } = data;

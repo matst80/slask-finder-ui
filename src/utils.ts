@@ -237,5 +237,5 @@ export const setCookie = (name: string, value: string, days: number) => {
   const date = new Date();
   date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
   const expires = "expires=" + (days < 0 ? new Date(0) : date).toUTCString();
-  document.cookie = `${name}=${value}; ${expires}; domain=${window.location.hostname}; path=/; SameSite=Lax; Secure`;
+  document.cookie = `${name}=${value}; ${expires}; path=/; SameSite=Lax; Secure`;
 };
