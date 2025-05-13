@@ -56,6 +56,7 @@ import { SidebarMenu } from "./components/SidebarMenu.tsx";
 import { JsonView } from "./pages/tracking/JsonView.tsx";
 import { AiShopper } from "./pages/AiShopper.tsx";
 import { CookieConsent } from "./CookieConsent.tsx";
+import { Words } from "./pages/admin/Words.tsx";
 
 const BubbleError = () => {
   const error = useRouteError();
@@ -194,6 +195,10 @@ const router = createBrowserRouter([
       {
         path: "missing_fields",
         element: <MissingFieldsView />,
+      },
+      {
+        path: "words",
+        element: <Words />,
       },
       {
         path: "relations",

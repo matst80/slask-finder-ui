@@ -13,6 +13,8 @@ export const english = {
     updated: "Updated",
     config: "Config",
     ai: "AI Shopper",
+
+    cookies: "Manage cookie consent",
   },
   admin_menu: {
     edit: "Edit",
@@ -20,6 +22,7 @@ export const english = {
     fields: "Fields",
     missing_facets: "Missing facets",
     relations: "Relations",
+    words: "Words",
     rules: "Rules",
     facet_groups: "Facet groups",
     csp: "CSP Report",

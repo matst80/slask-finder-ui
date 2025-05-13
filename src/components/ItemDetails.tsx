@@ -488,12 +488,14 @@ export const ItemDetails = (details: ItemDetail) => {
               )}
               {bp && (
                 <ul className="space-y-3 text-gray-600">
-                  {bp.split("\n").map((txt) => (
-                    <li key={txt} className="flex items-start">
-                      <span className="text-blue-500 mr-2">•</span>
-                      {txt}
-                    </li>
-                  ))}
+                  {bp.split("\n").map((txt) =>
+                    txt.length > 1 ? (
+                      <li key={txt} className="flex items-start">
+                        <span className="text-blue-500 mr-2">•</span>
+                        {txt}
+                      </li>
+                    ) : null
+                  )}
                 </ul>
               )}
             </div>

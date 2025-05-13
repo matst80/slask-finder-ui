@@ -23,9 +23,7 @@ export const Dialog = ({
       }
     }
   }, [open]);
-  // useSwipeAway(ref, () => {
-  //   ref.current?.close();
-  // });
+
   useEffect(() => {
     if (ref.current) {
       const c = ref.current;

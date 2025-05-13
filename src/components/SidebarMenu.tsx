@@ -13,7 +13,7 @@ import {
   User,
   BotMessageSquare,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { Sidebar } from "./ui/sidebar";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { TranslationKey } from "../translations/translations";
@@ -200,6 +200,11 @@ const menu: NavigationItemType[] = [
         url: "/edit/facet_groups",
       },
       {
+        translationKey: "admin_menu.words",
+        accessKey: "3",
+        url: "/edit/words",
+      },
+      {
         translationKey: "admin_menu.rules",
         accessKey: "r",
         url: "/edit/rules",
@@ -330,6 +335,8 @@ const UserButton = () => {
 };
 
 export const NavMenu = () => {
+  const { accepted, manageConsent } = useCookieAcceptance();
+  const t = useTranslations();
   return (
     <div className="flex flex-col justify-between gap-2 h-full bg-white">
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-6 px-6 mb-4">
@@ -348,7 +355,12 @@ export const NavMenu = () => {
         </div>
       </nav>
       <div className="pt-4 border-t border-gray-100 mt-auto p-4 bg-gray-50">
-        <div className="text-xs text-gray-500">s10r UI (dev)</div>
+        <div className="text-xs text-gray-500">
+          s10r UI (dev){" "}
+          {accepted != null && (
+            <button onClick={manageConsent}>{t("menu.cookies")}</button>
+          )}
+        </div>
       </div>
     </div>
   );

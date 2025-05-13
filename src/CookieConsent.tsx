@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import { cookieObject, setCookie } from "./utils";
 import { Dialog } from "./components/ui/dialog";
 import { atom, useAtom } from "jotai";
@@ -6,10 +6,29 @@ import { Button } from "./components/ui/button";
 
 type CookieAcceptanceLevel = "none" | "all" | "essential";
 
-const cookieAcceptanceAtom = atom<CookieAcceptanceLevel | null>(null);
+const getCookieAcceptance = () => {
+  const cookie = cookieObject();
+  if (cookie.ca == null) {
+    return null;
+  }
+  if (cookie.ca === "all") {
+    return "all";
+  }
+  if (cookie.ca === "none") {
+    return "none";
+  }
+  return "essential";
+};
+
+const cookieAcceptanceAtom = atom<CookieAcceptanceLevel | null>(
+  getCookieAcceptance()
+);
 
 export const useCookieAcceptance = () => {
   const [accepted, setAccepted] = useAtom(cookieAcceptanceAtom);
+  const manageConsent = () => {
+    setAccepted(null);
+  };
   const updateAccept = (value: CookieAcceptanceLevel | null) => {
     if (value === "none") {
       setCookie("ca", "", -10);
@@ -24,18 +43,7 @@ export const useCookieAcceptance = () => {
     setCookie("ca", value ?? "", value == null ? -10 : 365 * 5);
     setAccepted(value);
   };
-  if (accepted == null) {
-    const cookie = cookieObject();
-    if (cookie.ca == null) {
-      return { accepted: null, updateAccept };
-    }
-    if (cookie.ca === "all") {
-      setAccepted("all");
-    } else {
-      setAccepted("none");
-    }
-  }
-  return { accepted, updateAccept };
+  return { accepted, updateAccept, manageConsent };
 };
 
 export const CookieConsent = () => {
@@ -54,6 +62,11 @@ export const CookieConsent = () => {
     updateAccept("none");
     setOpen(false);
   };
+  useEffect(() => {
+    if (accepted == null) {
+      setOpen(true);
+    }
+  }, [accepted]);
 
   return (
     <Dialog open={open} setOpen={setOpen} attached="bottom">
