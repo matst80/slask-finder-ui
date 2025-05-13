@@ -196,6 +196,20 @@ export const getRelations = () =>
     toJson<RelationGroup[]>(d)
   );
 
+type WordConfig = {
+  splitWords: string[];
+  wordMappings: Record<string, string>;
+};
+
+export const getWordConfig = () =>
+  fetch(`${baseUrl}/admin/words`).then((d) => toJson<WordConfig>(d));
+
+export const updateWordConfig = (data: WordConfig) =>
+  fetch(`${baseUrl}/admin/words`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  }).then((d) => toJson<WordConfig>(d));
+
 export const clearCart = () =>
   fetch(`${baseUrl}/cart/`, {
     method: "DELETE",

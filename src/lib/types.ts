@@ -312,6 +312,8 @@ export type CartItem = {
   image: string;
   name: string;
   outlet?: string;
+  sellerId?: string;
+  sellerName?: string;
   brand?: string;
   category?: string;
   category2?: string;

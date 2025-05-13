@@ -212,6 +212,11 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
               {item.outlet}
             </span>
           )}
+          {item.sellerName != null && (
+            <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">
+              {item.sellerName}
+            </span>
+          )}
         </div>
       </div>
 
