@@ -322,6 +322,7 @@
   .has-attachments:has(input[aria-expanded="false"]) {
     .attachment {
       display: none;
+      pointer-events: none;
       opacity: 0;
     }
   }

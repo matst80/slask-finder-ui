@@ -47,26 +47,4 @@ export const Checkout = () => {
     });
   }, []);
   return <div ref={ref} id="checkout-container"></div>;
-  // <script>
-
-  // 	fetch('/cart/checkout')
-  // 		.then(response => response.json())
-  // 		.then(function renderSnippet(data) {
-  // 			console.log(data)
-  // 			const { html_snippet } = data
-  // 			var checkoutContainer = document.getElementById('checkout-container')
-  // 			checkoutContainer.innerHTML = html_snippet
-  // 			var scriptsTags = checkoutContainer.getElementsByTagName('script')
-  // 			// This is necessary otherwise the scripts tags are not going to be evaluated
-  // 			for (var i = 0; i < scriptsTags.length; i++) {
-  // 				var parentNode = scriptsTags[i].parentNode
-  // 				var newScriptTag = document.createElement('script')
-  // 				newScriptTag.type = 'text/javascript'
-  // 				newScriptTag.text = scriptsTags[i].text
-  // 				parentNode.removeChild(scriptsTags[i])
-  // 				parentNode.appendChild(newScriptTag)
-  // 			}
-  // 		})
-
-  // </script>
 };
