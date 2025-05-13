@@ -141,6 +141,31 @@
 
   }
 
+  .table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    &>thead {
+      background-color: var(--color-gray-200);
+    }
+
+    &>tbody {
+      background-color: var(--color-white);
+    }
+
+    & td,
+    & th {
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid var(--color-gray-200);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: var(--color-gray-800);
+    }
+  }
+
   /* @view-transition {
     navigation: auto;
   } */

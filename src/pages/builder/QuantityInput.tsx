@@ -57,13 +57,13 @@ export const QuantityInput = ({
 
   return (
     <div
-      className={`flex bg-white items-center border rounded-md overflow-hidden ${className}`}
+      className={`flex bg-white items-center border rounded-md ${className}`}
     >
       <Button
         type="button"
         variant="ghost"
         size="small-icon"
-        className="p-1 border-r aspect-square rounded-none hover:bg-gray-100 disabled:opacity-50"
+        className="p-1 border-r aspect-square rounded-none hover:bg-gray-100 disabled:opacity-50 focus:bg-gray-100"
         onClick={decrement}
         disabled={quantity <= minQuantity}
         aria-label="Decrease quantity"
@@ -85,7 +85,7 @@ export const QuantityInput = ({
         type="button"
         variant="ghost"
         size="small-icon"
-        className="p-1 border-l aspect-square rounded-none hover:bg-gray-100 disabled:opacity-50"
+        className="p-1 border-l aspect-square rounded-none hover:bg-gray-100 disabled:opacity-50 focus:bg-gray-100"
         onClick={increment}
         disabled={quantity >= maxQuantity}
         aria-label="Increase quantity"

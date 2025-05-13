@@ -12,6 +12,7 @@ import {
   LoaderCircle,
   User,
   BotMessageSquare,
+  Watch,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Sidebar } from "./ui/sidebar";
@@ -173,7 +174,7 @@ const menu: NavigationItemType[] = [
     translationKey: "menu.config",
     url: "/config",
     accessKey: "c",
-    icon: <Search size={20} />,
+    icon: <Watch size={20} />,
     color: menuColors.config,
   },
   {

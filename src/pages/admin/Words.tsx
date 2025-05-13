@@ -41,8 +41,8 @@ const SplitWordsEditor = ({
   const [inputValue, setInputValue] = useState<string>("");
 
   return (
-    <div className="p-4 border rounded-md shadow-md">
-      <ul className="list-disc pl-6 mb-4">
+    <>
+      <ul className="mb-4">
         {splitWords.map((word) => (
           <li key={word} className="flex items-center justify-between">
             <span>{word}</span>
@@ -77,7 +77,7 @@ const SplitWordsEditor = ({
           Add
         </Button>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -92,27 +92,38 @@ const WordMappingsEditor = ({
   const [toValue, setToValue] = useState<string>("");
 
   return (
-    <div className="p-4 border rounded-md shadow-md">
-      <ul className="list-disc pl-6 mb-4">
-        {Object.entries(wordMappings).map(([key, value]) => (
-          <li key={key} className="flex items-center justify-between">
-            <span>
-              <strong>From:</strong> {key} <strong>To:</strong> {value}
-            </span>
-            <button
-              onClick={() => {
-                const updatedMappings = { ...wordMappings };
-                delete updatedMappings[key];
-                onChange(updatedMappings);
-              }}
-              className="text-red-500 hover:text-red-700"
-              aria-label="Delete mapping"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </li>
-        ))}
-      </ul>
+    <>
+      <table className="mb-4 w-full table">
+        <thead>
+          <tr>
+            <th className="text-left">From</th>
+            <th className="text-left">To</th>
+            <th className="text-right">&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(wordMappings).map(([key, value]) => (
+            <tr key={key}>
+              <td>{key}</td>
+              <td>{value}</td>
+              <td>
+                <button
+                  onClick={() => {
+                    const updatedMappings = { ...wordMappings };
+                    delete updatedMappings[key];
+                    onChange(updatedMappings);
+                  }}
+                  className="text-red-500 hover:text-red-700"
+                  aria-label="Delete mapping"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
       <div className="flex gap-2 mb-4">
         <Input
           placeholder="From"
@@ -140,7 +151,7 @@ const WordMappingsEditor = ({
           Add
         </Button>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -176,12 +187,8 @@ export const Words = () => {
       <Card>
         <div className="h-2 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
         <CardHeader>
-          <h1 className="text-3xl font-bold text-center mb-6">
-            Words Management
-          </h1>
-          <p className="text-center text-gray-600 mb-8">
-            Manage your words and mappings here.
-          </p>
+          <h1 className="text-3xl font-bold">Words Management</h1>
+          <p className=" text-gray-600">Manage your words and mappings here.</p>
         </CardHeader>
         <CardContent className="p-6">
           <div className="mb-8">
