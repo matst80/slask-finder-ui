@@ -20,6 +20,14 @@ export default defineConfig({
         target,
         changeOrigin: true,
       },
+      "/checkout": {
+        target,
+        changeOrigin: true,
+      },
+      "/confirmation": {
+        target,
+        changeOrigin: true,
+      },
       "/tracking": {
         target,
         changeOrigin: true,

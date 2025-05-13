@@ -3,7 +3,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 import { cm, isDefined, makeImageUrl } from "../utils";
 import { useAddToCart, useCart, useChangeQuantity } from "../hooks/cartHooks";
-import { ButtonLink } from "./ui/button";
+import { ButtonAnchor, ButtonLink } from "./ui/button";
 import { Link } from "react-router-dom";
 import { QuantityInput } from "../pages/builder/QuantityInput";
 import { useTranslations } from "../lib/hooks/useTranslations";
@@ -314,16 +314,16 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
             </div>
             <div className="mt-6 w-full">
               {cart?.paymentStatus === "checkout_completed" ? (
-                <ButtonLink
+                <ButtonAnchor
                   onClick={onClose}
                   to={`/confirmation/${cart.orderReference}`}
                 >
                   {t("cart.show_confirmation")}
-                </ButtonLink>
+                </ButtonAnchor>
               ) : (
-                <ButtonLink onClick={onClose} to={"/checkout"}>
+                <ButtonAnchor onClick={onClose} to={"/checkout"}>
                   {t("cart.proceed_to_checkout")}
-                </ButtonLink>
+                </ButtonAnchor>
               )}
             </div>
           </div>

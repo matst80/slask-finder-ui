@@ -57,6 +57,30 @@ export const ButtonLink: React.FC<ButtonLinkProps> = ({
   );
 };
 
+export const ButtonAnchor: React.FC<ButtonLinkProps> = ({
+  children,
+  variant = "default",
+  size = "default",
+  to,
+  className = "",
+  ...props
+}) => {
+  return (
+    <a
+      href={to.toString()}
+      className={cm(
+        baseStyles,
+        variantStyles[variant],
+        sizeStyles[size],
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </a>
+  );
+};
+
 const baseStyles =
   "font-medium rounded-sm focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:cursor-not-allowed";
 const variantStyles = {

@@ -55,6 +55,7 @@ const NavigationItem = ({
   icon,
   children,
   accessKey,
+  fullNavigation,
   level,
   color = "from-blue-500 to-indigo-600",
 }: NavigationItemType & { level: number }) => {
@@ -92,13 +93,45 @@ const NavigationItem = ({
           ))
     );
 
+  const content = (
+    <>
+      <div className="flex items-center gap-3">
+        <span
+          className={`${
+            isActive ? "text-white" : "text-gray-500 group-hover:text-gray-700"
+          } transition-colors duration-200`}
+        >
+          {icon}
+        </span>
+        <span className={`${level === 0 ? "font-medium" : ""}`}>
+          {t(translationKey)}
+        </span>
+        {isActive && level === 0 && (
+          <span className="absolute left-0 w-1 h-6 bg-white rounded-r-full" />
+        )}
+      </div>
+    </>
+  );
+
+  {
+    hasChildren && (
+      <ChevronDown
+        size={16}
+        className={`transition-transform duration-300 ${
+          isOpen ? "rotate-180" : ""
+        } ${isActive ? "text-white" : "text-gray-400"}`}
+      />
+    );
+  }
+
   return (
     <li className={`mb-2 ${level > 0 ? "mt-1" : "mt-0"}`}>
       <div className={`group ${hasChildren ? "cursor-pointer" : ""}`}>
-        <Link
-          to={url}
-          accessKey={accessKey}
-          className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 
+        {fullNavigation ? (
+          <a
+            href={url}
+            accessKey={accessKey}
+            className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 
             ${
               isActive
                 ? `bg-gradient-to-r ${color} text-white font-medium shadow-sm`
@@ -106,42 +139,41 @@ const NavigationItem = ({
                 ? "bg-gray-50 text-gray-900"
                 : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
             }`}
-          onClick={
-            hasChildren
-              ? (e) => {
-                  e.preventDefault();
-                  setIsOpen(!isOpen);
-                }
-              : undefined
-          }
-        >
-          <div className="flex items-center gap-3">
-            <span
-              className={`${
-                isActive
-                  ? "text-white"
-                  : "text-gray-500 group-hover:text-gray-700"
-              } transition-colors duration-200`}
-            >
-              {icon}
-            </span>
-            <span className={`${level === 0 ? "font-medium" : ""}`}>
-              {t(translationKey)}
-            </span>
-            {isActive && level === 0 && (
-              <span className="absolute left-0 w-1 h-6 bg-white rounded-r-full" />
-            )}
-          </div>
-
-          {hasChildren && (
-            <ChevronDown
-              size={16}
-              className={`transition-transform duration-300 ${
-                isOpen ? "rotate-180" : ""
-              } ${isActive ? "text-white" : "text-gray-400"}`}
-            />
-          )}
-        </Link>
+            onClick={
+              hasChildren
+                ? (e) => {
+                    e.preventDefault();
+                    setIsOpen(!isOpen);
+                  }
+                : undefined
+            }
+          >
+            {content}
+          </a>
+        ) : (
+          <Link
+            to={url}
+            accessKey={accessKey}
+            className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 
+            ${
+              isActive
+                ? `bg-gradient-to-r ${color} text-white font-medium shadow-sm`
+                : isChildActive
+                ? "bg-gray-50 text-gray-900"
+                : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+            }`}
+            onClick={
+              hasChildren
+                ? (e) => {
+                    e.preventDefault();
+                    setIsOpen(!isOpen);
+                  }
+                : undefined
+            }
+          >
+            {content}
+          </Link>
+        )}
       </div>
 
       {hasChildren && (
