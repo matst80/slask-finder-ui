@@ -54,6 +54,7 @@ import { JsonView } from "./pages/tracking/JsonView.tsx";
 import { AiShopper } from "./pages/AiShopper.tsx";
 import { CookieConsent } from "./CookieConsent.tsx";
 import { Words } from "./pages/admin/Words.tsx";
+import { OrdersView } from "./pages/admin/OrdersView.tsx";
 
 const BubbleError = () => {
   const error = useRouteError();
@@ -200,6 +201,10 @@ const router = createBrowserRouter([
       {
         path: "relations",
         element: <RelationGroupEditor />,
+      },
+      {
+        path: "orders",
+        element: <OrdersView />,
       },
       {
         path: "csp",
