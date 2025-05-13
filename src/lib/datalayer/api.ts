@@ -196,7 +196,7 @@ export const getRelations = () =>
     toJson<RelationGroup[]>(d)
   );
 
-type WordConfig = {
+export type WordConfig = {
   splitWords: string[];
   wordMappings: Record<string, string>;
 };
