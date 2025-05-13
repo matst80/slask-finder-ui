@@ -3,7 +3,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 import { cm, isDefined, makeImageUrl } from "../utils";
 import { useAddToCart, useCart, useChangeQuantity } from "../hooks/cartHooks";
-import { ButtonAnchor, ButtonLink } from "./ui/button";
+import { ButtonAnchor } from "./ui/button";
 import { Link } from "react-router-dom";
 import { QuantityInput } from "../pages/builder/QuantityInput";
 import { useTranslations } from "../lib/hooks/useTranslations";
