@@ -29,6 +29,7 @@ import { useCookieAcceptance } from "../CookieConsent";
 type NavigationItemType = {
   translationKey: TranslationKey;
   url: string;
+  fullNavigation?: boolean;
   icon?: React.ReactNode;
   children?: NavigationItemType[];
   accessKey?: string;
@@ -294,6 +295,7 @@ const menu: NavigationItemType[] = [
     url: "/checkout",
     accessKey: "c",
     icon: <ShoppingCart size={20} />,
+    fullNavigation: true,
     color: menuColors.checkout,
   },
   {

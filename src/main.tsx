@@ -262,28 +262,28 @@ const router = createBrowserRouter([
     ],
     errorElement: <BubbleError />,
   },
-  {
-    path: "checkout",
-    element: (
-      <PageContainer>
-        <Checkout />
-        <ScrollToTop />
-      </PageContainer>
-    ),
-    errorElement: <BubbleError />,
-  },
-  {
-    path: "confirmation/:id",
+  // {
+  //   path: "checkout",
+  //   element: (
+  //     <PageContainer>
+  //       <Checkout />
+  //       <ScrollToTop />
+  //     </PageContainer>
+  //   ),
+  //   errorElement: <BubbleError />,
+  // },
+  // {
+  //   path: "confirmation/:id",
 
-    loader: ({ params: { id } }) =>
-      id != null ? getConfirmation(id) : Promise.reject(),
-    errorElement: <BubbleError />,
-    element: (
-      <PageContainer>
-        <Confirmation />
-      </PageContainer>
-    ),
-  },
+  //   loader: ({ params: { id } }) =>
+  //     id != null ? getConfirmation(id) : Promise.reject(),
+  //   errorElement: <BubbleError />,
+  //   element: (
+  //     <PageContainer>
+  //       <Confirmation />
+  //     </PageContainer>
+  //   ),
+  // },
   {
     path: "updated",
     errorElement: <BubbleError />,
