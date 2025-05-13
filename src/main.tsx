@@ -8,7 +8,6 @@ import { Admin } from "./pages/Admin.tsx";
 import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
 import { SWRConfig } from "swr";
 import { getRawData, getTrackingSession } from "./lib/datalayer/api.ts";
-import { getConfirmation } from "./lib/datalayer/cart-api.ts";
 import { ProductPage } from "./components/ProductPage.tsx";
 import { SessionView } from "./components/Sessions.tsx";
 import { QueriesView } from "./pages/tracking/queries.tsx";
@@ -25,8 +24,6 @@ import {
   MissingFieldsView,
 } from "./pages/admin/EditFieldsView.tsx";
 import { RelationGroupEditor } from "./pages/admin/RelationGroupEditor.tsx";
-import { Checkout } from "./pages/Checkout.tsx";
-import { Confirmation } from "./pages/Confirmation.tsx";
 import { FunnelsView } from "./pages/tracking/funnels-view.tsx";
 import { BuilderMain } from "./pages/builder/BuilderMain.tsx";
 import { BuilderStartPage } from "./pages/builder/BuilderStartPage.tsx";
