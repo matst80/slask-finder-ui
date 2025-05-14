@@ -332,7 +332,7 @@ export const MessageList = () => {
                   <span className="font-bold">Thinking:</span> {think}
                 </div>
               )}
-              <div className="whitespace-pre-wrap overflow-hidden">
+              <div className="ai-response overflow-hidden">
                 <Markdown>{content}</Markdown>
               </div>
             </div>

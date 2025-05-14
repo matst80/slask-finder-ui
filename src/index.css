@@ -141,6 +141,35 @@
 
   }
 
+  .ai-response {
+    p {
+      margin-block: 1rem;
+      padding: 0;
+    }
+
+    ul {
+      margin-block: 1rem;
+      padding-left: 1.5rem;
+      list-style: disc;
+    }
+
+    ol {
+      margin-block: 1rem;
+      padding-left: 1.5rem;
+      list-style: decimal;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin-block: 1rem;
+      padding: 0;
+    }
+  }
+
   .table {
     border-collapse: collapse;
     border-spacing: 0;
