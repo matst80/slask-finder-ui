@@ -15,7 +15,7 @@ type CompareContextType = {
   matchingFacetIds: Set<number>;
 };
 
-const LoadCompareState = () => {
+const LoadCompareState = (): Item[] => {
   if (!globalThis.localStorage) {
     return [];
   }
@@ -40,6 +40,16 @@ const ComparePersister = () => {
     });
   }, [items]);
   return null;
+};
+
+export const addProductToCompare = (item: Item) => {
+  const current = LoadCompareState();
+  const existing = current.find((i) => i.id === item.id);
+  if (!existing) {
+    current.push(item);
+  }
+  SaveCompareState(current);
+  return current;
 };
 
 const CompareContext = createContext<CompareContextType | null>(null);

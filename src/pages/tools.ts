@@ -8,6 +8,7 @@ import {
 import { FacetListItem, Item } from "../lib/types";
 import { isDefined, makeImageUrl } from "../utils";
 import { addToCart } from "../lib/datalayer/cart-api";
+import { addProductToCompare } from "../lib/hooks/CompareProvider";
 
 export const tools = [
   {
@@ -134,6 +135,24 @@ export const tools = [
   {
     type: "function",
     function: {
+      name: "add_to_compare",
+      description: "Add product to comparison list",
+      parameters: {
+        type: "object",
+        properties: {
+          id: {
+            type: "number",
+            description:
+              "the product id to get details for, can be found in the search results",
+          },
+        },
+        required: ["id"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "get_brands",
       description: "Get available brands",
       parameters: {
@@ -170,7 +189,7 @@ export const tools = [
 ];
 
 const convertProperties =
-  (facets: Record<string | number, FacetListItem>, all = false) =>
+  (facets?: FacetMap, all = false) =>
   (values: Item["values"]) => {
     let product_type = "";
     let brand = "";
@@ -215,9 +234,7 @@ const convertProperties =
     };
   };
 
-export const convertItemSimple = (
-  facets: Record<string | number, FacetListItem>
-) => {
+export const convertItemSimple = (facets?: FacetMap) => {
   const convertProps = convertProperties(facets, false);
   return ({ values, bp, id, sku, title, img }: Item) => {
     const { properties, product_type, brand, price } = convertProps(values);
@@ -236,9 +253,7 @@ export const convertItemSimple = (
   };
 };
 
-export const convertDetails = (
-  facets: Record<string | number, FacetListItem>
-) => {
+export const convertDetails = (facets?: FacetMap) => {
   const convertProps = convertProperties(facets, true);
   return ({ values, bp, id, sku, title, img, description }: Item) => {
     const { properties, product_type, brand, price } = convertProps(values);
@@ -259,9 +274,12 @@ export const convertDetails = (
 };
 
 const getProduct = async (
-  { id }: { id: string },
+  { id }: FunctionArgs,
   facets?: Record<string | number, FacetListItem>
 ) => {
+  if (id == null) {
+    return "product id argument is missing";
+  }
   const convertItem = convertDetails(facets ?? {});
   return await getRawData(id).then((data) => {
     return JSON.stringify(convertItem(data));
@@ -390,56 +408,83 @@ const searchProducts = async (
   return JSON.stringify(items);
 };
 
-const getCompatibleItems = async (
-  { id }: { id: number },
-  facets?: Record<string | number, FacetListItem>
-) => {
+type FacetMap = Record<string | number, FacetListItem>;
+
+const getCompatibleItems: ToolFunction = async ({ id }, facets) => {
+  if (id == null) {
+    return "product id argument is missing";
+  }
   const convertItem = convertItemSimple(facets ?? {});
-  return getCompatible(id).then((data) => {
+  return getCompatible(Number(id)).then((data) => {
     const items = data.map(convertItem);
     return JSON.stringify(items);
   });
 };
 
-const getSimilarItems = async (
-  { id }: { id: number },
-  facets?: Record<string | number, FacetListItem>
-) => {
+const getSimilarItems: ToolFunction = async ({ id }, facets) => {
+  if (id == null) {
+    return "product id argument is missing";
+  }
   const convertItem = convertItemSimple(facets ?? {});
-  return getRelated(id).then((data) => {
+  return getRelated(Number(id)).then((data) => {
     const items = data.map(convertItem);
     return JSON.stringify(items);
   });
 };
 
-const getPopularItems = async (
-  _: {},
-  facets?: Record<string | number, FacetListItem>
-) => {
+const getPopularItems: ToolFunction = async (_, facets) => {
   const convertItem = convertItemSimple(facets ?? {});
   return getYourPopularItems().then((items) => {
     return JSON.stringify(items.map(convertItem));
   });
 };
 
-export const availableFunctions = {
+type ToolFunction<T extends FunctionArgs = FunctionArgs> = (
+  args: T,
+  facets?: FacetMap
+) => Promise<string>;
+
+type FunctionArgs = { id?: number | string; [key: string]: unknown };
+
+export const availableFunctions: Record<
+  (typeof tools)[number]["function"]["name"],
+  ToolFunction
+> = {
   search: searchProducts,
   get_product: getProduct,
   compatible: getCompatibleItems,
   similar: getSimilarItems,
   popular_items: getPopularItems,
-  add_to_cart: ({ id }: { id: number | string }) => {
+  add_to_compare: async ({ id }, facets) => {
+    if (id == null) {
+      return "product id argument is missing";
+    }
+    const convertItem = convertItemSimple(facets);
+    return getRawData(id)
+      .then((data) => {
+        const items = addProductToCompare(data);
+        return `Items in compare: ${items.map(convertItem).join(", ")}`;
+      })
+      .catch((e) => {
+        console.error("Error adding to compare", e);
+        return "Failed to add to compare";
+      });
+  },
+  add_to_cart: async ({ id }) => {
+    if (id == null) {
+      return "product id argument is missing";
+    }
     return addToCart({ sku: String(id), quantity: 1 }).then((res) => {
       if (res) {
         return "Your cart now looks like this: " + JSON.stringify(res);
       } else {
-        throw new Error("Failed to add to cart");
+        return "Failed to add to cart";
       }
     });
   },
   get_brands: getPropertyValues("2", "possible brands: "),
   get_product_types: getPropertyValues("31158", "possible product types: "),
-  open_product: async ({ id }: { id: string }) => {
+  open_product: async ({ id }) => {
     window.open("/product/" + id, "_blank");
     return "ok";
   },
