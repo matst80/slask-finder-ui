@@ -717,6 +717,11 @@ input[type="number"] {
   opacity: 0;
 }
 
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) transparent;
+}
+
 .carousel {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
@@ -726,7 +731,7 @@ input[type="number"] {
   flex-direction: row;
   position: relative;
   scrollbar-width: thin;
-  scrollbar-color: var(--color-gray-300) var(--color-white);
+  scrollbar-color: var(--color-gray-300) transparent;
 
   &::scroll-button(*) {
 

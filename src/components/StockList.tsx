@@ -33,7 +33,7 @@ export const StockList = ({ stock, stockLevel }: StockData) => {
   }, [stock, location]);
   if (stock == null) return null;
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden flex flex-col flex-1">
+    <div className="border border-gray-200 rounded-lg overflow-hidden flex flex-col flex-1 thin-scrollbar">
       <div className="p-4 cursor-pointer hover:bg-gray-50 transition-colors">
         <h3 className="text-lg font-semibold">{t("stock.level")}</h3>
         {stockLevel != null && stockLevel !== "0" && (
