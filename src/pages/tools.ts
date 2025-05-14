@@ -7,6 +7,7 @@ import {
 } from "../lib/datalayer/api";
 import { FacetListItem, Item } from "../lib/types";
 import { isDefined, makeImageUrl } from "../utils";
+import { addToCart } from "../lib/datalayer/cart-api";
 
 export const tools = [
   {
@@ -99,6 +100,24 @@ export const tools = [
     function: {
       name: "open_product",
       description: "Open product details",
+      parameters: {
+        type: "object",
+        properties: {
+          id: {
+            type: "number",
+            description:
+              "the product id to get details for, can be found in the search results",
+          },
+        },
+        required: ["id"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "add_to_cart",
+      description: "Add product to cart",
       parameters: {
         type: "object",
         properties: {
@@ -409,6 +428,15 @@ export const availableFunctions = {
   compatible: getCompatibleItems,
   similar: getSimilarItems,
   popular_items: getPopularItems,
+  add_to_cart: ({ id }: { id: number | string }) => {
+    return addToCart({ sku: String(id), quantity: 1 }).then((res) => {
+      if (res) {
+        return "Your cart now looks like this: " + JSON.stringify(res);
+      } else {
+        throw new Error("Failed to add to cart");
+      }
+    });
+  },
   get_brands: getPropertyValues("2", "possible brands: "),
   get_product_types: getPropertyValues("31158", "possible product types: "),
   open_product: async ({ id }: { id: string }) => {
