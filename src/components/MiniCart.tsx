@@ -76,7 +76,7 @@ const CartCompatible = ({ id }: { id: number }) => {
       </button>
       {open && (
         <ImpressionProvider>
-          <div className="animate-pop bg-gray-50 border-y border-gray-300 overflow-hidden mt-2 -mx-6 grid grid-cols-[auto_1fr_auto] gap-x-4 gap-y-4 p-4 items-center">
+          <div className="animate-pop bg-gradient-to-b from-white to-gray-100 border-y border-gray-300 overflow-hidden mt-2 -mx-6 grid grid-cols-[auto_1fr_auto] gap-x-4 gap-y-4 p-4 items-center">
             {data?.slice(undefined, showMore ? undefined : 4).map((item, a) => {
               return (
                 <Fragment key={item.id}>

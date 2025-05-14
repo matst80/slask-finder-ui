@@ -329,6 +329,8 @@ const RelationGroupCarousel = ({
 };
 
 const RelationGroups = ({ values, id }: Pick<ItemDetail, "values" | "id">) => {
+  const [isAdmin] = useAdmin();
+  const [open, setOpen] = useState(false);
   const { data } = useRelationGroups();
   const validGroups = useMemo(
     () =>
@@ -339,21 +341,32 @@ const RelationGroups = ({ values, id }: Pick<ItemDetail, "values" | "id">) => {
       ) ?? [],
     [values, data]
   );
-  if (validGroups.length === 0) {
-    return <CompatibleItems id={id} />;
-  }
+
   return (
     <div>
-      {validGroups.map((group, idx) => {
-        return (
-          <RelationGroupCarousel
-            key={group.key}
-            group={group}
-            values={values}
-            defaultOpen={idx === 0}
-          />
-        );
-      })}
+      <CompatibleItems id={id} />
+      {validGroups.length > 0 && isAdmin && (
+        <button
+          className="underline hover:no-underline"
+          onClick={() => setOpen((p) => !p)}
+        >
+          Show group relations
+        </button>
+      )}
+      {open && (
+        <>
+          {validGroups.map((group, idx) => {
+            return (
+              <RelationGroupCarousel
+                key={group.key}
+                group={group}
+                values={values}
+                defaultOpen={idx === 0}
+              />
+            );
+          })}
+        </>
+      )}
     </div>
   );
 };
