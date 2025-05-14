@@ -201,7 +201,7 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
           <div></div>
         )}
         <div className="flex flex-col">
-          <Link to={`/product/${item.sku}`} className="text-sm font-medium">
+          <Link to={`/product/${item.itemId}`} className="text-sm font-medium">
             {item.name}
           </Link>
           <span className="text-xs text-gray-500">

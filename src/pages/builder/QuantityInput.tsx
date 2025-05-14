@@ -72,7 +72,7 @@ export const QuantityInput = ({
       </Button>
 
       <input
-        type="text"
+        type="number"
         value={quantity}
         onChange={handleInputChange}
         className="w-6 text-center text-sm focus:outline-none py-0.5"
