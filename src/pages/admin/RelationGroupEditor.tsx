@@ -644,7 +644,7 @@ const GroupEditor = ({
                         ...(value.requiredForItem ?? []),
                         {
                           facetId: 10,
-                          value: [""],
+                          value: [],
                         },
                       ],
                     });
@@ -692,7 +692,7 @@ const GroupEditor = ({
                         {
                           facetId: 10,
                           exclude: false,
-                          value: [""],
+                          value: [],
                         },
                       ],
                     });
