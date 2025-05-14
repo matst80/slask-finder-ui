@@ -725,6 +725,8 @@ input[type="number"] {
   display: flex;
   flex-direction: row;
   position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) var(--color-white);
 
   &::scroll-button(*) {
 
