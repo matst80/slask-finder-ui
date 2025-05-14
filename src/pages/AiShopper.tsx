@@ -318,7 +318,7 @@ export const MessageList = () => {
             }`}
           >
             <div
-              className={`max-w-[85%] p-4 rounded-2xl shadow-sm ${
+              className={`max-w-[85%] px-4 py-2 rounded-2xl shadow-sm ${
                 message.role === "user"
                   ? "bg-blue-500 text-white rounded-br-none"
                   : "bg-white border rounded-bl-none"
