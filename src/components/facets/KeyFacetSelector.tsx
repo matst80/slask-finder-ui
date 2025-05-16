@@ -35,11 +35,11 @@ export const KeyFacetSelector = ({
   const toShow = useMemo(() => {
     return fuzzysort.go(filter, toSorted(values, filterValue), {
       all: filter.length < 1,
-      limit: expanded ? 100 : 10,
+      limit: expanded ? 300 : 10,
       keys: ["value"],
       threshold: 0.5,
     });
-  }, [values, filter, filterValue]);
+  }, [values, filter, filterValue, expanded]);
 
   return (
     <div
