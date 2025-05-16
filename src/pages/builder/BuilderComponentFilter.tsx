@@ -182,7 +182,7 @@ export const BuilderComponentFilter = () => {
     return <div>Loading</div>;
   }
   return (
-    <QueryProvider initialQuery={requiredQuery} attachToHash={false}>
+    <QueryProvider initialQuery={requiredQuery} attachToHash={true}>
       <BuilderQueryMerger query={requiredQuery} componentId={componentId} />
       <div className="mb-24 md:mt-10 max-w-[1920px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-[288px_auto]">
