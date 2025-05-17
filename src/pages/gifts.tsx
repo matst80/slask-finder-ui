@@ -102,7 +102,7 @@ export const GiftAssistant = () => {
             </div>
             <div className="flex flex-col gap-2 md:gap-4">
               <label htmlFor="priceFilter" className="text-gray-700">
-                Price range:
+                Price range (per gifter):
               </label>
               <Slider
                 min={priceFilter.min}
@@ -114,7 +114,7 @@ export const GiftAssistant = () => {
             </div>
             <div className="flex flex-col gap-2 md:gap-4">
               <label htmlFor="persona" className="text-gray-700">
-                Persona:
+                Recommendations:
               </label>
               <select
                 id="persona"
