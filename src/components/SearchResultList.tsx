@@ -4,12 +4,18 @@ import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 import { InfiniteHitList } from "./InfiniteHitList";
 import { useYourPopularItems } from "../hooks/searchHooks";
 import { ItemsQuery } from "../lib/types";
+import { useMemo } from "react";
+import { Banner } from "./Banner";
 
 const NoResults = () => {
   const { data } = useYourPopularItems();
+  const [first, last] = useMemo(() => {
+    return data?.slice(0, 2) ?? [];
+  }, [data]);
 
   return (
     <ImpressionProvider>
+      {first && <Banner item={first} />}
       <div
         id="results"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0 scroll-snap-y"
@@ -21,6 +27,7 @@ const NoResults = () => {
           <ResultItem key={item.id} {...item} position={idx} />
         ))}
       </div>
+      {last && <Banner item={last} />}
     </ImpressionProvider>
   );
 };

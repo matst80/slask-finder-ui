@@ -69,8 +69,8 @@ export const Banner = ({ item: data }: { item: Item }) => {
   const bulletPoints = data?.bp ? data.bp.split("\n") : [];
 
   // Calculate vertical spacing for centered bullet points
-  const topMargin = 380; // Space for title
-  const bottomMargin = 320; // Space at bottom
+  const topMargin = 400; // Space for title
+  const bottomMargin = 340; // Space at bottom
   const availableHeight = 1000 - topMargin - bottomMargin;
   const totalBulletPoints = bulletPoints.length;
   const bulletSpacing =
@@ -79,7 +79,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
       : availableHeight;
 
   return (
-    <div className="relative w-full aspect-video overflow-hidden bg-[#0a1744]">
+    <div className="relative w-full aspect-video bg-[#0a1744]">
       {/* Background SVG with gradients and animations */}
       <svg
         ref={svgRef}
@@ -194,9 +194,9 @@ export const Banner = ({ item: data }: { item: Item }) => {
         {/* Title text - fancier with gradient fill */}
         <motion.text
           x="80"
-          y="120"
-          fontSize="56"
-          fontFamily="Inter, system-ui, Avenir, Helvetica, Arial, sans-serif"
+          y="180"
+          fontSize="85"
+          fontFamily="headline, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif"
           fontWeight="bold"
           fill="url(#title-gradient)"
           filter="url(#enhanced-shadow)"
@@ -228,8 +228,8 @@ export const Banner = ({ item: data }: { item: Item }) => {
             <motion.text
               x="120"
               y={topMargin + index * bulletSpacing}
-              fontSize="47"
-              fontFamily="Inter, system-ui, Avenir, Helvetica, Arial, sans-serif"
+              fontSize="67"
+              fontFamily="headline, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif"
               fontWeight="600"
               fill="white"
               filter="url(#enhanced-shadow)"
@@ -290,9 +290,9 @@ export const Banner = ({ item: data }: { item: Item }) => {
           {/* Button text - shown when not mutating */}
           <motion.text
             x="180"
-            y="882"
-            fontSize="26"
-            fontFamily="sans-serif"
+            y="884"
+            fontSize="43"
+            fontFamily="headline, sans-serif"
             fontWeight="bold"
             fill="white"
             textAnchor="middle"
@@ -336,7 +336,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
 
       {/* Product image container */}
       <motion.div
-        className="absolute bottom-0 right-8 top-5 flex w-[33%] flex-col items-center justify-center z-20"
+        className="absolute bottom-0 right-10 top-5 flex w-[33%] flex-col items-center justify-center z-20"
         initial={{ opacity: 0, x: 80 }}
         animate={{
           opacity: textVisible ? 1 : 0,

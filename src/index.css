@@ -1,5 +1,13 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'headline';
+  src: url('https://www.elgiganten.se/_next/static/media/cf793e6f0e4f1050-s.p.woff2') format('woff2'),
+    url('https://www.elgiganten.se/_next/static/media/cf793e6f0e4f1050-s.p.woff') format('woff');
+}
+
+
+
 :root {
   --dialog-duration: 0.4s;
   --dialog-bg: rgba(0, 0, 0, 0.5);
