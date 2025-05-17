@@ -190,7 +190,11 @@ export const AiShopper = () => {
   );
 };
 
-export const QueryInput = () => {
+export const QueryInput = ({
+  placeholderText = "Ask me anything...",
+}: {
+  placeholderText?: string;
+}) => {
   const { addMessage, loading } = useAiContext();
   const [query, setQuery] = useState("");
 
@@ -212,7 +216,7 @@ export const QueryInput = () => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="w-full p-4 pr-20 border-0 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        placeholder="Ask me anything..."
+        placeholder={placeholderText}
       />
       <button
         type="submit"

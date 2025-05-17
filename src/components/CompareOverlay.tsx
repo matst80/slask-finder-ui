@@ -1,12 +1,18 @@
 import { MessageSquareMore, X } from "lucide-react";
 import { useCompareContext } from "../lib/hooks/CompareProvider";
 import { cm, isDefined, makeImageUrl } from "../utils";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useFacetMap } from "../hooks/searchHooks";
-import { FacetListItem } from "../lib/types";
+import { FacetListItem, Item } from "../lib/types";
 import { ResultItemInner } from "./ResultItem";
 import { Dialog } from "./ui/dialog";
 import { matchValue } from "../lib/utils";
+import { convertItemSimple } from "../pages/tools";
+import {
+  AiShoppingProvider,
+  MessageList,
+  QueryInput,
+} from "../pages/AiShopper";
 
 const FacetCells = ({
   facet,
@@ -37,6 +43,38 @@ const FacetCells = ({
         </td>
       ))}
     </tr>
+  );
+};
+
+const AiChatForCompare = ({ items }: { items: Item[] }) => {
+  const { data: facets } = useFacetMap();
+  const convertItem = useCallback(convertItemSimple(facets ?? {}), [facets]);
+  const contextItems = useMemo(() => {
+    return items.map(convertItem).slice(0, 10);
+  }, [items, facets]);
+  if (contextItems.length === 0) {
+    return null;
+  }
+  return (
+    <AiShoppingProvider
+      messages={[
+        {
+          role: "system",
+          content:
+            "You should help the user to show the main differences between these products!\n```json\n" +
+            JSON.stringify(contextItems) +
+            "\n```",
+        },
+      ]}
+    >
+      <div className="flex flex-col gap-6 flex-1">
+        <div className="flex-1 overflow-auto">
+          <MessageList />
+        </div>
+
+        <QueryInput placeholderText="Ask questions regarding these products" />
+      </div>
+    </AiShoppingProvider>
   );
 };
 
@@ -164,6 +202,9 @@ export const CompareOverlay = () => {
                   </tr>
                 </tfoot>
               </table>
+              <div className="p-4 md:p-6">
+                <AiChatForCompare items={items} />
+              </div>
             </div>
 
             <div className="flex justify-end p-3 border-t border-gray-200">

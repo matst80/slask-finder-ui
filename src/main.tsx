@@ -3,7 +3,12 @@ import ReactDOM from "react-dom/client";
 import App from "./pages/App.tsx";
 import "./index.css";
 import { RouterProvider } from "react-router/dom";
-import { createBrowserRouter, Outlet, useRouteError } from "react-router";
+import {
+  createBrowserRouter,
+  Outlet,
+  useLoaderData,
+  useRouteError,
+} from "react-router";
 import { Admin } from "./pages/Admin.tsx";
 import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
 import { SWRConfig } from "swr";
@@ -42,7 +47,7 @@ import { FacetGroups } from "./pages/admin/FacetGroups.tsx";
 import { getLocale } from "./utils.ts";
 import { CspReport } from "./pages/tracking/csp-report.tsx";
 import { SessionList } from "./components/SessionList.tsx";
-import { Banner } from "./components/SearchResultList.tsx";
+import { Banner } from "./components/Banner.tsx";
 import { TrackingProvider } from "./lib/hooks/TrackingContext.tsx";
 import { slaskTracker } from "./tracking/slaskTracker.ts";
 import { ProductConfigurator } from "./pages/ProductConfigurator.tsx";
@@ -55,6 +60,7 @@ import { AiShopper } from "./pages/AiShopper.tsx";
 import { CookieConsent } from "./CookieConsent.tsx";
 import { Words } from "./pages/admin/Words.tsx";
 import { OrdersView } from "./pages/admin/OrdersView.tsx";
+import { useItemData } from "./hooks/trackingHooks.ts";
 
 const BubbleError = () => {
   const error = useRouteError();
@@ -71,6 +77,15 @@ const BubbleError = () => {
   );
 };
 
+const BannerLoader = () => {
+  const id = useLoaderData();
+  const { data } = useItemData(id);
+  if (data == null) {
+    return null;
+  }
+  return <Banner item={data} />;
+};
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -82,12 +97,17 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "test",
+    path: "banner/:id",
+    loader: ({ params }) => {
+      return Promise.resolve(params.id);
+    },
+
     element: (
       <PageContainer>
-        <Banner />
+        <BannerLoader />
       </PageContainer>
     ),
+
     errorElement: <BubbleError />,
   },
   {
