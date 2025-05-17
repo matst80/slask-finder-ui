@@ -336,7 +336,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
 
       {/* Product image container */}
       <motion.div
-        className="absolute bottom-0 right-10 top-5 flex w-[33%] flex-col items-center justify-center z-20"
+        className="absolute bottom-0 right-[5%] top-5 flex w-[33%] flex-col items-center justify-center z-20"
         initial={{ opacity: 0, x: 80 }}
         animate={{
           opacity: textVisible ? 1 : 0,
