@@ -47,6 +47,7 @@ const menuColors = {
   checkout: "from-amber-500 to-orange-500",
   updated: "from-orange-500 to-rose-500",
   ai: "from-rose-500 to-pink-500",
+  gifts: "from-pink-500 to-purple-500",
 };
 
 const NavigationItem = ({
@@ -215,6 +216,12 @@ const menu: NavigationItemType[] = [
     url: "/ai",
     icon: <BotMessageSquare size={20} />,
     color: menuColors.ai,
+  },
+  {
+    translationKey: "menu.gifts",
+    url: "/gifts",
+    icon: <Box size={20} />,
+    color: menuColors.gifts,
   },
   {
     translationKey: "admin_menu.edit",

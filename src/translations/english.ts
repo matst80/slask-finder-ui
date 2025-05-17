@@ -13,7 +13,7 @@ export const english = {
     updated: "Updated",
     config: "Config",
     ai: "AI Shopper",
-
+    gifts: "Gift Assistant",
     cookies: "Manage cookie consent",
   },
   admin_menu: {

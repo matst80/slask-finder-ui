@@ -13,6 +13,7 @@ export const swedish = {
     updated: "Uppdaterade",
     config: "Konfigurera",
     ai: "AI Shopper",
+    gifts: "Presentassistent",
     cookies: "Hantera cookie consent",
   },
   admin_menu: {
