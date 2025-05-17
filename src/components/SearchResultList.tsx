@@ -15,19 +15,24 @@ const NoResults = () => {
 
   return (
     <ImpressionProvider>
-      {first && <Banner item={first} />}
+      {first && (
+        <div className="-mx-4 md:-mx-0 mb-6">
+          <Banner item={first} />
+        </div>
+      )}
       <div
         id="results"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0 scroll-snap-y"
       >
-        {/* <div className="col-span-full text-center text-2xl font-bold mb-4">
-          Popular products
-        </div> */}
         {data?.map((item, idx) => (
           <ResultItem key={item.id} {...item} position={idx} />
         ))}
       </div>
-      {last && <Banner item={last} />}
+      {last && (
+        <div className="-mx-4 md:-mx-0 mt-6">
+          <Banner item={last} />
+        </div>
+      )}
     </ImpressionProvider>
   );
 };
