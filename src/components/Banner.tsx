@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import { Item } from "../lib/types";
 import { useAddToCart } from "../hooks/cartHooks";
 import { toEcomTrackingEvent } from "./toImpression";
+import { makeImageUrl } from "../utils";
 
 export const Banner = ({ item: data }: { item: Item }) => {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -350,6 +351,12 @@ export const Banner = ({ item: data }: { item: Item }) => {
           height={640}
           className="object-contain transition-transform hover:scale-110 rotate-0 hover:-rotate-3 duration-500 max-h-[80%]"
         />
+        {data.badgeUrl && (
+          <img
+            src={makeImageUrl(data.badgeUrl)}
+            className="object-contain absolute top-[10%] right-0 transition-transform hover:scale-110 rotate-0 hover:-rotate-3 duration-500 max-h-[25%]"
+          />
+        )}
       </motion.div>
     </div>
   );
