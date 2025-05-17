@@ -62,6 +62,7 @@ import { Words } from "./pages/admin/Words.tsx";
 import { OrdersView } from "./pages/admin/OrdersView.tsx";
 import { useItemData } from "./hooks/trackingHooks.ts";
 import { GiftAssistant } from "./pages/gifts.tsx";
+import { Shipping } from "./pages/Shipping.tsx";
 
 const BubbleError = () => {
   const error = useRouteError();
@@ -102,6 +103,15 @@ const router = createBrowserRouter([
     element: (
       <PageContainer>
         <GiftAssistant />
+      </PageContainer>
+    ),
+    errorElement: <BubbleError />,
+  },
+  {
+    path: "/shipping",
+    element: (
+      <PageContainer>
+        <Shipping />
       </PageContainer>
     ),
     errorElement: <BubbleError />,
