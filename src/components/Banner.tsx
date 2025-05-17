@@ -348,7 +348,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
           src={`https://next-media.elkjop.com/primaryimage/${data.sku}`}
           width={640}
           height={640}
-          className="object-contain"
+          className="object-contain max-h-[80%]"
         />
       </motion.div>
     </div>
