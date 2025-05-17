@@ -28,13 +28,24 @@ const personas: Record<string, Persona> = {
     string: [{ id: 30, value: ["PT100"] }],
     id: "homeOwner",
   },
-  diy: {
-    title: "Do it Yourself",
+  husband: {
+    title: "Husband",
     string: [
       //{ id: 10, value: ["Outlet"], exclude: true },
-      { id: 33249, value: ["!nil"] },
+      { id: 31, value: ["PT221"] },
     ],
-    id: "diy",
+    id: "husband",
+  },
+  wife: {
+    title: "Wife",
+    string: [
+      //{ id: 10, value: ["Outlet"], exclude: true },
+
+      //32:PT424
+      { id: 30, value: ["PT106"] },
+      { id: 32, value: ["PT424"], exclude: true },
+    ],
+    id: "wife",
   },
 };
 
