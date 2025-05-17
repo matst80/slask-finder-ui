@@ -131,8 +131,8 @@ export const Banner = ({ item: data }: { item: Item }) => {
             x2="0%"
             y2="100%"
           >
-            <stop offset="0%" stopColor="#14d192" />
-            <stop offset="100%" stopColor="#0d9268" />
+            <stop offset="0%" stopColor="#69a333" />
+            <stop offset="100%" stopColor="#399303" />
           </linearGradient>
 
           {/* Enhanced shadow */}
