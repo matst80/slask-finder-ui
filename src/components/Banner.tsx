@@ -143,18 +143,18 @@ export const Banner = ({ item: data }: { item: Item }) => {
             height="140%"
           >
             <feDropShadow
-              dx="2"
-              dy="2"
+              dx="-2"
+              dy="-2"
               stdDeviation="3"
               floodColor="#000"
-              floodOpacity="0.4"
+              floodOpacity="0.8"
             />
             <feDropShadow
-              dx="1"
-              dy="1"
-              stdDeviation="1"
+              dx="2"
+              dy="2"
+              stdDeviation="12"
               floodColor="#4a6bff"
-              floodOpacity="0.3"
+              floodOpacity="0.4"
             />
           </filter>
 
