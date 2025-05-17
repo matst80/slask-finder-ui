@@ -226,7 +226,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
 
             {/* Text with enhanced styling */}
             <motion.text
-              x="100"
+              x="120"
               y={topMargin + index * bulletSpacing}
               fontSize="47"
               fontFamily="Inter, system-ui, Avenir, Helvetica, Arial, sans-serif"
@@ -261,21 +261,10 @@ export const Banner = ({ item: data }: { item: Item }) => {
             }
           }}
         >
-          {/* Button glow effect */}
-          <ellipse
-            cx="180"
-            cy="900"
-            rx="90"
-            ry="35"
-            fill="#10b981"
-            opacity="0.3"
-            filter="url(#button-glow)"
-          />
-
           {/* Button background */}
           <rect
             x="80"
-            y="860"
+            y="840"
             width="200"
             height="80"
             rx="40"
@@ -289,7 +278,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
           {/* Button highlight */}
           <rect
             x="85"
-            y="870"
+            y="850"
             width="190"
             height="30"
             rx="25"
@@ -301,7 +290,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
           {/* Button text - shown when not mutating */}
           <motion.text
             x="180"
-            y="902"
+            y="882"
             fontSize="26"
             fontFamily="sans-serif"
             fontWeight="bold"
@@ -347,7 +336,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
 
       {/* Product image container */}
       <motion.div
-        className="absolute bottom-0 right-8 top-0 flex w-[33%] flex-col items-center justify-center z-20"
+        className="absolute bottom-0 right-8 top-5 flex w-[33%] flex-col items-center justify-center z-20"
         initial={{ opacity: 0, x: 80 }}
         animate={{
           opacity: textVisible ? 1 : 0,
