@@ -342,13 +342,13 @@ export const Banner = ({ item: data }: { item: Item }) => {
           opacity: textVisible ? 1 : 0,
           x: textVisible ? 0 : 80,
         }}
-        transition={{ duration: 0.6, delay: 0.6 }}
+        transition={{ duration: 0.6, delay: 0.8 }}
       >
         <img
           src={`https://next-media.elkjop.com/primaryimage/${data.sku}`}
           width={640}
           height={640}
-          className="object-contain max-h-[80%]"
+          className="object-contain transition-transform hover:scale-110 rotate-0 hover:-rotate-3 duration-500 max-h-[80%]"
         />
       </motion.div>
     </div>
