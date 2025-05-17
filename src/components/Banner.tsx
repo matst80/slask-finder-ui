@@ -323,8 +323,8 @@ export const Banner = ({ item: data }: { item: Item }) => {
             {/* Spinner circle */}
             <circle
               cx="180"
-              cy="900"
-              r="20"
+              cy="870"
+              r="30"
               fill="none"
               stroke="white"
               strokeWidth="4"
