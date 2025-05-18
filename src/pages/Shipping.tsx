@@ -207,6 +207,13 @@ export const Shipping = () => {
             return (
               <div
                 key={idx}
+                role={selected ? "none" : "button"}
+                aria-selected={selected}
+                onClick={() => {
+                  if (!selected) {
+                    handleOptionSelect(idx);
+                  }
+                }}
                 className={
                   `rounded-lg p-4 transition-shadow ` +
                   (selectedOptionIdx === idx
@@ -221,18 +228,8 @@ export const Shipping = () => {
                     </div>
                     <div className="text-gray-600 text-sm mb-2">
                       {Object.values(texts || {}).join(" ")}
-                      {/* <JsonView
-              data={opt.defaultOption?.descriptiveTexts || {}}
-            /> */}
                     </div>
                   </div>
-                  <Button
-                    variant={selected ? "default" : "outline"}
-                    onClick={() => handleOptionSelect(idx)}
-                    className="min-w-[120px]"
-                  >
-                    {selected ? "Selected" : "Select"}
-                  </Button>
                 </div>
                 {selected && (
                   <div className="mt-4">
@@ -246,10 +243,10 @@ export const Shipping = () => {
                             !!locOpt.location.name
                         )
                         .map((locOpt, locIdx) => (
-                          <div
+                          <button
                             key={locIdx}
                             className={
-                              `rounded-md p-3 min-w-[260px] cursor-pointer transition-all ` +
+                              `text-left rounded-md p-3 min-w-[260px] cursor-pointer transition-all ` +
                               (selectedLocationIdx === locIdx
                                 ? "border-2 border-green-500 bg-green-50"
                                 : "border border-gray-300 bg-gray-50 hover:border-green-400")
@@ -296,12 +293,7 @@ export const Shipping = () => {
                                 ))}
                               </ul>
                             </div>
-                            {selectedLocationIdx === locIdx && (
-                              <div className="mt-2 text-green-600 font-medium">
-                                Selected
-                              </div>
-                            )}
-                          </div>
+                          </button>
                         ))}
                     </div>
                   </div>
