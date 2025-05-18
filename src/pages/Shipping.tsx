@@ -188,7 +188,7 @@ const ShippingGroup = ({
         .filter(
           (d) =>
             d != null &&
-            d.location.name != null &&
+            d.location?.name != null &&
             d.location.name.trim() !== ""
         )
         .filter(isDefined),
@@ -207,6 +207,14 @@ const ShippingGroup = ({
       onClick={() => {
         if (!selected) {
           onSelect();
+          if (
+            allLocations.length == 0 &&
+            defaultOption?.bookingInstructions.deliveryOptionId != null
+          ) {
+            setDeliveryOption(
+              defaultOption.bookingInstructions.deliveryOptionId
+            );
+          }
         }
       }}
       className={
@@ -224,7 +232,7 @@ const ShippingGroup = ({
           </div>
         </div>
       </div>
-      {selected && (
+      {selected && allLocations.length > 0 && (
         <div className="mt-4">
           <div className="font-medium mb-2">Available Locations:</div>
           <div className="flex flex-wrap gap-4">
