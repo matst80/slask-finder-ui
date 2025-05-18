@@ -19,7 +19,7 @@ export interface DeliveryOption {
   descriptiveTexts: DeliveryTexts;
   deliveryTime: unknown;
   sustainability: unknown;
-  location: Location2;
+  location: DeliveryLocation;
 }
 
 type DeliveryTexts = {
@@ -39,15 +39,15 @@ export interface BookingInstructions {
   additionalServiceCodes: string[];
 }
 
-export interface Location2 {
+export interface DeliveryLocation {
   name: string;
   distanceFromRecipientAddress: number;
-  address: Address2;
+  address: Address;
   coordinate: Coordinate;
   openingHours: OpeningHours;
 }
 
-export interface Address2 {
+export interface Address {
   postCode: string;
   city: string;
   countryCode: string;
@@ -241,7 +241,9 @@ export const Shipping = () => {
                       {allLocations
                         .filter(
                           (locOpt): locOpt is DeliveryOption =>
-                            !!locOpt && !!locOpt.location
+                            !!locOpt &&
+                            !!locOpt.location &&
+                            !!locOpt.location.name
                         )
                         .map((locOpt, locIdx) => (
                           <div
