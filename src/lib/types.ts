@@ -292,9 +292,17 @@ export type ResultTransformer<Input, Output> = (input: Input) => Output;
 
 export type FacetQuery = FilteringQuery;
 
+export type CartDelivery = {
+  id: string;
+  provider: string;
+  items: number[];
+  price: number;
+};
+
 export type Cart = {
   id: string;
   items: CartItem[];
+  deliveries: CartDelivery[];
   processing: boolean;
   paymentInProgress: boolean;
   orderReference?: string;
