@@ -78,6 +78,8 @@ export const english = {
     added_to_cart: "Added to cart!",
     show_confirmation: "Show confirmation",
     proceed_to_checkout: "Proceed to Checkout",
+    hide_shipping: "Hide shipping",
+    show_shipping: "Show shipping",
   },
   builder: {
     start: {

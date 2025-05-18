@@ -14,6 +14,11 @@ import { CartItem, ItemPrice } from "../lib/types";
 import { toEcomTrackingEvent } from "./toImpression";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 import { useSwitching } from "../lib/hooks/useSwitching";
+import {
+  ShippingInputs,
+  ShippingOptionList,
+  ShippingProvider,
+} from "../pages/Shipping";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -259,7 +264,7 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
 
 const CartDialog = ({ onClose, open }: CartDialogProps) => {
   const { data: cart, isLoading } = useCart();
-
+  const [shippingOpen, setShippingOpen] = useState(false);
   const t = useTranslations();
 
   const items = cart?.items ?? [];
@@ -312,6 +317,18 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
               <span className="text-lg font-bold">{t("cart.total")}:</span>
               <PriceValue className="text-lg font-bold" value={totalPrice} />
             </div>
+            <button
+              className="underline text-blue-600 hover:text-blue-800 mt-2 text-sm"
+              onClick={() => setShippingOpen(!shippingOpen)}
+            >
+              {shippingOpen ? t("cart.hide_shipping") : t("cart.show_shipping")}
+            </button>
+            {cart != null && shippingOpen && (
+              <ShippingProvider>
+                <ShippingInputs />
+                <ShippingOptionList />
+              </ShippingProvider>
+            )}
             <div className="mt-6 w-full">
               {cart?.paymentStatus === "checkout_completed" ? (
                 <ButtonAnchor

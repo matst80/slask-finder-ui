@@ -134,8 +134,8 @@ const useShippingOptions = () => {
   return ctx;
 };
 
-const ShippingInputs = () => {
-  const [zip, setZip] = useState<string>("79147");
+export const ShippingInputs = () => {
+  const [zip, setZip] = useState<string>("");
   const { isLoading, checkOptions } = useShippingOptions();
   return (
     <div className="mb-6 flex items-end gap-4">
@@ -145,18 +145,26 @@ const ShippingInputs = () => {
           id="zip-input"
           type="text"
           value={zip}
-          onChange={(e) => setZip(e.target.value)}
-          placeholder="Enter ZIP code"
+          disabled={isLoading}
+          maxLength={5}
+          autoComplete="postal-code"
+          onChange={(e) => {
+            setZip(e.target.value);
+            if (e.target.value.length == 5) {
+              checkOptions(e.target.value);
+            }
+          }}
+          placeholder="Postnummer"
           className="w-40 mt-1"
         />
       </div>
-      <Button
+      {/* <Button
         onClick={() => checkOptions(zip)}
         disabled={zip.length < 5 || isLoading}
         className="h-10 mt-6"
       >
         Check Shipping Options
-      </Button>
+      </Button> */}
     </div>
   );
 };

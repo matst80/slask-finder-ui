@@ -78,6 +78,8 @@ export const swedish = {
     added_to_cart: "Tillagd i kundvagnen!",
     show_confirmation: "Visa bekräftelse",
     proceed_to_checkout: "Gå till kassan",
+    hide_shipping: "Dölj frakt",
+    show_shipping: "Välj frakt",
   },
   builder: {
     start: {
