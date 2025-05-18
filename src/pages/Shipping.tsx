@@ -1,19 +1,15 @@
 import {
   createContext,
-  use,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useCart } from "../hooks/cartHooks";
 import { toJson } from "../lib/datalayer/api";
 import { Label } from "../components/ui/label";
-import { useTranslations } from "../lib/hooks/useTranslations";
-import { TranslationKey } from "../translations/translations";
 import { isDefined } from "../utils";
 import {
   ShippingOption,
