@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useCart } from "../hooks/cartHooks";
@@ -7,6 +7,7 @@ import { Label } from "../components/ui/label";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { TranslationKey } from "../translations/translations";
 import { isDefined } from "../utils";
+import { JsonView } from "./tracking/JsonView";
 
 type ShippingOption = {
   type: string;
@@ -155,14 +156,30 @@ export const Shipping = () => {
     setSelectedLocationIdx(idx);
   };
 
-  const selectedOption =
-    selectedOptionIdx !== null ? options?.[selectedOptionIdx] : null;
-  const allLocations = selectedOption
-    ? [
-        selectedOption.defaultOption,
-        ...selectedOption.additionalOptions,
-      ].filter(isDefined)
-    : [];
+  const selectedOption = useMemo(
+    () => (selectedOptionIdx !== null ? options?.[selectedOptionIdx] : null),
+    [options, selectedOptionIdx]
+  );
+  const allLocations = useMemo(
+    () =>
+      selectedOption
+        ? [selectedOption.defaultOption, ...selectedOption.additionalOptions]
+            .filter(
+              (d) =>
+                d != null &&
+                d.location.name != null &&
+                d.location.name.trim() !== ""
+            )
+            .filter(isDefined)
+        : [],
+    [selectedOption]
+  );
+
+  const selectedLocation = useMemo(
+    () =>
+      selectedLocationIdx !== null ? allLocations[selectedLocationIdx] : null,
+    [allLocations, selectedLocationIdx]
+  );
 
   const t = useTranslations();
 
@@ -235,66 +252,57 @@ export const Shipping = () => {
                   <div className="mt-4">
                     <div className="font-medium mb-2">Available Locations:</div>
                     <div className="flex flex-wrap gap-4">
-                      {allLocations
-                        .filter(
-                          (locOpt): locOpt is DeliveryOption =>
-                            !!locOpt &&
-                            !!locOpt.location &&
-                            !!locOpt.location.name
-                        )
-                        .map((locOpt, locIdx) => (
-                          <button
-                            key={locIdx}
-                            className={
-                              `text-left rounded-md p-3 min-w-[260px] cursor-pointer transition-all ` +
-                              (selectedLocationIdx === locIdx
-                                ? "border-2 border-green-500 bg-green-50"
-                                : "border border-gray-300 bg-gray-50 hover:border-green-400")
-                            }
-                            onClick={() =>
-                              handleLocationSelect(
-                                locIdx,
-                                locOpt.bookingInstructions.deliveryOptionId
-                              )
-                            }
-                          >
-                            <div className="font-semibold">
-                              {locOpt.location.name}
-                            </div>
-                            <div className="text-gray-700 text-sm">
-                              {locOpt.location.address.streetName}{" "}
-                              {locOpt.location.address.streetNumber},{" "}
-                              {locOpt.location.address.postCode}{" "}
-                              {locOpt.location.address.city}
-                            </div>
-                            <div className="text-gray-500 text-xs">
-                              Distance:{" "}
-                              {locOpt.location.distanceFromRecipientAddress} m
-                            </div>
-                            <div className="text-xs text-gray-500 mt-1">
-                              <span className="font-medium">
-                                Opening hours:
-                              </span>
-                              <ul className="ml-2 mt-1">
-                                {Object.entries(
-                                  locOpt.location.openingHours.regular ?? {}
-                                ).map(([day, val]: [string, Day]) => (
-                                  <li key={day}>
-                                    <span className="capitalize">{day}</span>:{" "}
-                                    {val.open && val.timeRanges != null
-                                      ? val.timeRanges
-                                          .map(
-                                            (tr: TimeRange) =>
-                                              `${tr.from}-${tr.to}`
-                                          )
-                                          .join(", ")
-                                      : "Closed"}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </button>
-                        ))}
+                      {allLocations.map((locOpt, locIdx) => (
+                        <button
+                          key={locIdx}
+                          className={
+                            `text-left rounded-md p-3 min-w-[260px] cursor-pointer transition-all ` +
+                            (selectedLocationIdx === locIdx
+                              ? "border-2 border-green-500 bg-green-50"
+                              : "border border-gray-300 bg-gray-50 hover:border-green-400")
+                          }
+                          onClick={() =>
+                            handleLocationSelect(
+                              locIdx,
+                              locOpt.bookingInstructions.deliveryOptionId
+                            )
+                          }
+                        >
+                          <div className="font-semibold">
+                            {locOpt.location.name}
+                          </div>
+                          <div className="text-gray-700 text-sm">
+                            {locOpt.location.address.streetName}{" "}
+                            {locOpt.location.address.streetNumber},{" "}
+                            {locOpt.location.address.postCode}{" "}
+                            {locOpt.location.address.city}
+                          </div>
+                          <div className="text-gray-500 text-xs">
+                            Distance:{" "}
+                            {locOpt.location.distanceFromRecipientAddress} m
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            <span className="font-medium">Opening hours:</span>
+                            <ul className="ml-2 mt-1">
+                              {Object.entries(
+                                locOpt.location.openingHours.regular ?? {}
+                              ).map(([day, val]: [string, Day]) => (
+                                <li key={day}>
+                                  <span className="capitalize">{day}</span>:{" "}
+                                  {val.open && val.timeRanges != null
+                                    ? val.timeRanges
+                                        .map(
+                                          (tr: TimeRange) =>
+                                            `${tr.from}-${tr.to}`
+                                        )
+                                        .join(", ")
+                                    : "Closed"}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -307,34 +315,26 @@ export const Shipping = () => {
           No shipping options found for this ZIP code.
         </div>
       )}
-      {selectedOption &&
-        selectedLocationIdx !== null &&
-        allLocations[selectedLocationIdx] && (
-          <div className="mt-8 border-2 border-blue-600 p-6 rounded-xl bg-blue-50">
-            <h3 className="font-bold text-lg mb-2">
-              Selected Location Details
-            </h3>
-            <div>
-              <span className="font-semibold">Name:</span>{" "}
-              {allLocations[selectedLocationIdx].location.name}
-            </div>
-            <div>
-              <span className="font-semibold">Address:</span>{" "}
-              {allLocations[selectedLocationIdx].location.address.streetName}{" "}
-              {allLocations[selectedLocationIdx].location.address.streetNumber},{" "}
-              {allLocations[selectedLocationIdx].location.address.postCode}{" "}
-              {allLocations[selectedLocationIdx].location.address.city}
-            </div>
-            <div>
-              <span className="font-semibold">Distance:</span>{" "}
-              {
-                allLocations[selectedLocationIdx].location
-                  .distanceFromRecipientAddress
-              }{" "}
-              m
-            </div>
+      {selectedLocation && (
+        <div className="mt-8 border-2 border-blue-600 p-6 rounded-xl bg-blue-50">
+          <h3 className="font-bold text-lg mb-2">Selected Location Details</h3>
+          <div>
+            <span className="font-semibold">Name:</span>{" "}
+            {selectedLocation.location.name}
           </div>
-        )}
+          <div>
+            <span className="font-semibold">Address:</span>{" "}
+            {selectedLocation.location.address.streetName}{" "}
+            {selectedLocation.location.address.streetNumber},{" "}
+            {selectedLocation.location.address.postCode}{" "}
+            {selectedLocation.location.address.city}
+          </div>
+          <div>
+            <span className="font-semibold">Distance:</span>{" "}
+            {selectedLocation.location.distanceFromRecipientAddress} m
+          </div>
+        </div>
+      )}
     </div>
   );
 };
