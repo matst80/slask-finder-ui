@@ -379,6 +379,7 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
   if (item != null) {
     const mp = Math.max(item.mp ?? 0, 0);
     const possibleDiscount = item.values[4] * (mp / 100);
+    console.log({ popularity });
     return (
       <>
         <div className="p-4 my-2 flex gap-2 items-center justify-between bg-amber-100 text-amber-800 rounded-lg">
@@ -387,9 +388,6 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
             className="font-bold"
           />
           {mp > 0 && <span>{mp}%</span>}
-        </div>
-        <div className="my-2">
-          <JsonView data={popularity} />
         </div>
       </>
     );
