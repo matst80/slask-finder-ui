@@ -43,7 +43,6 @@ import { GroupedProperties } from "./GroupedProperties";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 import { Loader } from "./Loader";
 import { BotMessageSquare, UserCog } from "lucide-react";
-import { JsonView } from "../pages/tracking/JsonView";
 import { toEcomTrackingEvent } from "./toImpression";
 import { Stars } from "./Stars";
 import { QueryUpdater } from "./QueryMerger";
