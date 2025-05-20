@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAdmin } from "../hooks/appState";
-import { useFacetGroups, useFacetMap } from "../hooks/searchHooks";
-import { useQuery } from "../lib/hooks/useQuery";
+import { queryToHash, useFacetGroups, useFacetMap } from "../hooks/searchHooks";
 import {
   FacetGroup,
   FacetListItem,
@@ -85,7 +84,6 @@ const byGroup =
   };
 
 export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
-  const { setQuery } = useQuery();
   const [selected, setSelected] = useState<SelectedFacet[]>([]);
   const { showNotification } = useNotifications();
   const { setGroup } = useGroupDesigner();
@@ -169,8 +167,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
           <div className="button-group">
             <Link
               aria-label={t("common.search")}
-              onClick={() => setQuery(customQuery)}
-              to="/"
+              to={`/#${queryToHash(customQuery)}`}
             >
               <Search className="size-5" />
             </Link>
@@ -273,25 +270,17 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                           field.value != null && (
                             <Link
                               className="text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium inline-flex items-center gap-1"
-                              to="/"
-                              onClick={() => {
-                                if (
-                                  field.linkedId != null &&
-                                  field.value != null
-                                ) {
-                                  setQuery({
-                                    page: 0,
-                                    string: [
-                                      {
-                                        id: field.linkedId,
-                                        value: Array.isArray(field.value)
-                                          ? field.value
-                                          : [String(field.value)],
-                                      },
-                                    ],
-                                  });
-                                }
-                              }}
+                              to={`/#${queryToHash({
+                                page: 0,
+                                string: [
+                                  {
+                                    id: field.linkedId,
+                                    value: Array.isArray(field.value)
+                                      ? field.value
+                                      : [String(field.value)],
+                                  },
+                                ],
+                              })}`}
                             >
                               {t("common.show_compatible")}
                               {/* <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">

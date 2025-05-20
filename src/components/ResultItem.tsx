@@ -36,10 +36,10 @@ export const StockIndicator = ({
   showOnlyInStock = false,
 }: StockData & { showOnlyInStock?: boolean }) => {
   const t = useTranslations();
-  const {
-    query: { stock: stockQuery },
-  } = useQuery();
-  const locationId = stockQuery?.[0];
+
+  const locationId = (
+    globalThis.window as Window & { selectedStoreId?: string }
+  ).selectedStoreId;
   const stockOnLocation = locationId != null ? stock?.[locationId] : null;
   const storesWithStock = Object.entries(stock ?? {}).length;
   const hasStoreStock =

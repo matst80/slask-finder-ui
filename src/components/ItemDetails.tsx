@@ -1,4 +1,5 @@
 import {
+  queryToHash,
   useCompatibleItems,
   useFacetMap,
   useRelatedItems,
@@ -27,7 +28,7 @@ import { CompareButton, ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Price, PriceValue } from "./Price";
 import { QueryProvider } from "../lib/hooks/QueryProvider";
-import { Button } from "./ui/button";
+import { Button, ButtonLink } from "./ui/button";
 import { useAdmin } from "../hooks/appState";
 import {
   getAdminItem,
@@ -150,7 +151,6 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
 };
 
 export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
-  const { setQuery } = useQuery();
   const { data } = useFacetMap();
   const t = useTranslations();
   const stringFilters = useMemo(() => {
@@ -177,22 +177,20 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
     return filter;
   }, [values, data]);
 
-  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setQuery({
-      page: 0,
-      string: stringFilters,
-      range: [],
-    });
-  };
   if (stringFilters.length === 0) return null;
   return (
-    <Button size="sm" onClick={handleClick}>
+    <ButtonLink
+      to={`/#${queryToHash({
+        page: 0,
+        string: stringFilters,
+        range: [],
+      })}`}
+      size="sm"
+    >
       {t("common.show_compatible", {
         ids: stringFilters.map((f) => f.id).join(", "),
       })}
-    </Button>
+    </ButtonLink>
   );
 };
 
@@ -294,7 +292,6 @@ const RelationGroupCarousel = ({
   values: ItemValues;
   defaultOpen?: boolean;
 }) => {
-  const { setQuery } = useQuery();
   const query = useMemo(() => makeQuery(group, values), [group, values]);
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -307,8 +304,7 @@ const RelationGroupCarousel = ({
           {group.name}
         </button>
         <Link
-          to="/"
-          onClick={() => setQuery(query)}
+          to={`/#${queryToHash(query)}`}
           className={cm("text-sm hover:underline transition-all")}
         >
           Show all
@@ -408,7 +404,6 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
 };
 
 const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
-  const { setQuery } = useQuery();
   const parts = useMemo(() => {
     return [10, 11, 12, 13]
       .map((id) => ({ id, value: values[id] }))
@@ -421,19 +416,16 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
     <div className="inline-flex items-center overflow-x-auto max-w-full mb-4">
       {parts.map(({ id, value }, idx) => (
         <Link
-          to="/"
+          to={`/#${queryToHash({
+            page: 0,
+            string: [
+              {
+                id,
+                value: [String(value)],
+              },
+            ],
+          })}`}
           key={idx}
-          onClick={() => {
-            setQuery({
-              page: 0,
-              string: [
-                {
-                  id,
-                  value: [String(value)],
-                },
-              ],
-            });
-          }}
           className="text-sm grow-0 shrink-0 text-gray-500 hover:text-blue-600 cursor-pointer"
         >
           {value}

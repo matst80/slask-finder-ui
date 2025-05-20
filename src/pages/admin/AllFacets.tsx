@@ -17,19 +17,18 @@ import {
   XIcon,
   EyeOffIcon,
 } from "lucide-react";
-import { useQuery } from "../../lib/hooks/useQuery";
 import { FacetListItem } from "../../lib/types";
 import { getPossibleRelations } from "../../lib/datalayer/api";
 import { useNotifications } from "../../components/ui-notifications/useNotifications";
 import { useFacetGroups } from "../../hooks/searchHooks";
 import { Loader } from "../../components/Loader";
+import { queryToHash } from "../../lib/utils";
 
 type KeyValues =
   | [true, Fuzzysort.Results]
   | [false, { min: number; max: number }];
 
 const FacetValues = ({ id }: { id: number }) => {
-  const { setQuery } = useQuery();
   const { data } = useFieldValues(id);
   const [filter, setFilter] = useState<string>("");
   const { showNotification } = useNotifications();
@@ -107,16 +106,13 @@ const FacetValues = ({ id }: { id: number }) => {
               </Button>
               <ButtonLink
                 variant="ghost"
-                to={`/`}
+                to={`/#${queryToHash({
+                  page: 0,
+                  string: [{ id, value: [value] }],
+                  range: [],
+                })}`}
                 size="icon"
                 className="hover:bg-slate-200"
-                onClick={() => {
-                  setQuery({
-                    page: 0,
-                    string: [{ id, value: [value] }],
-                    range: [],
-                  });
-                }}
               >
                 <SearchIcon className="size-4" />
               </ButtonLink>

@@ -93,7 +93,9 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <PageContainer>
-        <App />
+        <QueryProvider attachToHash>
+          <App />
+        </QueryProvider>
       </PageContainer>
     ),
     errorElement: <BubbleError />,
@@ -350,14 +352,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <GroupDesignerProvider>
           <CompareProvider compareAllFacets={true}>
             <TranslationProvider language={getBrowserTranslations()}>
-              <QueryProvider attachToHash>
-                <NotificationsProvider>
-                  <ImpressionProvider>
-                    <RouterProvider router={router} />
-                    <CookieConsent />
-                  </ImpressionProvider>
-                </NotificationsProvider>
-              </QueryProvider>
+              <NotificationsProvider>
+                <ImpressionProvider>
+                  <RouterProvider router={router} />
+                  <CookieConsent />
+                </ImpressionProvider>
+              </NotificationsProvider>
             </TranslationProvider>
           </CompareProvider>
         </GroupDesignerProvider>

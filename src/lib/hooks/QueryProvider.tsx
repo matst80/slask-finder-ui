@@ -76,6 +76,9 @@ export const QueryProvider = ({
     setQuery((prev) => ({ ...prev, sort, page: 0 }));
   }, []);
   const setStock = useCallback((stock: string[]) => {
+    (
+      globalThis.window as Window & { selectedStoreId?: string }
+    ).selectedStoreId = stock[0];
     setQuery(({ filter, ...prev }) => ({ ...prev, stock, page: 0 }));
   }, []);
   const setTerm = useCallback((term: string) => {
@@ -192,6 +195,8 @@ export const QueryProvider = ({
       const hash = window.location.hash.substring(1);
       if (hash) {
         setQuery(queryFromHash(hash));
+      } else {
+        setQuery(initialQuery ?? {});
       }
     };
     addEventListener("hashchange", hashListener, false);
@@ -204,17 +209,20 @@ export const QueryProvider = ({
     if (itemsKey == null) {
       return;
     }
+    if (itemsKey === "page=0&size=20") {
+      return;
+    }
     if (attachToHash) {
-      window.history.pushState(null, "hash", `#${itemsKey}`);
+      if (itemsKey !== window.location.hash.substring(1)) {
+        window.history.pushState(null, "hash", `#${itemsKey}`);
+      }
     }
     //window.location.hash = itemsKey;
 
     if (itemsCache.has(itemsKey)) {
       setHits(itemsCache.get(itemsKey) ?? []);
     }
-    if (itemsKey == null || itemsKey === "page=0&size=20") {
-      return;
-    }
+
     setIsLoading(true);
 
     api.streamItems(toQuery(query)).then((data) => {
