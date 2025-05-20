@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "../lib/hooks/useQuery";
 import { StockBalloon } from "./ResultItem";
 import { useSuggestions } from "../lib/hooks/useSuggestions";
-import { CmsPicture } from "../lib/types";
+import { CmsPicture, ItemsQuery } from "../lib/types";
 import { MIN_FUZZY_SCORE } from "../lib/hooks/SuggestionProvider";
 import { SuggestQuery } from "../lib/hooks/suggestionUtils";
 import { useCursorPosition } from "./useCursorPosition";
@@ -30,6 +30,7 @@ import { toEcomTrackingEvent } from "./toImpression";
 import { useDropdownFocus } from "./useDropdownFocus";
 import { useArrowKeyNavigation } from "./useArrowKeyNavigation";
 import { useProductData } from "../lib/utils";
+import { queryFromHash } from "../hooks/searchHooks";
 
 const TrieSuggestions = ({
   toShow,
@@ -88,15 +89,31 @@ const TrieSuggestions = ({
   );
 };
 
-export const AutoSuggest = () => {
-  const { query: globalQuery, setQuery, hits } = useQuery();
+type AutoSuggestProps = {
+  onSearch: (query: ItemsQuery) => void;
+  onClear: () => void;
+};
 
+export const AutoSuggest = (props: AutoSuggestProps) => {
   const { inputRef, close, open, isOpen } = useDropdownFocus({
     onOpen: () => {
       updatePosition();
     },
     onClose: () => {},
   });
+  const { onSearch, onClear } = useMemo(
+    () => ({
+      onSearch: (query: ItemsQuery) => {
+        props.onSearch(query);
+        close();
+      },
+      onClear: () => {
+        props.onClear();
+        close();
+      },
+    }),
+    [props]
+  );
   const parentRef = useArrowKeyNavigation<HTMLFieldSetElement>(
     ".suggest-result button",
     {
@@ -127,7 +144,7 @@ export const AutoSuggest = () => {
         e.preventDefault();
         e.stopPropagation();
         if (smartQuery != null) {
-          setQuery(smartQuery);
+          onSearch(smartQuery);
         }
       }
       if (isAtEnd && e.key === "ArrowRight" && bestSuggestion != null) {
@@ -144,28 +161,43 @@ export const AutoSuggest = () => {
     [suggestions, setTerm, smartQuery]
   );
 
-  useEffect(() => {
-    if (globalQuery.query != null && inputRef.current != null) {
-      inputRef.current.value = globalQuery.query;
-    }
-    requestAnimationFrame(() => {
-      updatePosition();
-    });
-  }, [globalQuery, inputRef]);
+  // useEffect(() => {
+  //   if (globalQuery.query != null && inputRef.current != null) {
+  //     inputRef.current.value = globalQuery.query;
+  //   }
+  //   requestAnimationFrame(() => {
+  //     updatePosition();
+  //   });
+  // }, [globalQuery, inputRef]);
 
   useEffect(() => {
-    if (isOpen) {
-      requestAnimationFrame(() => {
-        const results = document.getElementById("results");
-        const firstChild = results?.children[0] as HTMLElement;
+    const updateFromHash = () => {
+      const { query } = queryFromHash(globalThis.location.hash.substring(1));
+      if (query && inputRef.current != null) {
+        inputRef.current.value = query;
+        setTerm(query);
+      }
+    };
+    const close = () => {
+      updateFromHash();
+      if (isOpen) {
+        requestAnimationFrame(() => {
+          const results = document.getElementById("results");
+          const firstChild = results?.children[0] as HTMLElement;
 
-        if (firstChild) {
-          close();
-          firstChild.focus({ preventScroll: false });
-        }
-      });
-    }
-  }, [hits]);
+          if (firstChild) {
+            close();
+            firstChild.focus({ preventScroll: false });
+          }
+        });
+      }
+    };
+    globalThis.window.addEventListener("hashchange", close, false);
+    updateFromHash();
+    return () => {
+      globalThis.window.removeEventListener("hashchange", close);
+    };
+  }, []);
 
   return (
     <form
@@ -177,13 +209,12 @@ export const AutoSuggest = () => {
         e.preventDefault();
 
         if (query != null && typeof query === "string" && query.length > 0) {
-          setQuery((prev) => ({
-            ...prev,
+          onSearch({
             string: [],
             range: [],
             page: 0,
             query: query,
-          }));
+          });
         }
       }}
     >
@@ -201,13 +232,14 @@ export const AutoSuggest = () => {
 
               if (e.currentTarget.value.length === 0) {
                 // console.log("cleared");
-                setQuery((prev) => ({ ...prev, query: "" }));
+                onClear();
+                //setQuery((prev) => ({ ...prev, query: "" }));
               }
             }}
             name="query"
             id="autosuggest-input"
             autoComplete="off"
-            defaultValue={globalQuery.query ?? ""}
+            defaultValue={""}
             aria-controls="suggestion-results"
             placeholder="Search..."
           />
@@ -234,7 +266,7 @@ export const AutoSuggest = () => {
             <button
               onClick={(e) => {
                 e.preventDefault();
-                smartQuery != null && setQuery(smartQuery);
+                smartQuery != null && onSearch(smartQuery);
               }}
               className="attachment transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs"
             >
@@ -260,13 +292,23 @@ export const AutoSuggest = () => {
             </button>
           )}
         </div>
-        <SuggestionResults onClose={close} />
+        <SuggestionResults
+          onClose={close}
+          onSearch={onSearch}
+          onClear={onClear}
+        />
       </fieldset>
     </form>
   );
 };
 
-const SuggestionResults = ({ onClose }: { onClose: () => void }) => {
+const SuggestionResults = ({
+  onClose,
+  onSearch,
+  onClear,
+}: AutoSuggestProps & {
+  onClose: () => void;
+}) => {
   const { items } = useSuggestions();
 
   return (
@@ -278,7 +320,13 @@ const SuggestionResults = ({ onClose }: { onClose: () => void }) => {
       className="transition-opacity md:rounded-md md:border md:border-gray-300 bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
     >
       {items.map((item, idx) => (
-        <SuggestSelector {...item} key={idx} index={idx} />
+        <SuggestSelector
+          {...item}
+          key={idx}
+          index={idx}
+          onSearch={onSearch}
+          onClear={onClear}
+        />
       ))}
       <button
         onClick={onClose}
@@ -349,8 +397,12 @@ const ContentHit = ({ name, description, picture, url }: SuggestedContent) => {
   );
 };
 
-const FlatRefinement = ({ facetId, facetName, values }: QueryRefinement) => {
-  const { setQuery } = useQuery();
+const FlatRefinement = ({
+  facetId,
+  facetName,
+  values,
+  onSearch,
+}: AutoSuggestProps & QueryRefinement) => {
   const { value } = values[0];
   return (
     <ItemContainer
@@ -359,7 +411,7 @@ const FlatRefinement = ({ facetId, facetName, values }: QueryRefinement) => {
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();
-        setQuery({ string: [{ id: facetId, value: [value] }] });
+        onSearch({ string: [{ id: facetId, value: [value] }] });
       }}
     >
       <Lightbulb className="size-5" />
@@ -375,9 +427,8 @@ const PopularRefinement = ({
   facetId,
   query,
   values,
-}: //selected,
-QueryRefinement) => {
-  const { setQuery } = useQuery();
+  onSearch,
+}: AutoSuggestProps & QueryRefinement) => {
   const { data } = useKeyFacetValuePopularity(facetId);
   const items = useMemo(() => {
     if (data == null || values == null) {
@@ -399,7 +450,7 @@ QueryRefinement) => {
         e.preventDefault();
         const first = items?.[0];
 
-        setQuery({
+        onSearch({
           query,
           string: first != null ? [{ id: facetId, value: [first.value] }] : [],
         });
@@ -417,7 +468,7 @@ QueryRefinement) => {
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              setQuery({
+              onSearch({
                 string: [{ id: facetId, value: [value] }],
                 query,
                 stock: [],
@@ -458,15 +509,17 @@ const ItemContainer = <T extends keyof HTMLElementTagNameMap>({
   );
 };
 
-const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
-  const { setQuery } = useQuery();
-
+const SuggestedQuery = ({
+  query,
+  fields,
+  onSearch,
+}: AutoSuggestProps & SuggestQuery) => {
   const updateQuery =
     (id?: number, value?: string): MouseEventHandler<unknown> =>
     (e) => {
       e.stopPropagation();
       e.preventDefault();
-      setQuery({
+      onSearch({
         string: id != null && value != null ? [{ id, value: [value] }] : [],
         query,
         stock: [],
@@ -502,7 +555,9 @@ const SuggestedQuery = ({ query, fields }: SuggestQuery) => {
   );
 };
 
-const SuggestSelector = (props: SuggestResultItem & { index: number }) => {
+const SuggestSelector = (
+  props: AutoSuggestProps & SuggestResultItem & { index: number }
+) => {
   const { type } = props;
   switch (type) {
     case "product":
