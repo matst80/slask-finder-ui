@@ -208,10 +208,15 @@ export const QueryProvider = ({
       window.history.pushState(null, "hash", `#${itemsKey}`);
     }
     //window.location.hash = itemsKey;
+
     if (itemsCache.has(itemsKey)) {
       setHits(itemsCache.get(itemsKey) ?? []);
     }
+    if (itemsKey == null || itemsKey === "page=0&size=20") {
+      return;
+    }
     setIsLoading(true);
+
     api.streamItems(toQuery(query)).then((data) => {
       itemsCache.set(itemsKey, data?.items);
       setHits(data?.items ?? []);
