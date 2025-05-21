@@ -349,7 +349,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
           src={`https://next-media.elkjop.com/primaryimage/${data.sku}`}
           width={640}
           height={640}
-          className="object-contain transition-transform hover:scale-110 rotate-0 hover:-rotate-3 duration-500 max-h-[80%]"
+          className="object-contain banner-reflect transition-transform hover:scale-110 rotate-0 hover:-rotate-3 duration-500 max-h-[80%]"
         />
         {data.badgeUrl && (
           <img
