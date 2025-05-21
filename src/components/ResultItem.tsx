@@ -4,7 +4,6 @@ import { PriceElement } from "./Price";
 import { Stars } from "./Stars";
 import { PropsWithChildren, useMemo, useState } from "react";
 import { Link, useViewTransitionState } from "react-router-dom";
-import { useQuery } from "../lib/hooks/useQuery";
 import { useImpression } from "../lib/hooks/useImpression";
 import { TimeAgo } from "./TimeAgo";
 import { useTranslations } from "../lib/hooks/useTranslations";

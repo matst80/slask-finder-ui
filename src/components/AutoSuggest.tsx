@@ -11,7 +11,6 @@ import {
 import { ChevronUp, Lightbulb, Search, SearchIcon } from "lucide-react";
 import { cm, makeImageUrl } from "../utils";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "../lib/hooks/useQuery";
 import { StockBalloon } from "./ResultItem";
 import { useSuggestions } from "../lib/hooks/useSuggestions";
 import { CmsPicture, ItemsQuery } from "../lib/types";
