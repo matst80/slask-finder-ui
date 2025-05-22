@@ -7,7 +7,7 @@ import {
 } from "../lib/datalayer/api";
 import { FacetListItem, Item } from "../lib/types";
 import { isDefined, makeImageUrl } from "../utils";
-import { addToCart } from "../lib/datalayer/cart-api";
+import { addToCart, getCart } from "../lib/datalayer/cart-api";
 import { addProductToCompare } from "../lib/hooks/CompareProvider";
 
 export const tools = [
@@ -130,6 +130,20 @@ export const tools = [
         },
         required: ["id"],
       },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_cart",
+      description: "Show cart contents",
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "checkout",
+      description: "Checkout your cart",
     },
   },
   {
@@ -455,6 +469,14 @@ export const availableFunctions: Record<
   compatible: getCompatibleItems,
   similar: getSimilarItems,
   popular_items: getPopularItems,
+  get_cart: async () => {
+    const cart = getCart();
+    return JSON.stringify(cart);
+  },
+  checkout: async () => {
+    window.open("/checkout", "_blank");
+    return "user redirected to checkout";
+  },
   add_to_compare: async ({ id }, facets) => {
     if (id == null) {
       return "product id argument is missing";

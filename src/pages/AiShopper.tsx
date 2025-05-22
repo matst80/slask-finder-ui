@@ -87,7 +87,7 @@ export const AiShoppingProvider = ({
           model,
           messages,
           options: {
-            num_ctx: 4096,
+            num_ctx: 16384,
             temperature: 0.3,
             repeat_penalty: 1.2,
           },

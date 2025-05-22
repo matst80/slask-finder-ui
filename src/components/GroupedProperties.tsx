@@ -244,7 +244,11 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                       <div className="flex items-center gap-2 mb-1">
                         <h4
                           className="text-lg font-semibold text-gray-900"
-                          onClick={() => copyToClipboard(String(field.id))}
+                          onClick={() =>
+                            copyToClipboard(
+                              JSON.stringify({ ...field }, null, 2)
+                            )
+                          }
                         >
                           {field.name}
                           {field.description && (
