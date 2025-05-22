@@ -190,7 +190,7 @@ export const tools = [
     type: "function",
     function: {
       name: "get_cart",
-      description: "Show cart contents",
+      description: "Show cart contents, prices in cart are in cents, SEK",
     },
   },
   {
