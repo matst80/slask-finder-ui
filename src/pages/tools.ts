@@ -9,15 +9,38 @@ import { isDefined, makeImageUrl } from "../utils";
 import { addToCart, getCart, removeFromCart } from "../lib/datalayer/cart-api";
 import { addProductToCompare } from "../lib/hooks/CompareProvider";
 
-export const tools = [
+type Parameter =
+  | {
+      type: "object";
+      description?: string;
+      properties: {
+        [key: string]: Parameter;
+      };
+      required?: string[];
+    }
+  | { type: "string"; description: string }
+  | { type: "number"; description?: string }
+  | { type: "array"; items: Parameter };
+
+export type Tool = {
+  type: "function";
+  function: {
+    name: string;
+    description: string;
+    parameters?: Parameter;
+  };
+};
+
+export const tools: Tool[] = [
   {
     type: "function",
     function: {
       name: "search",
       description:
-        "Search for products, responds with a list of products in json format with. show title, price and relevant properties to the user, you can make multiple calls to refine the search, range 4 is price",
+        "Search for products, responds with a list of products in json format with. show title, price and relevant properties to the user, you can make multiple calls to refine the search, range 4 is price and in cents",
       parameters: {
         type: "object",
+        description: "Search arguments",
         properties: {
           q: {
             type: "string",
@@ -76,7 +99,7 @@ export const tools = [
             },
           },
         },
-        required: ["q", "maxResults"],
+        required: ["maxResults"],
       },
     },
   },
@@ -217,7 +240,7 @@ export const tools = [
           id: {
             type: "number",
             description:
-              "the id of the item to remove from the cart, can be found in the get_cart response",
+              "the id of the line to remove from the cart, can be found in the get_cart response",
           },
         },
         required: ["id"],
@@ -282,18 +305,10 @@ export const tools = [
 const convertProperties =
   (facets?: FacetMap, all = false) =>
   (values: Item["values"]) => {
-    let product_type = "";
-    let brand = "";
     let price = "";
     const properties = Object.fromEntries(
       Object.entries(values)
         .map(([id, value]) => {
-          if (id === "2") {
-            brand = String(value);
-          }
-          if (id === "31158") {
-            product_type = String(value);
-          }
           if (id === "4") {
             price = `${Number(value) / 100} SEK`;
           }
@@ -307,11 +322,6 @@ const convertProperties =
               `${facet.name} (${facet.id})`,
               Array.isArray(value) ? value.join(", ") : String(value),
             ];
-            // return {
-            //   name: facet.name,
-            //   //id: facet.id,
-            //   value: value,
-            // };
           }
           return null;
         })
@@ -320,23 +330,19 @@ const convertProperties =
     return {
       properties,
       price,
-      product_type,
-      brand,
     };
   };
 
 export const convertItemSimple = (facets?: FacetMap) => {
   const convertProps = convertProperties(facets, false);
   return ({ values, bp, id, sku, title, img }: Item) => {
-    const { properties, product_type, brand, price } = convertProps(values);
+    const { properties, price } = convertProps(values);
 
     return {
       title,
       id,
       sku,
       price,
-      product_type,
-      brand,
       properties,
       bulletPoints: bp,
       img: makeImageUrl(img),
@@ -347,16 +353,14 @@ export const convertItemSimple = (facets?: FacetMap) => {
 export const convertDetails = (facets?: FacetMap) => {
   const convertProps = convertProperties(facets, true);
   return ({ values, bp, id, sku, title, img, description }: Item) => {
-    const { properties, product_type, brand, price } = convertProps(values);
+    const { properties, price } = convertProps(values);
 
     return {
       title,
       id,
       sku,
       description,
-      product_type,
       price,
-      brand,
       properties,
       bulletPoints: bp,
       img: makeImageUrl(img),
@@ -487,14 +491,25 @@ const searchProducts = async (
   // }
   if (string) {
     console.log("string filter", string);
+    const filters = new Map<number, Set<string>>();
     for (const { id, value } of string) {
-      qs.append("str", `${id}:${value}`);
+      if (filters.has(Number(id))) {
+        filters.get(Number(id))?.add(value);
+      } else {
+        filters.set(Number(id), new Set([value]));
+      }
+    }
+    for (const [id, value] of filters.entries()) {
+      qs.append("str", `${id}:${Array.from(value).join("||")}`);
     }
   }
   if (range) {
     console.log("range filter", range);
     for (const { id, min, max } of range) {
-      qs.append("rng", `${id}:${min}-${max}`);
+      qs.append(
+        "rng",
+        `${id}:${isNaN(min) ? 0 : min}-${isNaN(max) ? 9999999 : max}`
+      );
     }
   }
   console.log("qs", qs.toString());

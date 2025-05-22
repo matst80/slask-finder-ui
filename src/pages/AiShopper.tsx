@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { JsonView } from "./tracking/JsonView";
-import { tools, availableFunctions } from "./tools";
+import { tools, availableFunctions, Tool } from "./tools";
 import { toJson } from "../lib/datalayer/api";
 import { useFacetMap } from "../hooks/searchHooks";
 import { useAdmin } from "../hooks/appState";
@@ -58,10 +58,15 @@ type OllamaResponse = {
   done: boolean;
 };
 
+type CustomTool = Tool & {
+  tool: (args: unknown) => Promise<string>;
+};
+
 export const AiShoppingProvider = ({
   children,
+  customTools = [],
   messages: startMessages,
-}: PropsWithChildren<{ messages: Message[] }>) => {
+}: PropsWithChildren<{ messages: Message[]; customTools?: CustomTool[] }>) => {
   const { data: facets } = useFacetMap();
   const [messageReference, setMessageReference] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -74,6 +79,7 @@ export const AiShoppingProvider = ({
     setMessages([systemMessage]);
     setMessageReference(null);
   }, []);
+
   useEffect(() => {
     if (messageReference) {
       if (loading) {
@@ -92,7 +98,7 @@ export const AiShoppingProvider = ({
             repeat_penalty: 1.2,
           },
           stream: false,
-          tools,
+          tools: [...tools, ...customTools.map(({ tool, ...rest }) => rest)],
         }),
       }).then((d) => {
         return toJson<OllamaResponse>(d)
@@ -105,7 +111,9 @@ export const AiShoppingProvider = ({
                 function: { name, arguments: args },
               } of data.message.tool_calls) {
                 const toCall =
-                  availableFunctions[name as keyof typeof availableFunctions];
+                  availableFunctions[name as keyof typeof availableFunctions] ??
+                  customTools.find((tool) => tool.function.name == name)?.tool;
+
                 if (toCall) {
                   await toCall(args as any, facets).then((content) => {
                     const message: Message = {
