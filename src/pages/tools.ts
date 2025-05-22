@@ -555,10 +555,11 @@ export const availableFunctions: Record<
     });
   },
   checkout: async () => {
-    window.open(
-      window.location.origin + "/checkout",
-      "target=_blank,menubar=1,resizable=1,width=350,height=500"
-    );
+    globalThis.location.href = "/checkout";
+    // window.open(
+    //   window.location.origin + "/checkout",
+    //   "target=_blank,menubar=1,resizable=1,width=350,height=500"
+    // );
     return "user redirected to checkout";
   },
   add_to_compare: async ({ id }, facets) => {
@@ -592,6 +593,6 @@ export const availableFunctions: Record<
   get_product_types: getPropertyValues("31158", "possible product types: "),
   open_product: async ({ id }) => {
     window.open("/product/" + id, "_blank");
-    return "ok";
+    return "ok, inform the user that the page is opening in a new tab, and it might be blocked by the browser";
   },
 };
