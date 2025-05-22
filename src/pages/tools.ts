@@ -7,7 +7,7 @@ import {
 } from "../lib/datalayer/api";
 import { FacetListItem, Item } from "../lib/types";
 import { isDefined, makeImageUrl } from "../utils";
-import { addToCart, getCart } from "../lib/datalayer/cart-api";
+import { addToCart, getCart, removeFromCart } from "../lib/datalayer/cart-api";
 import { addProductToCompare } from "../lib/hooks/CompareProvider";
 
 export const tools = [
@@ -126,6 +126,24 @@ export const tools = [
             type: "number",
             description:
               "the product id to get details for, can be found in the search results",
+          },
+        },
+        required: ["id"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "remove_from_cart",
+      description: "Remove item from cart",
+      parameters: {
+        type: "object",
+        properties: {
+          id: {
+            type: "number",
+            description:
+              "the id of the item to remove from the cart, can be found in the get_cart response",
           },
         },
         required: ["id"],
@@ -473,8 +491,20 @@ export const availableFunctions: Record<
     const cart = getCart();
     return JSON.stringify(cart);
   },
+  remove_from_cart: async ({ id }) => {
+    if (id == null) {
+      return "product id argument is missing";
+    }
+    return removeFromCart({ id: Number(id) }).then((res) => {
+      if (res) {
+        return "Your cart now looks like this: " + JSON.stringify(res);
+      } else {
+        return "Failed to remove from cart";
+      }
+    });
+  },
   checkout: async () => {
-    window.open("/checkout", "_blank");
+    window.open(window.location.origin + "/checkout", "_blank");
     return "user redirected to checkout";
   },
   add_to_compare: async ({ id }, facets) => {
