@@ -540,7 +540,7 @@ export const availableFunctions: Record<
       } else {
         throw new Error("Network response was not ok");
       }
-    }
+    });
   },
   remove_from_cart: async ({ id }) => {
     if (id == null) {
