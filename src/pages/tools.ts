@@ -509,8 +509,8 @@ export const availableFunctions: Record<
   similar: getSimilarItems,
   popular_items: getPopularItems,
   get_cart: async () => {
-    const cart = getCart();
-    return JSON.stringify(cart);
+    const cart = await getCart();
+    return `Your cart: ` + JSON.stringify(cart);
   },
   get_shipping: async ({ zip }) => {
     const cart = await getCart();
