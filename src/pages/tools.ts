@@ -63,6 +63,42 @@ export const tools = [
   {
     type: "function",
     function: {
+      name: "get_shipping",
+      description: "Get shipping options for cart",
+      parameters: {
+        type: "object",
+        properties: {
+          zip: {
+            type: "string",
+            description:
+              "postal code to get shipping options for, must be a valid swedish postal code",
+          },
+        },
+        required: ["zip"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "set_shipping_option",
+      description: "Select shipping for cart",
+      parameters: {
+        type: "object",
+        properties: {
+          deliveryOptionId: {
+            type: "string",
+            description:
+              "delivery option id to get details for, can be found in the get_shipping response",
+          },
+        },
+        required: ["deliveryOptionId"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "similar",
       description: "Get similar products",
       parameters: {
@@ -187,11 +223,6 @@ export const tools = [
     function: {
       name: "get_brands",
       description: "Get available brands",
-      parameters: {
-        type: "object",
-        properties: {},
-        required: [],
-      },
     },
   },
   {
@@ -199,11 +230,6 @@ export const tools = [
     function: {
       name: "popular_items",
       description: "Get popular items",
-      parameters: {
-        type: "object",
-        properties: {},
-        required: [],
-      },
     },
   },
   {
@@ -211,11 +237,6 @@ export const tools = [
     function: {
       name: "get_product_types",
       description: "Get available product types",
-      parameters: {
-        type: "object",
-        properties: {},
-        required: [],
-      },
     },
   },
 ];
@@ -491,6 +512,36 @@ export const availableFunctions: Record<
     const cart = getCart();
     return JSON.stringify(cart);
   },
+  get_shipping: async ({ zip }) => {
+    const cart = await getCart();
+    if (zip == null) {
+      return "postal code argument is missing";
+    }
+    if (cart == null) {
+      return "cart is empty";
+    }
+    return fetch(`/api/shipping-options/${cart.id}/${zip}`).then((response) =>
+      response.text()
+    );
+  },
+  set_shipping_option: async ({ deliveryOptionId }) => {
+    const cart = await getCart();
+    if (cart == null) {
+      return "cart is empty";
+    }
+    if (deliveryOptionId == null) {
+      return "delivery option id argument is missing";
+    }
+    return await fetch(`/api/shipping-options/${cart.id}/${deliveryOptionId}`, {
+      method: "PUT",
+    }).then((response) => {
+      if (response.ok) {
+        return response.text();
+      } else {
+        throw new Error("Network response was not ok");
+      }
+    }
+  },
   remove_from_cart: async ({ id }) => {
     if (id == null) {
       return "product id argument is missing";
@@ -504,7 +555,10 @@ export const availableFunctions: Record<
     });
   },
   checkout: async () => {
-    window.open(window.location.origin + "/checkout", "_blank");
+    window.open(
+      window.location.origin + "/checkout",
+      "target=_blank,menubar=1,resizable=1,width=350,height=500"
+    );
     return "user redirected to checkout";
   },
   add_to_compare: async ({ id }, facets) => {
