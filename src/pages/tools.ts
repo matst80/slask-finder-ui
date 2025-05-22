@@ -1,4 +1,3 @@
-import fuzzysort from "fuzzysort";
 import {
   getCompatible,
   getRawData,
@@ -16,26 +15,65 @@ export const tools = [
     function: {
       name: "search",
       description:
-        "Search for products, responds with a list of products in json format with. show title, price and relevant properties to the user",
+        "Search for products, responds with a list of products in json format with. show title, price and relevant properties to the user, you can make multiple calls to refine the search, range 4 is price",
       parameters: {
         type: "object",
         properties: {
           q: {
             type: "string",
             description:
-              "query to search for. Not natural language, example: 'tv', 'headset', 'cpu' or 'iphone.",
+              "query to search for, example: 'tv', 'headset', 'cpu' or 'iphone' dont use and or other operators",
           },
           maxResults: {
             type: "number",
             description: "Maximum number of results to return",
           },
-          brand: {
-            type: "string",
-            description: `possible values found with get_brands, dont make up values!`,
+          // brand: {
+          //   type: "string",
+          //   description: `possible values found with get_brands, dont make up values!`,
+          // },
+          // product_type: {
+          //   type: "string",
+          //   description: `possible values found with get_product_types, dont make up values!`,
+          // },
+          string: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                id: {
+                  type: "number",
+                  description:
+                    "the id of the property, can be found on product properties",
+                },
+                value: {
+                  type: "string",
+                  description:
+                    "the value of the facet to filter on, use values from the product properties",
+                },
+              },
+            },
           },
-          product_type: {
-            type: "string",
-            description: `possible values found with get_product_types, dont make up values!`,
+          range: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                id: {
+                  type: "number",
+                  description:
+                    "the id of the property, can be found on product properties",
+                },
+                min: {
+                  type: "number",
+                  description: "min value of the range",
+                },
+                max: {
+                  type: "number",
+                  description: "max value of the range",
+                },
+              },
+            },
           },
         },
         required: ["q", "maxResults"],
@@ -266,7 +304,7 @@ const convertProperties =
               return null;
             }
             return [
-              facet.name,
+              `${facet.name} (${facet.id})`,
               Array.isArray(value) ? value.join(", ") : String(value),
             ];
             // return {
@@ -349,11 +387,12 @@ const getPropertyValues = (id: string, description: string) => async () => {
 type SearchArgs = {
   q: string;
   maxResults?: number;
-  brand?: string;
-  product_type?: string;
+  string?: { id: number | string; value: string }[];
+  range?: { id: number | string; min: number; max: number }[];
 };
 
 const getSearchArguments = (args: unknown): SearchArgs => {
+  console.log("incoming args", args);
   if (args == null) {
     return {
       q: "*",
@@ -366,24 +405,30 @@ const getSearchArguments = (args: unknown): SearchArgs => {
       maxResults: 20,
     };
   }
+
   if (typeof args === "object" && !Array.isArray(args)) {
     if ("properties" in args) {
       console.log("props", args.properties);
-      const { q, product_type, maxResults } = args.properties as {
+      const { q, maxResults } = args.properties as {
         [key: string]: { value: any };
       };
       return {
         q: q.value ?? "*",
-        product_type: product_type.value,
         maxResults: maxResults.value ?? 20,
       };
     }
-    const { q, maxResults, brand, product_type } = args as SearchArgs;
+    const { q, maxResults, string, range } = args as SearchArgs;
     return {
       q: q ?? "*",
       maxResults: maxResults ?? 20,
-      brand,
-      product_type,
+      //brand,
+      //product_type,
+      string: string?.map((s) => ({ id: Number(s.id), value: s.value })),
+      range: range?.map((s) => ({
+        id: Number(s.id),
+        min: Number(s.min),
+        max: Number(s.max),
+      })),
     };
   }
 
@@ -397,48 +442,60 @@ const searchProducts = async (
   args: unknown,
   facets?: Record<string | number, FacetListItem>
 ) => {
-  const { q, maxResults = 20, brand, product_type } = getSearchArguments(args);
+  const { q, maxResults = 20, string, range } = getSearchArguments(args);
 
   const qs = new URLSearchParams({
     page: "0",
     query: q.length > 0 ? q : "*",
     size: String(maxResults),
   });
-  if (brand) {
-    await fetch("/api/values/2").then(async (res) => {
-      const items = (await res.json()) as string[];
-      const matchingBrand = fuzzysort.go(brand, items, {
-        limit: 3,
-        threshold: 0.8,
-      })[0]?.target;
-      if (!matchingBrand) {
-        console.log("no matching brand found", brand);
-      } else {
-        console.log("matching brand", matchingBrand, "for", brand);
-        qs.append("str", `2:${matchingBrand}`);
-      }
-    });
-  }
-  if (product_type) {
-    await fetch("/api/values/31158").then(async (res) => {
-      const items = (await res.json()) as string[];
+  // if (brand) {
+  //   await fetch("/api/values/2").then(async (res) => {
+  //     const items = (await res.json()) as string[];
+  //     const matchingBrand = fuzzysort.go(brand, items, {
+  //       limit: 3,
+  //       threshold: 0.8,
+  //     })[0]?.target;
+  //     if (!matchingBrand) {
+  //       console.log("no matching brand found", brand);
+  //     } else {
+  //       console.log("matching brand", matchingBrand, "for", brand);
+  //       qs.append("str", `2:${matchingBrand}`);
+  //     }
+  //   });
+  // }
+  // if (product_type) {
+  //   await fetch("/api/values/31158").then(async (res) => {
+  //     const items = (await res.json()) as string[];
 
-      const matchingProductType = fuzzysort.go(product_type, items, {
-        limit: 3,
-        threshold: 0.8,
-      })[0]?.target;
-      if (!matchingProductType) {
-        console.log("no matching brand found", brand);
-      } else {
-        console.log(
-          "matching product type",
-          matchingProductType,
-          "for",
-          product_type
-        );
-        qs.append("str", `31158:${matchingProductType}`);
-      }
-    });
+  //     const matchingProductType = fuzzysort.go(product_type, items, {
+  //       limit: 3,
+  //       threshold: 0.8,
+  //     })[0]?.target;
+  //     if (!matchingProductType) {
+  //       console.log("no matching brand found", brand);
+  //     } else {
+  //       console.log(
+  //         "matching product type",
+  //         matchingProductType,
+  //         "for",
+  //         product_type
+  //       );
+  //       qs.append("str", `31158:${matchingProductType}`);
+  //     }
+  //   });
+  // }
+  if (string) {
+    console.log("string filter", string);
+    for (const { id, value } of string) {
+      qs.append("str", `${id}:${value}`);
+    }
+  }
+  if (range) {
+    console.log("range filter", range);
+    for (const { id, min, max } of range) {
+      qs.append("rng", `${id}:${min}-${max}`);
+    }
   }
   console.log("qs", qs.toString());
   const data = await fetch(`/api/stream?${qs}`).then((res) => {

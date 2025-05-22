@@ -46,7 +46,7 @@ const AiShopperContext = createContext<{
 const systemMessage: Message = {
   role: "system",
   content:
-    "You are a shopping assistant that make recommendations based on the data from tool calls. ask the user for product type, brand and other details. You can also ask the user for more details if needed.",
+    "You are a shopping assistant that make recommendations based on the data from tool calls. ask the user for product type, brand and other details. Use broad searches to start with and refine based on properties.",
 };
 
 const model: Model = "qwen3";
@@ -97,7 +97,6 @@ export const AiShoppingProvider = ({
       }).then((d) => {
         return toJson<OllamaResponse>(d)
           .then(async (data) => {
-            console.log("llm answer", data);
             if (data.message) {
               setMessages((prev) => [...prev, data.message]);
             }
@@ -116,6 +115,8 @@ export const AiShoppingProvider = ({
                     console.log("tool call result:", content);
                     setMessages((prev) => [...prev, message]);
                   });
+                } else {
+                  console.error("Unknown function:", name, args);
                 }
               }
               setMessageReference(Date.now().toString());
