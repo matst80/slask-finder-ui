@@ -36,6 +36,12 @@ type SelectedFacet = {
   value: string[];
 };
 
+type SelectedNumberFacet = {
+  id: number;
+  min: number;
+  max: number;
+};
+
 const isValidKeyFilter = (
   value: string[] | string | number | null | undefined
 ) => {
@@ -85,6 +91,7 @@ const byGroup =
 
 export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
   const [selected, setSelected] = useState<SelectedFacet[]>([]);
+  const [selectedRange, setSelectedRange] = useState<SelectedNumberFacet[]>([]);
   const { showNotification } = useNotifications();
   const { setGroup } = useGroupDesigner();
   const { data: groups } = useFacetGroups();
@@ -93,7 +100,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
   const copyToClipboard = useClipboard();
   const t = useTranslations();
   const customQuery = useMemo<ItemsQuery | null>(() => {
-    if (selected.length === 0) {
+    if (selected.length === 0 && selectedRange.length === 0) {
       return null;
     }
     const query: ItemsQuery = {
@@ -101,6 +108,11 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
       string: selected.map((s) => ({
         id: s.id,
         value: s.value,
+      })),
+      range: selectedRange.map((s) => ({
+        id: s.id,
+        min: s.min,
+        max: s.max,
       })),
     };
     return query;
@@ -207,7 +219,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                           "opacity-50 hover:opacity-100"
                       )}
                     >
-                      {isValidKeyFilter(field.value) && (
+                      {isValidKeyFilter(field.value) ? (
                         <button
                           className="absolute top-2 right-2 p-1 rounded-md bg-gray-100 hover:bg-gray-200"
                           onClick={() => {
@@ -240,6 +252,55 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                             )}
                           />
                         </button>
+                      ) : (
+                        <div className="absolute top-2 right-2 rounded-md overflow-hidden">
+                          <button
+                            className="p-1 bg-gray-100 hover:bg-gray-200"
+                            onClick={() => {
+                              if (field.value != null) {
+                                setSelectedRange((prev) => {
+                                  return [
+                                    ...prev.filter((s) => s.id !== field.id),
+                                    {
+                                      id: field.id,
+                                      max: Array.isArray(field.value)
+                                        ? Math.min(...field.value.map(Number))
+                                        : Number(field.value),
+                                      min: 0,
+                                    },
+                                  ];
+                                });
+                              }
+                            }}
+                          >
+                            <span className="hover:text-gray-700 cursor-pointer size-5">
+                              &lt;
+                            </span>
+                          </button>
+                          <button
+                            className="p-1 bg-gray-100 hover:bg-gray-200"
+                            onClick={() => {
+                              if (field.value != null) {
+                                setSelectedRange((prev) => {
+                                  return [
+                                    ...prev.filter((d) => d.id !== field.id),
+                                    {
+                                      id: field.id,
+                                      min: Array.isArray(field.value)
+                                        ? Math.min(...field.value.map(Number))
+                                        : Number(field.value),
+                                      max: 999999999,
+                                    },
+                                  ];
+                                });
+                              }
+                            }}
+                          >
+                            <span className="hover:text-gray-700 cursor-pointer size-5">
+                              &gt;
+                            </span>
+                          </button>
+                        </div>
                       )}
                       <div className="flex items-center gap-2 mb-1">
                         <h4
