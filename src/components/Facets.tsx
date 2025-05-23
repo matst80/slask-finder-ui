@@ -333,9 +333,9 @@ const StoreSelector = () => {
                 onClick={() => {
                   setStock(stock.filter((d) => d !== storeId));
                 }}
-                className="text-red-500"
+                className="text-gray-600 text-xs"
               >
-                <X />
+                Ta bort
               </button>
             </div>
           );
