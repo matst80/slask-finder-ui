@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { isNumberFacet, KeyFacet } from "../lib/types";
-import { ChevronUp, LoaderCircle, X } from "lucide-react";
+import { ChevronUp, LoaderCircle, X, MapPin, Store } from "lucide-react";
 
 import { stores } from "../lib/datalayer/stores";
 import { useQuery } from "../lib/hooks/useQuery";
@@ -244,6 +244,7 @@ const StoreSelector = () => {
   } = useQuery();
   const t = useTranslations();
   const [maxDistance, setMaxDistance] = useState(30);
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
   const sortedStores = useMemo(() => {
     return Object.values(stores)
       .map(({ displayName, id }) => ({
@@ -291,56 +292,133 @@ const StoreSelector = () => {
   // }, [maxDistance, stock]);
 
   return (
-    <>
-      <div className="flex gap-2">
-        <input
-          type="range"
-          min="5"
-          max="250"
-          value={maxDistance}
-          onChange={(e) => setMaxDistance(Number(e.target.value))}
-          onMouseUp={() => findCloseStores([stock[0]])}
-        />
-        <span>{maxDistance} km</span>
+    <div className="space-y-4">
+      {/* Distance Range Selector */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between text-sm">
+          <span className="font-medium text-gray-700">Max distance</span>
+          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+            {maxDistance} km
+          </span>
+        </div>
+        <div className="relative">
+          <input
+            type="range"
+            min="5"
+            max="250"
+            value={maxDistance}
+            onChange={(e) => setMaxDistance(Number(e.target.value))}
+            onMouseUp={() => findCloseStores([stock[0]])}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            style={{
+              background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${
+                ((maxDistance - 5) / (250 - 5)) * 100
+              }%, #e5e7eb ${
+                ((maxDistance - 5) / (250 - 5)) * 100
+              }%, #e5e7eb 100%)`,
+            }}
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>5 km</span>
+            <span>250 km</span>
+          </div>
+        </div>
       </div>
-      <select
-        value={stock[0] ?? ""}
-        onChange={(e) => {
-          const { value } = e.target;
-          if (value === "") {
-            setStock([]);
-          } else {
-            findCloseStores([value]);
-          }
-        }}
-        className="w-full p-2 border border-gray-300 bg-white rounded-md"
-      >
-        <option value="">{t("facets.stockEmptySelection")}</option>
-        {sortedStores.map((store) => (
-          <option key={store.id} value={store.id}>
-            {store.displayName}
-          </option>
-        ))}
-      </select>
-      <div className="bg-gray-50 p-2 my-2 rounded-md">
-        {stock.map((storeId) => {
-          const store = stores.find((d) => d.id === storeId);
-          if (!store) return null;
-          return (
-            <div key={storeId} className="flex items-center gap-2 ">
-              <span className="flex-1 shrink-0">{store.displayName}</span>
+
+      {/* Store Selector */}
+      <div className="space-y-2">
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <Store className="size-4 text-gray-500" />
+          Select store
+        </label>
+        <div className="relative">
+          <select
+            value={stock[0] ?? ""}
+            onChange={(e) => {
+              const { value } = e.target;
+              if (value === "") {
+                setStock([]);
+              } else {
+                findCloseStores([value]);
+              }
+            }}
+            onFocus={() => setIsSelectOpen(true)}
+            onBlur={() => setIsSelectOpen(false)}
+            className={cm(
+              "w-full px-4 py-3 pr-10 border border-gray-300 bg-white rounded-lg",
+              "appearance-none cursor-pointer transition-all duration-200",
+              "hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200",
+              "text-gray-900 placeholder-gray-500",
+              isSelectOpen && "border-blue-500 ring-2 ring-blue-200"
+            )}
+          >
+            <option value="" className="text-gray-500">
+              {t("facets.stockEmptySelection")}
+            </option>
+            {sortedStores.map((store) => (
+              <option key={store.id} value={store.id} className="text-gray-900">
+                {store.displayName}
+              </option>
+            ))}
+          </select>
+          <ChevronUp
+            className={cm(
+              "absolute right-3 top-1/2 transform -translate-y-1/2 size-5 text-gray-400 transition-transform duration-200 pointer-events-none",
+              isSelectOpen ? "rotate-0" : "rotate-180"
+            )}
+          />
+        </div>
+      </div>
+
+      {/* Selected Stores */}
+      {stock.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">
+              Selected stores ({stock.length})
+            </span>
+            {stock.length > 1 && (
               <button
-                onClick={() => {
-                  setStock(stock.filter((d) => d !== storeId));
-                }}
-                className="text-gray-600 text-xs"
+                onClick={() => setStock([])}
+                className="text-xs text-red-600 hover:text-red-800 transition-colors duration-200"
               >
-                Ta bort
+                {t("common.clear")}
               </button>
-            </div>
-          );
-        })}
-      </div>
-    </>
+            )}
+          </div>
+          <div className="space-y-2 max-h-screen overflow-y-auto">
+            {stock.map((storeId) => {
+              const store = stores.find((d) => d.id === storeId);
+              if (!store) return null;
+              return (
+                <div
+                  key={storeId}
+                  className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="size-2 bg-green-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-gray-900 flex-1">
+                      {store.displayName}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setStock(stock.filter((d) => d !== storeId));
+                    }}
+                    className={cm(
+                      "p-1.5 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50",
+                      "transition-all duration-200 opacity-70 group-hover:opacity-100"
+                    )}
+                    title={t("common.remove")}
+                  >
+                    <X className="size-4" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
