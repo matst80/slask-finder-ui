@@ -292,16 +292,16 @@ const StoreSelector = () => {
 
   return (
     <>
-      <div className="flex">
+      <div className="flex gap-2">
         <input
           type="range"
           min="5"
-          max="500"
+          max="250"
           value={maxDistance}
           onChange={(e) => setMaxDistance(Number(e.target.value))}
           onMouseUp={() => findCloseStores([stock[0]])}
         />
-        <span>{maxDistance}</span>
+        <span>{maxDistance} km</span>
       </div>
       <select
         value={stock[0] ?? ""}
