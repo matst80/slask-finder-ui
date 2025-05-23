@@ -243,7 +243,7 @@ const StoreSelector = () => {
     setStock,
   } = useQuery();
   const t = useTranslations();
-  const [maxDistance, setMaxDistance] = useState(10);
+  const [maxDistance, setMaxDistance] = useState(30);
   const sortedStores = useMemo(() => {
     return Object.values(stores)
       .map(({ displayName, id }) => ({
