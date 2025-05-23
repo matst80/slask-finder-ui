@@ -20,6 +20,7 @@ type Model =
   | "llama3.1"
   | "qwen3"
   | "qwen2.5"
+  | "qwen2.5:14b"
   | "phi4-mini:3.8b-q8_0";
 
 type ToolCall = {
@@ -49,7 +50,7 @@ const systemMessage: Message = {
     "You are a shopping assistant that make recommendations based on the data from tool calls. ask the user for product type, brand and other details. Use broad searches to start with and refine based on properties.",
 };
 
-const model: Model = "qwen3";
+const model: Model = "qwen2.5:14b";
 
 type OllamaResponse = {
   model: string;
