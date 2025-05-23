@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { isNumberFacet, KeyFacet } from "../lib/types";
-import { ChevronUp, LoaderCircle, X, MapPin, Store } from "lucide-react";
+import { ChevronUp, LoaderCircle, X, Store } from "lucide-react";
 
 import { stores } from "../lib/datalayer/stores";
 import { useQuery } from "../lib/hooks/useQuery";
