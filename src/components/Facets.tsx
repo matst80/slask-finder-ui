@@ -1,4 +1,4 @@
-import { use, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { isNumberFacet, KeyFacet } from "../lib/types";
 import { ChevronUp, LoaderCircle, X } from "lucide-react";
 
