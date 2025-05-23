@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { isNumberFacet, KeyFacet } from "../lib/types";
-import { ChevronUp, LoaderCircle } from "lucide-react";
+import { ChevronUp, LoaderCircle, X } from "lucide-react";
 
 import { stores } from "../lib/datalayer/stores";
 import { useQuery } from "../lib/hooks/useQuery";
@@ -12,6 +12,7 @@ import { useScreenWidth } from "../lib/hooks/useScreenWidth";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { useFacets } from "../lib/hooks/useFacets";
 import { StarRatingFacetSelector } from "./facets/RatingFacet";
+import { calculateDistance } from "./map-utils";
 
 const CategoryLevel = ({
   id,
@@ -242,6 +243,7 @@ const StoreSelector = () => {
     setStock,
   } = useQuery();
   const t = useTranslations();
+  const [maxDistance, setMaxDistance] = useState(10);
   const sortedStores = useMemo(() => {
     return Object.values(stores)
       .map(({ displayName, id }) => ({
@@ -250,18 +252,95 @@ const StoreSelector = () => {
       }))
       .sort((a, b) => a.displayName.localeCompare(b.displayName));
   }, []);
+
+  const findCloseStores = (selected: string[]) => {
+    const closeBy = new Set<string>(selected);
+    selected.forEach((storeId) => {
+      const targetStore = stores.find((d) => d.id === storeId);
+      if (!targetStore) return;
+      const { lat, lng } = targetStore.address.location;
+      const closeStores = stores
+        .map((store) => {
+          return {
+            ...store,
+            distance: calculateDistance(
+              {
+                coords: {
+                  latitude: lat,
+                  longitude: lng,
+                },
+              },
+              store.address.location
+            ),
+          };
+        })
+        .filter((store) => {
+          return store.distance <= maxDistance;
+        })
+        .forEach((store) => {
+          closeBy.add(store.id);
+        });
+
+      console.log("closeStores", closeStores);
+    });
+    setStock(Array.from(closeBy));
+  };
+
+  // useEffect(() => {
+  //   findCloseStores(stock);
+  // }, [maxDistance, stock]);
+
   return (
-    <select
-      value={stock?.[0] ?? ""}
-      onChange={(e) => setStock(e.target.value === "" ? [] : [e.target.value])}
-      className="w-full p-2 border border-gray-300 bg-white rounded-md"
-    >
-      <option value="">{t("facets.stockEmptySelection")}</option>
-      {sortedStores.map((store) => (
-        <option key={store.id} value={store.id}>
-          {store.displayName}
-        </option>
-      ))}
-    </select>
+    <>
+      <div className="flex">
+        <input
+          type="range"
+          min="5"
+          max="500"
+          value={maxDistance}
+          onChange={(e) => setMaxDistance(Number(e.target.value))}
+          onMouseUp={() => findCloseStores([stock[0]])}
+        />
+        <span>{maxDistance}</span>
+      </div>
+      <select
+        value={stock[0] ?? ""}
+        onChange={(e) => {
+          const { value } = e.target;
+          if (value === "") {
+            setStock([]);
+          } else {
+            findCloseStores([value]);
+          }
+        }}
+        className="w-full p-2 border border-gray-300 bg-white rounded-md"
+      >
+        <option value="">{t("facets.stockEmptySelection")}</option>
+        {sortedStores.map((store) => (
+          <option key={store.id} value={store.id}>
+            {store.displayName}
+          </option>
+        ))}
+      </select>
+      <div className="bg-gray-50 p-2 my-2 rounded-md">
+        {stock.map((storeId) => {
+          const store = stores.find((d) => d.id === storeId);
+          if (!store) return null;
+          return (
+            <div key={storeId} className="flex items-center gap-2 ">
+              <span className="flex-1 shrink-0">{store.displayName}</span>
+              <button
+                onClick={() => {
+                  setStock(stock.filter((d) => d !== storeId));
+                }}
+                className="text-red-500"
+              >
+                <X />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 };
