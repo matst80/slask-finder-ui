@@ -1,3 +1,4 @@
+"use client";
 import { ItemDetail } from "../../lib/types";
 import { useRelatedItems } from "../../hooks/searchHooks";
 import { Loader } from "../Loader";

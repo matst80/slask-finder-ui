@@ -1,5 +1,7 @@
+"use client";
 import { ItemDetail } from "../../lib/types";
-import { useFacetMap, queryToHash } from "../../hooks/searchHooks";
+import { useFacetMap } from "../../hooks/searchHooks";
+import { queryToHash } from "../../hooks/search-utils";
 import { useTranslations } from "../../lib/hooks/useTranslations";
 import { useMemo } from "react";
 import { isDefined } from "../../utils";

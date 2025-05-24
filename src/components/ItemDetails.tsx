@@ -1,27 +1,24 @@
-"use client";
-import { useState } from "react";
 import { makeImageUrl } from "../utils";
 import { ItemDetail } from "../lib/types";
 import { Store } from "../lib/datalayer/stores";
 import { CompareButton } from "./ResultItem";
-import { useAddToCart } from "../hooks/cartHooks";
 import { Price } from "./Price";
-import { Button } from "./ui/button";
-import { useTranslations } from "../lib/hooks/useTranslations";
+
 import { GroupedProperties } from "./GroupedProperties";
-import { Loader } from "./Loader";
-import { BotMessageSquare } from "lucide-react";
-import { toEcomTrackingEvent } from "./toImpression";
+
 import { Stars } from "./Stars";
-import { useProductData } from "../lib/utils";
-import { Sidebar } from "./ui/sidebar";
+
 import { RelatedItems } from "./itemdetails/RelatedItems";
 import { CompatibleButton } from "./itemdetails/CompatibleButton";
 import { RelationGroups } from "./itemdetails/RelationGroups";
 import { PopulateAdminDetails } from "./itemdetails/PopulateAdminDetails";
 import { BreadCrumbs } from "./itemdetails/BreadCrumbs";
-import { AiChatForCurrentProduct } from "./itemdetails/AiChatForCurrentProduct";
 import { StockList } from "./StockList";
+import { AddToCartButton } from "./AddToCartButton"; // Add this import
+import { convertProductValues } from "../lib/utils";
+import { ProductAiComponent } from "./ProductAiComponent";
+import { swedish } from "../translations/swedish";
+import { ssrTranslations } from "./ssrTranslations";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -29,11 +26,7 @@ export type StoreWithStock = Store & {
 };
 
 export const ItemDetails = (details: ItemDetail) => {
-  const { trigger: addToCart, isMutating } = useAddToCart();
-  const [open, setOpen] = useState(false);
-  const t = useTranslations();
-
-  if (!details) return null;
+  const t = ssrTranslations(swedish);
   const {
     title,
     img,
@@ -46,7 +39,7 @@ export const ItemDetails = (details: ItemDetail) => {
     values,
     disclaimer,
   } = details;
-  const { stockLevel, rating } = useProductData(values);
+  const { stockLevel, rating } = convertProductValues(values);
 
   return (
     <>
@@ -107,21 +100,7 @@ export const ItemDetails = (details: ItemDetail) => {
                     </div>
                   </div>
 
-                  <Button
-                    variant="default"
-                    onClick={() =>
-                      addToCart(
-                        { sku: details.sku, quantity: 1 },
-                        toEcomTrackingEvent(details, 0)
-                      )
-                    }
-                  >
-                    {isMutating ? (
-                      <Loader size="sm" />
-                    ) : (
-                      <span>{t("cart.add")}</span>
-                    )}
-                  </Button>
+                  <AddToCartButton details={details} />
                 </div>
 
                 <div className="flex items-center gap-2 justify-end">
@@ -130,26 +109,14 @@ export const ItemDetails = (details: ItemDetail) => {
                     className="font-medium rounded-sm focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:cursor-not-allowed border border-gray-300 text-gray-700 hover:bg-gray-50 bg-white/20 px-3 py-1 text-sm my-2"
                   />
                   <PopulateAdminDetails id={id} />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="shrink-1"
-                    title="Ask AI assistant"
-                    onClick={() => setOpen((p) => !p)}
-                  >
-                    <BotMessageSquare className="size-5" />
-                  </Button>
+                  <ProductAiComponent details={details} />
                 </div>
                 <StockList stock={stock} stockLevel={stockLevel} />
               </div>
             )}
           </div>
         </div>
-        <Sidebar side="right" open={open} setOpen={setOpen}>
-          <div className="bg-white flex flex-col overflow-y-auto py-6 px-4 h-full w-full max-w-full md:max-w-lg">
-            {open && <AiChatForCurrentProduct {...details} />}
-          </div>
-        </Sidebar>
+
         {/* Bottom Sections */}
         <div className="mt-6 space-y-6 md:mt-6 md:space-y-16">
           <BreadCrumbs values={values} />

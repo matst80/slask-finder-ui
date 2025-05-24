@@ -29,8 +29,8 @@ import { useTracking } from "../lib/hooks/TrackingContext";
 import { toEcomTrackingEvent } from "./toImpression";
 import { useDropdownFocus } from "./useDropdownFocus";
 import { useArrowKeyNavigation } from "./useArrowKeyNavigation";
-import { useProductData } from "../lib/utils";
-import { queryFromHash } from "../hooks/searchHooks";
+import { useProductData } from "../lib/useProductData";
+import { queryFromHash } from "../hooks/search-utils";
 
 const TrieSuggestions = ({
   toShow,

@@ -23,7 +23,9 @@ import {
   SessionListData,
 } from "../types";
 
-export const baseUrl = "";
+export const baseUrl = globalThis.document
+  ? ""
+  : "https://slask-finder.tornberg.me";
 
 export const getPrometheusQueryUrl = (
   query: string,

@@ -1,3 +1,4 @@
+"use client";
 import { useMemo } from "react";
 import { stores } from "../lib/datalayer/stores";
 import { StockData } from "../lib/types";

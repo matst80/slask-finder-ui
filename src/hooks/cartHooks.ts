@@ -7,12 +7,13 @@ import {
   getCart,
   removeFromCart,
 } from "../lib/datalayer/cart-api";
-import { useFetchMutation } from "../utils";
+
 import { trackCart } from "../lib/datalayer/beacons";
 import { BaseEcomEvent, Item } from "../lib/types";
 import { useNotifications } from "../components/ui-notifications/useNotifications";
 import { toEcomTrackingEvent } from "../components/toImpression";
 import { useCookieAcceptance } from "../CookieConsent";
+import { useFetchMutation } from "../useFetchMutation";
 
 const cartKey = "/cart";
 

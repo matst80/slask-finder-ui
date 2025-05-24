@@ -1,3 +1,4 @@
+"use client";
 import { useMemo, useState } from "react";
 import { ItemValues } from "../../lib/types";
 import { useAdmin } from "../../hooks/appState";

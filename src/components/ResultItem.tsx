@@ -1,3 +1,4 @@
+"use client";
 import { Item, StockData } from "../lib/types";
 import { makeImageUrl } from "../utils";
 import { PriceElement } from "./Price";
@@ -10,7 +11,7 @@ import { toEcomTrackingEvent } from "./toImpression";
 import { useTracking } from "../lib/hooks/TrackingContext";
 import { useCompareContext } from "../lib/hooks/CompareProvider";
 import { GitCompareArrows, X } from "lucide-react";
-import { useProductData } from "../lib/utils";
+import { useProductData } from "../lib/useProductData";
 import Link from "next/link";
 
 const hasStock = (value?: string | null) => {

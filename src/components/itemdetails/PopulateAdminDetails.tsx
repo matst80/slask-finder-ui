@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { ItemDetail } from "../../lib/types";
 import { useAdmin } from "../../hooks/appState";

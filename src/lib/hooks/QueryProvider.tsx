@@ -19,7 +19,7 @@ import {
   queryFromHash,
   queryToHash,
   toQuery,
-} from "../../hooks/searchHooks";
+} from "../../hooks/search-utils";
 import { mergeFilters } from "./queryUtils";
 import { AddPageResult, QueryContext } from "./queryContext";
 

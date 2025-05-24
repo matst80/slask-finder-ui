@@ -1,3 +1,4 @@
+"use client";
 import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 import { ImpressionContext } from "./ImpressionContext";
 import { useTracking } from "./TrackingContext";

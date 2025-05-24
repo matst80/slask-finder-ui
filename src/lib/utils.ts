@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo } from "react";
-import { getPrice } from "../utils";
 import {
   BaseTranslationType,
   FacetQuery,
   FilteringQuery,
   Item,
   ItemDetail,
+  ItemPrice,
   ItemsQuery,
+  ItemValues,
   PathInto,
   ValueMap,
 } from "./types";
@@ -212,25 +212,42 @@ export const getRating = (values: ItemDetail["values"]) => {
     numberOfRatings: Number(numberOfRatings),
   };
 };
-export const useProductData = (values: Item["values"]) => {
-  return useMemo(() => {
-    const rating = getRating(values);
 
-    const soldBy = values[ValueMap.SoldBy];
-    const isOutlet = values?.[ValueMap.Category1] == "Outlet";
-    const grade = values[ValueMap.Grade];
-    const price = getPrice(values);
-    const stockLevel = values[ValueMap.StockLevel];
-    const isOwn = soldBy == null || soldBy == "Elgiganten";
+export const convertProductValues = (values: Item["values"]) => {
+  const rating = getRating(values);
 
+  const soldBy = values[ValueMap.SoldBy];
+  const isOutlet = values?.[ValueMap.Category1] == "Outlet";
+  const grade = values[ValueMap.Grade];
+  const price = getPrice(values);
+  const stockLevel = values[ValueMap.StockLevel];
+  const isOwn = soldBy == null || soldBy == "Elgiganten";
+
+  return {
+    isOwn,
+    rating,
+    soldBy,
+    isOutlet,
+    grade,
+    price,
+    stockLevel,
+  };
+};
+export const getPrice = (values: ItemValues): ItemPrice => {
+  const current = Number(values["4"]);
+  const original = values["5"] != null ? Number(values["5"]) : null;
+  const discount = values["8"] != null ? Number(values["8"]) : null;
+
+  if (original != null && original > current) {
     return {
-      isOwn,
-      rating,
-      soldBy,
-      isOutlet,
-      grade,
-      price,
-      stockLevel,
+      isDiscounted: true,
+      current,
+      original,
+      discount: discount ?? original - current,
     };
-  }, [values]);
+  }
+  return {
+    isDiscounted: false,
+    current: Number(current ?? 0),
+  };
 };

@@ -2,7 +2,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useAdmin } from "../hooks/appState";
-import { queryToHash, useFacetGroups, useFacetMap } from "../hooks/searchHooks";
+import { useFacetGroups, useFacetMap } from "../hooks/searchHooks";
+import { queryToHash } from "../hooks/search-utils";
 import {
   FacetGroup,
   FacetListItem,

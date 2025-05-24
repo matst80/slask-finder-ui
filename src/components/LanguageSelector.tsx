@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useCookieAcceptance } from "../CookieConsent";
 import { getLocale, setCookie } from "../utils";
 
@@ -9,7 +10,8 @@ const regionNamesInEnglish = new Intl.DisplayNames(["en"], {
 
 export const LanguageSelector = () => {
   const { accepted } = useCookieAcceptance();
-  const locale = getLocale();
+  const [locale] = useState<string | null>(() => getLocale());
+
   if (accepted === "none" || accepted === null) {
     return null;
   }
@@ -19,7 +21,7 @@ export const LanguageSelector = () => {
         setCookie("sflocale", e.target.value, 365);
         globalThis.location?.reload();
       }}
-      value={locale}
+      value={locale ?? "sv-SE"}
       className="border border-gray-50 rounded-md p-2 appearance-none"
     >
       {regions.map((item) => (

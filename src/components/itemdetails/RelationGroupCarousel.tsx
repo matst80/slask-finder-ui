@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { RelationGroup, ItemValues } from "../../lib/types";
 import { cm } from "../../utils";
-import { queryToHash } from "../../hooks/searchHooks";
+import { queryToHash } from "../../hooks/search-utils";
 import { QueryProvider } from "../../lib/hooks/QueryProvider";
 import { QueryUpdater } from "../QueryMerger";
 import { ResultCarousel } from "./ResultCarousel";

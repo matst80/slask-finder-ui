@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { ItemValues } from "../../lib/types";
-import { queryToHash } from "../../hooks/searchHooks";
+import { queryToHash } from "../../hooks/search-utils";
 
 export const BreadCrumbs = ({ values }: { values: ItemValues }) => {
   const parts = useMemo(() => {

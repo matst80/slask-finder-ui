@@ -13,7 +13,7 @@ import { useTracking } from "../../lib/hooks/TrackingContext";
 import { toEcomTrackingEvent } from "../../components/toImpression";
 import { GroupedProperties } from "../../components/GroupedProperties";
 import { useCompareContext } from "../../lib/hooks/CompareProvider";
-import { useProductData } from "../../lib/utils";
+import { useProductData } from "../../lib/useProductData";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
   const { setItems } = useCompareContext();

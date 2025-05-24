@@ -376,7 +376,7 @@ const UserButton = () => {
 };
 
 export const NavMenu = () => {
-  const { accepted, manageConsent } = useCookieAcceptance();
+  const { manageConsent } = useCookieAcceptance();
   const t = useTranslations();
   return (
     <div className="flex flex-col justify-between gap-2 h-full bg-white">
@@ -392,8 +392,8 @@ export const NavMenu = () => {
         </ul>
         <div className="flex items-center justify-between mt-4">
           <Suspense>
-            <LanguageSelector />
-            <UserButton />
+            {/* <LanguageSelector /> */}
+            {/* <UserButton /> */}
           </Suspense>
         </div>
       </nav>
@@ -401,9 +401,7 @@ export const NavMenu = () => {
         <div className="text-xs text-gray-500">
           s10r UI (dev){" "}
           <Suspense>
-            {accepted != null && (
-              <button onClick={manageConsent}>{t("menu.cookies")}</button>
-            )}
+            <button onClick={manageConsent}>{t("menu.cookies")}</button>
           </Suspense>
         </div>
       </div>

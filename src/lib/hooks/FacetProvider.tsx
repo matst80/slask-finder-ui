@@ -4,7 +4,7 @@ import { useQuery } from "./useQuery";
 import { Facet, KeyFacet, isKeyFacet } from "../types";
 import { filteringQueryToHash } from "../utils";
 import { FacetContext } from "./facetContext";
-import { toQuery } from "../../hooks/searchHooks";
+import { toQuery } from "../../hooks/search-utils";
 import * as api from "../datalayer/api";
 
 const facetCache = new Map<string, Facet[]>();

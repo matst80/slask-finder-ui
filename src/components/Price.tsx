@@ -1,5 +1,6 @@
 import { ItemPrice, ItemValues } from "../lib/types";
-import { cm, getPrice } from "../utils";
+import { cm } from "../utils";
+import { getPrice } from "../lib/utils";
 
 type ValueProps = {
   values: ItemValues;
