@@ -19,7 +19,6 @@ import { useState, useEffect, Suspense } from "react";
 import { Sidebar } from "./ui/sidebar";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { TranslationKey } from "../translations/translations";
-import { LanguageSelector } from "./LanguageSelector";
 import { useUser } from "../adminHooks";
 import { useAdmin } from "../hooks/appState";
 import { Button } from "./ui/button";
@@ -343,7 +342,7 @@ const menu: NavigationItemType[] = [
   },
 ];
 
-const UserButton = () => {
+export const UserButton = () => {
   const { accepted } = useCookieAcceptance();
   const { data, isLoading } = useUser();
   const [, setIsAdmin] = useAdmin();
