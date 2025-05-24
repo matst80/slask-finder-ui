@@ -214,7 +214,7 @@ export const useDebounce = <TArg extends unknown[], TRet>(
   fn: (...args: TArg) => TRet,
   delay: number
 ) => {
-  let timeout: number;
+  let timeout: NodeJS.Timeout | undefined;
   return (...args: TArg) => {
     clearTimeout(timeout);
     timeout = globalThis.setTimeout(() => {
@@ -224,7 +224,10 @@ export const useDebounce = <TArg extends unknown[], TRet>(
 };
 
 export const cookieObject = () => {
-  const cookies = document.cookie.split("; ");
+  const cookies = globalThis.document?.cookie.split("; ");
+  if (!cookies || cookies.length === 0) {
+    return {};
+  }
   const cookieObject: { [key: string]: string } = {};
   for (const cookie of cookies) {
     const [key, value] = cookie.split("=");

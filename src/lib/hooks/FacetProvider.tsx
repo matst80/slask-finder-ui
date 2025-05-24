@@ -1,3 +1,4 @@
+"use client";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { useQuery } from "./useQuery";
 import { Facet, KeyFacet, isKeyFacet } from "../types";

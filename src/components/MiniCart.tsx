@@ -1,11 +1,12 @@
+"use client";
 import { ShoppingCartIcon, X } from "lucide-react";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 import { cm, isDefined, makeImageUrl } from "../utils";
 import { useAddToCart, useCart, useChangeQuantity } from "../hooks/cartHooks";
 import { ButtonAnchor } from "./ui/button";
-import { Link } from "react-router-dom";
-import { QuantityInput } from "../pages/builder/QuantityInput";
+import Link from "next/link";
+import { QuantityInput } from "../page-components/builder/QuantityInput";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { Sidebar } from "./ui/sidebar";
 import { Price, PriceElement, PriceValue } from "./Price";
@@ -18,7 +19,7 @@ import {
   ShippingInputs,
   ShippingOptionList,
   ShippingProvider,
-} from "../pages/Shipping";
+} from "../page-components/Shipping";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -92,7 +93,7 @@ const CartCompatible = ({ id }: { id: number }) => {
                     className="size-14 rounded-sm object-contain mix-blend-multiply aspect-square flex-shrink-0"
                   />
                   <Link
-                    to={`/product/${item.id}`}
+                    href={`/product/${item.id}`}
                     className="text-xs flex-1 flex flex-col"
                   >
                     <span className="line-clamp-1 font-medium overflow-ellipsis">
@@ -206,7 +207,10 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
           <div></div>
         )}
         <div className="flex flex-col">
-          <Link to={`/product/${item.itemId}`} className="text-sm font-medium">
+          <Link
+            href={`/product/${item.itemId}`}
+            className="text-sm font-medium"
+          >
             {item.name}
           </Link>
           <span className="text-xs text-gray-500">
@@ -333,12 +337,12 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
               {cart?.paymentStatus === "checkout_completed" ? (
                 <ButtonAnchor
                   onClick={onClose}
-                  to={`/confirmation/${cart.orderReference}`}
+                  href={`/confirmation/${cart.orderReference}`}
                 >
                   {t("cart.show_confirmation")}
                 </ButtonAnchor>
               ) : (
-                <ButtonAnchor onClick={onClose} to={"/checkout"}>
+                <ButtonAnchor onClick={onClose} href={"/checkout"}>
                   {t("cart.proceed_to_checkout")}
                 </ButtonAnchor>
               )}

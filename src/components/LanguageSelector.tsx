@@ -1,3 +1,4 @@
+"use client";
 import { useCookieAcceptance } from "../CookieConsent";
 import { getLocale, setCookie } from "../utils";
 
@@ -16,7 +17,7 @@ export const LanguageSelector = () => {
     <select
       onChange={(e) => {
         setCookie("sflocale", e.target.value, 365);
-        window.location.reload();
+        globalThis.location?.reload();
       }}
       value={locale}
       className="border border-gray-50 rounded-md p-2 appearance-none"

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useAdmin } from "../hooks/appState";
 import { queryToHash, useFacetGroups, useFacetMap } from "../hooks/searchHooks";
 import {
@@ -167,7 +167,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
           <div className="button-group">
             <Link
               aria-label={t("common.search")}
-              to={`/#${queryToHash(customQuery)}`}
+              href={`/#${queryToHash(customQuery)}`}
             >
               <Search className="size-5" />
             </Link>
@@ -270,7 +270,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                           field.value != null && (
                             <Link
                               className="text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium inline-flex items-center gap-1"
-                              to={`/#${queryToHash({
+                              href={`/#${queryToHash({
                                 page: 0,
                                 string: [
                                   {

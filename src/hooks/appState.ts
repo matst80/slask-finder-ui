@@ -3,7 +3,7 @@ import { useAtom } from "jotai/react";
 import { useEffect } from "react";
 import { trackAction } from "../lib/datalayer/beacons";
 
-const adminAtom = atom(globalThis.location.hostname === "localhost");
+const adminAtom = atom(false);
 
 export const useKeyboardAdminToggle = () => {
   const [_, setAdmin] = useAtom(adminAtom);

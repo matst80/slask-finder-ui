@@ -1,3 +1,4 @@
+"use client";
 import { PropsWithChildren } from "react";
 import { Translations } from "../../translations/translations";
 import { translationContext } from "./translationContext";

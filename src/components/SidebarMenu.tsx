@@ -1,3 +1,4 @@
+"use client";
 import {
   Menu,
   X,
@@ -14,17 +15,18 @@ import {
   BotMessageSquare,
   Watch,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Sidebar } from "./ui/sidebar";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { TranslationKey } from "../translations/translations";
-import { Link, useLocation } from "react-router-dom";
 import { LanguageSelector } from "./LanguageSelector";
 import { useUser } from "../adminHooks";
 import { useAdmin } from "../hooks/appState";
 import { Button } from "./ui/button";
 import { cm } from "../utils";
 import { useCookieAcceptance } from "../CookieConsent";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 type NavigationItemType = {
   translationKey: TranslationKey;
@@ -61,9 +63,9 @@ const NavigationItem = ({
   color = "from-blue-500 to-indigo-600",
 }: NavigationItemType & { level: number }) => {
   const t = useTranslations();
-  const location = useLocation();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const isActive = location.pathname === url;
+  const isActive = pathname === url;
   const hasChildren = children && children.length > 0;
 
   // Automatically open menu items when their children are active
@@ -72,26 +74,22 @@ const NavigationItem = ({
       hasChildren &&
       children.some(
         (child) =>
-          location.pathname === child.url ||
+          pathname === child.url ||
           (child.children &&
-            child.children.some(
-              (grandchild) => location.pathname === grandchild.url
-            ))
+            child.children.some((grandchild) => pathname === grandchild.url))
       )
     ) {
       setIsOpen(true);
     }
-  }, [location.pathname, hasChildren, children]);
+  }, [pathname, hasChildren, children]);
 
   const isChildActive =
     hasChildren &&
     children.some(
       (child) =>
-        location.pathname === child.url ||
+        pathname === child.url ||
         (child.children &&
-          child.children.some(
-            (grandchild) => location.pathname === grandchild.url
-          ))
+          child.children.some((grandchild) => pathname === grandchild.url))
     );
 
   const content = (
@@ -153,7 +151,7 @@ const NavigationItem = ({
           </a>
         ) : (
           <Link
-            to={url}
+            href={url}
             accessKey={accessKey}
             className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 
             ${
@@ -359,6 +357,7 @@ const UserButton = () => {
   if (accepted === "none" || accepted === null) {
     return null;
   }
+
   return (
     <a href={loggedIn ? "/admin/logout" : "/admin/login"}>
       <Button
@@ -392,8 +391,10 @@ export const NavMenu = () => {
           ))}
         </ul>
         <div className="flex items-center justify-between mt-4">
-          <LanguageSelector />
-          <UserButton />
+          <Suspense>
+            <LanguageSelector />
+            <UserButton />
+          </Suspense>
         </div>
       </nav>
       <div className="pt-4 border-t border-gray-100 mt-auto p-4 bg-gray-50">

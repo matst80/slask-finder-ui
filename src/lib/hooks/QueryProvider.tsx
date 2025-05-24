@@ -1,3 +1,4 @@
+"use client";
 import {
   PropsWithChildren,
   useCallback,
@@ -30,7 +31,7 @@ export type QueryProviderRef = {
 };
 
 const loadQueryFromHash = (): ItemsQuery => {
-  const hash = window.location.hash.substring(1);
+  const hash = globalThis.location?.hash.substring(1);
   if (!hash) {
     return {
       page: 0,

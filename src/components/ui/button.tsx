@@ -1,6 +1,6 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import { cm } from "../../utils";
-import { Link, LinkProps } from "react-router-dom";
+import Link, { LinkProps } from "next/link";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: keyof typeof variantStyles;
@@ -9,6 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 interface ButtonLinkProps extends LinkProps {
   variant?: keyof typeof variantStyles;
+  className?: string;
   size?: keyof typeof sizeStyles;
 }
 
@@ -35,7 +36,7 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 
-export const ButtonLink: React.FC<ButtonLinkProps> = ({
+export const ButtonLink: React.FC<PropsWithChildren<ButtonLinkProps>> = ({
   children,
   variant = "default",
   size = "default",
@@ -57,23 +58,23 @@ export const ButtonLink: React.FC<ButtonLinkProps> = ({
   );
 };
 
-export const ButtonAnchor: React.FC<ButtonLinkProps> = ({
+export const ButtonAnchor: React.FC<PropsWithChildren<ButtonLinkProps>> = ({
   children,
+  href,
   variant = "default",
   size = "default",
-  to,
   className = "",
   ...props
 }) => {
   return (
     <a
-      href={to.toString()}
       className={cm(
         baseStyles,
         variantStyles[variant],
         sizeStyles[size],
         className
       )}
+      href={href.toString()}
       {...props}
     >
       {children}

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { cm } from "../../utils";
 import ReactRangeSliderInput from "react-range-slider-input";
-import "react-range-slider-input/dist/style.css";
+//import "react-range-slider-input/dist/style.css";
 
 type SliderProps = {
   min: number;

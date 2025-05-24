@@ -1,3 +1,4 @@
+"use client";
 import {
   createElement,
   HTMLAttributes,
@@ -10,8 +11,7 @@ import {
 } from "react";
 import { ChevronUp, Lightbulb, Search, SearchIcon } from "lucide-react";
 import { cm, makeImageUrl } from "../utils";
-import { useNavigate } from "react-router-dom";
-import { useQuery } from "../lib/hooks/useQuery";
+import { useRouter } from "next/navigation";
 import { StockBalloon } from "./ResultItem";
 import { useSuggestions } from "../lib/hooks/useSuggestions";
 import { CmsPicture, ItemsQuery } from "../lib/types";
@@ -160,15 +160,6 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
     },
     [suggestions, setTerm, smartQuery]
   );
-
-  // useEffect(() => {
-  //   if (globalQuery.query != null && inputRef.current != null) {
-  //     inputRef.current.value = globalQuery.query;
-  //   }
-  //   requestAnimationFrame(() => {
-  //     updatePosition();
-  //   });
-  // }, [globalQuery, inputRef]);
 
   useEffect(() => {
     const updateFromHash = () => {
@@ -342,12 +333,12 @@ const SuggestedProduct = (item: SuggestedProduct & { index: number }) => {
   const { id, title, img, values, stock } = item;
   const { stockLevel, soldBy, isOutlet, grade, isOwn } = useProductData(values);
   const { track } = useTracking();
-  const navigate = useNavigate();
+  const router = useRouter();
   return (
     <button
       onClick={() => {
         track({ type: "click", item: toEcomTrackingEvent(item, item.index) });
-        navigate(`/product/${id}`);
+        router.push(`/product/${id}`);
       }}
       className="p-2 flex gap-2 w-full text-left items-center relative"
     >

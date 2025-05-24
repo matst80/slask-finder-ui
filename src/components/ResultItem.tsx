@@ -3,8 +3,6 @@ import { makeImageUrl } from "../utils";
 import { PriceElement } from "./Price";
 import { Stars } from "./Stars";
 import { PropsWithChildren, useMemo, useState } from "react";
-import { Link, useViewTransitionState } from "react-router-dom";
-import { useQuery } from "../lib/hooks/useQuery";
 import { useImpression } from "../lib/hooks/useImpression";
 import { TimeAgo } from "./TimeAgo";
 import { useTranslations } from "../lib/hooks/useTranslations";
@@ -13,6 +11,7 @@ import { useTracking } from "../lib/hooks/TrackingContext";
 import { useCompareContext } from "../lib/hooks/CompareProvider";
 import { GitCompareArrows, X } from "lucide-react";
 import { useProductData } from "../lib/utils";
+import Link from "next/link";
 
 const hasStock = (value?: string | null) => {
   return value != null && value != "0";
@@ -205,7 +204,7 @@ export const ResultItemInner = ({
     badgeUrl,
     values,
     stock,
-    id,
+    //id,
     children,
     bp,
     lastUpdate,
@@ -215,9 +214,7 @@ export const ResultItemInner = ({
   const { price, rating, grade, isOwn, isOutlet, soldBy, stockLevel } =
     useProductData(values);
 
-  const isTransitioning = useViewTransitionState(
-    transitionUrl ?? `/product/${id}`
-  );
+  const isTransitioning = false;
   return (
     <>
       <div className="relative pt-4 px-4">
@@ -349,7 +346,7 @@ export const DataView = ({ item }: { item: Item }) => {
 export const PlaceholderItem = () => {
   return (
     <Link
-      to={`#`}
+      href={`#`}
       className="group bg-white md:shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
     >
       <div className="min-h-[465px]"></div>
@@ -373,7 +370,7 @@ export const ResultItem = ({
   return (
     <Link
       ref={watch(ecomItem)}
-      to={`/product/${item.id}`}
+      href={`/product/${item.id}`}
       key={`item-${item.id}`}
       //viewTransition={true}
       className="group bg-white md:shadow-xs hover:shadow-md transition-all hover:z-10 duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"

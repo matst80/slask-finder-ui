@@ -28,7 +28,7 @@ import { Link, useLoaderData } from "react-router-dom";
 import { TimeAgo } from "./TimeAgo";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { Loader } from "./Loader";
-import { JsonView } from "../pages/tracking/JsonView";
+import { JsonView } from "../page-components/tracking/JsonView";
 
 const SearchEventElement = ({ string, query }: SearchEvent) => {
   const { data } = useFacetList();

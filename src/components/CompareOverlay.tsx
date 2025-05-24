@@ -1,3 +1,4 @@
+"use client";
 import { MessageSquareMore, X } from "lucide-react";
 import { useCompareContext } from "../lib/hooks/CompareProvider";
 import { cm, isDefined, makeImageUrl } from "../utils";
@@ -7,12 +8,12 @@ import { FacetListItem, Item } from "../lib/types";
 import { ResultItemInner } from "./ResultItem";
 import { Dialog } from "./ui/dialog";
 import { matchValue } from "../lib/utils";
-import { convertItemSimple } from "../pages/tools";
+import { convertItemSimple } from "../page-components/tools";
 import {
   AiShoppingProvider,
   MessageList,
   QueryInput,
-} from "../pages/AiShopper";
+} from "../page-components/AiShopper";
 
 const FacetCells = ({
   facet,

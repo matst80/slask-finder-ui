@@ -1,6 +1,8 @@
+"use client";
 import React, { createContext, PropsWithChildren, useCallback } from "react";
 import { BaseEcomEvent } from "../types";
 import { useCookieAcceptance } from "../../CookieConsent";
+import { slaskTracker } from "../../tracking/slaskTracker";
 
 export type TrackingEvent = ImpressionEvent | ClickEvent;
 
@@ -44,9 +46,9 @@ type TrackingContextProps = {
 const TrackingContext = createContext<TrackingContextProps | null>(null);
 
 export const TrackingProvider = ({
-  handlers: initialHandlers,
+  handlers: initialHandlers = [slaskTracker()],
   children,
-}: PropsWithChildren<{ handlers: TrackingHandler[] }>) => {
+}: PropsWithChildren<{ handlers?: TrackingHandler[] }>) => {
   const context = React.useContext(TrackingContext);
   const all = [
     ...initialHandlers,

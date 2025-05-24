@@ -38,7 +38,7 @@ import {
 import { useQuery } from "../lib/hooks/useQuery";
 import { trackAction } from "../lib/datalayer/beacons";
 import { StockList } from "./StockList";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { GroupedProperties } from "./GroupedProperties";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
@@ -53,8 +53,8 @@ import {
   AiShoppingProvider,
   MessageList,
   QueryInput,
-} from "../pages/AiShopper";
-import { convertDetails } from "../pages/tools";
+} from "../page-components/AiShopper";
+import { convertDetails } from "../page-components/tools";
 import { Sidebar } from "./ui/sidebar";
 
 export type StoreWithStock = Store & {
@@ -180,7 +180,7 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, "values">) => {
   if (stringFilters.length === 0) return null;
   return (
     <ButtonLink
-      to={`/#${queryToHash({
+      href={`/#${queryToHash({
         page: 0,
         string: stringFilters,
         range: [],
@@ -304,7 +304,7 @@ const RelationGroupCarousel = ({
           {group.name}
         </button>
         <Link
-          to={`/#${queryToHash(query)}`}
+          href={`/#${queryToHash(query)}`}
           className={cm("text-sm hover:underline transition-all")}
         >
           Show all
@@ -416,7 +416,7 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
     <div className="inline-flex items-center overflow-x-auto max-w-full mb-4">
       {parts.map(({ id, value }, idx) => (
         <Link
-          to={`/#${queryToHash({
+          href={`/#${queryToHash({
             page: 0,
             string: [
               {

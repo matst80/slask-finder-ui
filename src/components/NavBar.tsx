@@ -1,6 +1,6 @@
 import { Bell, LoaderCircle, Menu, Settings, User } from "lucide-react";
 import { Button } from "./ui/button";
-import { Link, To } from "react-router-dom";
+import Link from "next/link";
 import { cm } from "../utils";
 import { useUser } from "../adminHooks";
 import { PropsWithChildren, useEffect } from "react";
@@ -36,9 +36,9 @@ const UserButton = () => {
   );
 };
 
-const MenuLink = ({ to, children }: PropsWithChildren<{ to: To }>) => (
+const MenuLink = ({ to, children }: PropsWithChildren<{ to: string }>) => (
   <Link
-    to={to}
+    href={to}
     className="text-gray-600 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium"
   >
     {children}
@@ -69,9 +69,9 @@ export function Navbar() {
             </div>
           </div>
           <div className="flex items-center">
-            <div className="ml-4 flex items-center md:ml-6">
+            {/* <div className="ml-4 flex items-center md:ml-6">
               <LanguageSelector />
-            </div>
+            </div> */}
             <div className="hidden md:block">
               <div className="ml-4 flex items-center md:ml-6">
                 <Button variant="ghost" size="icon">

@@ -7,12 +7,12 @@ import { Button } from "./ui/button";
 import { BotMessageSquare } from "lucide-react";
 import { Sidebar } from "./ui/sidebar";
 import { useFacetMap } from "../hooks/searchHooks";
-import { convertItemSimple } from "../pages/tools";
+import { convertItemSimple } from "../page-components/tools";
 import {
   AiShoppingProvider,
   MessageList,
   QueryInput,
-} from "../pages/AiShopper";
+} from "../page-components/AiShopper";
 
 export const TotalResultText = ({
   className = "md:text-2xl font-bold",
