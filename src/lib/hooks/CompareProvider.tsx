@@ -59,7 +59,7 @@ export const CompareProvider = ({
   children,
   compareAllFacets,
 }: PropsWithChildren<{ compareAllFacets?: boolean }>) => {
-  const [items, setItems] = useState<Item[]>(LoadCompareState());
+  const [items, setItems] = useState<Item[]>([]);
   const [diffWarning, setDiffWarning] = useState(false);
   const [matchingFacetIds, setMatchingFacetIds] = useState<Set<number>>(
     new Set()
@@ -98,6 +98,13 @@ export const CompareProvider = ({
 
     setMatchingFacetIds(compareAllFacets ? allFacets : uniqueFacets);
   }, [items]);
+
+  useEffect(() => {
+    const initialItems = LoadCompareState();
+    if (initialItems.length > 0) {
+      setItems(initialItems);
+    }
+  }, []);
 
   return (
     <CompareContext.Provider value={value}>

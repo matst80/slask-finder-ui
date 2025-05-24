@@ -131,7 +131,7 @@ export const BuilderOverview = () => {
                         </span>
 
                         <ButtonLink
-                          to={`/builder/${component.type}/${component.id}`}
+                          href={`/builder/${component.type}/${component.id}`}
                           variant="outline"
                           size="icon"
                           className="ml-2"
@@ -157,7 +157,7 @@ export const BuilderOverview = () => {
             <div className="flex flex-col md:flex-row gap-2 mt-2">
               {unselectedComponents.map((item, i) => (
                 <ButtonLink
-                  to={`/builder/${item.type}/${item.id}`}
+                  href={`/builder/${item.type}/${item.id}`}
                   variant="outline"
                   className="flex items-center gap-2"
                   key={i}

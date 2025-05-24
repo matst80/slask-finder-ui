@@ -47,7 +47,7 @@ export const ComponentSelectorBox = ({
 };
 
 export const BuilderStartPage = () => {
-  const { rules, setOrder } = useBuilderContext();
+  const { rules } = useBuilderContext();
 
   const t = useTranslations();
 

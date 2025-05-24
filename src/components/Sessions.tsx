@@ -24,11 +24,12 @@ import {
   Sparkles,
   TabletSmartphone,
 } from "lucide-react";
-import { Link, useLoaderData } from "react-router-dom";
+
 import { TimeAgo } from "./TimeAgo";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { Loader } from "./Loader";
 import { JsonView } from "../page-components/tracking/JsonView";
+import Link from "next/link";
 
 const SearchEventElement = ({ string, query }: SearchEvent) => {
   const { data } = useFacetList();
@@ -408,7 +409,7 @@ const Session = (props: SessionData) => {
   const t = useTranslations();
   return (
     <Link
-      to={`/stats/session/${id}`}
+      href={`/stats/session/${id}`}
       className="min-w-fit flex flex-col p-4 bg-white rounded-xs shadow-xs hover:shadow-md transition-shadow relative"
     >
       <div className="text-lg font-medium mb-2" title={user_agent}>
@@ -465,9 +466,7 @@ export const Sessions = () => {
   );
 };
 
-export const SessionView = () => {
-  const data = useLoaderData() as SessionData | null;
-
+export const SessionView = (data: SessionData) => {
   const t = useTranslations();
   const eventSummary = useMemo(() => {
     if (!data)

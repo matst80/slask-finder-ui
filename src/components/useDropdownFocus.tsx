@@ -7,7 +7,7 @@ type FocusOptions = {
 
 export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const targetRef = useRef<HTMLElement>(null);
+  const targetRef = useRef<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const close = useCallback(() => {
     const elm = inputRef.current;

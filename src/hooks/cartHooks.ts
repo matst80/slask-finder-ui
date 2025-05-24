@@ -1,3 +1,4 @@
+"use client";
 import useSWR from "swr";
 import { clearCart } from "../lib/datalayer/api";
 import {

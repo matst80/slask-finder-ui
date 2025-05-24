@@ -1,3 +1,4 @@
+"use client";
 import { MouseEvent, useEffect, useState } from "react";
 import { cookieObject, setCookie } from "./utils";
 import { Dialog } from "./components/ui/dialog";

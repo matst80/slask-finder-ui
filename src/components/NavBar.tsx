@@ -7,7 +7,6 @@ import { PropsWithChildren, useEffect } from "react";
 import { MiniCart } from "./MiniCart";
 import { useAdmin } from "../hooks/appState";
 import { useTranslations } from "../lib/hooks/useTranslations";
-import { LanguageSelector } from "./LanguageSelector";
 
 const UserButton = () => {
   const { data, isLoading } = useUser();

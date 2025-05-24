@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { useAdmin } from "../hooks/appState";
 import { useFacetMap } from "../hooks/searchHooks";
 import { useQuery } from "../lib/hooks/useQuery";
@@ -12,6 +11,7 @@ import { QueryUpdater } from "./QueryMerger";
 import { ButtonLink } from "./ui/button";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { useClipboard } from "../lib/hooks/useClipboard";
+import Link from "next/link";
 
 const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
 
@@ -86,7 +86,7 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
             <QueryUpdater query={customQuery} />
             <TotalResultText className="text-sm" />
           </QueryProvider>
-          <ButtonLink onClick={() => setQuery(customQuery)} to="/">
+          <ButtonLink onClick={() => setQuery(customQuery)} href="/">
             {t("common.search")}
           </ButtonLink>
         </div>
@@ -170,7 +170,7 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                   field.value != null && (
                     <Link
                       className="text-blue-600 hover:text-blue-800 text-sm font-medium inline-flex items-center gap-1"
-                      to="/"
+                      href="/"
                       onClick={() => {
                         if (field.linkedId != null && field.value != null) {
                           setQuery({

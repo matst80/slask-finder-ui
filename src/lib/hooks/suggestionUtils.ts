@@ -1,3 +1,4 @@
+"use client";
 import { byPriority, isDefined } from "../../utils";
 import {
   KeyFacet,

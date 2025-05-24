@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { getPrometheusQueryUrl, getPrometheusData } from "../lib/datalayer/api";

@@ -1,10 +1,10 @@
 import { useState, useMemo } from "react";
 import { ChevronUp } from "lucide-react";
 import { QueryProvider } from "../lib/hooks/QueryProvider";
-import { ResultCarousel } from "./ItemDetails";
 import { TotalResultText } from "./ResultHeader";
 import { ItemsQuery, RelationMatch } from "../lib/types";
 import { QueryUpdater } from "./QueryMerger";
+import { ResultCarousel } from "./itemdetails/ResultCarousel";
 
 const hasValue = (
   relation: RelationMatch

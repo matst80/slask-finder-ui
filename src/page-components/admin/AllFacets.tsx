@@ -106,7 +106,7 @@ const FacetValues = ({ id }: { id: number }) => {
               </Button>
               <ButtonLink
                 variant="ghost"
-                to={`/#${queryToHash({
+                href={`/#${queryToHash({
                   page: 0,
                   string: [{ id, value: [value] }],
                   range: [],

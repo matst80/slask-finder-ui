@@ -400,9 +400,11 @@ export const NavMenu = () => {
       <div className="pt-4 border-t border-gray-100 mt-auto p-4 bg-gray-50">
         <div className="text-xs text-gray-500">
           s10r UI (dev){" "}
-          {accepted != null && (
-            <button onClick={manageConsent}>{t("menu.cookies")}</button>
-          )}
+          <Suspense>
+            {accepted != null && (
+              <button onClick={manageConsent}>{t("menu.cookies")}</button>
+            )}
+          </Suspense>
         </div>
       </div>
     </div>

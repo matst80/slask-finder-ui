@@ -1,6 +1,5 @@
 // src/app/builder/product/[componentId]/[id]/page.tsx
 
-import ScrollToTop from "../../../../../components/ScrollToTop";
 import { getRawData } from "../../../../../lib/datalayer/api";
 import { ComponentId } from "../../../../../page-components/builder/builder-types";
 import { BuilderProductPage } from "../../../../../page-components/builder/BuilderProductPage";
@@ -18,7 +17,6 @@ export default async function BuilderProductDetailsPage({
   return (
     <>
       <BuilderProductPage {...details} componentId={componentId} />
-      <ScrollToTop />
     </>
   );
 }

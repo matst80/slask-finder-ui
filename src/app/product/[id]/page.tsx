@@ -1,25 +1,25 @@
-// src/app/product/[id]/page.tsx
-import { ProductPage } from "../../../components/ProductPage";
-import { PageContainer } from "../../../PageContainer";
-import ScrollToTop from "../../../components/ScrollToTop";
 import { getRawData } from "../../../lib/datalayer/api";
+import { ItemDetails } from "../../../components/ItemDetails";
+import { Suspense } from "react";
+import { Loader } from "../../../components/Loader";
 
-// Data fetching will need to be adapted to Next.js (getServerSideProps or client-side with SWR/useEffect)
+const DetailLoader = async ({ id }: { id: number }) => {
+  const details = await getRawData(id); // Replace with actual ID or logic to fetch details
+  return <ItemDetails {...details} />;
+};
 
 export default async function ProductDetailsPage({
   params,
 }: {
   params: Promise<{ id: number | string }>;
 }) {
-  const { id } = await params; // Await the params promise to get the actual id
-  // const productData = useLoaderData(); // This is from react-router, needs replacement
-  // In Next.js, you'd fetch data based on params.id
-  const data = await getRawData(id); // Example API call, adjust as needed
+  const { id } = await params;
+
   return (
-    <PageContainer>
-      {/* Pass params.id or fetched data to ProductPage */}
-      <ProductPage {...data} />
-      <ScrollToTop />
-    </PageContainer>
+    <div className="container mx-auto px-4 py-8">
+      <Suspense fallback={<Loader size="md" />}>
+        <DetailLoader id={Number(id)} />
+      </Suspense>
+    </div>
   );
 }
