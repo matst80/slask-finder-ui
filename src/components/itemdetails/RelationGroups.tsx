@@ -5,7 +5,6 @@ import { useRelationGroups } from "../../hooks/searchHooks";
 import { CompatibleItems } from "./CompatibleItems";
 import { RelationGroupCarousel } from "./RelationGroupCarousel";
 import { hasRequiredValue } from "./helpers";
-import { cm } from "../../utils"; // Added cm import
 
 export const RelationGroups = ({
   values,
