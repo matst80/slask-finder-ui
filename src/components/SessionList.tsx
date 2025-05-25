@@ -1,3 +1,4 @@
+"use client";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { Sessions } from "./Sessions";
 

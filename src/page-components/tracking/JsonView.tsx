@@ -1,3 +1,4 @@
+"use client";
 import { useClipboard } from "../../lib/hooks/useClipboard";
 
 export const JsonView = ({ data }: { data: unknown }) => {

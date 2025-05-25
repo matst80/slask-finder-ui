@@ -1,3 +1,4 @@
+"use client";
 import useSWR from "swr";
 import { getTrackingFieldPopularity } from "../../lib/datalayer/api";
 import { useFacetMap } from "../../hooks/searchHooks";

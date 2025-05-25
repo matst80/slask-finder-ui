@@ -1,3 +1,4 @@
+"use client";
 import useSWR from "swr";
 import { getTrackingPopularity } from "../../lib/datalayer/api";
 import { useItemData } from "../../hooks/trackingHooks";

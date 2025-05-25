@@ -1,3 +1,4 @@
+"use client";
 import useSWR from "swr";
 import { getTrackingQueries } from "../../lib/datalayer/api";
 import { useTranslations } from "../../lib/hooks/useTranslations";

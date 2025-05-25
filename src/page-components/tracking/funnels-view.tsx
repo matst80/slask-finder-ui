@@ -1,3 +1,4 @@
+"use client";
 import useSWR from "swr";
 import { getFunnelData } from "../../lib/datalayer/api";
 import { FunnelChart } from "./funnel-chart";

@@ -1,3 +1,4 @@
+"use client";
 import useSWR from "swr";
 import { getTrackingUpdates } from "../../lib/datalayer/api";
 import { ResultItem } from "../../components/ResultItem";

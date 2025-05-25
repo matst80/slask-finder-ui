@@ -1,3 +1,4 @@
+"use client";
 import { useMemo, useState } from "react";
 import { useItemData, useSessions } from "../hooks/trackingHooks";
 import {
@@ -409,7 +410,7 @@ const Session = (props: SessionData) => {
   const t = useTranslations();
   return (
     <Link
-      href={`/stats/session/${id}`}
+      href={`/stats/sessions/${id}`}
       className="min-w-fit flex flex-col p-4 bg-white rounded-xs shadow-xs hover:shadow-md transition-shadow relative"
     >
       <div className="text-lg font-medium mb-2" title={user_agent}>

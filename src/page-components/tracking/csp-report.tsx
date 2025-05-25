@@ -1,3 +1,4 @@
+"use client";
 import useSWR from "swr";
 import { toJson } from "../../lib/datalayer/api";
 import { CheckCircle2 } from "lucide-react";
