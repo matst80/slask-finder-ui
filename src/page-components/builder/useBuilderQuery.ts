@@ -1,3 +1,4 @@
+"use client";
 import { useContext, useMemo } from "react";
 import { BuilderContext } from "./builder-context";
 import { fixSingleArray, isRangeFilter, isStringFilter } from "./builder-utils";

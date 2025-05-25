@@ -1,3 +1,4 @@
+"use client";
 import { PropsWithChildren } from "react";
 import { useBuilderContext } from "../useBuilderContext";
 import { ButtonLink } from "../../../components/ui/button";

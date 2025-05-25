@@ -1,3 +1,4 @@
+"use client";
 import { useMemo } from "react";
 import { SelectedAdditionalFilter } from "./builder-types";
 import { GPU, CPU, PSU } from "./rules";

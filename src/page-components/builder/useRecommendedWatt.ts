@@ -1,3 +1,4 @@
+"use client";
 import { useMemo } from "react";
 import { asNumber } from "./builder-utils";
 import { GPU } from "./rules";

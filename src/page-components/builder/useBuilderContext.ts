@@ -1,3 +1,4 @@
+"use client";
 import { useContext } from "react";
 import { BuilderContext } from "./builder-context";
 

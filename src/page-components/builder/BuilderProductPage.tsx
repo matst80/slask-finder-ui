@@ -1,28 +1,18 @@
 import { Price } from "../../components/Price";
 import { makeImageUrl } from "../../utils";
 import { StockList } from "../../components/StockList";
-import { Button, ButtonLink } from "../../components/ui/button";
-import { useBuilderContext } from "./useBuilderContext";
-import { isParentId, ItemWithComponentId } from "./builder-types";
-import { trackAction } from "../../lib/datalayer/beacons";
+import { ItemWithComponentId } from "./builder-types";
 import { BuilderFooterBar } from "./components/BuilderFooterBar";
-import { useBuilderStep } from "./useBuilderStep";
-import { useTranslations } from "../../lib/hooks/useTranslations";
-import { Loader } from "../../components/Loader";
-import { useTracking } from "../../lib/hooks/TrackingContext";
-import { toEcomTrackingEvent } from "../../components/toImpression";
 import { GroupedProperties } from "../../components/GroupedProperties";
-import { useCompareContext } from "../../lib/hooks/CompareProvider";
-import { useProductData } from "../../lib/useProductData";
+import { BuilderOtherComponents } from "./BuilderOtherComponents";
+import { AddToBuildButton } from "./AddToBuildButton";
+import { ssrTranslations } from "../../components/ssrTranslations";
+import { swedish } from "../../translations/swedish";
+import { convertProductValues } from "../../lib/utils";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
-  const { setItems } = useCompareContext();
-  const { setSelectedItems, selectedItems } = useBuilderContext();
-  const [unselectedComponents, nextComponent] = useBuilderStep(
-    details.componentId
-  );
-  const t = useTranslations();
-  if (!details) return null;
+  const t = ssrTranslations(swedish);
+
   const {
     title,
     id,
@@ -33,17 +23,14 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
     stock,
     buyable,
     buyableInStore,
-    parentId: itemParentId,
+    parentId,
     values,
     disclaimer,
   } = details;
-  const queryParentId =
-    new URLSearchParams(globalThis.location.search).get("parentId") ??
-    undefined;
-  const parentId = isParentId(queryParentId) ? queryParentId : itemParentId;
-  const isSelected = selectedItems.some((d) => d.id === id);
-  const { track } = useTracking();
-  const { stockLevel } = useProductData(values);
+
+  // const isSelected = selectedItems.some((d) => d.id === id);
+
+  const { stockLevel } = convertProductValues(values);
 
   return (
     <>
@@ -90,67 +77,16 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                     </div>
                   </div>
                   <div className="flex items-end justify-end">
-                    <Button
-                      variant={isSelected ? "outline" : "default"}
-                      onClick={() => {
-                        setSelectedItems((prev) => [
-                          ...prev.filter((d) =>
-                            parentId == null
-                              ? d.componentId != componentId
-                              : d.parentId != parentId
-                          ),
-                          ...(isSelected
-                            ? []
-                            : [
-                                {
-                                  ...details,
-                                  parentId,
-                                  componentId,
-                                },
-                              ]),
-                        ]);
-                        requestAnimationFrame(() => {
-                          const ecomItem = toEcomTrackingEvent(details, 1);
-                          track({
-                            type: "click",
-                            item: ecomItem,
-                          });
-                          //trackClick(id, 1);
-                          trackAction({
-                            item: ecomItem,
-                            action: "select_component",
-                            reason: `builder_${componentId}`,
-                          });
-                        });
-                      }}
-                    >
-                      {t(isSelected ? "builder.remove" : "builder.select")}
-                    </Button>
+                    <AddToBuildButton
+                      itemParentId={parentId}
+                      id={id}
+                      componentId={componentId}
+                      details={details}
+                    />
                   </div>
                 </div>
-                {unselectedComponents.length > 0 && isSelected && (
-                  <div className="mt-6 animate-pop">
-                    <div className="flex flex-col flex-wrap w-full md:flex-row gap-2 mt-2">
-                      {unselectedComponents
-                        .filter((d) => d.id != componentId)
-                        .map((item, i) => (
-                          <ButtonLink
-                            href={`/builder/${item.type}/${item.id}`}
-                            onClick={() => setItems([])}
-                            variant={
-                              item.id === nextComponent?.id
-                                ? "default"
-                                : "outline"
-                            }
-                            className="flex items-center gap-2"
-                            key={i}
-                          >
-                            {item.title}
-                          </ButtonLink>
-                        ))}
-                    </div>
-                  </div>
-                )}
+                <BuilderOtherComponents componentId={componentId} />
+
                 <StockList stock={stock} stockLevel={stockLevel} />
               </div>
             )}
@@ -170,11 +106,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
 export const BuilderProductPage = (details: ItemWithComponentId) => {
   return (
     <div className="container mx-auto px-4 py-8">
-      {details ? (
-        <ComponentDetails {...details} />
-      ) : (
-        <Loader size="lg" variant="overlay" />
-      )}
+      <ComponentDetails {...details} />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+"use client";
 import { useMemo } from "react";
 import { ComponentId, SelectedAdditionalFilter } from "./builder-types";
 import { useBuilderFilters } from "./useBuilderFilters";

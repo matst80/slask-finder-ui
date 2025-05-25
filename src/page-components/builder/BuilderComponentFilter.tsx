@@ -204,6 +204,7 @@ export const BuilderComponentFilter = ({
               <div className="flex space-x-2">
                 {views.map((view) => (
                   <button
+                    key={view}
                     className={`px-2 md:px-3 py-1 rounded-md ${
                       viewMode === view
                         ? "bg-blue-500 text-white"
