@@ -290,7 +290,7 @@ const StoreSelector = () => {
   // useEffect(() => {
   //   findCloseStores(stock);
   // }, [maxDistance, stock]);
-
+  console.log(stock);
   return (
     <div className="space-y-4">
       {/* Distance Range Selector */}

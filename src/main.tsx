@@ -63,6 +63,7 @@ import { OrdersView } from "./pages/admin/OrdersView.tsx";
 import { useItemData } from "./hooks/trackingHooks.ts";
 import { GiftAssistant } from "./pages/gifts.tsx";
 import { Shipping } from "./pages/Shipping.tsx";
+import { NaturalLanguageSearch } from "./pages/natural-language-search.tsx";
 
 const BubbleError = () => {
   const error = useRouteError();
@@ -96,6 +97,15 @@ const router = createBrowserRouter([
         <QueryProvider attachToHash>
           <App />
         </QueryProvider>
+      </PageContainer>
+    ),
+    errorElement: <BubbleError />,
+  },
+  {
+    path: "/natural",
+    element: (
+      <PageContainer>
+        <NaturalLanguageSearch />
       </PageContainer>
     ),
     errorElement: <BubbleError />,
