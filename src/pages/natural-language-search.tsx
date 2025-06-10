@@ -36,7 +36,7 @@ export const NaturalLanguageSearch = () => {
           Search
         </Button>
       </form>
-      <div className="w-1/2">
+      <div className="mt-6">
         {items.length > 0 ? (
           <ImpressionProvider>
             <div
