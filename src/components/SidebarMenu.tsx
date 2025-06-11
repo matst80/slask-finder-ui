@@ -13,6 +13,7 @@ import {
   User,
   BotMessageSquare,
   Watch,
+  Speaker,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Sidebar } from "./ui/sidebar";
@@ -338,9 +339,9 @@ const menu: NavigationItemType[] = [
     color: menuColors.checkout,
   },
   {
-    translationKey: "menu.updated",
-    url: "/updated",
-    icon: <Clock size={20} />,
+    translationKey: "menu.natural",
+    url: "/natural",
+    icon: <Speaker size={20} />,
     color: menuColors.updated,
   },
 ];
