@@ -2,6 +2,7 @@ import useSWR from "swr";
 import {
   getAdminRelations,
   getCompatible,
+  getCosineRelated,
   getFacetGroups,
   getFacetList,
   getFacetMap,
@@ -451,6 +452,14 @@ export const useFacetGroups = () => {
 
 export const useRelatedItems = (id: number) => {
   return useSWR(`related-items-${id}`, () => getRelated(id), {
+    revalidateOnFocus: false,
+    refreshInterval: 0,
+    focusThrottleInterval: 3600,
+  });
+};
+
+export const useCosineRelatedItems = (id: number) => {
+  return useSWR(`related-items-${id}`, () => getCosineRelated(id), {
     revalidateOnFocus: false,
     refreshInterval: 0,
     focusThrottleInterval: 3600,

@@ -1,6 +1,7 @@
 import {
   queryToHash,
   useCompatibleItems,
+  useCosineRelatedItems,
   useFacetMap,
   useRelatedItems,
   useRelationGroups,
@@ -76,6 +77,21 @@ const ProductCarouselContainer = ({
 
 export const RelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
   const { data, isLoading } = useRelatedItems(id);
+
+  return (
+    <ProductCarouselContainer list_id="related" list_name="Related">
+      {isLoading && <Loader size="md" />}
+      {data?.map((item, idx) => (
+        <CarouselItem key={item.id}>
+          <ResultItem {...item} position={idx} />
+        </CarouselItem>
+      ))}
+    </ProductCarouselContainer>
+  );
+};
+
+export const CosineRelatedItems = ({ id }: Pick<ItemDetail, "id">) => {
+  const { data, isLoading } = useCosineRelatedItems(id);
 
   return (
     <ProductCarouselContainer list_id="related" list_name="Related">
@@ -570,6 +586,12 @@ export const ItemDetails = (details: ItemDetail) => {
               {t("common.similar")}
             </h3>
             <RelatedItems id={details.id} />
+          </div>
+          <div className="animating-element">
+            <h3 className="text-2xl font-bold text-gray-900 pb-6 mb-8">
+              {t("common.similar")} (ai)
+            </h3>
+            <CosineRelatedItems id={details.id} />
           </div>
         </div>
       </div>

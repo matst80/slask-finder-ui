@@ -178,6 +178,11 @@ export const getFacetGroups = () =>
 export const getRelated = (id: number) =>
   fetch(`${baseUrl}/api/related/${id}`).then((d) => readStreamed<Item>(d));
 
+export const getCosineRelated = (id: number) =>
+  fetch(`${baseUrl}/api/cosine-similar/${id}`).then((d) =>
+    readStreamed<Item>(d)
+  );
+
 export const getCompatible = (id: number, otherIds?: number[]) =>
   fetch(
     `${baseUrl}/api/compatible/${id}`,
