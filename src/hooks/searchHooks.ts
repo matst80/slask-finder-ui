@@ -459,7 +459,7 @@ export const useRelatedItems = (id: number) => {
 };
 
 export const useCosineRelatedItems = (id: number) => {
-  return useSWR(`related-items-${id}`, () => getCosineRelated(id), {
+  return useSWR(`cosine-related-items-${id}`, () => getCosineRelated(id), {
     revalidateOnFocus: false,
     refreshInterval: 0,
     focusThrottleInterval: 3600,
