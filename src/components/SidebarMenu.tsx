@@ -8,7 +8,6 @@ import {
   Edit,
   BarChart2,
   ShoppingCart,
-  Clock,
   LoaderCircle,
   User,
   BotMessageSquare,

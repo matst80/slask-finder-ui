@@ -18,7 +18,6 @@ import { SessionView } from "./components/Sessions.tsx";
 import { QueriesView } from "./pages/tracking/queries.tsx";
 import { PopularItemsView } from "./pages/tracking/popular-items.tsx";
 import { PopularFacetsView } from "./pages/tracking/popular-facets.tsx";
-import { UpdatedItems } from "./pages/tracking/updates.tsx";
 import { DashboardView } from "./pages/Dashboard.tsx";
 import { PageContainer } from "./PageContainer.tsx";
 import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx";
@@ -338,15 +337,15 @@ const router = createBrowserRouter([
   //     </PageContainer>
   //   ),
   // },
-  {
-    path: "updated",
-    errorElement: <BubbleError />,
-    element: (
-      <PageContainer>
-        <UpdatedItems />
-      </PageContainer>
-    ),
-  },
+  // {
+  //   path: "updated",
+  //   errorElement: <BubbleError />,
+  //   element: (
+  //     <PageContainer>
+  //       <UpdatedItems />
+  //     </PageContainer>
+  //   ),
+  // },
 ]);
 
 const getBrowserTranslations = () => {
