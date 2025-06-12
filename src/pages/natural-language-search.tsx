@@ -3,7 +3,7 @@ import { Item } from "../lib/types";
 import { naturalSearch } from "../lib/datalayer/api";
 import { Input } from "../components/ui/input";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
-import { ResultItem, ResultItemInner } from "../components/ResultItem";
+import { ResultItemInner } from "../components/ResultItem";
 import { Button } from "../components/ui/button";
 import { trackDataSet } from "../lib/datalayer/beacons";
 
