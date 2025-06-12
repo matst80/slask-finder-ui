@@ -3,12 +3,25 @@ import { Item } from "../lib/types";
 import { naturalSearch } from "../lib/datalayer/api";
 import { Input } from "../components/ui/input";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
-import { ResultItem } from "../components/ResultItem";
+import { ResultItem, ResultItemInner } from "../components/ResultItem";
 import { Button } from "../components/ui/button";
+import { trackDataSet } from "../lib/datalayer/beacons";
+
+const isComplete = (dataset: {
+  positive?: string;
+  negative?: string;
+}): dataset is { positive: string; negative: string } => {
+  return dataset.positive !== undefined && dataset.negative !== undefined;
+};
 
 export const NaturalLanguageSearch = () => {
   const [term, setTerm] = useState<string>("");
   const [items, setItems] = useState<Item[]>([]);
+  const [dataset, setDataset] = useState<{
+    positive?: string;
+    negative?: string;
+  }>({ positive: undefined, negative: undefined });
+
   const doSearch = async () => {
     naturalSearch(term)
       .then(setItems)
@@ -23,6 +36,7 @@ export const NaturalLanguageSearch = () => {
         onSubmit={(e) => {
           e.preventDefault();
           doSearch();
+          setDataset({ positive: undefined, negative: undefined });
         }}
         className="flex gap-2"
       >
@@ -35,6 +49,21 @@ export const NaturalLanguageSearch = () => {
         <Button type="submit" variant="default" size="sm">
           Search
         </Button>
+        <Button
+          disabled={!isComplete(dataset)}
+          onClick={() => {
+            if (isComplete(dataset)) {
+              trackDataSet({
+                query: term,
+                positive: dataset.positive,
+                negative: dataset.negative,
+              });
+              setDataset({ positive: undefined, negative: undefined });
+            }
+          }}
+        >
+          Add
+        </Button>
       </form>
       <div className="mt-6">
         {items.length > 0 ? (
@@ -44,7 +73,41 @@ export const NaturalLanguageSearch = () => {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0 scroll-snap-y"
             >
               {items?.map((item, idx) => (
-                <ResultItem key={item.id} {...item} position={idx} />
+                <span
+                  key={item.id}
+                  className="group bg-white md:shadow-xs hover:shadow-md transition-all hover:z-10 duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
+                >
+                  <ResultItemInner key={item.id} {...item}>
+                    <div className="button-group absolute bottom-2 right-2">
+                      <button
+                        onClick={() =>
+                          setDataset((p) => ({
+                            ...p,
+                            positive:
+                              p.positive === item.title
+                                ? undefined
+                                : item.title!,
+                          }))
+                        }
+                      >
+                        +
+                      </button>
+                      <button
+                        onClick={() =>
+                          setDataset((p) => ({
+                            ...p,
+                            negative:
+                              p.negative === item.title
+                                ? undefined
+                                : item.title!,
+                          }))
+                        }
+                      >
+                        -
+                      </button>
+                    </div>
+                  </ResultItemInner>
+                </span>
               ))}
             </div>
             {/* {first && (

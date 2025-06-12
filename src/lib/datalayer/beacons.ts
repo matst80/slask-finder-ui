@@ -11,6 +11,15 @@ export const trackClick = (data: BaseEcomEvent) =>
     JSON.stringify(toTrackingEvent(data))
   );
 
+export type DataSetEvent = {
+  query: string;
+  positive: string;
+  negative: string;
+};
+
+export const trackDataSet = (data: DataSetEvent) =>
+  globalThis.navigator.sendBeacon(`/track/dataset`, JSON.stringify(data));
+
 export const trackImpression = (impressions: BaseEcomEvent[]) =>
   globalThis.navigator.sendBeacon(
     `/track/impressions`,
