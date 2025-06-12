@@ -80,6 +80,7 @@ export const NaturalLanguageSearch = () => {
                   <ResultItemInner key={item.id} {...item}>
                     <div className="button-group absolute bottom-2 right-2">
                       <button
+                        className="text-lg font-bold"
                         onClick={() =>
                           setDataset((p) => ({
                             ...p,
@@ -93,6 +94,7 @@ export const NaturalLanguageSearch = () => {
                         +
                       </button>
                       <button
+                        className="text-lg font-bold"
                         onClick={() =>
                           setDataset((p) => ({
                             ...p,
