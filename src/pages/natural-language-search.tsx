@@ -31,7 +31,7 @@ export const NaturalLanguageSearch = () => {
   };
   return (
     <div className="flex flex-col container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Natural Language Search</h1>
+      <h1 className="text-2xl font-bold mb-4">Embeddings training</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault();
