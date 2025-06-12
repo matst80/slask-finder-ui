@@ -39,7 +39,7 @@ export const NaturalLanguageSearch = () => {
           doSearch();
           setDataset({ positive: undefined, negative: undefined });
         }}
-        className="flex gap-2"
+        className="flex gap-2 sticky top-0 bg-white z-10 py-4 border-b border-gray-200"
       >
         <Input
           value={term}
