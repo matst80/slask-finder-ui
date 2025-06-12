@@ -6,6 +6,7 @@ import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 import { ResultItemInner } from "../components/ResultItem";
 import { Button } from "../components/ui/button";
 import { trackDataSet } from "../lib/datalayer/beacons";
+import { cm } from "../utils";
 
 const isComplete = (dataset: {
   positive?: string;
@@ -80,7 +81,10 @@ export const NaturalLanguageSearch = () => {
                   <ResultItemInner key={item.id} {...item}>
                     <div className="button-group absolute bottom-2 right-2">
                       <button
-                        className="text-lg font-bold"
+                        className={cm(
+                          "text-lg font-bold",
+                          dataset.positive === item.title && "active"
+                        )}
                         onClick={() =>
                           setDataset((p) => ({
                             ...p,
@@ -94,7 +98,10 @@ export const NaturalLanguageSearch = () => {
                         +
                       </button>
                       <button
-                        className="text-lg font-bold"
+                        className={cm(
+                          "text-lg font-bold",
+                          dataset.negative === item.title && "active"
+                        )}
                         onClick={() =>
                           setDataset((p) => ({
                             ...p,
