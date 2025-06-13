@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Item } from "../lib/types";
-import { naturalSearch } from "../lib/datalayer/api";
+import { naturalSearch, submitDataSet } from "../lib/datalayer/api";
 import { Input } from "../components/ui/input";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 import { ResultItemInner } from "../components/ResultItem";
 import { Button } from "../components/ui/button";
-import { trackDataSet } from "../lib/datalayer/beacons";
 import { cm } from "../utils";
+import { Search } from "lucide-react";
+import { useNotifications } from "../components/ui-notifications/useNotifications";
 
 const isComplete = (dataset: {
   positive?: string;
@@ -16,6 +17,7 @@ const isComplete = (dataset: {
 };
 
 export const NaturalLanguageSearch = () => {
+  const { showNotification } = useNotifications();
   const [term, setTerm] = useState<string>("");
   const [items, setItems] = useState<Item[]>([]);
   const [dataset, setDataset] = useState<{
@@ -48,16 +50,24 @@ export const NaturalLanguageSearch = () => {
           className="flex-1"
         />
         <Button type="submit" variant="default" size="sm">
-          Search
+          <Search className="size-5 mr-2" />
         </Button>
         <Button
           disabled={!isComplete(dataset)}
           onClick={() => {
             if (isComplete(dataset)) {
-              trackDataSet({
+              submitDataSet({
                 query: term,
                 positive: dataset.positive,
                 negative: dataset.negative,
+              }).then((r) => {
+                showNotification({
+                  title: r.ok
+                    ? "Dataset submitted"
+                    : "Error submitting dataset",
+                  message: `Positive: ${dataset.positive}, Negative: ${dataset.negative}`,
+                  variant: r.ok ? "success" : "error",
+                });
               });
               setDataset({ positive: undefined, negative: undefined });
             }
