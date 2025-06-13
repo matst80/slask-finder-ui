@@ -53,8 +53,8 @@ export const NaturalLanguageSearch = () => {
           placeholder="Enter your search query"
           className="flex-1"
         />
-        <Button type="submit" variant="default" size="sm">
-          <Search className="size-5 mr-2" />
+        <Button type="submit" variant="outline" size="sm">
+          <Search className="size-5" />
         </Button>
         <Button
           disabled={!isComplete(dataset)}
