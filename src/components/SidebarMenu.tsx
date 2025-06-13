@@ -260,6 +260,10 @@ const menu: NavigationItemType[] = [
         url: "/edit/fields",
       },
       {
+        translationKey: "admin_menu.dataset",
+        url: "/edit/dataset",
+      },
+      {
         translationKey: "admin_menu.csp",
         accessKey: "c",
         url: "/edit/csp",

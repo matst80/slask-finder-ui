@@ -184,6 +184,9 @@ export const getCosineRelated = (id: number) =>
     readStreamed<Item>(d)
   );
 
+export const getCurrentDataSet = () =>
+  fetch(`${baseUrl}/tracking/dataset`).then((d) => toJson<DataSetEvent[]>(d));
+
 export const submitDataSet = (data: DataSetEvent) =>
   fetch(`/track/dataset`, { method: "POST", body: JSON.stringify(data) });
 

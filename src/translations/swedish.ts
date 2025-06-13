@@ -26,6 +26,7 @@ export const swedish = {
     relations: "Relationer",
     rules: "Regler",
     facet_groups: "Facetgrupper",
+    dataset: "Dataset",
     csp: "CSP Rapport",
   },
   common: {
