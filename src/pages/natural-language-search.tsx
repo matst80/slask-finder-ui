@@ -16,6 +16,10 @@ const isComplete = (dataset: {
   return dataset.positive !== undefined && dataset.negative !== undefined;
 };
 
+const getEmbeddingText = (item: Item) => {
+  return `${item.title} ${item.bp} `;
+};
+
 export const NaturalLanguageSearch = () => {
   const { showNotification } = useNotifications();
   const [term, setTerm] = useState<string>("");
@@ -83,51 +87,42 @@ export const NaturalLanguageSearch = () => {
               id="results"
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0 scroll-snap-y"
             >
-              {items?.map((item) => (
-                <span
-                  key={item.id}
-                  className="group bg-white md:shadow-xs hover:shadow-md transition-all hover:z-10 duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
-                >
-                  <ResultItemInner key={item.id} {...item}>
-                    <div className="button-group absolute bottom-2 right-2">
-                      <button
-                        className={cm(
-                          "text-lg font-bold",
-                          dataset.positive === item.title && "active"
-                        )}
-                        onClick={() =>
-                          setDataset((p) => ({
-                            ...p,
-                            positive:
-                              p.positive === item.title
-                                ? undefined
-                                : item.title!,
-                          }))
-                        }
-                      >
-                        +
-                      </button>
-                      <button
-                        className={cm(
-                          "text-lg font-bold",
-                          dataset.negative === item.title && "active"
-                        )}
-                        onClick={() =>
-                          setDataset((p) => ({
-                            ...p,
-                            negative:
-                              p.negative === item.title
-                                ? undefined
-                                : item.title!,
-                          }))
-                        }
-                      >
-                        -
-                      </button>
-                    </div>
-                  </ResultItemInner>
-                </span>
-              ))}
+              {items?.map((item) => {
+                const embeddingText = getEmbeddingText(item);
+                return (
+                  <span
+                    key={item.id}
+                    className="group bg-white md:shadow-xs hover:shadow-md transition-all hover:z-10 duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
+                  >
+                    <ResultItemInner key={item.id} {...item}>
+                      <div className="button-group absolute bottom-2 right-2">
+                        {Object.keys(dataset).map((key) => {
+                          const isActive =
+                            dataset[key as keyof typeof dataset] ===
+                            embeddingText;
+                          return (
+                            <button
+                              key={key}
+                              className={cm(
+                                "text-lg font-bold",
+                                isActive && "active"
+                              )}
+                              onClick={() =>
+                                setDataset((prev) => ({
+                                  ...prev,
+                                  [key]: isActive ? undefined : embeddingText!,
+                                }))
+                              }
+                            >
+                              {key === "positive" ? "+" : "-"}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </ResultItemInner>
+                  </span>
+                );
+              })}
             </div>
             {/* {first && (
 									<div className="-mx-4 md:-mx-0 mb-6">
