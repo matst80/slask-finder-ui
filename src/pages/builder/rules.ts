@@ -560,7 +560,11 @@ export const componentRules: Rule[] = [
         id: 36249,
         to: STORAGE,
         converter: (values) => {
-          const slot = getStorageData(values)[0];
+          const slot = getStorageData(values)[0] ?? {
+            valid: false,
+            size: undefined,
+            pcie: undefined,
+          };
           return slot.valid
             ? [
                 { id: 36338, value: slot.size },
@@ -573,7 +577,11 @@ export const componentRules: Rule[] = [
         id: 36249,
         to: STORAGE2,
         converter: (values) => {
-          const slot = getStorageData(values)[1];
+          const slot = getStorageData(values)[1] ?? {
+            valid: false,
+            size: undefined,
+            pcie: undefined,
+          };
           return slot.valid
             ? [
                 { id: 36338, value: slot.size },
@@ -586,7 +594,11 @@ export const componentRules: Rule[] = [
         id: 36249,
         to: STORAGE3,
         converter: (values) => {
-          const slot = getStorageData(values)[2];
+          const slot = getStorageData(values)[2] ?? {
+            valid: false,
+            size: undefined,
+            pcie: undefined,
+          };
           return slot.valid
             ? [
                 { id: 36338, value: slot.size },
@@ -599,7 +611,11 @@ export const componentRules: Rule[] = [
         id: 36249,
         to: STORAGE4,
         converter: (values) => {
-          const slot = getStorageData(values)[3];
+          const slot = getStorageData(values)[3] ?? {
+            valid: false,
+            size: undefined,
+            pcie: undefined,
+          };
           return slot.valid
             ? [
                 { id: 36338, value: slot.size },
