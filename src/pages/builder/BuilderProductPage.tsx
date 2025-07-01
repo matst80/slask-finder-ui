@@ -18,8 +18,7 @@ import { useProductData } from "../../lib/utils";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
   const { setItems } = useCompareContext();
-  const { setSelectedItems, selectedItems, rules, updateRules } =
-    useBuilderContext();
+  const { setSelectedItems, selectedItems } = useBuilderContext();
   const [unselectedComponents, nextComponent] = useBuilderStep(
     details.componentId
   );

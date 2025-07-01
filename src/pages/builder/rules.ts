@@ -1,8 +1,6 @@
-import { s, select } from "framer-motion/client";
 import { ItemValues } from "../../lib/types";
 import { isDefined } from "../../utils";
 import {
-  Component,
   ComponentId,
   ConverterResult,
   Issue,
