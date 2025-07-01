@@ -18,7 +18,8 @@ import { useProductData } from "../../lib/utils";
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
   const { setItems } = useCompareContext();
-  const { setSelectedItems, selectedItems } = useBuilderContext();
+  const { setSelectedItems, selectedItems, rules, updateRules } =
+    useBuilderContext();
   const [unselectedComponents, nextComponent] = useBuilderStep(
     details.componentId
   );
@@ -110,6 +111,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                                 },
                               ]),
                         ]);
+
                         requestAnimationFrame(() => {
                           const ecomItem = toEcomTrackingEvent(details, 1);
                           track({

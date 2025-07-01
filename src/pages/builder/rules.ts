@@ -1,6 +1,8 @@
+import { s, select } from "framer-motion/client";
 import { ItemValues } from "../../lib/types";
 import { isDefined } from "../../utils";
 import {
+  Component,
   ComponentId,
   ConverterResult,
   Issue,
@@ -19,6 +21,9 @@ export const RAM: ComponentId = "ram";
 export const PSU: ComponentId = "psu";
 export const CASE: ComponentId = "case";
 export const STORAGE: ComponentId = "storage";
+export const STORAGE2: ComponentId = "storage2";
+export const STORAGE3: ComponentId = "storage3";
+export const STORAGE4: ComponentId = "storage4";
 export const COOLER: SelectionId = "cooler";
 export const ADDONS: OptionsId = "addons";
 const AIR_COOLER: ComponentId = "air_cooler";
@@ -190,11 +195,66 @@ export const defaultComponentOrder: RuleId[] = [
   MOTHERBOARD,
   RAM,
   STORAGE,
+  STORAGE2,
+  STORAGE3,
+  STORAGE4,
   GPU,
   CASE,
   PSU,
   COOLER,
 ];
+
+const isStringLike = (value: unknown): value is string | string[] => {
+  return typeof value === "string" || Array.isArray(value);
+};
+
+type StorageData =
+  | { valid: true; size: string[]; pcie: string[] }
+  | { valid: false; size: undefined; pcie: undefined };
+
+const getStorageData = (values: ItemValues): StorageData[] => {
+  const m2Slots = Number(values[36245]);
+  const slots: StorageData[] = [];
+  const slotSize = [values[36210], values[36212], values[36214], values[36216]];
+
+  const slotPcie = [values[36211], values[36213], values[36215], values[36217]];
+
+  for (let i = 0; i < m2Slots; i++) {
+    const [size, pcie] = [slotSize[i], slotPcie[i]];
+
+    if (
+      size != null &&
+      pcie != null &&
+      isStringLike(pcie) &&
+      isStringLike(size)
+    ) {
+      slots.push({
+        valid: true,
+        size: asArray(size),
+        pcie: asArray(pcie),
+      });
+    } else {
+      slots.push({
+        valid: false,
+        size: undefined,
+        pcie: undefined,
+      });
+    }
+  }
+  return slots;
+};
+
+const isDisabledM2Slot =
+  (nr: number) =>
+  (selectedItems: ItemWithComponentId[]): boolean => {
+    const motherboardSlots = selectedItems.find(
+      (d) => d.componentId === MOTHERBOARD
+    )?.values[36245];
+    if (motherboardSlots == null) return true;
+    const m2Slots = asNumber(motherboardSlots);
+    if (isNaN(m2Slots)) return true;
+    return m2Slots < nr;
+  };
 
 export const componentRules: Rule[] = [
   {
@@ -466,6 +526,27 @@ export const componentRules: Rule[] = [
         stringMatch(values, 30857, "error", "X"),
       ].filter(isDefined);
     },
+    // onSelect(values, rules) {
+    //   const m2Slots = values[36245];
+    //   console.log("M2 SLOTS", m2Slots);
+    //   return [
+    //     ...rules.flatMap((d) => {
+    //       if (d.id === STORAGE) {
+    //         const m2Storage: Component[] = [d];
+    //         for (let i = 1; i < Number(m2Slots); i++) {
+    //           m2Storage.push({
+    //             ...d,
+    //             type: "component",
+    //             id: "storage_" + i,
+    //             title: `Lagring M.2 ${i + 1}`,
+    //           } as Component);
+    //         }
+    //         return m2Storage;
+    //       }
+    //       return [d];
+    //     }),
+    //   ];
+    // },
     requires: [CPU],
     topFilters: [
       2, 36207, 30552, 30552, 30276, 32161, 32103, 33514, 33533, 33576, 36232,
@@ -481,26 +562,52 @@ export const componentRules: Rule[] = [
         id: 36249,
         to: STORAGE,
         converter: (values) => {
-          // m2 slots and gen
-          const m2Slots = Number(values[36245]);
-          const ret = [];
-          if (m2Slots > 0) {
-            // const size = values[36210]; // max size
-            const gen = values[36211];
-            if (gen != null && typeof gen === "string") {
-              const genNr = Number(gen.split(".")[0]);
-              // add max size!!!!
-              const values = [];
-              for (let i = 2; i <= genNr; i++) {
-                values.push(`${i}.0`, `${i}`);
-              }
-              ret.push({ id: 36249, value: values });
-              //ret.push({ id: /* to be added */, value: {min:0, max:Number(size)} });
-            }
-          } else {
-            ret.push({ id: 36249, value: ["3", "3.0", "4", "4.0"] });
-          }
-          return ret;
+          const slot = getStorageData(values)[0];
+          return slot.valid
+            ? [
+                { id: 36338, value: slot.size },
+                { id: 36249, value: slot.pcie },
+              ]
+            : [];
+        },
+      },
+      {
+        id: 36249,
+        to: STORAGE2,
+        converter: (values) => {
+          const slot = getStorageData(values)[1];
+          return slot.valid
+            ? [
+                { id: 36338, value: slot.size },
+                { id: 36249, value: slot.pcie },
+              ]
+            : [];
+        },
+      },
+      {
+        id: 36249,
+        to: STORAGE3,
+        converter: (values) => {
+          const slot = getStorageData(values)[2];
+          return slot.valid
+            ? [
+                { id: 36338, value: slot.size },
+                { id: 36249, value: slot.pcie },
+              ]
+            : [];
+        },
+      },
+      {
+        id: 36249,
+        to: STORAGE4,
+        converter: (values) => {
+          const slot = getStorageData(values)[3];
+          return slot.valid
+            ? [
+                { id: 36338, value: slot.size },
+                { id: 36249, value: slot.pcie },
+              ]
+            : [];
         },
       },
       {
@@ -761,7 +868,7 @@ export const componentRules: Rule[] = [
   },
   {
     type: "component",
-    title: "Hårddisk",
+    title: "SSD",
     id: STORAGE,
     requires: [MOTHERBOARD],
     filtersToApply: [],
@@ -769,33 +876,70 @@ export const componentRules: Rule[] = [
     //   30714, 31508, 32194, 32195, 32120, 36274, 31396, 36273, 36275, 32091,
     // ],
     importantFacets: [36279, 36338, 36274],
-    validator: (values) => {
-      const iface = String(values[30714]);
-      if (iface.includes("PCIe")) {
-        return [
-          //stringMatch(values, 36274, "error"),
-          numberMatch(values, 36338, { min: 200, max: 4000 }, "warning"),
-          numberMatch(values, 36249, { min: 1, max: 10 }, "warning"),
-        ].filter(isDefined);
-      } else {
-        return [
-          stringMatch(values, 30714, "error"),
-          stringContain(values, 30714, "error", "SATA"),
-        ].filter(isDefined);
-      }
-    },
-    maxQuantity: (selectedItems) => {
-      const motherboardSlots = selectedItems.find(
-        (d) => d.componentId === MOTHERBOARD
-      )?.values[36245];
-      if (motherboardSlots == null) return 0;
-      const m2Slots = asNumber(motherboardSlots);
-      if (isNaN(m2Slots)) return 0;
-      return m2Slots;
-    },
-    //nextComponentId: 12,
+    disabled: isDisabledM2Slot(1),
+    validator: validStorageItem,
     topFilters: [31508, 32120, 32194, 32195, 36274, 36279],
     //topFilters: [31508, 32194, 32195],
+    filter: {
+      range: [],
+      string: [
+        {
+          id: 35,
+          value: ["59060"],
+        },
+      ],
+    },
+  },
+  {
+    type: "component",
+    title: "SSD Slot 2",
+    id: STORAGE2,
+    requires: [MOTHERBOARD],
+    filtersToApply: [],
+    importantFacets: [36279, 36338, 36274],
+    disabled: isDisabledM2Slot(2),
+    validator: validStorageItem,
+    topFilters: [31508, 32120, 32194, 32195, 36274, 36279],
+    filter: {
+      range: [],
+      string: [
+        {
+          id: 35,
+          value: ["59060"],
+        },
+      ],
+    },
+  },
+  {
+    type: "component",
+    title: "SSD Slot 3",
+    id: STORAGE3,
+    requires: [MOTHERBOARD],
+    filtersToApply: [],
+    importantFacets: [36279, 36338, 36274],
+    disabled: isDisabledM2Slot(3),
+    validator: validStorageItem,
+    topFilters: [31508, 32120, 32194, 32195, 36274, 36279],
+    filter: {
+      range: [],
+      string: [
+        {
+          id: 35,
+          value: ["59060"],
+        },
+      ],
+    },
+  },
+  {
+    type: "component",
+    title: "SSD Slot 4",
+    id: STORAGE4,
+    requires: [MOTHERBOARD],
+    filtersToApply: [],
+    importantFacets: [36279, 36338, 36274],
+    disabled: isDisabledM2Slot(3),
+    validator: validStorageItem,
+    topFilters: [31508, 32120, 32194, 32195, 36274, 36279],
     filter: {
       range: [],
       string: [
@@ -926,3 +1070,18 @@ export const componentRules: Rule[] = [
     ],
   },
 ];
+function validStorageItem(values: ItemValues): Issue[] {
+  const iface = String(values[30714]);
+  if (iface.includes("PCIe")) {
+    return [
+      //stringMatch(values, 36274, "error"),
+      numberMatch(values, 36338, { min: 200, max: 4000 }, "warning"),
+      numberMatch(values, 36249, { min: 1, max: 10 }, "warning"),
+    ].filter(isDefined);
+  } else {
+    return [
+      stringMatch(values, 30714, "error"),
+      stringContain(values, 30714, "error", "SATA"),
+    ].filter(isDefined);
+  }
+}

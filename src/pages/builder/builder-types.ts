@@ -57,6 +57,9 @@ export type ComponentId =
   | "case"
   | "air_cooler"
   | "liquid_cooler"
+  | "storage2"
+  | "storage3"
+  | "storage4"
   | "screen"
   | "keyboard"
   | "os"
@@ -75,6 +78,7 @@ export type Component = {
   ignoreIfComponentSelected?: number;
   order?: RuleId[];
   //nextComponentId?: number;
+  onSelect?: (values: ItemValues, rules: Rule[]) => Rule[];
   quickFilters?: QuickFilter[];
   validator?: (values: ItemValues) => Issue[];
   filtersToApply: AdditionalFilter[];
