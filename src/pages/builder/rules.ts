@@ -557,6 +557,20 @@ export const componentRules: Rule[] = [
       { id: 35921, to: RAM }, // ram type
       { id: 30857, to: RAM }, // ram pins
       {
+        id: 31187, // max ram per slot
+        to: RAM,
+        converter: (values) => {
+          if (values[31187] == null) return [];
+          if (values[31190] == null) return [];
+          const maxRam = asNumber(values[31187]);
+          const slots = asNumber(values[31190]);
+          if (isNaN(maxRam) || isNaN(slots)) return [];
+          const maxRamPerSlot = maxRam / slots;
+          console.log({ maxRamPerSlot });
+          return [];
+        },
+      }, // ram speed
+      {
         id: 36249,
         to: STORAGE,
         converter: (values) => {
