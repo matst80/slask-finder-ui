@@ -22,6 +22,7 @@ import {
   Rule,
   SessionListData,
 } from "../types";
+import { DataSetEvent } from "./beacons";
 
 export const baseUrl = "";
 
@@ -182,6 +183,12 @@ export const getCosineRelated = (id: number) =>
   fetch(`${baseUrl}/api/cosine-similar/${id}`).then((d) =>
     readStreamed<Item>(d)
   );
+
+export const getCurrentDataSet = () =>
+  fetch(`${baseUrl}/tracking/dataset`).then((d) => toJson<DataSetEvent[]>(d));
+
+export const submitDataSet = (data: DataSetEvent) =>
+  fetch(`/track/dataset`, { method: "POST", body: JSON.stringify(data) });
 
 export const getCompatible = (id: number, otherIds?: number[]) =>
   fetch(

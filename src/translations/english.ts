@@ -26,6 +26,7 @@ export const english = {
     words: "Words",
     rules: "Rules",
     facet_groups: "Facet groups",
+    dataset: "Dataset",
     csp: "CSP Report",
   },
   common: {

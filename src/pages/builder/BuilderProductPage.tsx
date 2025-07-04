@@ -110,6 +110,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                                 },
                               ]),
                         ]);
+
                         requestAnimationFrame(() => {
                           const ecomItem = toEcomTrackingEvent(details, 1);
                           track({

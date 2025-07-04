@@ -63,6 +63,7 @@ import { useItemData } from "./hooks/trackingHooks.ts";
 import { GiftAssistant } from "./pages/gifts.tsx";
 import { Shipping } from "./pages/Shipping.tsx";
 import { NaturalLanguageSearch } from "./pages/natural-language-search.tsx";
+import { DatasetViewer } from "./pages/admin/DatasetViewer.tsx";
 
 const BubbleError = () => {
   const error = useRouteError();
@@ -252,6 +253,10 @@ const router = createBrowserRouter([
       {
         path: "relations",
         element: <RelationGroupEditor />,
+      },
+      {
+        path: "dataset",
+        element: <DatasetViewer />,
       },
       {
         path: "orders",

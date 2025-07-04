@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Item } from "../lib/types";
-import { naturalSearch } from "../lib/datalayer/api";
+import { naturalSearch, submitDataSet } from "../lib/datalayer/api";
 import { Input } from "../components/ui/input";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
-import { ResultItem, ResultItemInner } from "../components/ResultItem";
+import { ResultItemInner } from "../components/ResultItem";
 import { Button } from "../components/ui/button";
-import { trackDataSet } from "../lib/datalayer/beacons";
+import { cm } from "../utils";
+import { Search } from "lucide-react";
+import { useNotifications } from "../components/ui-notifications/useNotifications";
 
 const isComplete = (dataset: {
   positive?: string;
@@ -14,7 +16,12 @@ const isComplete = (dataset: {
   return dataset.positive !== undefined && dataset.negative !== undefined;
 };
 
+const getEmbeddingText = (item: Item) => {
+  return `${item.title} ${item.bp} `;
+};
+
 export const NaturalLanguageSearch = () => {
+  const { showNotification } = useNotifications();
   const [term, setTerm] = useState<string>("");
   const [items, setItems] = useState<Item[]>([]);
   const [dataset, setDataset] = useState<{
@@ -38,7 +45,7 @@ export const NaturalLanguageSearch = () => {
           doSearch();
           setDataset({ positive: undefined, negative: undefined });
         }}
-        className="flex gap-2"
+        className="flex gap-2 sticky top-0 bg-white z-10 py-4 border-b border-gray-200"
       >
         <Input
           value={term}
@@ -46,17 +53,25 @@ export const NaturalLanguageSearch = () => {
           placeholder="Enter your search query"
           className="flex-1"
         />
-        <Button type="submit" variant="default" size="sm">
-          Search
+        <Button type="submit" variant="outline" size="sm">
+          <Search className="size-5" />
         </Button>
         <Button
           disabled={!isComplete(dataset)}
           onClick={() => {
             if (isComplete(dataset)) {
-              trackDataSet({
+              submitDataSet({
                 query: term,
                 positive: dataset.positive,
                 negative: dataset.negative,
+              }).then((r) => {
+                showNotification({
+                  title: r.ok
+                    ? "Dataset submitted"
+                    : "Error submitting dataset",
+                  message: `Positive: ${dataset.positive}, Negative: ${dataset.negative}`,
+                  variant: r.ok ? "success" : "error",
+                });
               });
               setDataset({ positive: undefined, negative: undefined });
             }
@@ -72,43 +87,42 @@ export const NaturalLanguageSearch = () => {
               id="results"
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0 scroll-snap-y"
             >
-              {items?.map((item, idx) => (
-                <span
-                  key={item.id}
-                  className="group bg-white md:shadow-xs hover:shadow-md transition-all hover:z-10 duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
-                >
-                  <ResultItemInner key={item.id} {...item}>
-                    <div className="button-group absolute bottom-2 right-2">
-                      <button
-                        onClick={() =>
-                          setDataset((p) => ({
-                            ...p,
-                            positive:
-                              p.positive === item.title
-                                ? undefined
-                                : item.title!,
-                          }))
-                        }
-                      >
-                        +
-                      </button>
-                      <button
-                        onClick={() =>
-                          setDataset((p) => ({
-                            ...p,
-                            negative:
-                              p.negative === item.title
-                                ? undefined
-                                : item.title!,
-                          }))
-                        }
-                      >
-                        -
-                      </button>
-                    </div>
-                  </ResultItemInner>
-                </span>
-              ))}
+              {items?.map((item) => {
+                const embeddingText = getEmbeddingText(item);
+                return (
+                  <span
+                    key={item.id}
+                    className="group bg-white md:shadow-xs hover:shadow-md transition-all hover:z-10 duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
+                  >
+                    <ResultItemInner key={item.id} {...item}>
+                      <div className="button-group absolute bottom-10 right-2">
+                        {Object.keys(dataset).map((key) => {
+                          const isActive =
+                            dataset[key as keyof typeof dataset] ===
+                            embeddingText;
+                          return (
+                            <button
+                              key={key}
+                              className={cm(
+                                "text-lg font-bold",
+                                isActive && "active"
+                              )}
+                              onClick={() =>
+                                setDataset((prev) => ({
+                                  ...prev,
+                                  [key]: isActive ? undefined : embeddingText!,
+                                }))
+                              }
+                            >
+                              {key === "positive" ? "+" : "-"}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </ResultItemInner>
+                  </span>
+                );
+              })}
             </div>
             {/* {first && (
 									<div className="-mx-4 md:-mx-0 mb-6">
