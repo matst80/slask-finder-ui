@@ -60,6 +60,7 @@ const FilteredFieldView = ({
   data: (FieldListItem & { key: string })[];
 }) => {
   const [filter, setFilter] = useState<string>("");
+  const [ids, setIds] = useState<string[]>([]);
   const { data: facets = [] } = useAdminFacets();
   const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
   const uniquePurpose = useMemo(() => {
@@ -131,6 +132,44 @@ const FilteredFieldView = ({
           ))}
         </span>
       </div>
+      <div className="border border-amber-200 p-4">
+        <textarea
+          className="border border-gray-100 p-2 w-full h-32"
+          value={ids.join("\n")}
+          onChange={(e) => {
+            const values = e.target.value
+              .split("\n")
+              .filter((d) => d.length > 1);
+            console.log(values);
+            setIds(values);
+          }}
+        ></textarea>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Description</th>
+              <th>Data type</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ids.map((id) => {
+              const field = data?.find((d) => String(d.id) === id);
+              if (!field) {
+                return null;
+              }
+              return (
+                <tr>
+                  <td>{field.id}</td>
+                  <td>{field.name}</td>
+                  <td>{field.type === 0 ? "text" : "float"}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
       <Input
         value={filter}
         onChange={(e) => setFilter(e.target.value)}

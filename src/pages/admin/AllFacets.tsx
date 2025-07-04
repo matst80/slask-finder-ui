@@ -31,6 +31,7 @@ type KeyValues =
 const FacetValues = ({ id }: { id: number }) => {
   const { data } = useFieldValues(id);
   const [filter, setFilter] = useState<string>("");
+
   const { showNotification } = useNotifications();
 
   const [isKeyValues, values] = useMemo<KeyValues>(() => {
