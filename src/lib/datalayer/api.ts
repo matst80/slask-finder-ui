@@ -119,9 +119,10 @@ export const handleSuggestResponse = (d: Response) => {
       .then(({ done, value: dataChunk }) => {
         if (done || dataChunk == null) {
           return {
-            suggestions: suggestions
-              .filter((d) => d.match.toLowerCase() != d.prefix)
-              .sort((a, b) => b.hits - a.hits),
+            suggestions,
+            // suggestions: suggestions
+            //   .filter((d) => d.match.toLowerCase() != d.prefix)
+            //   .sort((a, b) => b.hits - a.hits),
             items,
             facets: convertFacets(facetsBuffer),
           };
