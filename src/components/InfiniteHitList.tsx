@@ -18,44 +18,46 @@ export const InfiniteHitList = ({
   const endRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (!endRef.current) return;
-    const elm = endRef.current;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (
-          entry.isIntersecting &&
-          !loadingRef.current &&
-          canLoadMoreRef.current
-        ) {
-          elm.classList.add("opacity-100");
-          elm.classList.remove("opacity-0");
-          // Only load more if we have more results to fetch
-          loadingRef.current = true;
-          addPage().then(({ hasMorePages }) => {
-            canLoadMoreRef.current = hasMorePages;
-            setTimeout(() => {
-              elm.classList.add("opacity-0");
-              elm.classList.remove("opacity-100");
-              loadingRef.current = false;
-            }, 250);
-            // if (!hasMorePages) {
-            //   // No more pages to load, stop observing
-            //   observer.unobserve(elm);
-            // }
-          });
-        }
-      },
-      { threshold: 0.1 } // Trigger when at least 90% of the element is visible
-    );
+    setTimeout(() => {
+      if (!endRef.current) return;
+      const elm = endRef.current;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const [entry] = entries;
+          if (
+            entry.isIntersecting &&
+            !loadingRef.current &&
+            canLoadMoreRef.current
+          ) {
+            elm.classList.add("opacity-100");
+            elm.classList.remove("opacity-0");
+            // Only load more if we have more results to fetch
+            loadingRef.current = true;
+            addPage().then(({ hasMorePages }) => {
+              canLoadMoreRef.current = hasMorePages;
+              setTimeout(() => {
+                elm.classList.add("opacity-0");
+                elm.classList.remove("opacity-100");
+                loadingRef.current = false;
+              }, 250);
+              // if (!hasMorePages) {
+              //   // No more pages to load, stop observing
+              //   observer.unobserve(elm);
+              // }
+            });
+          }
+        },
+        { threshold: 0.1 } // Trigger when at least 90% of the element is visible
+      );
 
-    observer.observe(endRef.current);
+      observer.observe(endRef.current);
 
-    // Clean up the observer on unmount
-    return () => {
-      observer.unobserve(elm);
-      observer.disconnect();
-    };
+      // Clean up the observer on unmount
+      return () => {
+        observer.unobserve(elm);
+        observer.disconnect();
+      };
+    }, 350);
   }, [endRef, loadingRef, addPage]);
   useEffect(() => {
     // Reset the loading state when the query changes

@@ -72,7 +72,7 @@ export const queryFromHash = (hash: string): ItemsQuery => {
 export const queryToHash = ({
   range,
   sort,
-  page,
+  page = 0,
   pageSize,
   query,
   stock,
@@ -160,10 +160,19 @@ const itemsKey = (data: ItemsQuery) => `items-` + queryToHash(data);
 //const facetsKey = (data: FacetQuery) => "facets-" + facetQueryToHash(data);
 
 export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
-  const { range, sort, page, pageSize, query, stock, string, filter } = data;
+  const {
+    range,
+    sort,
+    page = 0,
+    pageSize,
+    query,
+    stock,
+    string,
+    filter,
+  } = data;
 
   const result = new URLSearchParams({
-    page: (page ?? 0).toString(),
+    page: page.toString(),
     size: (pageSize ?? 40)?.toString(),
     sort: sort ?? "popular",
     query: query ?? "",
