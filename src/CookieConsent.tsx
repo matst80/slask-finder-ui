@@ -30,7 +30,7 @@ export const useCookieAcceptance = () => {
     setAccepted(null);
   };
   const updateAccept = (value: CookieAcceptanceLevel | null) => {
-    console.log("updateAccept", value);
+    // console.log("updateAccept", value);
     if (value === "none") {
       setCookie("ca", "", -10);
       setCookie("sfadmin", "", -10);

@@ -260,7 +260,7 @@ const StoreSelector = () => {
       const targetStore = stores.find((d) => d.id === storeId);
       if (!targetStore) return;
       const { lat, lng } = targetStore.address.location;
-      const closeStores = stores
+      stores
         .map((store) => {
           return {
             ...store,
@@ -281,16 +281,10 @@ const StoreSelector = () => {
         .forEach((store) => {
           closeBy.add(store.id);
         });
-
-      console.log("closeStores", closeStores);
     });
     setStock(Array.from(closeBy));
   };
 
-  // useEffect(() => {
-  //   findCloseStores(stock);
-  // }, [maxDistance, stock]);
-  console.log(stock);
   return (
     <div className="space-y-4">
       {/* Distance Range Selector */}
