@@ -34,6 +34,19 @@ type KeyValues =
     ]
   | [false, { min: number; max: number }];
 
+const isKeyValue = (
+  data: unknown
+): data is { value: string; count: number } => {
+  return (
+    data != null &&
+    typeof data === "object" &&
+    "value" in data &&
+    typeof (data as any).value === "string" &&
+    "count" in data &&
+    typeof (data as any).count === "number"
+  );
+};
+
 const FacetValues = ({ id }: { id: number }) => {
   const { data } = useFieldValues(id);
   const [filter, setFilter] = useState<string>("");
@@ -42,14 +55,11 @@ const FacetValues = ({ id }: { id: number }) => {
 
   const [isKeyValues, values] = useMemo<KeyValues>(() => {
     if (!data) return [false, { min: 0, max: 0 }];
-    const isKeys = typeof data[0] === "string";
+    const isKeys = isKeyValue(data[0]);
     if (!isKeys) {
       return [false, data[0] as { min: number; max: number }];
     }
-    const keyValues = data.filter(
-      (d): d is { value: string; count: number } =>
-        d != null && typeof d === "object" && "value" in d
-    );
+    const keyValues = data.filter(isKeyValue);
     const filtered = fuzzysort.go(filter, keyValues, {
       limit: 50,
       keys: ["value"],
