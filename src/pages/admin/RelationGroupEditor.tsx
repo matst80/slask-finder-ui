@@ -60,7 +60,7 @@ const FacetValueTagEditor = ({
       all: value.length < 1,
       threshold: 0.4,
     });
-    return [...filtered.map((f) => f.obj.value)];
+    return [...filtered.map((f) => f.obj)];
   }, [facetValues, value]);
 
   useEffect(() => {
@@ -111,7 +111,7 @@ const FacetValueTagEditor = ({
             "absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex-col z-10 max-h-60 dropdown"
           }
         >
-          {filteredData.map((text) => (
+          {filteredData.map(({ value: text, count }) => (
             <button
               key={text}
               onClick={() => {
@@ -120,7 +120,7 @@ const FacetValueTagEditor = ({
               }}
               className="text-left px-3 py-2 border-b border-gray-100 last:border-0 dropdown-item"
             >
-              {text}
+              {text} ({count})
             </button>
           ))}
         </div>
