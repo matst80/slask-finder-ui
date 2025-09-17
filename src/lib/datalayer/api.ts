@@ -153,7 +153,9 @@ export const handleSuggestResponse = (d: Response) => {
 
 export const getKeyFieldsValues = (id: string | number) =>
   fetch(`${baseUrl}/api/values/${id}`).then((d) =>
-    toJson<string[] | { min: number; max: number }[]>(d)
+    toJson<{ value: string; count: number }[] | { min: number; max: number }[]>(
+      d
+    )
   );
 
 export const getContentResults = (q: string) =>

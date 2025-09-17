@@ -47,14 +47,20 @@ const FacetValueTagEditor = ({
 
   const filteredData = useMemo(() => {
     const keyData =
-      facetValues?.filter((d) => typeof d === "string").sort() ?? [];
+      facetValues
+        ?.filter(
+          (d): d is { value: string; count: number } =>
+            "value" in d && typeof d.value === "string"
+        )
+        .sort() ?? [];
 
     const filtered = fuzzysort.go(value, keyData, {
       limit: 20,
+      keys: ["value"],
       all: value.length < 1,
       threshold: 0.4,
     });
-    return [...filtered.map((f) => f.target)];
+    return [...filtered.map((f) => f.obj.value)];
   }, [facetValues, value]);
 
   useEffect(() => {

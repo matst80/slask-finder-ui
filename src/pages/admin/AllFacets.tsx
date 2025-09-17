@@ -25,7 +25,13 @@ import { Loader } from "../../components/Loader";
 import { queryToHash } from "../../lib/utils";
 
 type KeyValues =
-  | [true, Fuzzysort.Results]
+  | [
+      true,
+      Fuzzysort.KeysResults<{
+        value: string;
+        count: number;
+      }>
+    ]
   | [false, { min: number; max: number }];
 
 const FacetValues = ({ id }: { id: number }) => {
@@ -40,9 +46,13 @@ const FacetValues = ({ id }: { id: number }) => {
     if (!isKeys) {
       return [false, data[0] as { min: number; max: number }];
     }
-    const keyValues = data.filter((d): d is string => typeof d === "string");
+    const keyValues = data.filter(
+      (d): d is { value: string; count: number } =>
+        d != null && typeof d === "object" && "value" in d
+    );
     const filtered = fuzzysort.go(filter, keyValues, {
       limit: 50,
+      keys: ["value"],
       threshold: 0.5,
       all: filter.length == 0,
     });
@@ -73,7 +83,6 @@ const FacetValues = ({ id }: { id: number }) => {
     );
   }
 
-  const keyValues = values as Fuzzysort.Results;
   return (
     <div className="bg-slate-100 p-4 rounded-md flex flex-col gap-2">
       <Input
@@ -83,12 +92,13 @@ const FacetValues = ({ id }: { id: number }) => {
         className="w-full"
       />
       <ul className="max-h-60 overflow-auto">
-        {keyValues.map(({ target: value }) => (
+        {values.map(({ obj: { count, value } }) => (
           <li
             key={value}
             className="flex items-center justify-between gap-2 border-b border-gray-300 py-2"
           >
             <span className="font-medium">{value}</span>
+            <span className="text-sm text-gray-500">({count})</span>
             <div className="flex gap-2">
               <Button
                 variant="ghost"
@@ -122,7 +132,7 @@ const FacetValues = ({ id }: { id: number }) => {
         ))}
       </ul>
       <div className="text-sm text-gray-500">
-        Showing {keyValues.length} of {data.length} values
+        Showing {values.length} of {data.length} values
       </div>
     </div>
   );
