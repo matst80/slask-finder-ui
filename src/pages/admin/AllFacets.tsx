@@ -111,7 +111,7 @@ const FacetValues = ({ id }: { id: number }) => {
 
             <div className="flex gap-2 items-center">
               {count > 1 && (
-                <span className="mx-2 hidden md:inline-flex items-center justify-center p-2 aspect-square text-sm rounded-full bg-blue-200 text-blue-500">
+                <span className="mx-2 hidden md:inline-flex items-center justify-center p-1 aspect-square text-xs rounded-full bg-blue-200 text-blue-500">
                   {count}
                 </span>
               )}
