@@ -36,12 +36,15 @@ export const useCookieAcceptance = () => {
       setCookie("sfadmin", "", -10);
       setCookie("locale", "", -10);
       setCookie("cartid", "", -10);
-      return;
     }
     if (value === "essential") {
       setCookie("sid", "", -1);
     }
-    setCookie("ca", value ?? "", value == null ? undefined : 365 * 5);
+    setCookie(
+      "ca",
+      value ?? "",
+      value == null || value === "none" ? undefined : 365 * 5,
+    );
     setAccepted(value);
   };
   return { accepted, updateAccept, manageConsent };
