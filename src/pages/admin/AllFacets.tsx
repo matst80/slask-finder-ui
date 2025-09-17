@@ -110,7 +110,7 @@ const FacetValues = ({ id }: { id: number }) => {
             <span className="font-medium">{value}</span>
 
             <div className="flex gap-2 items-center">
-              <span className="mx-2 hidden md:inline-flex items-center justify-center p-2 rounded-full bg-blue-200 text-blue-500">
+              <span className="mx-2 hidden md:inline-flex items-center justify-center p-2 aspect-square text-sm rounded-full bg-blue-200 text-blue-500">
                 {count}
               </span>
               <Button
