@@ -21,7 +21,7 @@ const getCookieAcceptance = () => {
 };
 
 const cookieAcceptanceAtom = atom<CookieAcceptanceLevel | null>(
-  getCookieAcceptance()
+  getCookieAcceptance(),
 );
 
 export const useCookieAcceptance = () => {
@@ -41,7 +41,7 @@ export const useCookieAcceptance = () => {
     if (value === "essential") {
       setCookie("sid", "", -1);
     }
-    setCookie("ca", value ?? "", value == null ? -10 : 365 * 5);
+    setCookie("ca", value ?? "", value == null ? undefined : 365 * 5);
     setAccepted(value);
   };
   return { accepted, updateAccept, manageConsent };

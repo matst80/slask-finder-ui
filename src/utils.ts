@@ -40,7 +40,7 @@ export const makeImageUrl = (pathOrUrl: string, size = "640") => {
 export const useFetchMutation = <T, U>(
   key: string,
   fn: (payload: U) => Promise<T>,
-  config?: SWRMutationConfiguration<T, Error, string, U>
+  config?: SWRMutationConfiguration<T, Error, string, U>,
 ) => {
   return useSWRMutation(key, (_, { arg }) => fn(arg), {
     ...config,
@@ -212,7 +212,7 @@ export const textSize = (level: number) => {
 
 export const useDebounce = <TArg extends unknown[], TRet>(
   fn: (...args: TArg) => TRet,
-  delay: number
+  delay: number,
 ) => {
   let timeout: number;
   return (...args: TArg) => {
@@ -233,9 +233,14 @@ export const cookieObject = () => {
   return cookieObject;
 };
 
-export const setCookie = (name: string, value: string, days: number) => {
+const getExpires = (days?: number) => {
+  if (days === undefined) return "";
   const date = new Date();
-  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-  const expires = "expires=" + (days < 0 ? new Date(0) : date).toUTCString();
-  document.cookie = `${name}=${value}; ${expires}; path=/; SameSite=Lax; Secure`;
+  date.setTime(date.getTime() + (days ?? 0) * 24 * 60 * 60 * 1000);
+  return "expires=" + (days < 0 ? new Date(0) : date).toUTCString() + ";";
+};
+
+export const setCookie = (name: string, value: string, days?: number) => {
+  const expires = getExpires(days);
+  document.cookie = `${name}=${value};${expires}path=/;SameSite=Lax;Secure`;
 };
