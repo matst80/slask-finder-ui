@@ -65,6 +65,7 @@ import { Shipping } from "./pages/Shipping.tsx";
 import { NaturalLanguageSearch } from "./pages/natural-language-search.tsx";
 import { DatasetViewer } from "./pages/admin/DatasetViewer.tsx";
 import Register from "./pages/Register.tsx";
+import { UsersView } from "./pages/admin/UsersView.tsx";
 
 const BubbleError = () => {
   const error = useRouteError();
@@ -275,6 +276,10 @@ const router = createBrowserRouter([
       {
         path: "csp",
         element: <CspReport />,
+      },
+      {
+        path: "users",
+        element: <UsersView />,
       },
     ],
   },

@@ -273,6 +273,10 @@ const menu: NavigationItemType[] = [
         translationKey: "admin_menu.missing_facets",
         url: "/edit/missing_fields",
       },
+      {
+        translationKey: "admin_menu.users",
+        url: "/edit/users",
+      },
     ],
   },
   {

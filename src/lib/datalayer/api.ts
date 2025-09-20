@@ -21,6 +21,8 @@ import {
   FacetGroup,
   Rule,
   SessionListData,
+  User,
+  UserUpdateRequest,
 } from "../types";
 import { DataSetEvent } from "./beacons";
 
@@ -543,3 +545,26 @@ export const getTrackingFieldPopularity = () =>
 
 export const getTrackingUpdates = () =>
   fetch(`${baseUrl}/tracking/updated`).then((d) => toJson<UpdatedItem[]>(d));
+
+// User management API functions
+export const getUsers = () =>
+  fetch(`${baseUrl}/admin/users`).then((d) => toJson<User[]>(d));
+
+export const updateUser = (id: string, userData: UserUpdateRequest) =>
+  fetch(`${baseUrl}/admin/users/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(userData),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((d) => toJson<User>(d));
+
+export const deleteUser = (id: string) =>
+  fetch(`${baseUrl}/admin/users/${id}`, {
+    method: "DELETE",
+  }).then((d) => {
+    if (d.ok) {
+      return true;
+    }
+    throw new Error("Failed to delete user");
+  });

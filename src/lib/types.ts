@@ -730,3 +730,18 @@ export type StockData = {
   stock?: Stock;
   stockLevel?: string;
 };
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  displayName: string;
+  isAdmin: boolean;
+};
+
+export type UserUpdateRequest = {
+  name?: string;
+  email?: string;
+  displayName?: string;
+  isAdmin?: boolean;
+};

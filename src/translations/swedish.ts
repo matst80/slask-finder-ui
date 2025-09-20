@@ -28,6 +28,7 @@ export const swedish = {
     facet_groups: "Facetgrupper",
     dataset: "Dataset",
     csp: "CSP Rapport",
+    users: "Användare",
   },
   common: {
     view: {

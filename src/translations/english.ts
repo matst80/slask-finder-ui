@@ -28,6 +28,7 @@ export const english = {
     facet_groups: "Facet groups",
     dataset: "Dataset",
     csp: "CSP Report",
+    users: "Users",
   },
   common: {
     view: {
