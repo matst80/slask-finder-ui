@@ -118,7 +118,7 @@ export default function Register() {
                                 {!isLoggedIn && (
                                     <li className="flex items-center gap-2">
                                         <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                                        Please log in to your account first
+                                        Please log in to your account first <a href="/admin/login" className="text-blue-600 underline">here</a>.
                                     </li>
                                 )}
                                 {!isSupported && (
