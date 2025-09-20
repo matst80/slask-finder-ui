@@ -1,7 +1,6 @@
 import {
   Menu,
   X,
-  ChevronDown,
   Search,
   LayoutDashboard,
   Box,
