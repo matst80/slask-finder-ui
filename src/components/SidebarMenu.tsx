@@ -25,6 +25,7 @@ import { useAdmin } from "../hooks/appState";
 import { Button } from "./ui/button";
 import { cm } from "../utils";
 import { useCookieAcceptance } from "../CookieConsent";
+import { useWebAuthn } from "./useWebAuthn";
 
 type NavigationItemType = {
   translationKey: TranslationKey;
@@ -350,6 +351,7 @@ const menu: NavigationItemType[] = [
 ];
 
 const UserButton = () => {
+  const { isSupported, initiateWebAuthnLogin } = useWebAuthn();
   const { accepted } = useCookieAcceptance();
   const { data, isLoading } = useUser();
   const [, setIsAdmin] = useAdmin();
@@ -363,8 +365,18 @@ const UserButton = () => {
   if (accepted === "none" || accepted === null) {
     return null;
   }
+
+  const handleWebAuthnLogin = (e: React.MouseEvent) => {
+    
+    if (isSupported) {
+      e.preventDefault();
+      // Trigger WebAuthn login flow
+      initiateWebAuthnLogin();
+    }
+  };
+
   return (
-    <a href={loggedIn ? "/admin/logout" : "/admin/login"}>
+    <a href={loggedIn ? "/admin/logout" : "/admin/login"} onClick={handleWebAuthnLogin}>
       <Button
         variant={loggedIn ? "outline" : "ghost"}
         size="icon"

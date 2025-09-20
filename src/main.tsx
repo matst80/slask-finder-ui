@@ -64,6 +64,7 @@ import { GiftAssistant } from "./pages/gifts.tsx";
 import { Shipping } from "./pages/Shipping.tsx";
 import { NaturalLanguageSearch } from "./pages/natural-language-search.tsx";
 import { DatasetViewer } from "./pages/admin/DatasetViewer.tsx";
+import Register from "./pages/Register.tsx";
 
 const BubbleError = () => {
   const error = useRouteError();
@@ -97,6 +98,15 @@ const router = createBrowserRouter([
         <QueryProvider attachToHash>
           <App />
         </QueryProvider>
+      </PageContainer>
+    ),
+    errorElement: <BubbleError />,
+  },
+  {
+    path: "/register",
+    element: (
+      <PageContainer>
+        <Register />
       </PageContainer>
     ),
     errorElement: <BubbleError />,
