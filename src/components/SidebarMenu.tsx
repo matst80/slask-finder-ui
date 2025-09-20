@@ -14,7 +14,7 @@ import {
   Watch,
   Speaker,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Sidebar } from "./ui/sidebar";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { TranslationKey } from "../translations/translations";
@@ -95,7 +95,7 @@ const NavigationItem = ({
           ))
     );
 
-  const content = (
+  const content = useMemo(()=>(
     <>
       <div className="flex items-center gap-3">
         <span
@@ -113,7 +113,7 @@ const NavigationItem = ({
         )}
       </div>
     </>
-  );
+  ), [icon, isActive, level, t, translationKey]);
 
   // {
   //   hasChildren && (

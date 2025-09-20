@@ -16,7 +16,9 @@ export const Sidebar = ({
   useEffect(() => {
     if (ref.current) {
       if (open) {
-        ref.current.showModal();
+        requestAnimationFrame(() =>
+          ref.current?.showModal()
+        );
       } else {
         ref.current.close();
       }
