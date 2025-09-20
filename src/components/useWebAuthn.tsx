@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export const useWebAuthn = () => {
   const [isSupported, setIsSupported] = useState(false);
 
   useEffect(() => {
     const checkWebAuthnSupport = async () => {
-      if (window.PublicKeyCredential) {
+      if (globalThis.PublicKeyCredential) {
         setIsSupported(true);
       }
     };
     checkWebAuthnSupport();
   }, []);
 
-  const initiateRegistration = async () => {
+  const initiateRegistration = useCallback(async () => {
     const publicKey = await fetch('/admin/webauthn/register/start').then(res => res.json()).then(d => {
       return globalThis.PublicKeyCredential.parseCreationOptionsFromJSON(d.publicKey);
     });
@@ -24,9 +24,9 @@ export const useWebAuthn = () => {
       method: 'POST',
       body: JSON.stringify((credential as PublicKeyCredential).toJSON()),
     });
-  };
+  }, []);
 
-  const initiateWebAuthnLogin = async () => {
+  const initiateWebAuthnLogin = useCallback(async () => {
     const publicKey = await fetch('/admin/webauthn/login/start', {
       method: 'GET',
       headers: {
@@ -43,7 +43,7 @@ export const useWebAuthn = () => {
       method: 'POST',
       body: JSON.stringify((credential as PublicKeyCredential).toJSON()),
     });
-  };
+  }, []);
 
   return { isSupported, initiateWebAuthnLogin, initiateRegistration };
 };

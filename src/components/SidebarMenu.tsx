@@ -115,16 +115,16 @@ const NavigationItem = ({
     </>
   );
 
-  {
-    hasChildren && (
-      <ChevronDown
-        size={16}
-        className={`transition-transform duration-300 ${
-          isOpen ? "rotate-180" : ""
-        } ${isActive ? "text-white" : "text-gray-400"}`}
-      />
-    );
-  }
+  // {
+  //   hasChildren && (
+  //     <ChevronDown
+  //       size={16}
+  //       className={`transition-transform duration-300 ${
+  //         isOpen ? "rotate-180" : ""
+  //       } ${isActive ? "text-white" : "text-gray-400"}`}
+  //     />
+  //   );
+  // }
 
   return (
     <li className={`mb-2 ${level > 0 ? "mt-1" : "mt-0"}`}>
@@ -181,7 +181,7 @@ const NavigationItem = ({
       {hasChildren && (
         <ul
           className={`pl-3 mt-1 overflow-hidden transition-all duration-300 ease-in-out border-l-2 border-gray-100 ml-2 
-            ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
+            ${isOpen ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"}`}
         >
           {children.map((child) => (
             <NavigationItem
