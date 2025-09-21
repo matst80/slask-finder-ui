@@ -58,7 +58,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Handle API requests
-  if (request.url.includes('/api/')) {
+  if (request.url.includes('/api/') || request.url.includes('/admin/')) {
     event.respondWith(
       fetch(request)
         .then((response) => {
