@@ -477,27 +477,36 @@ export const ItemDetails = (details: ItemDetail) => {
   const { trigger: registerWatch, isMutating: isRegistering } = useFetchMutation(
     `/price-watch/${id}`,
     async () => {
-      // Try to get a PushSubscription if service worker and push manager exist
       let subscription: PushSubscriptionJSON | null = null;
       try {
         if ("serviceWorker" in navigator) {
           const reg = await navigator.serviceWorker.ready;
           if (reg.pushManager) {
-            // Use existing subscription or create a new one (VAPID key assumed to be set server side if needed)
             let sub = await reg.pushManager.getSubscription();
             if (!sub) {
+              // Retrieve VAPID key from backend
+              const vapidKey = "BKYS1HI1_Elr5SglbyB8n0VTRHNVxDvct5kw1aaTYrw_jtJI7l3pw0EjmADJNA6s_5pWkJXYMcQdMIPOBHnTsf8";
+              const appServerKey = vapidKey
+                ? urlBase64ToUint8Array(vapidKey.trim())
+                : undefined;
               try {
-                // If you have a VAPID public key, replace atob placeholder with actual key from backend or env.
-                // For now we attempt without applicationServerKey (assumption backend allows it or will respond with error).
                 sub = await reg.pushManager.subscribe({
                   userVisibleOnly: true,
+                  applicationServerKey: appServerKey,
                 });
               } catch (e) {
                 console.debug("Push subscribe failed", e);
               }
             }
             subscription = sub?.toJSON() ?? null;
+            if (!subscription) {
+              console.debug("Subscription is still null after attempt");
+            }
+          } else {
+            console.debug("No pushManager on service worker registration");
           }
+        } else {
+          console.debug("No serviceWorker support in navigator");
         }
       } catch (e) {
         console.debug("Failed obtaining push subscription", e);
@@ -505,6 +514,20 @@ export const ItemDetails = (details: ItemDetail) => {
       return registerPriceWatch(Number(id), subscription);
     }
   );
+
+  // Helper to convert base64 (URL safe) VAPID key to UInt8Array
+  function urlBase64ToUint8Array(base64String: string) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
 
   const watchPriceChanges = async () => {
     // Request Notification permission first

@@ -584,3 +584,4 @@ export const registerPriceWatch = (
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ subscription }),
   }).then((d) => d.ok);
+
