@@ -579,7 +579,7 @@ export const registerPriceWatch = (
   id: number,
   subscription?: PushSubscriptionJSON | null
 ) =>
-  fetch(`${baseUrl}/api/price-watch/${id}`.replace(/\/+/g, "/"), {
+  fetch(`${baseUrl}/admin/price-watch/${id}`.replace(/\/+/g, "/"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ subscription }),
