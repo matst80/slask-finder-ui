@@ -13,7 +13,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { cm, isDefined, makeImageUrl } from "../utils";
+import { cm, isDefined, makeImageUrl, useFetchMutation } from "../utils";
 import {
   ItemDetail,
   ItemsQuery,
@@ -35,6 +35,7 @@ import {
   getAdminItem,
   getAdminItemPopularity,
   ItemPopularity,
+  registerPriceWatch,
 } from "../lib/datalayer/api";
 import { useQuery } from "../lib/hooks/useQuery";
 import { trackAction } from "../lib/datalayer/beacons";
@@ -57,6 +58,7 @@ import {
 } from "../pages/AiShopper";
 import { convertDetails } from "../pages/tools";
 import { Sidebar } from "./ui/sidebar";
+import { useNotifications } from "./ui-notifications/useNotifications";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -471,6 +473,80 @@ export const ItemDetails = (details: ItemDetail) => {
     disclaimer,
   } = details;
   const { stockLevel, rating } = useProductData(values);
+  const { showNotification } = useNotifications();
+  const { trigger: registerWatch, isMutating: isRegistering } = useFetchMutation(
+    `/price-watch/${id}`,
+    async () => {
+      // Try to get a PushSubscription if service worker and push manager exist
+      let subscription: PushSubscriptionJSON | null = null;
+      try {
+        if ("serviceWorker" in navigator) {
+          const reg = await navigator.serviceWorker.ready;
+          if (reg.pushManager) {
+            // Use existing subscription or create a new one (VAPID key assumed to be set server side if needed)
+            let sub = await reg.pushManager.getSubscription();
+            if (!sub) {
+              try {
+                // If you have a VAPID public key, replace atob placeholder with actual key from backend or env.
+                // For now we attempt without applicationServerKey (assumption backend allows it or will respond with error).
+                sub = await reg.pushManager.subscribe({
+                  userVisibleOnly: true,
+                });
+              } catch (e) {
+                console.debug("Push subscribe failed", e);
+              }
+            }
+            subscription = sub?.toJSON() ?? null;
+          }
+        }
+      } catch (e) {
+        console.debug("Failed obtaining push subscription", e);
+      }
+      return registerPriceWatch(Number(id), subscription);
+    }
+  );
+
+  const watchPriceChanges = async () => {
+    // Request Notification permission first
+    if (!("Notification" in window)) {
+      showNotification({
+        title: "Not supported",
+        message: "This browser doesn't support notifications.",
+        variant: "error",
+      });
+      return;
+    }
+    let permission = Notification.permission;
+    if (permission === "default") {
+      try {
+        permission = await Notification.requestPermission();
+      } catch (e) {
+        console.debug("Notification permission error", e);
+      }
+    }
+    if (permission !== "granted") {
+      showNotification({
+        title: "Permission denied",
+        message: "You need to allow notifications to watch price changes.",
+        variant: "error",
+      });
+      return;
+    }
+    const ok = await registerWatch();
+    if (ok) {
+      showNotification({
+        title: "Watching price",
+        message: "You'll be notified if the price changes.",
+        variant: "success",
+      });
+    } else {
+      showNotification({
+        title: "Failed",
+        message: "Couldn't register price watch.",
+        variant: "error",
+      });
+    }
+  };
 
   return (
     <>
@@ -529,6 +605,9 @@ export const ItemDetails = (details: ItemDetail) => {
                     <div className="text-4xl font-bold text-gray-900">
                       <Price values={values} disclaimer={disclaimer} />
                     </div>
+                    <button onClick={watchPriceChanges} disabled={isRegistering} className="underline disabled:opacity-50">
+                      {isRegistering ? "Registering..." : "Watch"}
+                    </button>
                   </div>
 
                   <Button

@@ -568,3 +568,19 @@ export const deleteUser = (id: string) =>
     }
     throw new Error("Failed to delete user");
   });
+
+// -------------------------------------------------------------
+// Price watch (client requests price change notifications)
+// -------------------------------------------------------------
+// Registers a price watch for a specific item id. Optionally includes a
+// Push API subscription (if available). The backend can store the
+// subscription and send web push notifications on price changes.
+export const registerPriceWatch = (
+  id: number,
+  subscription?: PushSubscriptionJSON | null
+) =>
+  fetch(`${baseUrl}/api/price-watch/${id}`.replace(/\/+/g, "/"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ subscription }),
+  }).then((d) => d.ok);
