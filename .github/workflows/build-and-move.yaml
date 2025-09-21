@@ -69,8 +69,8 @@ jobs:
           fi
           
           # Set proper permissions
-          chmod -R 644 /srv/shared/slask-finder-web/*
-          find /srv/shared/slask-finder-web -type d -exec chmod 755 {} \;
+          #chmod -R 644 /srv/shared/slask-finder-web/*
+          #find /srv/shared/slask-finder-web -type d -exec chmod 755 {} \;
 
       - name: Verify PWA files deployment
         run: |
