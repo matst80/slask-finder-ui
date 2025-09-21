@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "deploy": "scp -r dist/* dev:/srv/shared/slask-finder-web",
     "deploy-all": "npm run build && npm run deploy",
+    "deploy-pwa": "npm run build && ./deploy-local.sh",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -40,6 +41,7 @@
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3",
     "vite": "^6.3.3",
-    "vite-bundle-analyzer": "^0.19.0"
+    "vite-bundle-analyzer": "^0.19.0",
+    "vite-plugin-pwa": "^1.0.3"
   }
 }

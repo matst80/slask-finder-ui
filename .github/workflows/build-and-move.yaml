@@ -24,9 +24,67 @@ jobs:
       - name: Build the Vite project
         run: npm run build
 
+      - name: List build output for debugging
+        run: |
+          echo "Build output contents:"
+          ls -la dist/
+          echo ""
+          echo "Assets directory:"
+          ls -la dist/assets/ 2>/dev/null || echo "No assets directory"
+          echo ""
+          echo "Icons directory:"
+          ls -la dist/icons/ 2>/dev/null || echo "No icons directory"
+
       - name: Copy dist folder to /srv/slask-finder-web
         run: |
-          #sudo rm -rf /srv/slask-finder-web/*
+          # Create necessary directories
+          mkdir -p /srv/shared/slask-finder-web/assets
+          mkdir -p /srv/shared/slask-finder-web/icons
+          
+          # Copy robots.txt from root
           cp robots.txt /srv/shared/slask-finder-web/
-          cp dist/index.html /srv/shared/slask-finder-web/
-          cp dist/assets/* /srv/shared/slask-finder-web/assets/
+          
+          # Copy all main files from dist (HTML, manifests, service workers, etc.)
+          cp dist/*.html /srv/shared/slask-finder-web/ 2>/dev/null || true
+          cp dist/*.js /srv/shared/slask-finder-web/ 2>/dev/null || true
+          cp dist/*.json /srv/shared/slask-finder-web/ 2>/dev/null || true
+          cp dist/*.webmanifest /srv/shared/slask-finder-web/ 2>/dev/null || true
+          cp dist/*.svg /srv/shared/slask-finder-web/ 2>/dev/null || true
+          cp dist/*.ico /srv/shared/slask-finder-web/ 2>/dev/null || true
+          cp dist/*.png /srv/shared/slask-finder-web/ 2>/dev/null || true
+          
+          # Copy assets directory (CSS, JS bundles, images)
+          if [ -d "dist/assets" ]; then
+            cp -r dist/assets/* /srv/shared/slask-finder-web/assets/
+          fi
+          
+          # Copy icons directory (PWA icons)
+          if [ -d "dist/icons" ]; then
+            cp -r dist/icons/* /srv/shared/slask-finder-web/icons/
+          fi
+          
+          # Copy any additional PWA assets
+          if [ -d "dist/pwa-assets" ]; then
+            cp -r dist/pwa-assets /srv/shared/slask-finder-web/
+          fi
+          
+          # Set proper permissions
+          chmod -R 644 /srv/shared/slask-finder-web/*
+          find /srv/shared/slask-finder-web -type d -exec chmod 755 {} \;
+
+      - name: Verify PWA files deployment
+        run: |
+          echo "Verifying PWA files were deployed correctly..."
+          echo "Files in deployment directory:"
+          ls -la /srv/shared/slask-finder-web/
+          echo ""
+          echo "PWA-specific files:"
+          echo "Service Worker: $(test -f /srv/shared/slask-finder-web/sw.js && echo 'FOUND' || echo 'MISSING')"
+          echo "Manifest (JSON): $(test -f /srv/shared/slask-finder-web/manifest.json && echo 'FOUND' || echo 'MISSING')"
+          echo "Manifest (WebManifest): $(test -f /srv/shared/slask-finder-web/manifest.webmanifest && echo 'FOUND' || echo 'MISSING')"
+          echo "Register SW: $(test -f /srv/shared/slask-finder-web/registerSW.js && echo 'FOUND' || echo 'MISSING')"
+          echo "Icons directory: $(test -d /srv/shared/slask-finder-web/icons && echo 'FOUND' || echo 'MISSING')"
+          if [ -d "/srv/shared/slask-finder-web/icons" ]; then
+            echo "Icon files:"
+            ls -la /srv/shared/slask-finder-web/icons/
+          fi

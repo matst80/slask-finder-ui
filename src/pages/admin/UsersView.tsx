@@ -151,9 +151,9 @@ const UserRow = ({
   return (
     <tr className="hover:bg-gray-50">
       <td className="px-4 py-2">{user.id}</td>
-      <td className="px-4 py-2 font-medium">{user.name}</td>
+      <td className="px-4 py-2 font-medium">{user.displayName}</td>
       <td className="px-4 py-2">{user.email}</td>
-      <td className="px-4 py-2">{user.displayName}</td>
+      <td className="px-4 py-2">{user.name}</td>
       <td className="px-4 py-2">
         <Badge
           className={

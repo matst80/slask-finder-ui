@@ -66,6 +66,8 @@ import { NaturalLanguageSearch } from "./pages/natural-language-search.tsx";
 import { DatasetViewer } from "./pages/admin/DatasetViewer.tsx";
 import Register from "./pages/Register.tsx";
 import { UsersView } from "./pages/admin/UsersView.tsx";
+import PWAInstallPrompt from "./components/PWAInstallPrompt.tsx";
+import OfflineIndicator from "./components/OfflineIndicator.tsx";
 
 const BubbleError = () => {
   const error = useRouteError();
@@ -384,6 +386,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               <NotificationsProvider>
                 <ImpressionProvider>
                   <RouterProvider router={router} />
+                  <OfflineIndicator />
+                  <PWAInstallPrompt />
                   <CookieConsent />
                 </ImpressionProvider>
               </NotificationsProvider>
