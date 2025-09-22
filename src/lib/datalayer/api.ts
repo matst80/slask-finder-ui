@@ -575,13 +575,9 @@ export const deleteUser = (id: string) =>
 // Registers a price watch for a specific item id. Optionally includes a
 // Push API subscription (if available). The backend can store the
 // subscription and send web push notifications on price changes.
-export const registerPriceWatch = (
-  id: number,
-  subscription?: PushSubscriptionJSON | null
-) =>
+export const registerPriceWatch = (id: number, token?: string | null) =>
   fetch(`${baseUrl}/admin/price-watch/${id}`.replace(/\/+/g, "/"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ subscription }),
+    body: JSON.stringify({ token }),
   }).then((d) => d.ok);
-

@@ -12,6 +12,7 @@ import {
   BotMessageSquare,
   Watch,
   Speaker,
+  Bell,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { Sidebar } from "./ui/sidebar";
@@ -25,6 +26,7 @@ import { Button } from "./ui/button";
 import { cm } from "../utils";
 import { useCookieAcceptance } from "../CookieConsent";
 import { useWebAuthn } from "./useWebAuthn";
+import { useFirebaseMessaging } from "../hooks/useFirebaseMessaging";
 
 type NavigationItemType = {
   translationKey: TranslationKey;
@@ -94,25 +96,30 @@ const NavigationItem = ({
           ))
     );
 
-  const content = useMemo(()=>(
-    <>
-      <div className="flex items-center gap-3">
-        <span
-          className={`${
-            isActive ? "text-white" : "text-gray-500 group-hover:text-gray-700"
-          } transition-colors duration-200`}
-        >
-          {icon}
-        </span>
-        <span className={`${level === 0 ? "font-medium" : ""}`}>
-          {t(translationKey)}
-        </span>
-        {isActive && level === 0 && (
-          <span className="absolute left-0 w-1 h-6 bg-white rounded-r-full" />
-        )}
-      </div>
-    </>
-  ), [icon, isActive, level, t, translationKey]);
+  const content = useMemo(
+    () => (
+      <>
+        <div className="flex items-center gap-3">
+          <span
+            className={`${
+              isActive
+                ? "text-white"
+                : "text-gray-500 group-hover:text-gray-700"
+            } transition-colors duration-200`}
+          >
+            {icon}
+          </span>
+          <span className={`${level === 0 ? "font-medium" : ""}`}>
+            {t(translationKey)}
+          </span>
+          {isActive && level === 0 && (
+            <span className="absolute left-0 w-1 h-6 bg-white rounded-r-full" />
+          )}
+        </div>
+      </>
+    ),
+    [icon, isActive, level, t, translationKey]
+  );
 
   // {
   //   hasChildren && (
@@ -370,7 +377,6 @@ const UserButton = () => {
   }
 
   const handleWebAuthnLogin = (e: React.MouseEvent) => {
-    
     if (isSupported) {
       e.preventDefault();
       // Trigger WebAuthn login flow
@@ -379,7 +385,10 @@ const UserButton = () => {
   };
 
   return (
-    <a href={loggedIn ? "/admin/logout" : "/admin/login"} onClick={handleWebAuthnLogin}>
+    <a
+      href={loggedIn ? "/admin/logout" : "/admin/login"}
+      onClick={handleWebAuthnLogin}
+    >
       <Button
         variant={loggedIn ? "outline" : "ghost"}
         size="icon"
@@ -392,6 +401,25 @@ const UserButton = () => {
         )}
       </Button>
     </a>
+  );
+};
+
+const NotificationBell = () => {
+  const { isSubscribed, subscribe, error } = useFirebaseMessaging();
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        onClick={subscribe}
+        disabled={isSubscribed}
+        size="sm"
+        variant="ghost"
+        title={isSubscribed ? "Subscribed" : "Subscribe"}
+      >
+        <Bell className="size-5" />
+      </Button>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+    </div>
   );
 };
 
@@ -412,7 +440,10 @@ export const NavMenu = () => {
         </ul>
         <div className="flex items-center justify-between mt-4">
           <LanguageSelector />
-          <UserButton />
+          <div className="flex items-center gap-2">
+            <UserButton />
+            <NotificationBell />
+          </div>
         </div>
       </nav>
       <div className="pt-4 border-t border-gray-100 mt-auto p-4 bg-gray-50">

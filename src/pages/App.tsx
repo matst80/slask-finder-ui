@@ -8,12 +8,10 @@ import { SuggestionProvider } from "../lib/hooks/SuggestionProvider";
 import { FacetProvider } from "../lib/hooks/FacetProvider";
 import { useQuery } from "../lib/hooks/useQuery";
 
-// px-4 py-3 md:py-8 md:px-10
-// px-4 md:px-10
-
 function App() {
   useFocusTracking();
   const { setQuery } = useQuery();
+
   return (
     <SuggestionProvider
       config={[

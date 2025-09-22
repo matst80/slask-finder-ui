@@ -206,7 +206,6 @@ export const QueryProvider = ({
   }, [attachToHash]);
 
   useEffect(() => {
-    console.log("ItemsKey effect", { itemsKey });
     if (itemsKey == null) {
       return;
     }

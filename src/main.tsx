@@ -68,6 +68,7 @@ import Register from "./pages/Register.tsx";
 import { UsersView } from "./pages/admin/UsersView.tsx";
 import PWAInstallPrompt from "./components/PWAInstallPrompt.tsx";
 import OfflineIndicator from "./components/OfflineIndicator.tsx";
+// Import the functions you need from the SDKs you need
 
 const BubbleError = () => {
   const error = useRouteError();
