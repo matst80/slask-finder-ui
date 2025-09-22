@@ -14,6 +14,17 @@ import { useAdmin } from "../hooks/appState";
 import { Loader } from "../components/Loader";
 import { Link } from "react-router-dom";
 import Markdown from "react-markdown";
+import firebaseApp from "../firebase";
+import {
+  Content,
+  FunctionCallPart,
+  FunctionDeclaration,
+  FunctionResponsePart,
+  getAI,
+  getGenerativeModel,
+  Part,
+} from "firebase/ai";
+import { isDefined } from "../utils";
 
 type Model =
   | "llama3.2"
@@ -21,6 +32,7 @@ type Model =
   | "qwen3"
   | "qwen2.5"
   | "qwen2.5:14b"
+  | "gemini-2.5-flash"
   | "phi4-mini:3.8b-q8_0";
 
 type ToolCall = {
@@ -50,7 +62,7 @@ const systemMessage: Message = {
     "You are a shopping assistant that make recommendations based on the data from tool calls. ask the user for product type, brand and other details. Use broad searches to start with and refine based on properties.",
 };
 
-const model: Model = "qwen2.5:14b";
+const model: Model = "gemini-2.5-flash";
 
 type OllamaResponse = {
   model: string;
@@ -63,11 +75,36 @@ type CustomTool = Tool & {
   tool: (args: unknown) => Promise<string>;
 };
 
+const toGoogleTool = ({
+  function: { description, name, parameters },
+}: Tool): FunctionDeclaration => {
+  return {
+    name,
+    description,
+    parameters: parameters as FunctionDeclaration["parameters"] | undefined,
+  };
+};
+
 export const AiShoppingProvider = ({
   children,
   customTools = [],
   messages: startMessages,
 }: PropsWithChildren<{ messages: Message[]; customTools?: CustomTool[] }>) => {
+  const ai = getAI(firebaseApp);
+  const aiModel = getGenerativeModel(ai, {
+    model,
+    systemInstruction:
+      startMessages.find((d) => d.role === "system")?.content ??
+      systemMessage.content,
+    tools: [
+      {
+        functionDeclarations: [
+          ...tools,
+          ...customTools.map(({ tool, ...rest }) => rest),
+        ].map(toGoogleTool),
+      },
+    ],
+  });
   const { data: facets } = useFacetMap();
   const [messageReference, setMessageReference] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -77,68 +114,134 @@ export const AiShoppingProvider = ({
     setMessageReference(message.content);
   }, []);
   const restart = useCallback(() => {
-    setMessages([systemMessage]);
+    setMessages([]);
     setMessageReference(null);
   }, []);
 
   useEffect(() => {
-    if (messageReference) {
-      if (loading) {
-        return;
-      }
-      setLoading(true);
-      fetch("/api/chat", {
-        method: "POST",
-        headers: { accept: "application/json" },
-        body: JSON.stringify({
-          model,
-          messages,
-          options: {
-            num_ctx: 16384,
-            temperature: 0.3,
-            repeat_penalty: 1.2,
-          },
-          stream: false,
-          tools: [...tools, ...customTools.map(({ tool, ...rest }) => rest)],
-        }),
-      }).then((d) => {
-        return toJson<OllamaResponse>(d)
-          .then(async (data) => {
-            if (data.message) {
-              setMessages((prev) => [...prev, data.message]);
-            }
-            if (data.message.tool_calls != null) {
-              for (const {
-                function: { name, arguments: args },
-              } of data.message.tool_calls) {
-                const toCall =
-                  availableFunctions[name as keyof typeof availableFunctions] ??
-                  customTools.find((tool) => tool.function.name == name)?.tool;
-
-                if (toCall) {
-                  await toCall(args as any, facets).then((content) => {
-                    const message: Message = {
-                      role: "tool",
-                      content,
-                    };
-                    console.log("tool call result:", content);
-                    setMessages((prev) => [...prev, message]);
-                  });
-                } else {
-                  console.error("Unknown function:", name, args);
-                }
-              }
-              setMessageReference(Date.now().toString());
-            }
-
-            return data;
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      });
+    if (!messageReference || loading) {
+      return;
     }
-  }, [messageReference]);
+
+    const run = async () => {
+      setLoading(true);
+
+      // Convert message history to the format expected by the API
+      const history = messages
+        .map((message): Content | null => {
+          const parts: Part[] = [];
+          if (message.role === "system") {
+            parts.push({ text: message.content });
+          }
+
+          const role = message.role === "assistant" ? "model" : "user";
+
+          if (message.content) {
+            parts.push({ text: message.content });
+          }
+
+          if (message.tool_calls) {
+            parts.push(
+              ...message.tool_calls.map(
+                (tc): FunctionCallPart => ({
+                  functionCall: {
+                    name: tc.function.name,
+                    args: tc.function.arguments,
+                  },
+                })
+              )
+            );
+          }
+          return { role, parts };
+        })
+        .filter(isDefined);
+
+      // First call to get the initial response (text or function calls)
+      console.log("AI History:", history);
+      const { response: initialResponse } = await aiModel.generateContent({
+        contents: history,
+      });
+
+      const { text } = initialResponse;
+      const functionCalls = initialResponse.functionCalls();
+
+      const assistantMessage: Message = {
+        role: "assistant",
+        content: text() ?? "",
+      };
+
+      if (functionCalls && functionCalls.length > 0) {
+        assistantMessage.tool_calls = functionCalls.map((fc) => ({
+          function: {
+            name: fc.name,
+            arguments: fc.args,
+          },
+        }));
+
+        setMessages((prev) => [...prev, assistantMessage]);
+
+        // Execute the tool calls and get responses
+        const toolResponses: FunctionResponsePart[] = await Promise.all(
+          functionCalls.map(async (fc) => {
+            const toCall =
+              availableFunctions[fc.name as keyof typeof availableFunctions] ??
+              customTools.find((tool) => tool.function.name === fc.name)?.tool;
+
+            let content: string;
+            if (toCall) {
+              content = await toCall(fc.args as any, facets);
+            } else {
+              content = `Unknown function: ${fc.name}`;
+              console.error("Unknown function:", fc.name, fc.args);
+            }
+            return {
+              functionResponse: {
+                name: fc.name,
+                response: { content },
+              },
+            };
+          })
+        );
+
+        // Add tool responses to history and make a second call to get the final text response
+        const newHistory: Content[] = [
+          ...history,
+          {
+            role: "model",
+            parts: assistantMessage.tool_calls.map((tc) => ({
+              functionCall: {
+                name: tc.function.name,
+                args: tc.function.arguments,
+              },
+            })),
+          },
+          { role: "user", parts: toolResponses },
+        ];
+
+        const { response: finalResponse } = await aiModel.generateContent({
+          contents: newHistory,
+        });
+
+        const finalMessage: Message = {
+          role: "assistant",
+          content: finalResponse.text() ?? "",
+        };
+        setMessages((prev) => [...prev, finalMessage]);
+        setMessageReference(null);
+      } else {
+        setMessages((prev) => [...prev, assistantMessage]);
+        setMessageReference(null);
+      }
+
+      setLoading(false);
+    };
+
+    run().catch((err) => {
+      console.error("AI Error:", err);
+      setLoading(false);
+      // Optionally, add an error message to the chat
+    });
+  }, [messageReference, aiModel, facets, customTools, loading, messages]);
 
   return (
     <AiShopperContext.Provider
@@ -315,10 +418,11 @@ export const MessageList = () => {
 
         if (
           message.role === "system" ||
-          message.content == null ||
-          message.content === ""
+          (message.content == null && message.tool_calls == null) ||
+          (message.content === "" &&
+            (message.tool_calls == null || message.tool_calls.length === 0))
         ) {
-          return null; // Hide system messages
+          return null; // Hide system messages and empty assistant messages
         }
         const { content, think } = splitTinking(message.content);
         return (
@@ -340,6 +444,12 @@ export const MessageList = () => {
             >
               {message.role === "assistant" && (
                 <div className="text-xs text-gray-500 mb-1">Assistant</div>
+              )}
+              {message.tool_calls && (
+                <div className="text-xs text-gray-500 mb-1">
+                  <span className="font-bold">Tools used:</span>{" "}
+                  {message.tool_calls.map((tc) => tc.function.name).join(", ")}
+                </div>
               )}
               {think && (
                 <div className="text-xs text-gray-500 mb-1">
