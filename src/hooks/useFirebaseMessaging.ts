@@ -29,7 +29,11 @@ export const useFirebaseMessaging = () => {
 
     // Check for existing token
     const checkToken = async () => {
+      if (Notification.permission !== "granted") {
+        return;
+      }
       try {
+        const messaging = getMessaging(firebaseApp);
         const currentToken = await getToken(messaging, { vapidKey: VAPID_KEY });
         if (currentToken) {
           setToken(currentToken);
