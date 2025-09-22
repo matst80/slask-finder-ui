@@ -412,8 +412,8 @@ const NotificationBell = () => {
       <Button
         onClick={subscribe}
         disabled={isSubscribed}
-        size="sm"
-        variant="ghost"
+        size="icon"
+        variant={isSubscribed ? "outline" : "ghost"}
         title={isSubscribed ? "Subscribed" : "Subscribe"}
       >
         <Bell className="size-5" />
@@ -440,7 +440,7 @@ export const NavMenu = () => {
         </ul>
         <div className="flex items-center justify-between mt-4">
           <LanguageSelector />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <UserButton />
             <NotificationBell />
           </div>
