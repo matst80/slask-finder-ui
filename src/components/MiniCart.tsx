@@ -19,7 +19,6 @@ import {
   ShippingOptionList,
   ShippingProvider,
 } from "../pages/Shipping";
-import { useWebAuthn } from "./useWebAuthn";
 
 type CartDialogProps = {
   onClose: () => void;
