@@ -421,7 +421,7 @@ const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
           d.publicKey
         );
       });
-    const { allowCredentials, challenge } = options;
+    const { challenge } = options;
     const credential = await navigator.credentials.get({ publicKey: options });
     const verificationResult = await fetch("/admin/webauthn/login/finish", {
       method: "POST",
