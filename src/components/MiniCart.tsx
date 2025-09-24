@@ -422,7 +422,8 @@ const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
         );
       });
     const { allowCredentials, challenge } = options;
-    console.log(options);
+    const credential = await navigator.credentials.get({ publicKey: options });
+    console.log(credential, options);
     const request = new PaymentRequest(
       [
         {
