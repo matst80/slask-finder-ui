@@ -1,4 +1,4 @@
-import { ShoppingCartIcon, X } from "lucide-react";
+import { CreditCard, ShoppingCartIcon, X } from "lucide-react";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 import { cm, isDefined, makeImageUrl } from "../utils";
@@ -10,7 +10,7 @@ import { useTranslations } from "../lib/hooks/useTranslations";
 import { Sidebar } from "./ui/sidebar";
 import { Price, PriceElement, PriceValue } from "./Price";
 import { useCompatibleItems } from "../hooks/searchHooks";
-import { CartItem, ItemPrice } from "../lib/types";
+import { Cart, CartItem, ItemPrice } from "../lib/types";
 import { toEcomTrackingEvent } from "./toImpression";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
 import { useSwitching } from "../lib/hooks/useSwitching";
@@ -338,15 +338,87 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
                   {t("cart.show_confirmation")}
                 </ButtonAnchor>
               ) : (
-                <ButtonAnchor onClick={onClose} to={"/checkout"}>
-                  {t("cart.proceed_to_checkout")}
-                </ButtonAnchor>
+                <>
+                  <ButtonAnchor onClick={onClose} to={"/checkout"}>
+                    {t("cart.proceed_to_checkout")}
+                  </ButtonAnchor>
+                  <WebPayButton cart={cart} />
+                </>
               )}
             </div>
           </div>
         </>
       )}
     </div>
+  );
+};
+
+const isSecurePaymentConfirmationSupported = async () => {
+  if (!"PaymentRequest" in globalThis) {
+    return [false, "Payment Request API is not supported"];
+  }
+
+  try {
+    // The data below is the minimum required to create the request and
+    // check if a payment can be made.
+    const supportedInstruments = [
+      {
+        supportedMethods: "secure-payment-confirmation",
+        data: {
+          // RP's hostname as its ID
+          rpId: "slask.show.knatofs.se",
+          // A dummy credential ID
+          credentialIds: [new Uint8Array(1)],
+          // A dummy challenge
+          challenge: new Uint8Array(1),
+          instrument: {
+            // Non-empty display name string
+            displayName: " ",
+            // Transparent-black pixel.
+            icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==",
+          },
+          // A dummy merchant origin
+          payeeOrigin: "https://slask.show.knatofs.se",
+        },
+      },
+    ];
+
+    const details = {
+      // Dummy shopping details
+      total: { label: "Total", amount: { currency: "USD", value: "0" } },
+    };
+
+    const request = new PaymentRequest(supportedInstruments, details);
+    const canMakePayment = await request.canMakePayment();
+    return [canMakePayment, canMakePayment ? "" : "SPC is not available"];
+  } catch (error: { message?: string }) {
+    console.error(error);
+    return [false, error.message];
+  }
+};
+
+const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
+  const disabled = cart == null || cart.items.length === 0;
+  const [supported, setSupported] = useState(false);
+  useEffect(() => {
+    isSecurePaymentConfirmationSupported().then(([isSupported]) => {
+      setSupported(isSupported);
+    });
+  }, []);
+  return (
+    <button
+      disabled={disabled || !supported}
+      className="border border-gray-500"
+    >
+      {supported ? (
+        <>
+          <CreditCard className="size-4 inline-block mr-2" />
+          Betala med kort (WebPay)
+        </>
+      ) : (
+        "Kortbetalning (WebPay) ej tillgängligt"
+      )}
+    </button>
   );
 };
 

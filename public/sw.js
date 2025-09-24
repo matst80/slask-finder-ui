@@ -59,8 +59,10 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  const dynamicUrlPatterns = ["/api/", "/admin/", "/cart/"];
+
   // Handle API requests
-  if (request.url.includes("/api/") || request.url.includes("/admin/")) {
+  if (dynamicUrlPatterns.some((pattern) => request.url.includes(pattern))) {
     event.respondWith(
       fetch(request)
         .then((response) => {
