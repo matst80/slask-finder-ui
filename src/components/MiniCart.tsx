@@ -442,7 +442,7 @@ const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
             // A display name and an icon that represent the payment instrument.
             instrument: {
               displayName: "Fancy Card ****1234",
-              icon: "https://rp.example/card-art.png",
+              icon: "https://slask-finder.tornberg.me/vite.svg",
               iconMustBeShown: false,
             },
 
