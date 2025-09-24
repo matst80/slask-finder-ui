@@ -422,7 +422,7 @@ const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
         );
       });
     const { allowCredentials, challenge } = options;
-
+    console.log(options);
     const request = new PaymentRequest(
       [
         {
