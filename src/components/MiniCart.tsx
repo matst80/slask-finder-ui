@@ -3,7 +3,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 import { cm, isDefined, makeImageUrl } from "../utils";
 import { useAddToCart, useCart, useChangeQuantity } from "../hooks/cartHooks";
-import { ButtonAnchor } from "./ui/button";
+import { Button, ButtonAnchor } from "./ui/button";
 import { Link } from "react-router-dom";
 import { QuantityInput } from "../pages/builder/QuantityInput";
 import { useTranslations } from "../lib/hooks/useTranslations";
@@ -19,6 +19,7 @@ import {
   ShippingOptionList,
   ShippingProvider,
 } from "../pages/Shipping";
+import { useWebAuthn } from "./useWebAuthn";
 
 type CartDialogProps = {
   onClose: () => void;
@@ -329,7 +330,7 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
                 <ShippingOptionList />
               </ShippingProvider>
             )}
-            <div className="mt-6 w-full">
+            <div className="mt-6 w-full flex gap-2 items-center">
               {cart?.paymentStatus === "checkout_completed" ? (
                 <ButtonAnchor
                   onClick={onClose}
@@ -340,7 +341,7 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
               ) : (
                 <>
                   <ButtonAnchor onClick={onClose} to={"/checkout"}>
-                    {t("cart.proceed_to_checkout")}
+                    {t("menu.checkout")}
                   </ButtonAnchor>
                   <WebPayButton cart={cart} />
                 </>
@@ -353,8 +354,10 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
   );
 };
 
-const isSecurePaymentConfirmationSupported = async () => {
-  if (!"PaymentRequest" in globalThis) {
+const isSecurePaymentConfirmationSupported = async (): Promise<
+  [boolean, unknown]
+> => {
+  if (!("PaymentRequest" in globalThis)) {
     return [false, "Payment Request API is not supported"];
   }
 
@@ -366,19 +369,19 @@ const isSecurePaymentConfirmationSupported = async () => {
         supportedMethods: "secure-payment-confirmation",
         data: {
           // RP's hostname as its ID
-          rpId: "slask.show.knatofs.se",
+          rpId: "slask-finder.tornberg.me",
           // A dummy credential ID
           credentialIds: [new Uint8Array(1)],
           // A dummy challenge
           challenge: new Uint8Array(1),
           instrument: {
             // Non-empty display name string
-            displayName: " ",
+            displayName: "Slask-payment",
             // Transparent-black pixel.
             icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==",
           },
           // A dummy merchant origin
-          payeeOrigin: "https://slask.show.knatofs.se",
+          payeeOrigin: "https://slask-finder.tornberg.me",
         },
       },
     ];
@@ -391,34 +394,108 @@ const isSecurePaymentConfirmationSupported = async () => {
     const request = new PaymentRequest(supportedInstruments, details);
     const canMakePayment = await request.canMakePayment();
     return [canMakePayment, canMakePayment ? "" : "SPC is not available"];
-  } catch (error: { message?: string }) {
+  } catch (error) {
     console.error(error);
-    return [false, error.message];
+    return [false, error];
   }
 };
 
 const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
   const disabled = cart == null || cart.items.length === 0;
   const [supported, setSupported] = useState(false);
+
   useEffect(() => {
     isSecurePaymentConfirmationSupported().then(([isSupported]) => {
       setSupported(isSupported);
     });
   }, []);
+  const register = async () => {
+    const options = await fetch("/admin/webauthn/login/start", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((d) => {
+        return globalThis.PublicKeyCredential.parseRequestOptionsFromJSON(
+          d.publicKey
+        );
+      });
+    const { allowCredentials, challenge } = options;
+
+    const request = new PaymentRequest(
+      [
+        {
+          // Specify `secure-payment-confirmation` as payment method.
+          supportedMethods: "secure-payment-confirmation",
+          data: {
+            // The RP ID
+            rpId: "slask-finder.tornberg.me",
+
+            // List of credential IDs obtained from the RP server.
+            credentialIds: allowCredentials,
+
+            // The challenge is also obtained from the RP server.
+            challenge,
+
+            // A display name and an icon that represent the payment instrument.
+            instrument: {
+              displayName: "Fancy Card ****1234",
+              icon: "https://rp.example/card-art.png",
+              iconMustBeShown: false,
+            },
+
+            // The origin of the payee (merchant)
+            payeeOrigin: "https://slask-finder.tornberg.me",
+
+            // The number of milliseconds to timeout.
+            timeout: 360000, // 6 minutes
+          },
+        },
+      ],
+      {
+        // Payment details.
+        total: {
+          label: "Total",
+          amount: {
+            currency: "SEK",
+            value: (cart?.totalPrice ?? 500 / 100).toFixed(2),
+          },
+        },
+      }
+    );
+
+    try {
+      const response = await request.show();
+
+      // response.details is a PublicKeyCredential, with a clientDataJSON that
+      // contains the transaction data for verification by the issuing bank.
+      // Make sure to serialize the binary part of the credential before
+      // transferring to the server.
+      // const result = fetchFromServer(
+      //   "https://rp.example/spc-auth-response",
+      //   response.details
+      // );
+      console.log(response);
+      if (true) {
+        await response.complete("success");
+      } else {
+        await response.complete("fail");
+      }
+    } catch (err) {
+      // SPC cannot be used; merchant should fallback to traditional flows
+      console.error(err);
+    }
+  };
+  if (disabled || !supported) {
+    return null;
+  }
   return (
-    <button
-      disabled={disabled || !supported}
-      className="border border-gray-500"
-    >
-      {supported ? (
-        <>
-          <CreditCard className="size-4 inline-block mr-2" />
-          Betala med kort (WebPay)
-        </>
-      ) : (
-        "Kortbetalning (WebPay) ej tillgängligt"
-      )}
-    </button>
+    <Button onClick={register}>
+      <CreditCard className="size-4 inline-block mr-2" />
+      WebPay
+    </Button>
   );
 };
 
