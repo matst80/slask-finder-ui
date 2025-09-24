@@ -423,7 +423,11 @@ const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
       });
     const { allowCredentials, challenge } = options;
     const credential = await navigator.credentials.get({ publicKey: options });
-    console.log("nytt", credential, options);
+    const verificationResult = await fetch("/admin/webauthn/login/finish", {
+      method: "POST",
+      body: JSON.stringify((credential as PublicKeyCredential).toJSON()),
+    }).then((d) => d.json());
+    console.log("nytt", verificationResult, options);
     const request = new PaymentRequest(
       [
         {
@@ -434,7 +438,7 @@ const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
             rpId: "slask-finder.tornberg.me",
 
             // List of credential IDs obtained from the RP server.
-            credentialIds: allowCredentials,
+            credentialIds: [new Uint8Array(1)],
 
             // The challenge is also obtained from the RP server.
             challenge,
