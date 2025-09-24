@@ -423,11 +423,7 @@ const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
       });
     const { challenge } = options;
     const credential = await navigator.credentials.get({ publicKey: options });
-    const verificationResult = await fetch("/admin/webauthn/login/finish", {
-      method: "POST",
-      body: JSON.stringify((credential as PublicKeyCredential).toJSON()),
-    }).then((d) => d.json());
-    console.log("nytt", verificationResult, options);
+
     const request = new PaymentRequest(
       [
         {
@@ -469,6 +465,12 @@ const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
         },
       }
     );
+
+    const verificationResult = await fetch("/admin/webauthn/login/finish", {
+      method: "POST",
+      body: JSON.stringify((credential as PublicKeyCredential).toJSON()),
+    }).then((d) => d.json());
+    console.log("nytt", verificationResult, options);
 
     try {
       const response = await request.show();
