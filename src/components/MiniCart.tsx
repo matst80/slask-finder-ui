@@ -423,7 +423,7 @@ const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
       });
     const { allowCredentials, challenge } = options;
     const credential = await navigator.credentials.get({ publicKey: options });
-    console.log(credential, options);
+    console.log("nytt", credential, options);
     const request = new PaymentRequest(
       [
         {
