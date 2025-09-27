@@ -50,6 +50,8 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+const dynamicUrlParts = ["/api/", "/admin/", "/ai/","/checkout","/cart"];
+
 // Fetch event - serve cached content when offline
 self.addEventListener("fetch", (event) => {
   const { request } = event;
@@ -60,7 +62,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Handle API requests
-  if (request.url.includes("/api/") || request.url.includes("/admin/")) {
+  if (dynamicUrlParts.some((part) => request.url.includes(part))) {
     event.respondWith(
       fetch(request)
         .then((response) => {

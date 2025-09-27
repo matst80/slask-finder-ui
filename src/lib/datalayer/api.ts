@@ -185,7 +185,7 @@ export const getRelated = (id: number) =>
   fetch(`${baseUrl}/api/related/${id}`).then((d) => readStreamed<Item>(d));
 
 export const getCosineRelated = (id: number) =>
-  fetch(`${baseUrl}/api/cosine-similar/${id}`).then((d) =>
+  fetch(`${baseUrl}/ai/cosine-similar/${id}`).then((d) =>
     readStreamed<Item>(d)
   );
 
@@ -487,7 +487,7 @@ export const getYourPopularItems = () =>
   fetch(`${baseUrl}/api/popular`).then((d) => readStreamed<Item>(d));
 
 export const naturalSearch = (q: string) =>
-  fetch(`${baseUrl}/api/natural?${new URLSearchParams({ q })}`).then((d) =>
+  fetch(`${baseUrl}/ai/natural?${new URLSearchParams({ q })}`).then((d) =>
     readStreamed<Item>(d)
   );
 
