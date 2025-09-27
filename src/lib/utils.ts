@@ -221,7 +221,7 @@ export const useProductData = (values: Item["values"]) => {
     const grade = values[ValueMap.Grade];
     const price = getPrice(values);
     const stockLevel = values[ValueMap.StockLevel];
-    const isOwn = soldBy == null || soldBy == "Elgiganten";
+    const isOwn = soldBy == null || soldBy == "Elgiganten" || soldBy == "Elkjøp";
 
     return {
       isOwn,

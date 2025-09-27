@@ -31,7 +31,7 @@ if [ -d "dist/assets" ]; then
     cp -r dist/assets/* "$TARGET_DIR/assets/"
     echo "✅ Assets copied"
 else
-    echo "⚠️  No assets directory found"
+    echo "⚠️ No assets directory found"
 fi
 
 # Copy icons directory
@@ -39,7 +39,7 @@ if [ -d "dist/icons" ]; then
     cp -r dist/icons/* "$TARGET_DIR/icons/"
     echo "✅ Icons copied"
 else
-    echo "⚠️  No icons directory found"
+    echo "⚠️ No icons directory found"
 fi
 
 # Copy any additional PWA assets

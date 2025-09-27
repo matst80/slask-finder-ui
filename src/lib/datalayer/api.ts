@@ -179,7 +179,7 @@ export const facets = (query: string) =>
 //     d.ok ? (d.json() as Promise<FacetResult>) : Promise.reject(d)
 //   );
 export const getFacetGroups = () =>
-  fetch(`${baseUrl}/admin/facet-groups`).then((d) => toJson<FacetGroup[]>(d));
+  fetch(`${baseUrl}/api/facet-groups`).then((d) => toJson<FacetGroup[]>(d));
 
 export const getRelated = (id: number) =>
   fetch(`${baseUrl}/api/related/${id}`).then((d) => readStreamed<Item>(d));

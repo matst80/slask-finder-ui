@@ -248,7 +248,7 @@ const StoreSelector = () => {
   const sortedStores = useMemo(() => {
     return Object.values(stores)
       .map(({ displayName, id }) => ({
-        displayName: displayName.replace("Elgiganten ", ""),
+        displayName: displayName.replace("Elgiganten ", "").replace("Elkjøp ", ""),
         id,
       }))
       .sort((a, b) => a.displayName.localeCompare(b.displayName));
