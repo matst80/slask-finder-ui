@@ -576,7 +576,7 @@ export const deleteUser = (id: string) =>
 // Push API subscription (if available). The backend can store the
 // subscription and send web push notifications on price changes.
 export const registerPriceWatch = (id: number, token?: string | null) =>
-  fetch(`${baseUrl}/admin/price-watch/${id}`.replace(/\/+/g, "/"), {
+  fetch(`${baseUrl}/push/watch/${id}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token }),
