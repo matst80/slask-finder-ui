@@ -193,6 +193,7 @@ const useCartItemData = (item: CartItem) => {
 const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   const { trigger: changeQuantity } = useChangeQuantity();
   const { price, trackingItem } = useCartItemData(item);
+  console.log("sellerId", item.sellerId);
   return (
     <li key={item.id + item.sku} className="py-3 flex flex-col group relative">
       <div className="flex items-start gap-2">
