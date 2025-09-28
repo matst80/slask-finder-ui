@@ -190,10 +190,14 @@ const useCartItemData = (item: CartItem) => {
   }, [item]);
 };
 
+const ownIds = ["001071"]
+
 const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   const { trigger: changeQuantity } = useChangeQuantity();
   const { price, trackingItem } = useCartItemData(item);
-  console.log("sellerId", item.sellerId);
+
+
+  
   return (
     <li key={item.id + item.sku} className="py-3 flex flex-col group relative">
       <div className="flex items-start gap-2">
@@ -218,7 +222,7 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
               {item.outlet}
             </span>
           )}
-          {item.sellerName != null && (
+          {item.sellerId!=null && item.sellerName != null && !ownIds.includes(item.sellerId) && (
             <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">
               {item.sellerName}
             </span>

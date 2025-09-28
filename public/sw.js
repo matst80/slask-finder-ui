@@ -114,9 +114,11 @@ self.addEventListener("fetch", (event) => {
 
           return response;
         })
-        .catch(() => {
+        .catch((err) => {
+          
           // Return a fallback page for navigation requests
           if (request.destination === "document") {
+            console.log("Returning fallback page, cause:", err);
             return caches.match("/index.html");
           }
         });
