@@ -11,11 +11,17 @@ type ChangeQuantityArgs = {
   quantity: number;
 };
 
-export const addToCart = (payload: AddToCartArgs) =>
-  fetch(`${baseUrl}/cart/`, {
+const getCountry = () => {
+  return globalThis.location.host.includes("-no") ? "no" : "se";
+}
+
+export const addToCart = (payload: AddToCartArgs) => {
+  const country = getCountry();
+  return fetch(`${baseUrl}/cart/`, {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({...payload, country}),
   }).then((d) => toJson<Cart>(d));
+};
 
 export const changeQuantity = (payload: ChangeQuantityArgs) =>
   fetch(`${baseUrl}/cart/`, {
