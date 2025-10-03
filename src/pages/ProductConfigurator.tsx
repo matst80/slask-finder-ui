@@ -1,7 +1,7 @@
 import { QueryProvider } from "../lib/hooks/QueryProvider";
 import { useQuery } from "../lib/hooks/useQuery";
 import { useMemo } from "react";
-import { isKeyFacet, KeyFacet, ValueMap } from "../lib/types";
+import { isKeyFacet, KeyFacet } from "../lib/types";
 import { useQueryKeyFacet } from "../lib/hooks/useQueryKeyFacet";
 
 import { Button } from "../components/ui/button";

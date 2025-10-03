@@ -468,7 +468,8 @@ export const OtherVariants = ({ pft, id }: { pft: string[]; id: number }) => {
   useEffect(() => {
     if (!data?.items) return;
     const allValues = data.items.reduce(
-      (acc, { values }) => {
+      (acc, { values, id: itemId }) => {
+        if (itemId === id) return acc;
         Object.entries(values).forEach(([key, value]) => {
           if (typeof value === "string" && key !== "3") {
             if (!acc[key]) {
@@ -489,7 +490,7 @@ export const OtherVariants = ({ pft, id }: { pft: string[]; id: number }) => {
     );
   }, [data]);
 
-  console.log(facetValues);
+  // console.log(facetValues);
   const showButton = Object.keys(facetValues).length > 1;
   if (!data?.items || !data.items.length) return null;
   return (
@@ -501,7 +502,9 @@ export const OtherVariants = ({ pft, id }: { pft: string[]; id: number }) => {
       ) : (
         <div>
           {data?.items.map((item) => (
-            <div>{item.title}</div>
+            <Link to={`/item/${item.id}`} key={item.id}>
+              {item.title}
+            </Link>
           ))}
         </div>
       )}
