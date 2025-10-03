@@ -34,8 +34,6 @@ import { Button, ButtonLink } from "./ui/button";
 import { useAdmin } from "../hooks/appState";
 import {
   getAdminItem,
-  getAdminItemPopularity,
-  ItemPopularity,
   registerPriceWatch,
 } from "../lib/datalayer/api";
 import { useQuery } from "../lib/hooks/useQuery";
