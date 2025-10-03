@@ -41,7 +41,7 @@ import {
 import { useQuery } from "../lib/hooks/useQuery";
 import { trackAction } from "../lib/datalayer/beacons";
 import { StockList } from "./StockList";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { GroupedProperties } from "./GroupedProperties";
 import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
@@ -61,6 +61,9 @@ import { convertDetails } from "../pages/tools";
 import { useFirebaseMessaging } from "../hooks/useFirebaseMessaging";
 import { Sidebar } from "./ui/sidebar";
 import { useNotifications } from "./ui-notifications/useNotifications";
+import { div } from "framer-motion/client";
+import { FacetProvider } from "../lib/hooks/FacetProvider";
+import { FacetSelector } from "../pages/ProductConfigurator";
 
 export type StoreWithStock = Store & {
   stock: string;
@@ -456,10 +459,57 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
   );
 };
 
+const configIgnoredFacets = [
+  2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559, 31158,
+];
+
+const ItemChangeHandler = () => {
+  const { hits } = useQuery();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (hits.length > 0) {
+      const item = hits[0];
+      //console.log(item);
+      navigate(`/product/${item.id}`, { replace: true });
+      // Handle item change
+    }
+  }, [hits, navigate]);
+  return null;
+};
+
+const ConfiguratorSidebar = ({
+  open,
+  setOpen,
+  pft,
+}: {
+  pft: string[];
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) => {
+  return (
+    <Sidebar open={open} setOpen={setOpen} side="right">
+      <div className="bg-white p-6 w-sm max-w-full h-screen overflow-y-auto">
+        <QueryProvider
+          initialQuery={{
+            string: [{ id: 25, value: pft }],
+          }}
+        >
+          <FacetProvider ignoreFacets={configIgnoredFacets}>
+            <FacetSelector />
+          </FacetProvider>
+          <ItemChangeHandler />
+        </QueryProvider>
+      </div>
+    </Sidebar>
+  );
+};
+
 export const OtherVariants = ({ pft, id }: { pft: string[]; id: number }) => {
   const { data, isLoading } = useItemsSearch({
     string: [{ id: 25, value: pft }],
   });
+
+  const [open, setOpen] = useState(false);
 
   const [facetValues, setFacetValues] = useState<Record<string, Set<string>>>(
     {},
@@ -488,7 +538,7 @@ export const OtherVariants = ({ pft, id }: { pft: string[]; id: number }) => {
         Object.entries(allValues).filter(([, values]) => values.size > 1),
       ),
     );
-  }, [data]);
+  }, [data, id]);
 
   // console.log(facetValues);
   const showButton = Object.keys(facetValues).length > 1;
@@ -498,7 +548,10 @@ export const OtherVariants = ({ pft, id }: { pft: string[]; id: number }) => {
       {isLoading ? (
         <Loader size="md" />
       ) : showButton ? (
-        <ButtonLink to={`/config/${pft[0]}`}>Configure</ButtonLink>
+        <>
+          <Button onClick={() => setOpen(true)}>Configure</Button>
+          <ConfiguratorSidebar open={open} setOpen={setOpen} pft={pft} />
+        </>
       ) : (
         <div>
           {data?.items.map((item) => (
@@ -517,7 +570,6 @@ export const ItemDetails = (details: ItemDetail) => {
   const [open, setOpen] = useState(false);
   const t = useTranslations();
 
-  if (!details) return null;
   const {
     title,
     img,
@@ -590,8 +642,8 @@ export const ItemDetails = (details: ItemDetail) => {
       });
     }
   };
+  if (!details) return null;
   const pft = details.values[25];
-  console.log(pft);
 
   return (
     <>

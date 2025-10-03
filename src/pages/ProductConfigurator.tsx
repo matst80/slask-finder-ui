@@ -27,7 +27,7 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
     removeValue,
   } = useQueryKeyFacet(id);
 
-  const allSorted = useMemo(() => toSorted(values), [values, filterValue]);
+  const allSorted = useMemo(() => toSorted(values), [values]);
 
   //const { data: popularValues } = useKeyFacetValuePopularity(id);
 
@@ -59,7 +59,7 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
   );
 };
 
-const FacetSelector = () => {
+export const FacetSelector = () => {
   const { facets } = useFacets();
   const toShow = useMemo<KeyFacet[]>(() => {
     return facets
