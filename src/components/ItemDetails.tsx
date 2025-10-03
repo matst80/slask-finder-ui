@@ -61,7 +61,6 @@ import { convertDetails } from "../pages/tools";
 import { useFirebaseMessaging } from "../hooks/useFirebaseMessaging";
 import { Sidebar } from "./ui/sidebar";
 import { useNotifications } from "./ui-notifications/useNotifications";
-import { div } from "framer-motion/client";
 import { FacetProvider } from "../lib/hooks/FacetProvider";
 import { FacetSelector } from "../pages/ProductConfigurator";
 
