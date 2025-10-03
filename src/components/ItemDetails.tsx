@@ -3,6 +3,7 @@ import {
   useCompatibleItems,
   useCosineRelatedItems,
   useFacetMap,
+  useItemsSearch,
   useRelatedItems,
   useRelationGroups,
 } from "../hooks/searchHooks";
@@ -140,9 +141,9 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
           data
             ?.map((d) => d.values[31158])
             .filter(isDefined)
-            .map((d) => String(d))
-        )
-      )
+            .map((d) => String(d)),
+        ),
+      ),
     );
   }, [data]);
   if (!data || data.length === 0) return null;
@@ -217,13 +218,13 @@ type PossibleValue = string | string[] | number | undefined;
 
 const getMatch = (
   requiredValue: string | number | string[],
-  value: string | number | string[]
+  value: string | number | string[],
 ) => {
   if (Array.isArray(requiredValue)) {
     return requiredValue.some((part) =>
       Array.isArray(value)
         ? value.includes(part)
-        : String(part) === String(value)
+        : String(part) === String(value),
     );
   }
   return String(requiredValue) === String(value);
@@ -231,7 +232,7 @@ const getMatch = (
 
 const hasRequiredValue = (
   { value: requiredValue, exclude = false }: RelationMatch,
-  value: PossibleValue
+  value: PossibleValue,
 ) => {
   if (value == null) return false;
   if (requiredValue == null) return value != null;
@@ -256,7 +257,7 @@ const isRangeFilter = (d: NumberField | KeyField): d is NumberField => {
 
 const makeQuery = (
   group: RelationGroup,
-  values: ItemDetail["values"]
+  values: ItemDetail["values"],
 ): ItemsQuery => {
   const globalFilters =
     group.additionalQueries?.map((query) => {
@@ -292,7 +293,7 @@ const makeQuery = (
       }
       return acc;
     },
-    [[], []] as [ItemsQuery["string"], ItemsQuery["range"]]
+    [[], []] as [ItemsQuery["string"], ItemsQuery["range"]],
   );
 
   return {
@@ -350,10 +351,10 @@ const RelationGroups = ({ values, id }: Pick<ItemDetail, "values" | "id">) => {
     () =>
       data?.filter((group) =>
         group.requiredForItem.every((requirement) =>
-          hasRequiredValue(requirement, values[requirement.facetId])
-        )
+          hasRequiredValue(requirement, values[requirement.facetId]),
+        ),
       ) ?? [],
-    [values, data]
+    [values, data],
   );
 
   return (
@@ -428,7 +429,7 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
       .map((id) => ({ id, value: values[id] }))
       .filter(
         (d) =>
-          d.value != null && typeof d.value === "string" && d.value.length > 0
+          d.value != null && typeof d.value === "string" && d.value.length > 0,
       );
   }, [values]);
   return (
@@ -451,6 +452,59 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
           {idx < parts.length - 1 && <span className="mx-2">/</span>}
         </Link>
       ))}
+    </div>
+  );
+};
+
+export const OtherVariants = ({ pft, id }: { pft: string[]; id: number }) => {
+  const { data, isLoading } = useItemsSearch({
+    string: [{ id: 25, value: pft }],
+  });
+
+  const [facetValues, setFacetValues] = useState<Record<string, Set<string>>>(
+    {},
+  );
+
+  useEffect(() => {
+    if (!data?.items) return;
+    const allValues = data.items.reduce(
+      (acc, { values }) => {
+        Object.entries(values).forEach(([key, value]) => {
+          if (typeof value === "string" && key !== "3") {
+            if (!acc[key]) {
+              acc[key] = new Set<string>();
+            }
+            acc[key].add(value);
+          }
+        });
+        return acc;
+      },
+      {} as Record<string, Set<string>>,
+    );
+
+    setFacetValues(
+      Object.fromEntries(
+        Object.entries(allValues).filter(([, values]) => values.size > 1),
+      ),
+    );
+  }, [data]);
+
+  console.log(facetValues);
+  const showButton = Object.keys(facetValues).length > 1;
+  if (!data?.items || !data.items.length) return null;
+  return (
+    <div>
+      {isLoading ? (
+        <Loader size="md" />
+      ) : showButton ? (
+        <ButtonLink to={`/config/${pft[0]}`}>Configure</ButtonLink>
+      ) : (
+        <div>
+          {data?.items.map((item) => (
+            <div>{item.title}</div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -533,6 +587,8 @@ export const ItemDetails = (details: ItemDetail) => {
       });
     }
   };
+  const pft = details.values[25];
+  console.log(pft);
 
   return (
     <>
@@ -540,7 +596,7 @@ export const ItemDetails = (details: ItemDetail) => {
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
           {/* Image Section */}
 
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-center w-full">
             <img
               className="max-w-full mix-blend-multiply h-auto object-contain product-image"
               src={makeImageUrl(img)}
@@ -574,7 +630,7 @@ export const ItemDetails = (details: ItemDetail) => {
                         <span className="text-blue-500 mr-2">•</span>
                         {txt}
                       </li>
-                    ) : null
+                    ) : null,
                   )}
                 </ul>
               )}
@@ -583,6 +639,11 @@ export const ItemDetails = (details: ItemDetail) => {
             {/* Price and Cart Section */}
             {(buyable || buyableInStore) && (
               <div className="flex flex-col gap-2">
+                <div>
+                  {pft != null && typeof pft === "string" && (
+                    <OtherVariants pft={[pft]} id={id} />
+                  )}
+                </div>
                 <div className="grid grid-cols-2 gap-4 items-end">
                   <div>
                     <span className="text-gray-500 text-sm">
@@ -605,7 +666,7 @@ export const ItemDetails = (details: ItemDetail) => {
                     onClick={() =>
                       addToCart(
                         { sku: details.sku, quantity: 1 },
-                        toEcomTrackingEvent(details, 0)
+                        toEcomTrackingEvent(details, 0),
                       )
                     }
                   >

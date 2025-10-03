@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from "react";
 import * as api from "../datalayer/api";
@@ -55,7 +56,8 @@ export const QueryProvider = ({
   attachToHash?: boolean;
   ref?: React.Ref<QueryProviderRef>;
 }>) => {
-  const [virtualPage, setVirtualPage] = useState(0);
+  const virtualPage = useRef(0);
+  //const [virtualPage, setVirtualPage] = useState(0);
   const [queryHistory, setQueryHistory] = useState<HistoryQuery[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -64,7 +66,7 @@ export const QueryProvider = ({
   const [hits, setHits] = useState<Item[]>([]);
   const [totalHits, setTotalHits] = useState<number>(0);
   const [query, setQuery] = useState<ItemsQuery>(
-    initialQuery ?? (attachToHash ? loadQueryFromHash() : {})
+    initialQuery ?? (attachToHash ? loadQueryFromHash() : {}),
   );
   const setPage = useCallback((page: number) => {
     setQuery((prev) => ({ ...prev, page }));
@@ -105,7 +107,7 @@ export const QueryProvider = ({
       },
       setQuery,
     }),
-    []
+    [],
   );
 
   const setFilter = useCallback(
@@ -130,7 +132,7 @@ export const QueryProvider = ({
         }));
       }
     },
-    []
+    [],
   );
 
   const setFilterTerm = useCallback(
@@ -141,7 +143,7 @@ export const QueryProvider = ({
         filter,
       }));
     },
-    [setQuery]
+    [setQuery],
   );
 
   useEffect(() => {
@@ -155,14 +157,14 @@ export const QueryProvider = ({
       }
       return [...prev, { ...query, key: currentKey }];
     });
-
-    setVirtualPage(query.page ?? 0);
+    virtualPage.current = query.page ?? 0;
+    //setVirtualPage(query.page ?? 0);
 
     setItemsKey(queryToHash(query));
   }, [query]);
 
-  const addPage = useCallback(() => {
-    const virtualQuery = { ...query, page: virtualPage + 1 };
+  const addPage = useCallback(async () => {
+    const virtualQuery = { ...query, page: virtualPage.current + 1 };
 
     const virtualKey = queryToHash(virtualQuery);
     return api
@@ -170,14 +172,14 @@ export const QueryProvider = ({
       .then((data): AddPageResult => {
         if (data?.items == null) {
           return {
-            currentPage: virtualPage,
+            currentPage: virtualPage.current,
             hasMorePages: false,
-            totalPages: virtualPage,
+            totalPages: virtualPage.current,
           };
         }
-
         itemsCache.set(virtualKey, data.items);
-        setVirtualPage(data.page);
+
+        virtualPage.current = data.page;
         setHits((prev) => [...prev, ...data.items]);
         return {
           currentPage: data.page,

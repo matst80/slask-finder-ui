@@ -77,8 +77,8 @@ const NavigationItem = ({
           location.pathname === child.url ||
           (child.children &&
             child.children.some(
-              (grandchild) => location.pathname === grandchild.url
-            ))
+              (grandchild) => location.pathname === grandchild.url,
+            )),
       )
     ) {
       setIsOpen(true);
@@ -92,8 +92,8 @@ const NavigationItem = ({
         location.pathname === child.url ||
         (child.children &&
           child.children.some(
-            (grandchild) => location.pathname === grandchild.url
-          ))
+            (grandchild) => location.pathname === grandchild.url,
+          )),
     );
 
   const content = useMemo(
@@ -118,7 +118,7 @@ const NavigationItem = ({
         </div>
       </>
     ),
-    [icon, isActive, level, t, translationKey]
+    [icon, isActive, level, t, translationKey],
   );
 
   // {
@@ -139,13 +139,13 @@ const NavigationItem = ({
           <a
             href={url}
             accessKey={accessKey}
-            className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 
+            className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300
             ${
               isActive
                 ? `bg-gradient-to-r ${color} text-white font-medium shadow-sm`
                 : isChildActive
-                ? "bg-gray-50 text-gray-900"
-                : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-gray-50 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
             }`}
             onClick={
               hasChildren
@@ -162,13 +162,13 @@ const NavigationItem = ({
           <Link
             to={url}
             accessKey={accessKey}
-            className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 
+            className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300
             ${
               isActive
                 ? `bg-gradient-to-r ${color} text-white font-medium shadow-sm`
                 : isChildActive
-                ? "bg-gray-50 text-gray-900"
-                : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-gray-50 text-gray-900"
+                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
             }`}
             onClick={
               hasChildren
@@ -186,7 +186,7 @@ const NavigationItem = ({
 
       {hasChildren && (
         <ul
-          className={`pl-3 mt-1 overflow-hidden transition-all duration-300 ease-in-out border-l-2 border-gray-100 ml-2 
+          className={`pl-3 mt-1 overflow-hidden transition-all duration-300 ease-in-out border-l-2 border-gray-100 ml-2
             ${isOpen ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"}`}
         >
           {children.map((child) => (
@@ -213,7 +213,7 @@ const menu: NavigationItemType[] = [
   },
   {
     translationKey: "menu.config",
-    url: "/config",
+    url: "/config/PFT6938",
     accessKey: "c",
     icon: <Watch size={20} />,
     color: menuColors.config,

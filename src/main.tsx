@@ -166,7 +166,10 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "config",
+    path: "config/:pft",
+    loader: ({ params }) => {
+      return Promise.resolve(params.pft);
+    },
     element: (
       <PageContainer>
         <ProductConfigurator />
@@ -397,5 +400,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </GroupDesignerProvider>
       </TrackingProvider>
     </SWRConfig>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

@@ -8,6 +8,7 @@ import { Button } from "../components/ui/button";
 import { makeImageUrl } from "../utils";
 import { FacetProvider } from "../lib/hooks/FacetProvider";
 import { useFacets } from "../lib/hooks/useFacets";
+import { useLoaderData } from "react-router-dom";
 
 const ignoredFacets = [
   2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559, 31158,
@@ -97,17 +98,12 @@ const ResultItem = () => {
 };
 
 export const ProductConfigurator = () => {
+  const pft = useLoaderData();
   return (
     <div className="grid grid-cols-1 md:grid-cols-[300px_auto] gap-2 h-screen">
       <QueryProvider
         initialQuery={{
-          string: [
-            { id: ValueMap.Model, value: ["Apple Watch S10"] },
-            {
-              id: ValueMap.Category1,
-              value: ["Mobiler, Tablets & Smartklockor"],
-            },
-          ],
+          string: [{ id: 25, value: [pft] }],
         }}
       >
         <div className="mb-6 p-6 md:mb-0 bg-gray-100 border-b md:border-b-0 md:border-r md:border-gray-300">
