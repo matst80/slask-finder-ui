@@ -1,7 +1,7 @@
 import { QueryProvider } from "../lib/hooks/QueryProvider";
 import { useQuery } from "../lib/hooks/useQuery";
 import { useMemo } from "react";
-import { isKeyFacet, KeyFacet } from "../lib/types";
+import { Facet, isKeyFacet, KeyFacet } from "../lib/types";
 import { useQueryKeyFacet } from "../lib/hooks/useQueryKeyFacet";
 
 import { Button } from "../components/ui/button";
@@ -9,6 +9,7 @@ import { makeImageUrl } from "../utils";
 import { FacetProvider } from "../lib/hooks/FacetProvider";
 import { useFacets } from "../lib/hooks/useFacets";
 import { useLoaderData } from "react-router-dom";
+import { NumberFacetSelector } from "../components/facets/NumericFacetSelectors";
 
 const ignoredFacets = [
   2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559, 31158,
@@ -61,16 +62,15 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
 
 export const FacetSelector = () => {
   const { facets } = useFacets();
-  const toShow = useMemo<KeyFacet[]>(() => {
+  const toShow = useMemo<Facet[]>(() => {
     return facets
-      .filter(isKeyFacet)
       .filter((facet) => !ignoredFacets.includes(facet.id));
   }, [facets]);
   return (
     <div className="flex flex-col gap-3">
-      {toShow.map((facet) => (
+      {toShow.map((facet) => (isKeyFacet(facet) ? (
         <KeyFacetSelector key={facet.id} {...facet} />
-      ))}
+      ) : <NumberFacetSelector key={facet.id} {...facet} />))}
     </div>
   );
 };

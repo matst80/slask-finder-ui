@@ -391,12 +391,12 @@ const RelationGroups = ({ values, id }: Pick<ItemDetail, "values" | "id">) => {
 const PopulateAdminDetails = ({ id }: { id: number }) => {
   const [isAdmin] = useAdmin();
   const [item, setItem] = useState<ItemDetail | null>(null);
-  const [popularity, setPopularity] = useState<ItemPopularity | null>(null);
+  
   if (!isAdmin) return null;
   if (item != null) {
     const mp = Math.max(item.mp ?? 0, 0);
     const possibleDiscount = item.values[4] * (mp / 100);
-    console.log({ popularity });
+  
     return (
       <>
         <div className="p-4 my-2 flex gap-2 items-center justify-between bg-amber-100 text-amber-800 rounded-lg">
@@ -417,7 +417,6 @@ const PopulateAdminDetails = ({ id }: { id: number }) => {
       onClick={() => {
         trackAction({ action: "fetch_admin_details", reason: "admin_button" });
         getAdminItem(id).then(setItem);
-        getAdminItemPopularity(id).then(setPopularity);
       }}
     >
       <UserCog className="size-5" />
