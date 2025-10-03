@@ -24,7 +24,7 @@ self.addEventListener("install", (event) => {
       })
       .then(() => {
         self.skipWaiting();
-      })
+      }),
   );
 });
 
@@ -41,16 +41,23 @@ self.addEventListener("activate", (event) => {
               console.log("Deleting old cache:", cacheName);
               return caches.delete(cacheName);
             }
-          })
+          }),
         );
       })
       .then(() => {
         self.clients.claim();
-      })
+      }),
   );
 });
 
-const dynamicUrlParts = ["/api/", "/admin/", "/ai/","/checkout","/cart","/push/"];
+const dynamicUrlParts = [
+  "/api/",
+  "/admin/",
+  "/ai/",
+  "/checkout",
+  "/cart",
+  "/push/",
+];
 
 // Fetch event - serve cached content when offline
 self.addEventListener("fetch", (event) => {
@@ -71,9 +78,10 @@ self.addEventListener("fetch", (event) => {
 
           // Cache successful API responses
           if (response.status === 200) {
-            caches.open(DYNAMIC_CACHE).then((cache) => {
-              cache.put(request, responseClone);
+            const cachePromise = caches.open(DYNAMIC_CACHE).then((cache) => {
+              return cache.put(request, responseClone);
             });
+            event.waitUntil(cachePromise);
           }
 
           return response;
@@ -81,7 +89,7 @@ self.addEventListener("fetch", (event) => {
         .catch(() => {
           // Return cached API response if available
           return caches.match(request);
-        })
+        }),
     );
     return;
   }
@@ -108,21 +116,25 @@ self.addEventListener("fetch", (event) => {
           const responseToCache = response.clone();
 
           // Cache the response
-          caches.open(DYNAMIC_CACHE).then((cache) => {
-            cache.put(request, responseToCache);
+          const cachePromise = caches.open(DYNAMIC_CACHE).then((cache) => {
+            return cache.put(request, responseToCache);
           });
+          event.waitUntil(cachePromise);
 
           return response;
         })
         .catch((err) => {
-          
           // Return a fallback page for navigation requests
           if (request.destination === "document") {
             console.log("Returning fallback page, cause:", err);
             return caches.match("/index.html");
           }
+
+          // For other requests, re-throwing the error will signal a network failure
+          // to the browser, preventing the request from stalling.
+          throw err;
         });
-    })
+    }),
   );
 });
 
@@ -133,7 +145,7 @@ self.addEventListener("sync", (event) => {
   if (event.tag === "background-sync") {
     event.waitUntil(
       // Handle any queued actions here
-      Promise.resolve()
+      Promise.resolve(),
     );
   }
 });
@@ -155,7 +167,7 @@ self.addEventListener("push", (event) => {
       icon: "/icons/icon-192x192.png",
       badge: "/icons/icon-192x192.png",
       data: data.url || "/",
-    })
+    }),
   );
 });
 
