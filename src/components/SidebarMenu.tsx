@@ -361,7 +361,7 @@ const menu: NavigationItemType[] = [
 ];
 
 const UserButton = () => {
-  const { isSupported, initiateWebAuthnLogin } = useWebAuthn();
+  //const { isSupported, initiateWebAuthnLogin } = useWebAuthn();
   const { accepted } = useCookieAcceptance();
   const { data, isLoading } = useUser();
   const [, setIsAdmin] = useAdmin();
@@ -376,18 +376,18 @@ const UserButton = () => {
     return null;
   }
 
-  const handleWebAuthnLogin = (e: React.MouseEvent) => {
-    if (isSupported) {
-      e.preventDefault();
-      // Trigger WebAuthn login flow
-      initiateWebAuthnLogin();
-    }
-  };
+  // const handleWebAuthnLogin = (e: React.MouseEvent) => {
+  //   if (isSupported) {
+  //     e.preventDefault();
+  //     // Trigger WebAuthn login flow
+  //     initiateWebAuthnLogin();
+  //   }
+  // };
 
   return (
     <a
       href={loggedIn ? "/admin/logout" : "/admin/login"}
-      onClick={handleWebAuthnLogin}
+      //onClick={handleWebAuthnLogin}
     >
       <Button
         variant={loggedIn ? "outline" : "ghost"}
