@@ -25,7 +25,6 @@ import { useAdmin } from "../hooks/appState";
 import { Button } from "./ui/button";
 import { cm } from "../utils";
 import { useCookieAcceptance } from "../CookieConsent";
-import { useWebAuthn } from "./useWebAuthn";
 import { useFirebaseMessaging } from "../hooks/useFirebaseMessaging";
 
 type NavigationItemType = {
