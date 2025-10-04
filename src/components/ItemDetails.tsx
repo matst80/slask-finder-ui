@@ -485,7 +485,7 @@ const ConfiguratorSidebar = ({
   return (
     <Sidebar open={open} setOpen={setOpen} side="right">
       <div className="bg-white p-6 w-sm max-w-full h-screen overflow-y-auto">
-        <QueryProvider
+        {open && <QueryProvider
           initialQuery={{
             string: [{ id: 25, value: pft }],
           }}
@@ -494,7 +494,7 @@ const ConfiguratorSidebar = ({
             <FacetSelector />
           </FacetProvider>
           <ItemChangeHandler />
-        </QueryProvider>
+        </QueryProvider> }
       </div>
     </Sidebar>
   );
