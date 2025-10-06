@@ -1,19 +1,20 @@
 import { useMemo } from "react";
-import { stores } from "../lib/datalayer/stores";
 import { StockData } from "../lib/types";
 import { isDefined } from "../utils";
 import { StockLocation } from "./StockLocation";
 import { useGeoLocation } from "./useGeoLocation";
 import { calculateDistance } from "./map-utils";
 import { useTranslations } from "../lib/hooks/useTranslations";
+import { useStores } from "../lib/datalayer/stores";
 
 export const StockList = ({ stock, stockLevel }: StockData) => {
   const location = useGeoLocation();
   const t = useTranslations();
+  const { data: stores } = useStores();
   const storesWithStock = useMemo(() => {
     return Object.entries(stock ?? {})
       .map(([id, value]) => {
-        const store = stores.find((store) => store.id === id);
+        const store = stores?.find((store) => store.id === id);
         if (!store) return null;
         return {
           ...store,
@@ -28,9 +29,9 @@ export const StockList = ({ stock, stockLevel }: StockData) => {
       .sort((a, b) =>
         location != null
           ? a.distance! - b.distance!
-          : a.displayName.localeCompare(b.displayName)
+          : a.displayName.localeCompare(b.displayName),
       );
-  }, [stock, location]);
+  }, [stock, location, stores]);
   if (stock == null) return null;
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden flex flex-col flex-1 thin-scrollbar">

@@ -1,8 +1,6 @@
 import { useMemo, useState } from "react";
 import { isNumberFacet, KeyFacet } from "../lib/types";
 import { ChevronUp, LoaderCircle, X, Store } from "lucide-react";
-
-import { stores } from "../lib/datalayer/stores";
 import { useQuery } from "../lib/hooks/useQuery";
 import { KeyFacetSelector } from "./facets/KeyFacetSelector";
 import { ColorFacetSelector } from "./facets/ColorFacet";
@@ -13,6 +11,7 @@ import { useTranslations } from "../lib/hooks/useTranslations";
 import { useFacets } from "../lib/hooks/useFacets";
 import { StarRatingFacetSelector } from "./facets/RatingFacet";
 import { calculateDistance } from "./map-utils";
+import { useStores } from "../lib/datalayer/stores";
 
 const CategoryLevel = ({
   id,
@@ -42,7 +41,7 @@ const CategoryLevel = ({
                   page: 0,
                   string: [
                     ...(prev.string?.filter(
-                      (d) => !facets.some((e) => e.id == d.id)
+                      (d) => !facets.some((e) => e.id == d.id),
                     ) ?? []),
                     { id, value: selected ? [] : [value] },
                   ],
@@ -73,7 +72,7 @@ const CategoryResult = ({ categories }: { categories: KeyFacet[] }) => {
       categories.sort((a, b) => {
         return (a.categoryLevel ?? 0) - (b.categoryLevel ?? 0);
       }),
-    [categories]
+    [categories],
   );
   // console.log("sorted", sorted);
   if (sorted.length === 0 || sorted[0].categoryLevel !== 1) {
@@ -106,7 +105,7 @@ export const FacetList = ({
         .filter((d) => facetsToHide == null || !facetsToHide.includes(d.id))
         .map((d) => ({ ...d, disabled: facetsToDisable.includes(d.id) })),
 
-    [facets, facetsToHide, facetsToDisable]
+    [facets, facetsToHide, facetsToDisable],
   );
   return (
     <>
@@ -194,7 +193,7 @@ export const Facets = ({
         <ChevronUp
           className={cm(
             "size-5 transition-transform md:hidden",
-            open ? "rotate-0" : "rotate-180"
+            open ? "rotate-0" : "rotate-180",
           )}
         />
       </button>
@@ -215,7 +214,7 @@ export const Facets = ({
           </div>
           <button
             className={cm(
-              "sticky w-full transition-all bottom-2 left-2 z-10 right-2 p-1 bg-blue-100 border rounded-lg border-blue-300 md:hidden animate-pop"
+              "sticky w-full transition-all bottom-2 left-2 z-10 right-2 p-1 bg-blue-100 border rounded-lg border-blue-300 md:hidden animate-pop",
             )}
             onClick={(e) => {
               requestAnimationFrame(() => {
@@ -243,25 +242,28 @@ const StoreSelector = () => {
     setStock,
   } = useQuery();
   const t = useTranslations();
+  const { data: stores } = useStores();
   const [maxDistance, setMaxDistance] = useState(30);
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const sortedStores = useMemo(() => {
-    return Object.values(stores)
+    return Object.values(stores ?? {})
       .map(({ displayName, id }) => ({
-        displayName: displayName.replace("Elgiganten ", "").replace("Elkjøp ", ""),
+        displayName: displayName
+          .replace("Elgiganten ", "")
+          .replace("Elkjøp ", ""),
         id,
       }))
       .sort((a, b) => a.displayName.localeCompare(b.displayName));
-  }, []);
+  }, [stores]);
 
   const findCloseStores = (selected: string[]) => {
     const closeBy = new Set<string>(selected);
     selected.forEach((storeId) => {
-      const targetStore = stores.find((d) => d.id === storeId);
+      const targetStore = stores?.find((d) => d.id === storeId);
       if (!targetStore) return;
       const { lat, lng } = targetStore.address.location;
       stores
-        .map((store) => {
+        ?.map((store) => {
           return {
             ...store,
             distance: calculateDistance(
@@ -271,7 +273,7 @@ const StoreSelector = () => {
                   longitude: lng,
                 },
               },
-              store.address.location
+              store.address.location,
             ),
           };
         })
@@ -343,7 +345,7 @@ const StoreSelector = () => {
               "appearance-none cursor-pointer transition-all duration-200",
               "hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200",
               "text-gray-900 placeholder-gray-500",
-              isSelectOpen && "border-blue-500 ring-2 ring-blue-200"
+              isSelectOpen && "border-blue-500 ring-2 ring-blue-200",
             )}
           >
             <option value="" className="text-gray-500">
@@ -358,7 +360,7 @@ const StoreSelector = () => {
           <ChevronUp
             className={cm(
               "absolute right-3 top-1/2 transform -translate-y-1/2 size-5 text-gray-400 transition-transform duration-200 pointer-events-none",
-              isSelectOpen ? "rotate-0" : "rotate-180"
+              isSelectOpen ? "rotate-0" : "rotate-180",
             )}
           />
         </div>
@@ -382,7 +384,7 @@ const StoreSelector = () => {
           </div>
           <div className="space-y-2 max-h-screen overflow-y-auto">
             {stock.map((storeId) => {
-              const store = stores.find((d) => d.id === storeId);
+              const store = stores?.find((d) => d.id === storeId);
               if (!store) return null;
               return (
                 <div
@@ -401,7 +403,7 @@ const StoreSelector = () => {
                     }}
                     className={cm(
                       "p-1.5 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50",
-                      "transition-all duration-200 opacity-70 group-hover:opacity-100"
+                      "transition-all duration-200 opacity-70 group-hover:opacity-100",
                     )}
                     title={t("common.remove")}
                   >

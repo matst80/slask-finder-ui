@@ -161,12 +161,12 @@ export type KeyFacet = BaseFacet & {
 export type Facet = NumberFacet | KeyFacet;
 
 export const isKeyResult = (
-  result: KeyResult | NumberResult
+  result: KeyResult | NumberResult,
 ): result is KeyResult =>
   result != null && (result as KeyResult).values != null;
 
 export const isNumberResult = (
-  result: KeyResult | NumberResult
+  result: KeyResult | NumberResult,
 ): result is NumberResult =>
   result != null && (result as NumberResult).max != null;
 
@@ -670,7 +670,7 @@ type StoreContentRecord = BaseContentRecord & {
 };
 
 export const isStoreContentRecord = (
-  record: ContentRecord
+  record: ContentRecord,
 ): record is StoreContentRecord => {
   return (
     (record as StoreContentRecord).lat != null ||
@@ -723,8 +723,8 @@ export type PathInto<T extends BaseTranslationType> = keyof {
   [K in keyof T as T[K] extends string
     ? K
     : T[K] extends BaseTranslationType
-    ? `${K & string}.${PathInto<T[K]> & string}`
-    : never]: string;
+      ? `${K & string}.${PathInto<T[K]> & string}`
+      : never]: string;
 };
 export type StockData = {
   stock?: Stock;
@@ -745,3 +745,71 @@ export type UserUpdateRequest = {
   displayName?: string;
   isAdmin?: boolean;
 };
+
+export const CollectAtStorePickupType = {
+  CollectAtStore: "CollectAtStore",
+  Ship2Store: "Ship2Store",
+  InStoreOnly: "InStoreOnly",
+} as const;
+export type CollectAtStorePickupType = ValueOf<typeof CollectAtStorePickupType>;
+
+export type MapAddress = {
+  street?: string;
+  nr?: string;
+  zip?: string;
+  city?: string;
+  location: GeoLocation;
+};
+
+export type MapLocation = {
+  id: string;
+  displayName: string;
+  address: MapAddress;
+  url?: string;
+  distance?: number;
+  isHighlighted?: boolean;
+};
+
+export interface Store extends MapLocation {
+  openHours: OpenHours;
+  shipToStore: boolean;
+  collectAtStore: CollectAtStore | null;
+  onlineId: string;
+  shipFromStore?: ShipFromStore | null;
+  attributeSections?: Record<string, StoreAttribute[]>;
+}
+
+export interface CollectAtStore {
+  prePaid: boolean;
+  leadTime: number;
+}
+
+export type TimeTuple = [number, number, number];
+
+export interface Other {
+  closed: boolean;
+  date: TimeTuple;
+  time?: [TimeTuple, TimeTuple];
+  text?: string;
+}
+
+export interface ShipFromStore {
+  post: boolean;
+  home: boolean;
+  leadTime: number;
+}
+
+export interface StoreAttribute {
+  id: string;
+  title: string;
+  // categoryId: string;
+  // categoryTitle: string;
+  notes: string;
+  notesEnabled: boolean;
+  icon: string;
+}
+
+export interface OpenHours {
+  days: Array<[TimeTuple, TimeTuple] | null>;
+  other: Other[];
+}

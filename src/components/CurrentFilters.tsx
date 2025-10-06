@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { X } from "lucide-react";
 import { FacetListItem, Field, isNumberValue } from "../lib/types";
-import { stores } from "../lib/datalayer/stores";
 import { useFacetMap } from "../hooks/searchHooks";
 import { useQuery } from "../lib/hooks/useQuery";
 import { isDefined } from "../utils";
 import { useAdmin } from "../hooks/appState";
+import { useStores } from "../lib/datalayer/stores";
 
 function toFilter(facets?: Record<number, FacetListItem>, hideHidden = true) {
   return (data: Field) => {
@@ -17,8 +17,8 @@ function toFilter(facets?: Record<number, FacetListItem>, hideHidden = true) {
         ? `${data.min / 100}kr - ${data.max / 100} kr`
         : `${data.min} - ${data.max}`
       : Array.isArray(data.value)
-      ? data.value.join(", ")
-      : data.value;
+        ? data.value.join(", ")
+        : data.value;
 
     return {
       ...field,
@@ -44,6 +44,7 @@ const FilterItem = ({ name, value, onClick }: FilterItemProps) => {
 
 export const CurrentFilters = () => {
   const { data } = useFacetMap();
+  const { data: stores } = useStores();
   const [isAdmin] = useAdmin();
   const {
     query: { stock },
@@ -60,7 +61,7 @@ export const CurrentFilters = () => {
       ...(keyFilters?.map(toFilter(data, !isAdmin)) ?? []),
       ...(numberFilters?.map(toFilter(data, !isAdmin)) ?? []),
     ].filter(isDefined);
-  }, [keyFilters, numberFilters, data]);
+  }, [keyFilters, numberFilters, data, isAdmin]);
   return (
     (selectedFilters.length > 0 || locationId != null) && (
       <div className="mb-6 hidden md:flex flex-col md:flex-row items-center gap-2">
@@ -70,7 +71,7 @@ export const CurrentFilters = () => {
             <FilterItem
               name="Butik"
               value={
-                stores.find((d) => d.id === locationId)?.displayName ??
+                stores?.find((d) => d.id === locationId)?.displayName ??
                 "Unknown store"
               }
               onClick={() => setStock([])}

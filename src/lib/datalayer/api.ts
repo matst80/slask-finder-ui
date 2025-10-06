@@ -23,10 +23,15 @@ import {
   SessionListData,
   User,
   UserUpdateRequest,
+  Store,
 } from "../types";
 import { DataSetEvent } from "./beacons";
 
 export const baseUrl = "";
+
+export const getStores = async () => {
+  return fetch(`${baseUrl}/api/stores`).then((res) => toJson<Store[]>(res));
+};
 
 export const getPrometheusQueryUrl = (
   query: string,
