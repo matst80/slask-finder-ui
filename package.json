@@ -9,7 +9,7 @@
     "deploy": "scp -r dist/* dev:/srv/shared/slask-finder-web",
     "deploy-all": "npm run build && npm run deploy",
     "deploy-pwa": "npm run build && ./deploy-local.sh",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
     "preview": "vite preview"
   },
   "dependencies": {
