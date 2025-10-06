@@ -12,7 +12,8 @@ import { useLoaderData } from "react-router-dom";
 import { NumberFacetSelector } from "../components/facets/NumericFacetSelectors";
 
 const ignoredFacets = [
-  2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559, 31158,
+  2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559, 31158, 31693,
+  34137, 30648, 30382, 31684, 30657,
 ];
 
 const toSorted = (values: Record<string, number>) =>
@@ -63,14 +64,17 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
 export const FacetSelector = () => {
   const { facets } = useFacets();
   const toShow = useMemo<Facet[]>(() => {
-    return facets
-      .filter((facet) => !ignoredFacets.includes(facet.id));
+    return facets.filter((facet) => !ignoredFacets.includes(facet.id));
   }, [facets]);
   return (
     <div className="flex flex-col gap-3">
-      {toShow.map((facet) => (isKeyFacet(facet) ? (
-        <KeyFacetSelector key={facet.id} {...facet} />
-      ) : <NumberFacetSelector key={facet.id} {...facet} />))}
+      {toShow.map((facet) =>
+        isKeyFacet(facet) ? (
+          <KeyFacetSelector key={facet.id} {...facet} />
+        ) : (
+          <NumberFacetSelector key={facet.id} {...facet} />
+        ),
+      )}
     </div>
   );
 };
