@@ -10,6 +10,7 @@
     "deploy-all": "npm run build && npm run deploy",
     "deploy-pwa": "npm run build && ./deploy-local.sh",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
+    "lint-fix": "eslint . --ext ts,tsx,js,jsx --fix && prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "lint-staged": "lint-staged",
     "preview": "vite preview",
     "prepare": "husky"
@@ -53,6 +54,13 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ],
+    "*.{js,jsx}": [
+      "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
       "prettier --write"
     ]
   }

@@ -7,18 +7,21 @@ A modern React + TypeScript + Vite application with full PWA (Progressive Web Ap
 This application is a fully functional Progressive Web App that includes:
 
 ### Installation
+
 - **Installable**: Users can install the app on their device like a native app
 - **Install Prompt**: Automatic prompt appears after 3 seconds for eligible users
 - **Cross-platform**: Works on desktop, mobile, and tablet devices
 - **App-like Experience**: Runs in standalone mode without browser UI
 
 ### Offline Support
+
 - **Service Worker**: Caches resources for offline access
 - **Cache Strategy**: Network-first for API calls, cache-first for static assets
 - **Offline Fallback**: Graceful degradation when network is unavailable
 - **Background Sync**: Handles offline actions when connection is restored
 
 ### Performance
+
 - **Fast Loading**: Pre-cached critical resources
 - **Optimized Caching**: Strategic caching of API responses and static assets
 - **Asset Optimization**: Automatic compression and optimization
@@ -26,17 +29,21 @@ This application is a fully functional Progressive Web App that includes:
 ## 📱 Installation Instructions
 
 ### Desktop (Chrome, Edge, Safari)
+
 1. Visit the website
 2. Look for the install prompt or click the install icon in the address bar
 3. Click "Install" to add to your desktop
 
 ### Mobile (iOS/Android)
+
 1. Open in your mobile browser
 2. For iOS Safari: Tap Share → Add to Home Screen
 3. For Android Chrome: Tap the install prompt or menu → Add to Home Screen
 
 ### Manual Installation
+
 If you don't see the automatic prompt:
+
 - **Chrome/Edge**: Look for the install icon (⊕) in the address bar
 - **Firefox**: Menu → Install this site as an app
 - **Safari**: Share → Add to Dock
@@ -44,12 +51,14 @@ If you don't see the automatic prompt:
 ## 🛠️ Technical Implementation
 
 ### PWA Components
+
 - `manifest.json` - App metadata and configuration
-- `sw.js` - Service worker for caching and offline functionality  
+- `sw.js` - Service worker for caching and offline functionality
 - `PWAInstallPrompt.tsx` - React component for install prompts
 - `usePWA.ts` - React hook for PWA status and functionality
 
 ### Build Configuration
+
 - **Vite PWA Plugin**: Handles service worker generation and manifest
 - **Workbox**: Advanced caching strategies and offline support
 - **Icon Generation**: Multiple icon sizes for different devices
@@ -57,6 +66,7 @@ If you don't see the automatic prompt:
 ## 🔧 Development
 
 ### PWA Development
+
 ```bash
 # Install dependencies
 npm install
@@ -69,7 +79,46 @@ npm run build
 
 # Preview production build
 npm run preview
+
+# Linting and code quality
+npm run lint          # Check and fix linting issues
+npm run lint-fix      # Fix all linting and formatting issues
+npm run lint-staged   # Run linting on staged files only
 ```
+
+## 🔍 Code Quality & Linting
+
+This project uses a comprehensive linting setup to maintain code quality:
+
+### Automated Code Quality
+
+- **ESLint**: Configured with TypeScript, React, and unused imports detection
+- **Prettier**: Code formatting with consistent style
+- **Pre-commit Hooks**: Automatic linting and formatting before each commit
+- **Unused Imports**: Automatically removed on save and commit
+
+### Pre-commit Hooks
+
+The project uses Husky and lint-staged for automatic code quality enforcement:
+
+```bash
+# Manual setup (already configured)
+npm install --save-dev husky lint-staged
+npx husky init
+```
+
+### VS Code Integration
+
+- **Auto-fix on save**: ESLint issues are automatically fixed
+- **Organize imports**: Unused imports removed automatically
+- **Format on save**: Code is formatted with Prettier
+
+### Linting Rules
+
+- Unused imports are treated as **errors** (blocks builds)
+- Unused variables are **warnings** (except those prefixed with `_`)
+- React hooks rules enforced
+- TypeScript strict checking enabled
 
 # React + TypeScript + Vite
 
@@ -90,12 +139,12 @@ If you are developing a production application, we recommend updating the config
 export default {
   // other rules...
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
+    ecmaVersion: "latest",
+    sourceType: "module",
+    project: ["./tsconfig.json", "./tsconfig.node.json"],
     tsconfigRootDir: __dirname,
   },
-}
+};
 ```
 
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
