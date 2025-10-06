@@ -1,20 +1,20 @@
 import { MapPin } from "lucide-react";
-import { stores } from "../lib/datalayer/stores";
 import { useMemo } from "react";
 import { useQuery } from "../lib/hooks/useQuery";
+import { useStores } from "../lib/datalayer/stores";
 
 export const SelectedStore = () => {
   const {
     query: { stock },
   } = useQuery();
-
+  const { data: stores } = useStores();
   const locationId = stock?.[0];
 
   const selectedStore = useMemo(() => {
     return locationId != null
-      ? stores.find((store) => store.id === locationId)
+      ? stores?.find((store) => store.id === locationId)
       : null;
-  }, [locationId]);
+  }, [locationId, stores]);
 
   return (
     <>

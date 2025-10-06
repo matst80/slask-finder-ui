@@ -7,13 +7,7 @@ import {
   useRelatedItems,
   useRelationGroups,
 } from "../hooks/searchHooks";
-import {
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { cm, isDefined, makeImageUrl, useFetchMutation } from "../utils";
 import {
   ItemDetail,
@@ -24,18 +18,15 @@ import {
   RelationGroup,
   RelationMatch,
   relationValueConverters,
+  Store,
 } from "../lib/types";
-import { Store } from "../lib/datalayer/stores";
 import { CompareButton, ResultItem } from "./ResultItem";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Price, PriceValue } from "./Price";
 import { QueryProvider } from "../lib/hooks/QueryProvider";
 import { Button, ButtonLink } from "./ui/button";
 import { useAdmin } from "../hooks/appState";
-import {
-  getAdminItem,
-  registerPriceWatch,
-} from "../lib/datalayer/api";
+import { getAdminItem, registerPriceWatch } from "../lib/datalayer/api";
 import { useQuery } from "../lib/hooks/useQuery";
 import { trackAction } from "../lib/datalayer/beacons";
 import { StockList } from "./StockList";
@@ -64,7 +55,7 @@ import { FacetSelector } from "../pages/ProductConfigurator";
 
 export type StoreWithStock = Store & {
   stock: string;
-  distance: number | null;
+  distance?: number;
 };
 
 const ProductCarouselContainer = ({
@@ -145,7 +136,7 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, "id">) => {
         ),
       ),
     );
-  }, [data]);
+  }, [data, setProductTypes]);
   if (!data || data.length === 0) return null;
   return (
     <div className="relative">
@@ -389,12 +380,12 @@ const RelationGroups = ({ values, id }: Pick<ItemDetail, "values" | "id">) => {
 const PopulateAdminDetails = ({ id }: { id: number }) => {
   const [isAdmin] = useAdmin();
   const [item, setItem] = useState<ItemDetail | null>(null);
-  
+
   if (!isAdmin) return null;
   if (item != null) {
     const mp = Math.max(item.mp ?? 0, 0);
     const possibleDiscount = item.values[4] * (mp / 100);
-  
+
     return (
       <>
         <div className="p-4 my-2 flex gap-2 items-center justify-between bg-amber-100 text-amber-800 rounded-lg">
@@ -485,16 +476,18 @@ const ConfiguratorSidebar = ({
   return (
     <Sidebar open={open} setOpen={setOpen} side="right">
       <div className="bg-white p-6 w-sm max-w-full h-screen overflow-y-auto">
-        {open && <QueryProvider
-          initialQuery={{
-            string: [{ id: 25, value: pft }],
-          }}
-        >
-          <FacetProvider ignoreFacets={configIgnoredFacets}>
-            <FacetSelector />
-          </FacetProvider>
-          <ItemChangeHandler />
-        </QueryProvider> }
+        {open && (
+          <QueryProvider
+            initialQuery={{
+              string: [{ id: 25, value: pft }],
+            }}
+          >
+            <FacetProvider ignoreFacets={configIgnoredFacets}>
+              <FacetSelector />
+            </FacetProvider>
+            <ItemChangeHandler />
+          </QueryProvider>
+        )}
       </div>
     </Sidebar>
   );
@@ -782,7 +775,7 @@ export const ItemDetails = (details: ItemDetail) => {
 
 const AiChatForCurrentProduct = (item: ItemDetail) => {
   const { data: facets } = useFacetMap();
-  const convertItem = useCallback(convertDetails(facets ?? {}), [facets]);
+  const convertItem = useMemo(() => convertDetails(facets ?? {}), [facets]);
   if (!item || !facets) return null;
   return (
     <AiShoppingProvider

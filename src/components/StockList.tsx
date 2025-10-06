@@ -6,12 +6,13 @@ import { useGeoLocation } from "./useGeoLocation";
 import { calculateDistance } from "./map-utils";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { useStores } from "../lib/datalayer/stores";
+import { StoreWithStock } from "./ItemDetails";
 
 export const StockList = ({ stock, stockLevel }: StockData) => {
   const location = useGeoLocation();
   const t = useTranslations();
   const { data: stores } = useStores();
-  const storesWithStock = useMemo(() => {
+  const storesWithStock = useMemo<StoreWithStock[]>(() => {
     return Object.entries(stock ?? {})
       .map(([id, value]) => {
         const store = stores?.find((store) => store.id === id);
@@ -22,7 +23,7 @@ export const StockList = ({ stock, stockLevel }: StockData) => {
           distance:
             location != null
               ? calculateDistance(location, store.address.location)
-              : null,
+              : undefined,
         };
       })
       .filter(isDefined)

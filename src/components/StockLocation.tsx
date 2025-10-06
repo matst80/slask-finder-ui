@@ -14,7 +14,7 @@ export const StockLocation = ({
     >
       <div className="flex items-center gap-2 grow">
         <span className="font-medium line-clamp-1 text-ellipsis">
-          {store.name}
+          {store.displayName}
         </span>
         <span className="text-gray-500">•</span>
         <span className="text-green-600 font-medium">

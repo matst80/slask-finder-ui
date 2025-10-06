@@ -746,12 +746,17 @@ export type UserUpdateRequest = {
   isAdmin?: boolean;
 };
 
+export type GeoLocation = {
+  lat: number;
+  lng: number;
+};
+
 export const CollectAtStorePickupType = {
   CollectAtStore: "CollectAtStore",
   Ship2Store: "Ship2Store",
   InStoreOnly: "InStoreOnly",
 } as const;
-export type CollectAtStorePickupType = ValueOf<typeof CollectAtStorePickupType>;
+//export type CollectAtStorePickupType = ValueOf<typeof CollectAtStorePickupType>;
 
 export type MapAddress = {
   street?: string;
