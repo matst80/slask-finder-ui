@@ -214,7 +214,7 @@ export const getRating = (values: ItemDetail["values"]) => {
 };
 export const useProductData = (values: Item["values"]) => {
   return useMemo(() => {
-    if (!values) return null;
+    if (!values) return {};
     const rating = getRating(values);
 
     const soldBy = values[ValueMap.SoldBy];

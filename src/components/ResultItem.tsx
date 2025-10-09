@@ -215,8 +215,9 @@ export const ResultItemInner = ({
     useProductData(values);
 
   const isTransitioning = useViewTransitionState(
-    transitionUrl ?? `/product/${id}`
+    transitionUrl ?? `/product/${id}`,
   );
+
   return (
     <>
       <div className="relative pt-4 px-4">
@@ -272,14 +273,16 @@ export const ResultItemInner = ({
           </ul>
         )}
 
-        <div className="pt-2 place-self-start">
-          <PriceElement size="large" price={price} disclaimer={disclaimer} />
-          {advertisingText != null && (
-            <em className="block text-xs text-gray-500 italic">
-              {advertisingText}
-            </em>
-          )}
-        </div>
+        {price != null && (
+          <div className="pt-2 place-self-start">
+            <PriceElement size="large" price={price} disclaimer={disclaimer} />
+            {advertisingText != null && (
+              <em className="block text-xs text-gray-500 italic">
+                {advertisingText}
+              </em>
+            )}
+          </div>
+        )}
 
         {children}
 
@@ -366,7 +369,7 @@ export const ResultItem = ({
   const { track } = useTracking();
   const ecomItem = useMemo(
     () => toEcomTrackingEvent(item, position),
-    [item, position]
+    [item, position],
   );
 
   return (
