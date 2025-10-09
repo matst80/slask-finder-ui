@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { createContext, PropsWithChildren, useCallback } from "react";
 import { BaseEcomEvent } from "../types";
 import { useCookieAcceptance } from "../../CookieConsent";
 
