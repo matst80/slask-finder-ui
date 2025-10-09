@@ -137,20 +137,25 @@ export const StockLocation = ({
       </div>
       {open && (
         <div className="px-3 py-2 text-sm text-gray-600">
-          {store.address.street}, {store.address.zip} {store.address.city}
+          <div className="flex gap-1">
+            <p className="flex-1">
+              {store.address.street}, {store.address.zip} {store.address.city}
+            </p>
+            <Button
+              size="sm"
+              onClick={() =>
+                addToCart(
+                  { sku: sku, storeId: store.id, quantity: 1 },
+                  trackingItem,
+                )
+              }
+            >
+              {isMutating ? "Reserving..." : "Reserve"}
+            </Button>
+          </div>
+
           <OpenHours openHours={store.openHours} />
           <WeekHours openHours={store.openHours} />
-          <Button
-            size="sm"
-            onClick={() =>
-              addToCart(
-                { sku: sku, storeId: store.id, quantity: 1 },
-                trackingItem,
-              )
-            }
-          >
-            {isMutating ? "Reserving..." : "Reserve"}
-          </Button>
         </div>
       )}
     </li>

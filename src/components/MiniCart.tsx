@@ -39,7 +39,7 @@ const CartCompatible = ({ id }: { id: number }) => {
 
   const { data, isLoading } = useCompatibleItems(
     id,
-    cart?.items.map((c) => Number(c.itemId)).filter(isDefined) ?? []
+    cart?.items.map((c) => Number(c.itemId)).filter(isDefined) ?? [],
   );
   useEffect(() => {
     setProductTypes(
@@ -48,11 +48,11 @@ const CartCompatible = ({ id }: { id: number }) => {
           data
             ?.map((d) => d.values[31158])
             .filter(isDefined)
-            .map((d) => String(d))
-        )
-      )
+            .map((d) => String(d)),
+        ),
+      ),
     );
-  }, [data]);
+  }, [data, setProductTypes]);
 
   if (!isLoading && data?.length === 0) {
     return null;
@@ -63,7 +63,7 @@ const CartCompatible = ({ id }: { id: number }) => {
       <button
         className={cm(
           "text-xs text-gray-600 line-clamp-1 -mb-2 mt-1 text-left animate-pop border-gray-200 pb-1",
-          open ? "" : "border-b"
+          open ? "" : "border-b",
         )}
         onClick={(e) => {
           e.stopPropagation();
@@ -119,7 +119,7 @@ const CartCompatible = ({ id }: { id: number }) => {
                       onClick={() =>
                         addToCart(
                           { ...item, quantity: 1 },
-                          toEcomTrackingEvent(item, a)
+                          toEcomTrackingEvent(item, a),
                         )
                       }
                       className="underline text-xs text-gray-600 hover:text-gray-800"
@@ -190,14 +190,12 @@ const useCartItemData = (item: CartItem) => {
   }, [item]);
 };
 
-const ownIds = ["001071"]
+const ownIds = ["001071", "498"];
 
 const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   const { trigger: changeQuantity } = useChangeQuantity();
   const { price, trackingItem } = useCartItemData(item);
 
-
-  
   return (
     <li key={item.id + item.sku} className="py-3 flex flex-col group relative">
       <div className="flex items-start gap-2">
@@ -222,11 +220,13 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
               {item.outlet}
             </span>
           )}
-          {item.sellerId!=null && item.sellerName != null && !ownIds.includes(item.sellerId) && (
-            <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">
-              {item.sellerName}
-            </span>
-          )}
+          {item.sellerId != null &&
+            item.sellerName != null &&
+            !ownIds.includes(item.sellerId) && (
+              <span className="text-xs self-end px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full inline-block">
+                {item.sellerName}
+              </span>
+            )}
         </div>
       </div>
 
@@ -423,7 +423,7 @@ const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
       .then((res) => res.json())
       .then((d) => {
         return globalThis.PublicKeyCredential.parseRequestOptionsFromJSON(
-          d.publicKey
+          d.publicKey,
         );
       });
     const { challenge } = options;
@@ -468,7 +468,7 @@ const WebPayButton = ({ cart }: { cart: Cart | null | undefined }) => {
             value: (cart?.totalPrice ?? 500 / 100).toFixed(2),
           },
         },
-      }
+      },
     );
 
     const verificationResult = await fetch("/admin/webauthn/login/finish", {
@@ -519,8 +519,8 @@ export const MiniCart = () => {
     () =>
       isLoading
         ? "~"
-        : cart?.items?.reduce((acc, item) => acc + (item.qty ?? 1), 0) ?? 0,
-    [cart, isLoading]
+        : (cart?.items?.reduce((acc, item) => acc + (item.qty ?? 1), 0) ?? 0),
+    [cart, isLoading],
   );
 
   useEffect(() => {
