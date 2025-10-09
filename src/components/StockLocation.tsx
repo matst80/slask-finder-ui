@@ -140,16 +140,19 @@ export const StockLocation = ({
           {store.address.street}, {store.address.zip} {store.address.city}
           <OpenHours openHours={store.openHours} />
           <WeekHours openHours={store.openHours} />
-          {/* <JsonView data={store}  /> */}
+          <Button
+            size="sm"
+            onClick={() =>
+              addToCart(
+                { sku: sku, storeId: store.id, quantity: 1 },
+                trackingItem,
+              )
+            }
+          >
+            {isMutating ? "Reserving..." : "Reserve"}
+          </Button>
         </div>
       )}
-      <Button
-        onClick={() =>
-          addToCart({ sku: sku, storeId: store.id, quantity: 1 }, trackingItem)
-        }
-      >
-        {isMutating ? "Adding..." : "Add to Cart"}
-      </Button>
     </li>
   );
 };
