@@ -19,7 +19,7 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
         });
       }
     },
-    [observer]
+    [observer],
   );
   const unwatch = useCallback(
     (ref: HTMLElement) => {
@@ -30,7 +30,7 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
         });
       }
     },
-    [observer]
+    [observer],
   );
   useEffect(() => {
     //const impressions = new Set<number>();
@@ -45,12 +45,12 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
 
             if (impression != null) {
               toPush.push({ ...impression });
-
+              observerInstance.unobserve(target);
               watched.current.delete(target);
             }
           });
       },
-      { threshold: 1 }
+      { threshold: 1 },
     );
     const pushImpressions = () => {
       if (toPush.length) {

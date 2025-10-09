@@ -1,4 +1,9 @@
-import React, { createContext, PropsWithChildren, useCallback } from "react";
+import React, {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useMemo,
+} from "react";
 import { BaseEcomEvent } from "../types";
 import { useCookieAcceptance } from "../../CookieConsent";
 
@@ -16,7 +21,7 @@ type ClickEvent = {
 
 export type BaseTrackingHandler<
   TType extends string,
-  TContext extends Record<string, unknown> = Record<string, unknown>
+  TContext extends Record<string, unknown> = Record<string, unknown>,
 > = {
   type: TType;
   context: TContext;
@@ -48,14 +53,13 @@ export const TrackingProvider = ({
   children,
 }: PropsWithChildren<{ handlers: TrackingHandler[] }>) => {
   const context = React.useContext(TrackingContext);
-  const all = [
+
+  const [handlers, setHandlers] = React.useState<TrackingHandler[]>([
     ...initialHandlers,
     ...(context?.handlers.filter(
-      (d) => !initialHandlers.some((e) => e.type == d.type)
+      (d) => !initialHandlers.some((e) => e.type == d.type),
     ) || []),
-  ];
-
-  const [handlers, setHandlers] = React.useState<TrackingHandler[]>(all);
+  ]);
 
   return (
     <TrackingContext.Provider value={{ handlers, setHandlers }}>
@@ -68,7 +72,7 @@ export const useTrackingHandlers = () => {
   const context = React.useContext(TrackingContext);
   if (!context) {
     throw new Error(
-      "useTrackingHandlers must be used within a TrackingProvider"
+      "useTrackingHandlers must be used within a TrackingProvider",
     );
   }
   return context.handlers;
@@ -92,7 +96,7 @@ export const useTracking = () => {
         handler.handle.apply(handler, [event, handler.context]);
       });
     },
-    [handlers]
+    [handlers],
   );
   return {
     track,
