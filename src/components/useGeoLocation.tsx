@@ -45,7 +45,7 @@ export const useGeoLocation = () => {
   }, []);
   const getCoarseLocation = useCallback((zip?: string) => {
     return getLocation(zip).then((loc) => {
-      console.log("got location", loc);
+      // console.log("got location", loc);
       const baseLocation = { coords: { latitude: loc.lat, longitude: loc.lng } };
       if (loc) {
         setLocation(baseLocation);

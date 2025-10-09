@@ -15,13 +15,12 @@ export const StockList = ({ stock, stockLevel }: StockData) => {
   const [zip, setZip] = useState("");
   const { data: stores } = useStores();
   const storesWithStock = useMemo<StoreWithStock[]>(() => {
-    return Object.entries(stock ?? {})
-      .map(([id, value]) => {
-        const store = stores?.find((store) => store.id === id);
-        if (!store) return null;
+    return stores?.map((store) => {
+        const value = stock?.[store.id];
+        if (!value && !store.shipToStore) return null;
         return {
           ...store,
-          stock: value,
+          stock: value ?? "",
           distance:
             location != null
               ? calculateDistance(location, store.address.location)
@@ -33,9 +32,9 @@ export const StockList = ({ stock, stockLevel }: StockData) => {
         location != null
           ? a.distance! - b.distance!
           : a.displayName.localeCompare(b.displayName),
-      );
+      ) ?? [];
   }, [stock, location, stores]);
-  useEffect(()=>{
+  useEffect(() => {
     if (zip.length >= 4) {
       getCoarseLocation(zip).catch(() => {
         console.log("unable to get a location")
@@ -53,8 +52,8 @@ export const StockList = ({ stock, stockLevel }: StockData) => {
           </p>
         )}
       </div>
-      <div className="flex gap-2 border-t border-gray-200 p-4 items-center">
-        <input value={zip} onChange={(e) => setZip(e.target.value)} placeholder="Zip code" className="border border-gray-300 rounded-md p-2 flex-1" />
+      <div className="flex gap-2 bg-gray-200 p-2 items-center">
+        <input value={zip} onChange={(e) => setZip(e.target.value)} placeholder="Zip code" className="bg-white rounded-md px-2 py-1 flex-1" />
         <button onClick={() => getBrowserLocation()}>
           <MapPin className="text-gray-500" />
         </button>
