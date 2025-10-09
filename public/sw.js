@@ -126,7 +126,10 @@ self.addEventListener("fetch", (event) => {
         })
         .catch((err) => {
           // Return a fallback page for navigation requests
-          if (request.destination === "document") {
+          if (
+            request.destination === "document" &&
+            !dynamicUrlParts.some((d) => request.url.includes(d))
+          ) {
             console.log("Returning fallback page, cause:", err);
             return caches.match("/index.html");
           }
