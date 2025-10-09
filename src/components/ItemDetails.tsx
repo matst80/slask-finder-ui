@@ -738,7 +738,12 @@ export const ItemDetails = (details: ItemDetail) => {
                     <BotMessageSquare className="size-5" />
                   </Button>
                 </div>
-                <StockList stock={stock} stockLevel={stockLevel} />
+                <StockList
+                  stock={stock}
+                  stockLevel={stockLevel}
+                  trackingItem={toEcomTrackingEvent(details, 0)}
+                  sku={details.sku}
+                />
               </div>
             )}
           </div>

@@ -51,8 +51,8 @@ export const useAddMultipleToCart = () => {
               variant: "error",
             });
           });
-      })
-    )
+      }),
+    ),
   );
 };
 
@@ -63,8 +63,8 @@ export const useAddToCart = () => {
   return {
     ...rest,
     trigger: async (
-      item: { sku: string; quantity: number },
-      trackingItem: BaseEcomEvent
+      item: { sku: string; quantity: number; storeId?: string },
+      trackingItem: BaseEcomEvent,
     ) => {
       if (accepted === "none" || accepted === null) {
         showNotification({

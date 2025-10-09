@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { StockData } from "../lib/types";
+import { BaseEcomEvent, StockData } from "../lib/types";
 import { isDefined } from "../utils";
 import { StockLocation } from "./StockLocation";
 import { useGeoLocation } from "./useGeoLocation";
@@ -9,38 +9,46 @@ import { useStores } from "../lib/datalayer/stores";
 import { StoreWithStock } from "./ItemDetails";
 import { MapPin } from "lucide-react";
 
-export const StockList = ({ stock, stockLevel }: StockData) => {
+export const StockList = ({
+  stock,
+  stockLevel,
+  trackingItem,
+  sku,
+}: StockData & { sku: string; trackingItem: BaseEcomEvent }) => {
   const { location, getBrowserLocation, getCoarseLocation } = useGeoLocation();
   const t = useTranslations();
   const [zip, setZip] = useState("");
   const { data: stores } = useStores();
   const storesWithStock = useMemo<StoreWithStock[]>(() => {
-    return stores?.map((store) => {
-        const value = stock?.[store.id];
-        if (!value && !store.shipToStore) return null;
-        return {
-          ...store,
-          stock: value ?? "",
-          distance:
-            location != null
-              ? calculateDistance(location, store.address.location)
-              : undefined,
-        };
-      })
-      .filter(isDefined)
-      .sort((a, b) =>
-        location != null
-          ? a.distance! - b.distance!
-          : a.displayName.localeCompare(b.displayName),
-      ) ?? [];
+    return (
+      stores
+        ?.map((store) => {
+          const value = stock?.[store.id];
+          if (!value && !store.shipToStore) return null;
+          return {
+            ...store,
+            stock: value ?? "",
+            distance:
+              location != null
+                ? calculateDistance(location, store.address.location)
+                : undefined,
+          };
+        })
+        .filter(isDefined)
+        .sort((a, b) =>
+          location != null
+            ? a.distance! - b.distance!
+            : a.displayName.localeCompare(b.displayName),
+        ) ?? []
+    );
   }, [stock, location, stores]);
   useEffect(() => {
     if (zip.length >= 4) {
       getCoarseLocation(zip).catch(() => {
-        console.log("unable to get a location")
+        console.log("unable to get a location");
       });
     }
-  }, [zip, getCoarseLocation])
+  }, [zip, getCoarseLocation]);
   if (stock == null) return null;
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden flex flex-col flex-1 thin-scrollbar">
@@ -53,7 +61,12 @@ export const StockList = ({ stock, stockLevel }: StockData) => {
         )}
       </div>
       <div className="flex gap-2 bg-gray-200 p-2 items-center">
-        <input value={zip} onChange={(e) => setZip(e.target.value)} placeholder="Zip code" className="bg-white rounded-md px-2 py-1 flex-1" />
+        <input
+          value={zip}
+          onChange={(e) => setZip(e.target.value)}
+          placeholder="Zip code"
+          className="bg-white rounded-md px-2 py-1 flex-1"
+        />
         <button onClick={() => getBrowserLocation()}>
           <MapPin className="text-gray-500" />
         </button>
@@ -61,7 +74,12 @@ export const StockList = ({ stock, stockLevel }: StockData) => {
       <div className="overflow-y-auto flex-1 max-h-80">
         <ul className="border-t border-gray-200 divide-y divide-gray-200">
           {storesWithStock.map((s) => (
-            <StockLocation key={s.id} {...s} />
+            <StockLocation
+              key={s.id}
+              {...s}
+              trackingItem={trackingItem}
+              sku={sku}
+            />
           ))}
         </ul>
       </div>

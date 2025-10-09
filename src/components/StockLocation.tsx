@@ -1,7 +1,9 @@
 import { Fragment, useState } from "react";
 import { useTranslations } from "../lib/hooks/useTranslations";
 import { StoreWithStock } from "./ItemDetails";
-import { Store } from "../lib/types";
+import { BaseEcomEvent, Store } from "../lib/types";
+import { useAddToCart } from "../hooks/cartHooks";
+import { Button } from "./ui/button";
 
 const weekdayDateMap = {
   Mon: new Date("2020-01-06T00:00:00.000Z"),
@@ -102,8 +104,11 @@ const WeekHours = ({ openHours }: Pick<Store, "openHours">) => {
 export const StockLocation = ({
   stock,
   distance,
+  sku,
+  trackingItem,
   ...store
-}: StoreWithStock) => {
+}: StoreWithStock & { sku: string; trackingItem: BaseEcomEvent }) => {
+  const { trigger: addToCart, isMutating } = useAddToCart();
   const t = useTranslations();
   const [open, setOpen] = useState(false);
   return (
@@ -138,6 +143,13 @@ export const StockLocation = ({
           {/* <JsonView data={store}  /> */}
         </div>
       )}
+      <Button
+        onClick={() =>
+          addToCart({ sku: sku, storeId: store.id, quantity: 1 }, trackingItem)
+        }
+      >
+        {isMutating ? "Adding..." : "Add to Cart"}
+      </Button>
     </li>
   );
 };

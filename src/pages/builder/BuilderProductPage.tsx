@@ -20,7 +20,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
   const { setItems } = useCompareContext();
   const { setSelectedItems, selectedItems } = useBuilderContext();
   const [unselectedComponents, nextComponent] = useBuilderStep(
-    details.componentId
+    details.componentId,
   );
   const t = useTranslations();
   if (!details) return null;
@@ -98,7 +98,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                           ...prev.filter((d) =>
                             parentId == null
                               ? d.componentId != componentId
-                              : d.parentId != parentId
+                              : d.parentId != parentId,
                           ),
                           ...(isSelected
                             ? []
@@ -153,7 +153,12 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                     </div>
                   </div>
                 )}
-                <StockList stock={stock} stockLevel={stockLevel} />
+                <StockList
+                  stock={stock}
+                  stockLevel={stockLevel}
+                  sku={details.sku}
+                  trackingItem={toEcomTrackingEvent(details, 0)}
+                />
               </div>
             )}
           </div>
