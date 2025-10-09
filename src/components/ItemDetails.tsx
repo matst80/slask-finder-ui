@@ -571,7 +571,7 @@ export const ItemDetails = (details: ItemDetail) => {
     values,
     disclaimer,
   } = details;
-  const { stockLevel, rating } = useProductData(values);
+  const productData = useProductData(values);
   const { showNotification } = useNotifications();
   const { token, subscribe } = useFirebaseMessaging();
   const { trigger: registerWatch, isMutating: isRegistering } =
@@ -657,11 +657,11 @@ export const ItemDetails = (details: ItemDetail) => {
               <h2 className="text-3xl font-bold text-gray-900 mb-6 product-name">
                 {title}
               </h2>
-              {rating != null && (
+              {productData?.rating != null && (
                 <div className="my-3">
                   <Stars
-                    rating={rating.rating}
-                    numberOfRatings={rating.numberOfRatings}
+                    rating={productData.rating.rating}
+                    numberOfRatings={productData.rating.numberOfRatings}
                     showText={true}
                   />
                 </div>
@@ -740,7 +740,7 @@ export const ItemDetails = (details: ItemDetail) => {
                 </div>
                 <StockList
                   stock={stock}
-                  stockLevel={stockLevel}
+                  stockLevel={productData?.stockLevel}
                   trackingItem={toEcomTrackingEvent(details, 0)}
                   sku={details.sku}
                 />

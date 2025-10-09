@@ -23,28 +23,27 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
     details.componentId,
   );
   const t = useTranslations();
-  if (!details) return null;
   const {
     title,
     id,
     componentId,
     img,
     bp,
-
     stock,
     buyable,
     buyableInStore,
     parentId: itemParentId,
     values,
     disclaimer,
-  } = details;
+  } = details ?? {};
   const queryParentId =
     new URLSearchParams(globalThis.location.search).get("parentId") ??
     undefined;
   const parentId = isParentId(queryParentId) ? queryParentId : itemParentId;
   const isSelected = selectedItems.some((d) => d.id === id);
   const { track } = useTracking();
-  const { stockLevel } = useProductData(values);
+  const productData = useProductData(values);
+  if (!details) return null;
 
   return (
     <>
@@ -155,7 +154,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                 )}
                 <StockList
                   stock={stock}
-                  stockLevel={stockLevel}
+                  stockLevel={productData?.stockLevel}
                   sku={details.sku}
                   trackingItem={toEcomTrackingEvent(details, 0)}
                 />

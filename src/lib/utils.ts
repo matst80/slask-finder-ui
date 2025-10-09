@@ -109,7 +109,7 @@ export const toQuery = (data: ItemsQuery): string => {
   string?.forEach(({ id, value }) => {
     result.append(
       "str",
-      `${id}:${Array.isArray(value) ? value.join("||") : value}`
+      `${id}:${Array.isArray(value) ? value.join("||") : value}`,
     );
   });
   stock?.forEach((s) => {
@@ -122,7 +122,7 @@ export const toQuery = (data: ItemsQuery): string => {
 export const setNestedValues = <T extends BaseTranslationType>(
   obj: T,
   onValue: (key: string, value: unknown) => void,
-  path: (string & keyof T)[] = []
+  path: (string & keyof T)[] = [],
 ) => {
   Object.entries(obj).forEach(([key, value]) => {
     if (value && typeof value === "object") {
@@ -135,20 +135,20 @@ export const setNestedValues = <T extends BaseTranslationType>(
 
 export const getNestedProperty = <T extends BaseTranslationType>(
   obj: T,
-  path: PathInto<T> & string
+  path: PathInto<T> & string,
 ) => {
   return path
     .split(".")
     .reduce(
       (result, key) => (result ? result[key] : undefined),
-      obj as Record<string, any>
+      obj as Record<string, any>,
     );
 };
 
 export function extractFromObject(
   object: BaseTranslationType,
   path: Array<string>,
-  index = 0
+  index = 0,
 ): string | undefined {
   const key = path[index];
   if (key === undefined) {
@@ -166,7 +166,7 @@ export function extractFromObject(
 
 export const replaceMustacheKeys = (
   text: string,
-  object?: Record<string, any>
+  object?: Record<string, any>,
 ) =>
   object
     ? text.replace(/{{\s*([^}]+)\s*}}/g, (_, key) => {
@@ -180,7 +180,7 @@ export const replaceMustacheKeys = (
 
 export const matchValue = (
   itemValue: string[] | string | number | undefined,
-  filterValue: string[] | string | number
+  filterValue: string[] | string | number,
 ): boolean => {
   if (typeof itemValue === "string" && typeof filterValue === "string") {
     return itemValue.toLowerCase() === filterValue.toLowerCase();
@@ -190,7 +190,7 @@ export const matchValue = (
   }
   if (Array.isArray(itemValue) && Array.isArray(filterValue)) {
     return itemValue.some((value) =>
-      filterValue.some((filter) => matchValue(value, filter))
+      filterValue.some((filter) => matchValue(value, filter)),
     );
   }
   if (Array.isArray(itemValue) && typeof filterValue === "string") {
@@ -214,6 +214,7 @@ export const getRating = (values: ItemDetail["values"]) => {
 };
 export const useProductData = (values: Item["values"]) => {
   return useMemo(() => {
+    if (!values) return null;
     const rating = getRating(values);
 
     const soldBy = values[ValueMap.SoldBy];
@@ -221,7 +222,8 @@ export const useProductData = (values: Item["values"]) => {
     const grade = values[ValueMap.Grade];
     const price = getPrice(values);
     const stockLevel = values[ValueMap.StockLevel];
-    const isOwn = soldBy == null || soldBy == "Elgiganten" || soldBy == "Elkjøp";
+    const isOwn =
+      soldBy == null || soldBy == "Elgiganten" || soldBy == "Elkjøp";
 
     return {
       isOwn,
