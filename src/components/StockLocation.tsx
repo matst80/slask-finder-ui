@@ -4,6 +4,7 @@ import { StoreWithStock } from "./ItemDetails";
 import { BaseEcomEvent, Store } from "../lib/types";
 import { useAddToCart } from "../hooks/cartHooks";
 import { Button } from "./ui/button";
+import { useFavouriteStore } from "../hooks/useFavouriteStore";
 
 const weekdayDateMap = {
   Mon: new Date("2020-01-06T00:00:00.000Z"),
@@ -81,22 +82,20 @@ const WeekHours = ({ openHours }: Pick<Store, "openHours">) => {
   const nameNames = getDaysOfWeek("sv-SE", "long");
   return (
     <div className="grid grid-cols-2 gap-1 border-t mt-2 pt-2 text-sm text-gray-600">
-      {openHours.days.map((hours, idx) => {
-        return (
-          <Fragment key={idx}>
-            <span className="capitalize">{nameNames[idx]}</span>
-            <span className="text-right">
-              {!hours ? (
-                <>Closed</>
-              ) : (
-                <>
-                  {toTime(hours[0])} - {toTime(hours[1])}
-                </>
-              )}
-            </span>
-          </Fragment>
-        );
-      })}
+      {openHours.days.map((hours, idx) => (
+        <Fragment key={idx}>
+          <span className="capitalize">{nameNames[idx]}</span>
+          <span className="text-right">
+            {!hours ? (
+              <>Closed</>
+            ) : (
+              <>
+                {toTime(hours[0])} - {toTime(hours[1])}
+              </>
+            )}
+          </span>
+        </Fragment>
+      ))}
     </div>
   );
 };
@@ -110,7 +109,8 @@ export const StockLocation = ({
 }: StoreWithStock & { sku: string; trackingItem: BaseEcomEvent }) => {
   const { trigger: addToCart, isMutating } = useAddToCart();
   const t = useTranslations();
-  const [open, setOpen] = useState(false);
+  const [favouriteStore, setFavouriteStore] = useFavouriteStore();
+  const [open, setOpen] = useState(favouriteStore === store.id);
   return (
     <li
       key={store.id}
@@ -118,7 +118,10 @@ export const StockLocation = ({
     >
       <div
         className="flex items-center py-2 px-3 gap-2"
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          setFavouriteStore(store.id);
+          setOpen(!open);
+        }}
       >
         <span className="font-medium line-clamp-1 text-ellipsis flex-1">
           {store.displayName}
@@ -141,17 +144,19 @@ export const StockLocation = ({
             <p className="flex-1">
               {store.address.street}, {store.address.zip} {store.address.city}
             </p>
-            <Button
-              size="sm"
-              onClick={() =>
-                addToCart(
-                  { sku: sku, storeId: store.id, quantity: 1 },
-                  trackingItem,
-                )
-              }
-            >
-              {isMutating ? "Reserving..." : "Reserve"}
-            </Button>
+            {(Number(stock) > 0 || store.shipToStore) && (
+              <Button
+                size="sm"
+                onClick={() =>
+                  addToCart(
+                    { sku: sku, storeId: store.id, quantity: 1 },
+                    trackingItem,
+                  )
+                }
+              >
+                {isMutating ? "Reserving..." : "Reserve"}
+              </Button>
+            )}
           </div>
 
           <OpenHours openHours={store.openHours} />
