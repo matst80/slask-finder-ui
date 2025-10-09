@@ -30,7 +30,9 @@ import { DataSetEvent } from "./beacons";
 export const baseUrl = "";
 
 export const getStores = async () => {
-  return fetch(`${baseUrl}/api/stores`).then((res) => toJson<Store[]>(res));
+  return fetch(`${baseUrl}/location/stores`).then((res) =>
+    toJson<Store[]>(res),
+  );
 };
 
 export const getPrometheusQueryUrl = (
