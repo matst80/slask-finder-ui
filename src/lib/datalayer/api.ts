@@ -37,7 +37,7 @@ export const getStores = async () => {
 
 export const getLocation = async (zip?: string) => {
   return fetch(`${baseUrl}/location${zip ? `?zip=${zip}` : ""}`).then((res) =>
-    toJson<Location>(res),
+    toJson<{lat: number, lng: number}>(res),
   );
 };
 

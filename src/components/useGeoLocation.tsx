@@ -1,16 +1,66 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { cookieObject, setCookie } from "../utils";
+import { YourLocation } from "./map-utils";
+import { getLocation } from "../lib/datalayer/api";
+
+
+const getStoredLocation = (): YourLocation | null => {
+  const { location } = cookieObject();
+  if (!location) return null;
+  const [lat, lng] = location.split(",").map((str) => parseFloat(str));
+  if (!isNaN(lat) && !isNaN(lng)) {
+    return { coords: { latitude: lat, longitude: lng } };
+  }
+  return null;
+};
+
+const storeLocation = (location: YourLocation) => {
+  setCookie(
+    "location",
+    `${location.coords.latitude},${location.coords.longitude}`,
+    365
+  );
+};
 
 export const useGeoLocation = () => {
-  const [location, setLocation] = useState<GeolocationPosition | null>(null);
+  const [location, setLocation] = useState<YourLocation | null>(getStoredLocation());
 
-  useEffect(() => {
+  const getBrowserLocation = useCallback(() => {
+  
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => setLocation(position),
+        (position) => {
+          const newLocation = {
+            coords: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            },
+          };
+          setLocation(newLocation);
+          storeLocation(newLocation);
+        },
         (error) => console.error("Error getting location:", error)
       );
     }
   }, []);
+  const getCoarseLocation = useCallback((zip?: string) => {
+    return getLocation(zip).then((loc) => {
+      console.log("got location", loc);
+      const baseLocation = { coords: { latitude: loc.lat, longitude: loc.lng } };
+      if (loc) {
+        setLocation(baseLocation);
+        storeLocation(baseLocation);
+      }
+        return baseLocation;
+      });
+  }, []);
+  useEffect(() => {
+    if (location == null) {
+      getCoarseLocation().catch(() => {
+        console.log("unable to get a location")
+      });
+    }
+  }, []);
 
-  return location;
+  return {location, getBrowserLocation, getCoarseLocation};
 };

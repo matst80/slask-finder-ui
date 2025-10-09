@@ -1,7 +1,7 @@
-type Input = { coords: { latitude: number; longitude: number } };
+export type YourLocation = { coords: { latitude: number; longitude: number } };
 
 export const calculateDistance = (
-  you: Input,
+  you: YourLocation,
   other: {
     lat: number;
     lng: number;

@@ -17,6 +17,10 @@ export default defineConfig({
         target, //: localTarget,
         changeOrigin: true,
       },
+      "/location": {
+        target, //: localTarget,
+        changeOrigin: true,
+      },
       "/cart": {
         target,
         changeOrigin: true,
