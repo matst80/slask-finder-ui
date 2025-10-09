@@ -57,6 +57,7 @@ const dynamicUrlParts = [
   "/checkout",
   "/cart",
   "/push/",
+  "/location",
 ];
 
 // Fetch event - serve cached content when offline
