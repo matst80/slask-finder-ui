@@ -1,49 +1,49 @@
-import { Link, useLoaderData } from "react-router-dom";
-import { Facets } from "../../components/Facets";
-import { ResultHeader } from "../../components/ResultHeader";
-import { QueryProvider } from "../../lib/hooks/QueryProvider";
-import { useBuilderQuery } from "./useBuilderQuery";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { BuilderFooterBar } from "./components/BuilderFooterBar";
-import { PlaceholderItem, ResultItemInner } from "../../components/ResultItem";
-import { useQuery } from "../../lib/hooks/useQuery";
-import { ImpressionProvider } from "../../lib/hooks/ImpressionProvider";
-import { FilteringQuery, Item, ItemValues } from "../../lib/types";
-import { useBuilderContext } from "./useBuilderContext";
-import { cm } from "../../utils";
-import { ComponentId, Issue, RuleId } from "./builder-types";
-import { IssueList } from "./IssueList";
-import { NextComponentButton } from "./NextComponentButton";
-import { InfiniteHitList } from "../../components/InfiniteHitList";
-import { useImpression } from "../../lib/hooks/useImpression";
-import { ComponentResultTable } from "./components/ComponentResultTable";
-import { useTranslations } from "../../lib/hooks/useTranslations";
-import { TranslationKey } from "../../translations/translations";
-import { toEcomTrackingEvent } from "../../components/toImpression";
-import { useTracking } from "../../lib/hooks/TrackingContext";
-import { FacetProvider } from "../../lib/hooks/FacetProvider";
+import { Link, useLoaderData } from 'react-router-dom'
+import { Facets } from '../../components/Facets'
+import { ResultHeader } from '../../components/ResultHeader'
+import { QueryProvider } from '../../lib/hooks/QueryProvider'
+import { useBuilderQuery } from './useBuilderQuery'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { BuilderFooterBar } from './components/BuilderFooterBar'
+import { PlaceholderItem, ResultItemInner } from '../../components/ResultItem'
+import { useQuery } from '../../lib/hooks/useQuery'
+import { ImpressionProvider } from '../../lib/hooks/ImpressionProvider'
+import { FilteringQuery, Item, ItemValues } from '../../lib/types'
+import { useBuilderContext } from './useBuilderContext'
+import { cm } from '../../utils'
+import { ComponentId, Issue, RuleId } from './builder-types'
+import { IssueList } from './IssueList'
+import { NextComponentButton } from './NextComponentButton'
+import { InfiniteHitList } from '../../components/InfiniteHitList'
+import { useImpression } from '../../lib/hooks/useImpression'
+import { ComponentResultTable } from './components/ComponentResultTable'
+import { useTranslations } from '../../lib/hooks/useTranslations'
+import { TranslationKey } from '../../translations/translations'
+import { toEcomTrackingEvent } from '../../components/toImpression'
+import { useTracking } from '../../lib/hooks/TrackingContext'
+import { FacetProvider } from '../../lib/hooks/FacetProvider'
 
 const ComponentItem = (
   item: Item & {
-    componentId: RuleId;
-    position: number;
-    issues: Issue[];
-    isSelected: boolean;
-  }
+    componentId: RuleId
+    position: number
+    issues: Issue[]
+    isSelected: boolean
+  },
 ) => {
-  const { position, issues, componentId, isSelected } = item;
-  const { watch } = useImpression();
-  const { track } = useTracking();
+  const { position, issues, componentId, isSelected } = item
+  const { watch } = useImpression()
+  const { track } = useTracking()
   const ecomItem = useMemo(
     () => toEcomTrackingEvent(item, position),
-    [item, position]
-  );
-  const trackItem = () => track({ type: "click", item: ecomItem });
+    [item, position],
+  )
+  const trackItem = () => track({ type: 'click', item: ecomItem })
 
-  const hasError = issues.some((d) => d.type === "error");
-  const isValid = issues.length === 0;
-  const qs = new URLSearchParams(window.location.search);
-  const url = `/builder/product/${componentId}/${item.id}?${qs.toString()}`;
+  const hasError = issues.some((d) => d.type === 'error')
+  const isValid = issues.length === 0
+  const qs = new URLSearchParams(window.location.search)
+  const url = `/builder/product/${componentId}/${item.id}?${qs.toString()}`
   return (
     <Link
       ref={watch(ecomItem)}
@@ -52,37 +52,37 @@ const ComponentItem = (
       viewTransition
       onClick={trackItem}
       className={cm(
-        "group bg-white md:shadow-xs text-left hover:shadow-md transition-all duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item bg-linear-to-br border-b border-gray-200 md:border-b-0",
+        'group bg-white md:shadow-xs text-left hover:shadow-md transition-all duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item bg-linear-to-br border-b border-gray-200 md:border-b-0',
         isSelected
-          ? "from-blue-100 hover:from-blue-200"
-          : "hover:from-white to-gray-50 hover:to-gray-10"
+          ? 'from-blue-100 hover:from-blue-200'
+          : 'hover:from-white to-gray-50 hover:to-gray-10',
       )}
     >
       <div
         className={
-          isValid ? "opacity-100" : hasError ? "opacity-50" : "opacity-75"
+          isValid ? 'opacity-100' : hasError ? 'opacity-50' : 'opacity-75'
         }
       >
         <ResultItemInner key={item.id} {...item} transitionUrl={url} />
       </div>
       <IssueList issues={issues} />
     </Link>
-  );
-};
+  )
+}
 
 const ComponentResultList = ({
   componentId,
   validator,
 }: {
-  componentId: RuleId;
-  validator?: (values: ItemValues) => Issue[];
+  componentId: RuleId
+  validator?: (values: ItemValues) => Issue[]
 }) => {
   const {
     isLoading,
     hits,
     query: { pageSize = 20 },
-  } = useQuery();
-  const { selectedItems } = useBuilderContext();
+  } = useQuery()
+  const { selectedItems } = useBuilderContext()
 
   if (isLoading && hits.length < 1) {
     return (
@@ -94,15 +94,15 @@ const ComponentResultList = ({
           <PlaceholderItem key={`p-${idx}`} />
         ))}
       </div>
-    );
+    )
   }
 
   const selectedId = selectedItems.find(
-    (i) => i.componentId === componentId
-  )?.id;
+    (i) => i.componentId === componentId,
+  )?.id
 
   if (hits == null || hits.length < 1) {
-    return <div>No matching components</div>;
+    return <div>No matching components</div>
   }
   return (
     <ImpressionProvider>
@@ -112,8 +112,8 @@ const ComponentResultList = ({
       >
         <InfiniteHitList>
           {(item) => {
-            const issues = validator?.(item.values) ?? [];
-            const isSelected = selectedId === item.id;
+            const issues = validator?.(item.values) ?? []
+            const isSelected = selectedId === item.id
             return (
               <ComponentItem
                 key={item.id}
@@ -123,46 +123,46 @@ const ComponentResultList = ({
                 issues={issues}
                 isSelected={isSelected}
               />
-            );
+            )
           }}
         </InfiniteHitList>
       </div>
     </ImpressionProvider>
-  );
-};
+  )
+}
 
-const views = ["grid", "table"] as const;
-type View = (typeof views)[number];
+const views = ['grid', 'table'] as const
+type View = (typeof views)[number]
 
 const BuilderQueryMerger = ({
   query,
   componentId,
 }: {
-  query: FilteringQuery;
-  componentId: string | number | null;
+  query: FilteringQuery
+  componentId: string | number | null
 }) => {
-  const { setQuery } = useQuery();
-  const keyRef = useRef<string | number | null>(componentId);
+  const { setQuery } = useQuery()
+  const keyRef = useRef<string | number | null>(componentId)
   useEffect(() => {
     if (keyRef.current === componentId) {
-      return;
+      return
     }
 
-    keyRef.current = componentId;
-    setQuery(query);
-  }, [query, setQuery, componentId]);
-  return null;
-};
+    keyRef.current = componentId
+    setQuery(query)
+  }, [query, setQuery, componentId])
+  return null
+}
 
 export const BuilderComponentFilter = () => {
-  const componentId = useLoaderData() as ComponentId | null;
-  const [viewMode, setViewMode] = useState<View>("grid");
-  const t = useTranslations();
+  const componentId = useLoaderData() as ComponentId | null
+  const [viewMode, setViewMode] = useState<View>('grid')
+  const t = useTranslations()
   const { component, requiredQuery, selectionFilters } = useBuilderQuery(
-    componentId ?? undefined
-  );
+    componentId ?? undefined,
+  )
   const [facetsToHide, facetsToDisable] = useMemo(() => {
-    const { filter } = component ?? {};
+    const { filter } = component ?? {}
     return [
       Array.from(
         new Set([
@@ -172,14 +172,14 @@ export const BuilderComponentFilter = () => {
           13,
           ...(filter?.string ?? []).map((d) => d.id),
           ...(filter?.range ?? []).map((d) => d.id),
-        ])
+        ]),
       ),
       selectionFilters?.map((d) => d.id) ?? [],
-    ];
-  }, [component, selectionFilters]);
+    ]
+  }, [component, selectionFilters])
 
   if (!requiredQuery || !componentId) {
-    return <div>Loading</div>;
+    return <div>Loading</div>
   }
   return (
     <QueryProvider initialQuery={requiredQuery} attachToHash={true}>
@@ -203,8 +203,8 @@ export const BuilderComponentFilter = () => {
                   <button
                     className={`px-2 md:px-3 py-1 rounded-md ${
                       viewMode === view
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200"
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200'
                     }`}
                     onClick={() => setViewMode(view)}
                   >
@@ -214,7 +214,7 @@ export const BuilderComponentFilter = () => {
               </div>
             </ResultHeader>
 
-            {viewMode === "grid" ? (
+            {viewMode === 'grid' ? (
               <ComponentResultList
                 componentId={componentId}
                 validator={component?.validator}
@@ -235,5 +235,5 @@ export const BuilderComponentFilter = () => {
         <NextComponentButton componentId={componentId} />
       </BuilderFooterBar>
     </QueryProvider>
-  );
-};
+  )
+}

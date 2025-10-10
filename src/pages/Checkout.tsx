@@ -1,13 +1,13 @@
-import { useEffect, useRef } from "react";
-import { getCheckout } from "../lib/datalayer/cart-api";
-import { useCart } from "../hooks/cartHooks";
-import { trackEnterCheckout } from "../lib/datalayer/beacons";
+import { useEffect, useRef } from 'react'
+import { getCheckout } from '../lib/datalayer/cart-api'
+import { useCart } from '../hooks/cartHooks'
+import { trackEnterCheckout } from '../lib/datalayer/beacons'
 
 export const Checkout = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const { data: cart } = useCart();
+  const ref = useRef<HTMLDivElement>(null)
+  const { data: cart } = useCart()
   useEffect(() => {
-    if (!cart?.items) return;
+    if (!cart?.items) return
     trackEnterCheckout({
       items: cart.items.map((item, index) => ({
         item_id: Number(item.id),
@@ -26,25 +26,25 @@ export const Checkout = () => {
             ? item.orgPrice - item.price
             : undefined,
       })),
-    });
-  }, [cart]);
+    })
+  }, [cart])
   useEffect(() => {
-    if (!ref.current) return;
+    if (!ref.current) return
     getCheckout().then((data) => {
-      console.log(data);
-      const { html_snippet } = data;
-      ref.current!.innerHTML = html_snippet;
-      const scriptsTags = ref.current!.getElementsByTagName("script");
+      console.log(data)
+      const { html_snippet } = data
+      ref.current!.innerHTML = html_snippet
+      const scriptsTags = ref.current!.getElementsByTagName('script')
       // This is necessary otherwise the scripts tags are not going to be evaluated
       for (let i = 0; i < scriptsTags.length; i++) {
-        const parentNode = scriptsTags[i].parentNode;
-        const newScriptTag = document.createElement("script");
-        newScriptTag.type = "text/javascript";
-        newScriptTag.text = scriptsTags[i].text;
-        parentNode?.removeChild(scriptsTags[i]);
-        parentNode?.appendChild(newScriptTag);
+        const parentNode = scriptsTags[i].parentNode
+        const newScriptTag = document.createElement('script')
+        newScriptTag.type = 'text/javascript'
+        newScriptTag.text = scriptsTags[i].text
+        parentNode?.removeChild(scriptsTags[i])
+        parentNode?.appendChild(newScriptTag)
       }
-    });
-  }, []);
-  return <div ref={ref} id="checkout-container"></div>;
-};
+    })
+  }, [])
+  return <div ref={ref} id="checkout-container"></div>
+}

@@ -1,13 +1,13 @@
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown } from 'lucide-react'
 
-import { Sort } from "../lib/types";
-import { useQuery } from "../lib/hooks/useQuery";
+import { Sort } from '../lib/types'
+import { useQuery } from '../lib/hooks/useQuery'
 
 export const Sorting = () => {
   const {
     query: { sort },
     setSort,
-  } = useQuery();
+  } = useQuery()
   return (
     <div className="relative">
       <select
@@ -27,5 +27,5 @@ export const Sorting = () => {
         <ArrowUpDown className="h-4 w-4" />
       </div>
     </div>
-  );
-};
+  )
+}

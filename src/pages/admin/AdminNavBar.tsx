@@ -1,19 +1,19 @@
-import { Link } from "react-router-dom";
-import { useTranslations } from "../../lib/hooks/useTranslations";
-import { TranslationKey } from "../../translations/translations";
+import { Link } from 'react-router-dom'
+import { useTranslations } from '../../lib/hooks/useTranslations'
+import { TranslationKey } from '../../translations/translations'
 
 const items = [
-  "facets",
-  "fields",
-  "missing_facets",
-  "rules",
-  "relations",
-  "facet_groups",
-  "csp",
-];
+  'facets',
+  'fields',
+  'missing_facets',
+  'rules',
+  'relations',
+  'facet_groups',
+  'csp',
+]
 
 export const AdminNavBar = () => {
-  const t = useTranslations();
+  const t = useTranslations()
 
   return (
     <nav className="bg-white shadow-md border-t border-gray-300">
@@ -35,5 +35,5 @@ export const AdminNavBar = () => {
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}

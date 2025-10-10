@@ -1,19 +1,19 @@
-import { ChevronUp, Star } from "lucide-react";
-import { useState, useMemo } from "react";
-import { KeyFacet } from "../../lib/types";
-import { useQueryKeyFacet } from "../../lib/hooks/useQueryKeyFacet";
-import { cm } from "../../utils";
-import { useKeyFacetValuePopularity } from "../../hooks/popularityHooks";
-import fuzzysort from "fuzzysort";
+import { ChevronUp, Star } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { KeyFacet } from '../../lib/types'
+import { useQueryKeyFacet } from '../../lib/hooks/useQueryKeyFacet'
+import { cm } from '../../utils'
+import { useKeyFacetValuePopularity } from '../../hooks/popularityHooks'
+import fuzzysort from 'fuzzysort'
 
 const toSorted = (values: Record<string, number>, selected: Set<string>) =>
   Object.entries(values)
     .sort(
       (a, b) =>
         (selected.has(b[0]) ? 1 : 0) - (selected.has(a[0]) ? 1 : 0) ||
-        b[1] - a[1]
+        b[1] - a[1],
     )
-    .map(([value, count]) => ({ value, count }));
+    .map(([value, count]) => ({ value, count }))
 
 export const KeyFacetSelector = ({
   name,
@@ -22,30 +22,30 @@ export const KeyFacetSelector = ({
   disabled,
   defaultOpen,
 }: KeyFacet & { defaultOpen: boolean; disabled?: boolean }) => {
-  const { values } = result;
-  const { filter: filterValue, addValue, removeValue } = useQueryKeyFacet(id);
-  const [open, setOpen] = useState(defaultOpen);
-  const [expanded, setExpanded] = useState(false);
+  const { values } = result
+  const { filter: filterValue, addValue, removeValue } = useQueryKeyFacet(id)
+  const [open, setOpen] = useState(defaultOpen)
+  const [expanded, setExpanded] = useState(false)
   const { data: popularValues } = useKeyFacetValuePopularity(
-    open ? id : undefined
-  );
-  const totalCount = useMemo(() => Object.keys(values).length, [values]);
-  const [filter, setFilter] = useState("");
+    open ? id : undefined,
+  )
+  const totalCount = useMemo(() => Object.keys(values).length, [values])
+  const [filter, setFilter] = useState('')
 
   const toShow = useMemo(() => {
     return fuzzysort.go(filter, toSorted(values, filterValue), {
       all: filter.length < 1,
       limit: expanded ? 300 : 10,
-      keys: ["value"],
+      keys: ['value'],
       threshold: 0.5,
-    });
-  }, [values, filter, filterValue, expanded]);
+    })
+  }, [values, filter, filterValue, expanded])
 
   return (
     <div
       className={cm(
-        "mb-4 border-b border-gray-200 pb-2",
-        disabled && "opacity-50"
+        'mb-4 border-b border-gray-200 pb-2',
+        disabled && 'opacity-50',
       )}
     >
       <button
@@ -53,7 +53,7 @@ export const KeyFacetSelector = ({
         onClick={() => setOpen((p) => !p)}
       >
         <span>
-          {name}{" "}
+          {name}{' '}
           <span className="text-gray-500 text-sm">
             ({Object.keys(values).length})
           </span>
@@ -61,8 +61,8 @@ export const KeyFacetSelector = ({
 
         <ChevronUp
           className={cm(
-            "size-4 transition-transform",
-            open ? "rotate-0" : "rotate-180"
+            'size-4 transition-transform',
+            open ? 'rotate-0' : 'rotate-180',
           )}
         />
       </button>
@@ -79,7 +79,7 @@ export const KeyFacetSelector = ({
           )}
           {toShow.map(({ obj: { value, count } }) => {
             const popularityIndex =
-              popularValues?.findIndex((d) => d.value === value) ?? -1;
+              popularValues?.findIndex((d) => d.value === value) ?? -1
             return (
               <label
                 key={value}
@@ -92,11 +92,11 @@ export const KeyFacetSelector = ({
                     value={value}
                     checked={filterValue.has(value)}
                     onChange={(e) => {
-                      const checked = e.target.checked;
+                      const checked = e.target.checked
                       if (checked) {
-                        addValue(value);
+                        addValue(value)
                       } else {
-                        removeValue(value);
+                        removeValue(value)
                       }
                     }}
                   />
@@ -112,7 +112,7 @@ export const KeyFacetSelector = ({
                   <span>({count})</span>
                 </em>
               </label>
-            );
+            )
           })}
 
           {totalCount > 9 && (
@@ -120,11 +120,11 @@ export const KeyFacetSelector = ({
               className="underline text-sm"
               onClick={() => setExpanded((p) => !p)}
             >
-              {expanded ? "Show less" : "Show more"}
+              {expanded ? 'Show less' : 'Show more'}
             </button>
           )}
         </fieldset>
       )}
     </div>
-  );
-};
+  )
+}

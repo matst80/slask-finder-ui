@@ -1,12 +1,12 @@
-import { PlaceholderItem, ResultItem } from "./ResultItem";
-import { useQuery } from "../lib/hooks/useQuery";
-import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
-import { InfiniteHitList } from "./InfiniteHitList";
-import { useYourPopularItems } from "../hooks/searchHooks";
-import { ItemsQuery } from "../lib/types";
+import { PlaceholderItem, ResultItem } from './ResultItem'
+import { useQuery } from '../lib/hooks/useQuery'
+import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
+import { InfiniteHitList } from './InfiniteHitList'
+import { useYourPopularItems } from '../hooks/searchHooks'
+import { ItemsQuery } from '../lib/types'
 
 const NoResults = () => {
-  const { data } = useYourPopularItems();
+  const { data } = useYourPopularItems()
   // const [first, last] = useMemo(() => {
   //   return data?.slice(0, 2) ?? [];
   // }, [data]);
@@ -32,23 +32,23 @@ const NoResults = () => {
         </div>
       )} */}
     </ImpressionProvider>
-  );
-};
+  )
+}
 
 const useIsEmptyQuery = (query: ItemsQuery) => {
-  const { string, range, filter, query: term } = query;
+  const { string, range, filter, query: term } = query
   const isEmpty =
     (string?.length ?? 0) === 0 &&
     (range?.length ?? 0) === 0 &&
     (term?.length ?? 0) === 0 &&
-    (filter?.length ?? 0) === 0;
+    (filter?.length ?? 0) === 0
 
-  return isEmpty;
-};
+  return isEmpty
+}
 
 export const SearchResultList = () => {
-  const { isLoading, hits, query } = useQuery();
-  const isEmpty = useIsEmptyQuery(query);
+  const { isLoading, hits, query } = useQuery()
+  const isEmpty = useIsEmptyQuery(query)
   if (isLoading && !isEmpty) {
     return (
       <div
@@ -59,11 +59,11 @@ export const SearchResultList = () => {
           <PlaceholderItem key={`p-${idx}`} />
         ))}
       </div>
-    );
+    )
   }
 
   if (!hits.length && isEmpty) {
-    return <NoResults />;
+    return <NoResults />
   }
 
   return (
@@ -77,5 +77,5 @@ export const SearchResultList = () => {
         </InfiniteHitList>
       </div>
     </ImpressionProvider>
-  );
-};
+  )
+}

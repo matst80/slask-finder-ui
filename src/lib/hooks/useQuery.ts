@@ -1,10 +1,10 @@
-import { useContext } from "react";
-import { QueryContext } from "./queryContext";
+import { useContext } from 'react'
+import { QueryContext } from './queryContext'
 
 export const useQuery = () => {
-  const context = useContext(QueryContext);
+  const context = useContext(QueryContext)
   if (context == null) {
-    throw new Error("useQuery must be used within a QueryProvider");
+    throw new Error('useQuery must be used within a QueryProvider')
   }
-  return context;
-};
+  return context
+}

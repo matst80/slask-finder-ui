@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import { useKeyFacetValuePopularity } from "../hooks/popularityHooks";
+import React, { useState } from 'react'
+import { useKeyFacetValuePopularity } from '../hooks/popularityHooks'
 
 interface FacetCardProps {
   facet: {
-    id: number;
-    name: string;
-    count: number;
-  };
+    id: number
+    name: string
+    count: number
+  }
 }
 
 export const FacetCard: React.FC<FacetCardProps> = ({ facet }) => {
-  const [open, setOpen] = useState(false);
-  const { data } = useKeyFacetValuePopularity(open ? facet.id : undefined);
+  const [open, setOpen] = useState(false)
+  const { data } = useKeyFacetValuePopularity(open ? facet.id : undefined)
   return (
     <div className="bg-white rounded-lg shadow-xs p-4 hover:shadow-md transition-shadow duration-200">
       <button
@@ -41,5 +41,5 @@ export const FacetCard: React.FC<FacetCardProps> = ({ facet }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}

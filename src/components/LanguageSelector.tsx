@@ -1,22 +1,22 @@
-import { useCookieAcceptance } from "../CookieConsent";
-import { getLocale, setCookie } from "../utils";
+import { useCookieAcceptance } from '../CookieConsent'
+import { getLocale, setCookie } from '../utils'
 
-const regions = ["sv-SE", "sv-FI", "en-US", "en-GB"];
-const regionNamesInEnglish = new Intl.DisplayNames(["en"], {
-  type: "language",
-});
+const regions = ['sv-SE', 'sv-FI', 'en-US', 'en-GB']
+const regionNamesInEnglish = new Intl.DisplayNames(['en'], {
+  type: 'language',
+})
 
 export const LanguageSelector = () => {
-  const { accepted } = useCookieAcceptance();
-  const locale = getLocale();
-  if (accepted === "none" || accepted === null) {
-    return null;
+  const { accepted } = useCookieAcceptance()
+  const locale = getLocale()
+  if (accepted === 'none' || accepted === null) {
+    return null
   }
   return (
     <select
       onChange={(e) => {
-        setCookie("sflocale", e.target.value, 365);
-        window.location.reload();
+        setCookie('sflocale', e.target.value, 365)
+        window.location.reload()
       }}
       value={locale}
       className="border border-gray-50 rounded-md p-2 appearance-none"
@@ -27,5 +27,5 @@ export const LanguageSelector = () => {
         </option>
       ))}
     </select>
-  );
-};
+  )
+}

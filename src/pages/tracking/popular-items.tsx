@@ -1,12 +1,12 @@
-import useSWR from "swr";
-import { getTrackingPopularity } from "../../lib/datalayer/api";
-import { useItemData } from "../../hooks/trackingHooks";
-import { makeImageUrl } from "../../utils";
-import { useTranslations } from "../../lib/hooks/useTranslations";
-import { Link } from "react-router-dom";
+import useSWR from 'swr'
+import { getTrackingPopularity } from '../../lib/datalayer/api'
+import { useItemData } from '../../hooks/trackingHooks'
+import { makeImageUrl } from '../../utils'
+import { useTranslations } from '../../lib/hooks/useTranslations'
+import { Link } from 'react-router-dom'
 
 const PopularItem = ({ itemId, value }: { itemId: number; value: number }) => {
-  const { data } = useItemData(itemId);
+  const { data } = useItemData(itemId)
   return (
     <Link
       to={`/product/${itemId}`}
@@ -33,16 +33,16 @@ const PopularItem = ({ itemId, value }: { itemId: number; value: number }) => {
         <h2 className="text-2xl font-bold text-gray-800">{value.toFixed(2)}</h2>
       </div>
     </Link>
-  );
-};
+  )
+}
 
 export const PopularItemsView = () => {
-  const { data } = useSWR("/api/popular-items", getTrackingPopularity);
-  const t = useTranslations();
+  const { data } = useSWR('/api/popular-items', getTrackingPopularity)
+  const t = useTranslations()
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <h1 className="font-bold text-3xl mb-8 text-gray-800">
-        {t("tracking.items.title")}
+        {t('tracking.items.title')}
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {Object.entries(data ?? {})
@@ -53,5 +53,5 @@ export const PopularItemsView = () => {
           ))}
       </div>
     </div>
-  );
-};
+  )
+}

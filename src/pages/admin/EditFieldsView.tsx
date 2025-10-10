@@ -1,25 +1,25 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react'
 import {
   useAdminFacets,
   useCleanFields,
   useFields,
   useMissingFacets,
-} from "../../adminHooks";
-import { Button } from "../../components/ui/button";
-import { createFacetFromField, deleteFacet } from "../../lib/datalayer/api";
-import { cm } from "../../utils";
-import { FieldListItem } from "../../lib/types";
-import { TimeAgo } from "../../components/TimeAgo";
-import { LoaderCircle } from "lucide-react";
-import { Input } from "../../components/ui/input";
-import { Loader } from "../../components/Loader";
+} from '../../adminHooks'
+import { Button } from '../../components/ui/button'
+import { createFacetFromField, deleteFacet } from '../../lib/datalayer/api'
+import { cm } from '../../utils'
+import { FieldListItem } from '../../lib/types'
+import { TimeAgo } from '../../components/TimeAgo'
+import { LoaderCircle } from 'lucide-react'
+import { Input } from '../../components/ui/input'
+import { Loader } from '../../components/Loader'
 
 const byCount = (a: FieldListItem, b: FieldListItem) => {
-  return (b.itemCount ?? 0) - (a.itemCount ?? 0);
-};
+  return (b.itemCount ?? 0) - (a.itemCount ?? 0)
+}
 
 const CleanFieldsButton = () => {
-  const { cleanFields, isLoading, error } = useCleanFields();
+  const { cleanFields, isLoading, error } = useCleanFields()
 
   return (
     <>
@@ -28,7 +28,7 @@ const CleanFieldsButton = () => {
         size="sm"
         variant="outline"
         onClick={() => {
-          cleanFields();
+          cleanFields()
         }}
       >
         {isLoading ? (
@@ -38,40 +38,40 @@ const CleanFieldsButton = () => {
         )}
       </Button>
     </>
-  );
-};
+  )
+}
 
 const getDataType = (type: number): string => {
   switch (type) {
     case 0:
-      return "String";
+      return 'String'
     case 1:
-      return "Number";
+      return 'Number'
     case 2:
-      return "Decimal";
+      return 'Decimal'
     default:
-      return "-Unknown-";
+      return '-Unknown-'
   }
-};
+}
 
 const FilteredFieldView = ({
   data,
 }: {
-  data: (FieldListItem & { key: string })[];
+  data: (FieldListItem & { key: string })[]
 }) => {
-  const [filter, setFilter] = useState<string>("");
-  const [ids, setIds] = useState<string[]>([]);
-  const { data: facets = [] } = useAdminFacets();
-  const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string>('')
+  const [ids, setIds] = useState<string[]>([])
+  const { data: facets = [] } = useAdminFacets()
+  const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null)
   const uniquePurpose = useMemo(() => {
-    const purposeSet = new Set<string>();
+    const purposeSet = new Set<string>()
     data.forEach((field) => {
       field.purpose?.forEach((purpose) => {
-        purposeSet.add(purpose);
-      });
-    });
-    return Array.from(purposeSet);
-  }, [data]);
+        purposeSet.add(purpose)
+      })
+    })
+    return Array.from(purposeSet)
+  }, [data])
   const filteredData = useMemo(() => {
     return data
       .filter((field) => {
@@ -79,29 +79,29 @@ const FilteredFieldView = ({
           selectedPurpose != null &&
           !field.purpose?.includes(selectedPurpose)
         )
-          return false;
-        if (!filter.length) return selectedPurpose != null;
-        if (field.key?.includes(filter) || field.key == filter) return true;
-        return field.name.toLowerCase()?.includes(filter.toLowerCase());
+          return false
+        if (!filter.length) return selectedPurpose != null
+        if (field.key?.includes(filter) || field.key == filter) return true
+        return field.name.toLowerCase()?.includes(filter.toLowerCase())
       })
       .map((field) => {
-        const isFacet = facets.some((f) => f.id == field.id);
+        const isFacet = facets.some((f) => f.id == field.id)
         return {
           ...field,
           isFacet,
-        };
+        }
       })
-      .sort(byCount);
-  }, [filter, data, selectedPurpose, facets]);
+      .sort(byCount)
+  }, [filter, data, selectedPurpose, facets])
   // console.log("filteredData", filteredData.map(d=>d.id));
   const addField = (fieldKey: string) => {
-    createFacetFromField(fieldKey);
-  };
+    createFacetFromField(fieldKey)
+  }
   const removeFacet = (facetId: number) => {
-    if (confirm("Are you sure you want to remove this facet?")) {
-      deleteFacet(facetId);
+    if (confirm('Are you sure you want to remove this facet?')) {
+      deleteFacet(facetId)
     }
-  };
+  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -117,14 +117,14 @@ const FilteredFieldView = ({
               key={str}
               onClick={() => {
                 if (selectedPurpose === str) {
-                  setSelectedPurpose(null);
+                  setSelectedPurpose(null)
                 } else {
-                  setSelectedPurpose(str);
+                  setSelectedPurpose(str)
                 }
               }}
               className={cm(
-                "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-blue-800 cursor-pointer shrink-0",
-                selectedPurpose === str ? "bg-white" : "bg-blue-100"
+                'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-blue-800 cursor-pointer shrink-0',
+                selectedPurpose === str ? 'bg-white' : 'bg-blue-100',
               )}
             >
               {str}
@@ -135,13 +135,13 @@ const FilteredFieldView = ({
       <div className="border border-amber-200 p-4">
         <textarea
           className="border border-gray-100 p-2 w-full h-32"
-          value={ids.join("\n")}
+          value={ids.join('\n')}
           onChange={(e) => {
             const values = e.target.value
-              .split("\n")
-              .filter((d) => d.length > 1);
-            console.log(values);
-            setIds(values);
+              .split('\n')
+              .filter((d) => d.length > 1)
+            console.log(values)
+            setIds(values)
           }}
         ></textarea>
         <table className="table">
@@ -154,17 +154,17 @@ const FilteredFieldView = ({
           </thead>
           <tbody>
             {ids.map((id) => {
-              const field = data?.find((d) => String(d.id) === id);
+              const field = data?.find((d) => String(d.id) === id)
               if (!field) {
-                return null;
+                return null
               }
               return (
                 <tr>
                   <td>{field.id}</td>
                   <td>{field.name}</td>
-                  <td>{field.type === 0 ? "text" : "float"}</td>
+                  <td>{field.type === 0 ? 'text' : 'float'}</td>
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
@@ -189,7 +189,7 @@ const FilteredFieldView = ({
                 >
                   {field.name}
                 </span>
-                <span className="text-sm"> ({field.itemCount ?? "0"}st)</span>
+                <span className="text-sm"> ({field.itemCount ?? '0'}st)</span>
               </div>
               <span className="text-sm">{field.description}</span>
             </div>
@@ -237,21 +237,21 @@ const FilteredFieldView = ({
         <CleanFieldsButton />
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const EditFieldsView = () => {
-  const { data, isLoading } = useFields();
+  const { data, isLoading } = useFields()
   if (isLoading) {
-    return <Loader size="lg" variant="default" />;
+    return <Loader size="lg" variant="default" />
   }
-  return <FilteredFieldView data={data ?? []} />;
-};
+  return <FilteredFieldView data={data ?? []} />
+}
 
 export const MissingFieldsView = () => {
-  const { data, isLoading } = useMissingFacets();
+  const { data, isLoading } = useMissingFacets()
   if (isLoading) {
-    return <Loader size="lg" variant="default" />;
+    return <Loader size="lg" variant="default" />
   }
-  return <FilteredFieldView data={data ?? []} />;
-};
+  return <FilteredFieldView data={data ?? []} />
+}

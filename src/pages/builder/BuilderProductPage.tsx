@@ -1,28 +1,28 @@
-import { useLoaderData } from "react-router-dom";
-import { Price } from "../../components/Price";
-import { makeImageUrl } from "../../utils";
-import { StockList } from "../../components/StockList";
-import { Button, ButtonLink } from "../../components/ui/button";
-import { useBuilderContext } from "./useBuilderContext";
-import { isParentId, ItemWithComponentId } from "./builder-types";
-import { trackAction } from "../../lib/datalayer/beacons";
-import { BuilderFooterBar } from "./components/BuilderFooterBar";
-import { useBuilderStep } from "./useBuilderStep";
-import { useTranslations } from "../../lib/hooks/useTranslations";
-import { Loader } from "../../components/Loader";
-import { useTracking } from "../../lib/hooks/TrackingContext";
-import { toEcomTrackingEvent } from "../../components/toImpression";
-import { GroupedProperties } from "../../components/GroupedProperties";
-import { useCompareContext } from "../../lib/hooks/CompareProvider";
-import { useProductData } from "../../lib/utils";
+import { useLoaderData } from 'react-router-dom'
+import { Price } from '../../components/Price'
+import { makeImageUrl } from '../../utils'
+import { StockList } from '../../components/StockList'
+import { Button, ButtonLink } from '../../components/ui/button'
+import { useBuilderContext } from './useBuilderContext'
+import { isParentId, ItemWithComponentId } from './builder-types'
+import { trackAction } from '../../lib/datalayer/beacons'
+import { BuilderFooterBar } from './components/BuilderFooterBar'
+import { useBuilderStep } from './useBuilderStep'
+import { useTranslations } from '../../lib/hooks/useTranslations'
+import { Loader } from '../../components/Loader'
+import { useTracking } from '../../lib/hooks/TrackingContext'
+import { toEcomTrackingEvent } from '../../components/toImpression'
+import { GroupedProperties } from '../../components/GroupedProperties'
+import { useCompareContext } from '../../lib/hooks/CompareProvider'
+import { useProductData } from '../../lib/utils'
 
 export const ComponentDetails = (details: ItemWithComponentId) => {
-  const { setItems } = useCompareContext();
-  const { setSelectedItems, selectedItems } = useBuilderContext();
+  const { setItems } = useCompareContext()
+  const { setSelectedItems, selectedItems } = useBuilderContext()
   const [unselectedComponents, nextComponent] = useBuilderStep(
     details.componentId,
-  );
-  const t = useTranslations();
+  )
+  const t = useTranslations()
   const {
     title,
     id,
@@ -35,15 +35,14 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
     parentId: itemParentId,
     values,
     disclaimer,
-  } = details ?? {};
+  } = details ?? {}
   const queryParentId =
-    new URLSearchParams(globalThis.location.search).get("parentId") ??
-    undefined;
-  const parentId = isParentId(queryParentId) ? queryParentId : itemParentId;
-  const isSelected = selectedItems.some((d) => d.id === id);
-  const { track } = useTracking();
-  const productData = useProductData(values);
-  if (!details) return null;
+    new URLSearchParams(globalThis.location.search).get('parentId') ?? undefined
+  const parentId = isParentId(queryParentId) ? queryParentId : itemParentId
+  const isSelected = selectedItems.some((d) => d.id === id)
+  const { track } = useTracking()
+  const productData = useProductData(values)
+  if (!details) return null
 
   return (
     <>
@@ -67,7 +66,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
               </h2>
               {bp && (
                 <ul className="space-y-3 text-gray-600">
-                  {bp.split("\n").map((txt) => (
+                  {bp.split('\n').map((txt) => (
                     <li key={txt} className="flex items-start">
                       <span className="text-blue-500 mr-2">•</span>
                       {txt}
@@ -83,7 +82,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <span className="text-gray-500 text-sm">
-                      {t("common.price")}
+                      {t('common.price')}
                     </span>
                     <div className="text-4xl font-bold text-gray-900">
                       <Price values={values} disclaimer={disclaimer} />
@@ -91,7 +90,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                   </div>
                   <div className="flex items-end justify-end">
                     <Button
-                      variant={isSelected ? "outline" : "default"}
+                      variant={isSelected ? 'outline' : 'default'}
                       onClick={() => {
                         setSelectedItems((prev) => [
                           ...prev.filter((d) =>
@@ -108,24 +107,24 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                                   componentId,
                                 },
                               ]),
-                        ]);
+                        ])
 
                         requestAnimationFrame(() => {
-                          const ecomItem = toEcomTrackingEvent(details, 1);
+                          const ecomItem = toEcomTrackingEvent(details, 1)
                           track({
-                            type: "click",
+                            type: 'click',
                             item: ecomItem,
-                          });
+                          })
                           //trackClick(id, 1);
                           trackAction({
                             item: ecomItem,
-                            action: "select_component",
+                            action: 'select_component',
                             reason: `builder_${componentId}`,
-                          });
-                        });
+                          })
+                        })
                       }}
                     >
-                      {t(isSelected ? "builder.remove" : "builder.select")}
+                      {t(isSelected ? 'builder.remove' : 'builder.select')}
                     </Button>
                   </div>
                 </div>
@@ -140,8 +139,8 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                             onClick={() => setItems([])}
                             variant={
                               item.id === nextComponent?.id
-                                ? "default"
-                                : "outline"
+                                ? 'default'
+                                : 'outline'
                             }
                             className="flex items-center gap-2"
                             key={i}
@@ -170,11 +169,11 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
       </div>
       <BuilderFooterBar />
     </>
-  );
-};
+  )
+}
 
 export const BuilderProductPage = () => {
-  const details = useLoaderData() as ItemWithComponentId | null;
+  const details = useLoaderData() as ItemWithComponentId | null
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -184,5 +183,5 @@ export const BuilderProductPage = () => {
         <Loader size="lg" variant="overlay" />
       )}
     </div>
-  );
-};
+  )
+}

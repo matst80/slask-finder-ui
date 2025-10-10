@@ -1,123 +1,123 @@
-import { ChevronUp } from "lucide-react";
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
-import { NumberFacet } from "../../lib/types";
-import { cm, converters } from "../../utils";
-import { Slider } from "./Slider";
-import { useQueryRangeFacet } from "../../lib/hooks/useQueryRangeFacet";
+import { ChevronUp } from 'lucide-react'
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
+import { NumberFacet } from '../../lib/types'
+import { cm, converters } from '../../utils'
+import { Slider } from './Slider'
+import { useQueryRangeFacet } from '../../lib/hooks/useQueryRangeFacet'
 
 type SelectedRange = {
-  min: number;
-  max: number;
-};
+  min: number
+  max: number
+}
 
 export default function HistogramWithSelection({
   bins,
   onSelection,
   selection,
 }: {
-  bins: number[];
-  selection: SelectedRange | undefined;
-  onSelection?: (data: SelectedRange) => void;
+  bins: number[]
+  selection: SelectedRange | undefined
+  onSelection?: (data: SelectedRange) => void
 }) {
-  const width = 288;
-  const height = 80;
-  const [selectionStart, setSelectionStart] = useState<number | null>(null);
-  const [selectionEnd, setSelectionEnd] = useState<number | null>(null);
+  const width = 288
+  const height = 80
+  const [selectionStart, setSelectionStart] = useState<number | null>(null)
+  const [selectionEnd, setSelectionEnd] = useState<number | null>(null)
 
   useEffect(() => {
     if (selection != null) {
-      setSelectionStart(selection.min * width);
-      setSelectionEnd(selection.max * width);
+      setSelectionStart(selection.min * width)
+      setSelectionEnd(selection.max * width)
     } else {
-      setSelectionStart(null);
-      setSelectionEnd(null);
+      setSelectionStart(null)
+      setSelectionEnd(null)
     }
-  }, [selection]);
-  const [isDragging, setIsDragging] = useState(false);
+  }, [selection])
+  const [isDragging, setIsDragging] = useState(false)
   // const [selectedRange, setSelectedRange] = useState<{
   //   min: number;
   //   max: number;
   // } | null>(null);
   //const [selectedCount, setSelectedCount] = useState<number>(0);
 
-  const svgRef = useRef<SVGSVGElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null)
 
   // Constants for the SVG dimensions and margins
 
-  const margin = { top: 0, right: 0, bottom: 0, left: 0 };
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
+  const margin = { top: 0, right: 0, bottom: 0, left: 0 }
+  const innerWidth = width - margin.left - margin.right
+  const innerHeight = height - margin.top - margin.bottom
 
   // Handle mouse events for selection
   const handleMouseDown = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (!svgRef.current) return;
+    if (!svgRef.current) return
 
-    const svgRect = svgRef.current.getBoundingClientRect();
-    const x = e.clientX - svgRect.left - margin.left;
+    const svgRect = svgRef.current.getBoundingClientRect()
+    const x = e.clientX - svgRect.left - margin.left
 
-    setSelectionStart(x);
-    setSelectionEnd(x);
-    setIsDragging(true);
-  };
+    setSelectionStart(x)
+    setSelectionEnd(x)
+    setIsDragging(true)
+  }
 
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (!isDragging || !svgRef.current) return;
+    if (!isDragging || !svgRef.current) return
 
-    const svgRect = svgRef.current.getBoundingClientRect();
-    const x = e.clientX - svgRect.left - margin.left;
+    const svgRect = svgRef.current.getBoundingClientRect()
+    const x = e.clientX - svgRect.left - margin.left
 
-    setSelectionEnd(Math.max(0, Math.min(x, innerWidth)));
-  };
+    setSelectionEnd(Math.max(0, Math.min(x, innerWidth)))
+  }
 
   const handleMouseUp = () => {
-    if (!isDragging) return;
+    if (!isDragging) return
 
-    setIsDragging(false);
+    setIsDragging(false)
 
     if (selectionStart !== null && selectionEnd !== null) {
-      const min = Math.min(selectionStart, selectionEnd);
-      const max = Math.max(selectionStart, selectionEnd);
+      const min = Math.min(selectionStart, selectionEnd)
+      const max = Math.max(selectionStart, selectionEnd)
 
       // Convert pixel positions to percentages
-      const dataMin = min / innerWidth;
-      const dataMax = max / innerWidth;
+      const dataMin = min / innerWidth
+      const dataMax = max / innerWidth
 
-      onSelection?.({ min: dataMin, max: dataMax });
+      onSelection?.({ min: dataMin, max: dataMax })
     }
-  };
+  }
 
   const handleMouseLeave = () => {
     if (isDragging) {
-      setIsDragging(false);
+      setIsDragging(false)
       const end =
-        selectionEnd != null && selectionEnd > innerHeight / 2 ? innerWidth : 0;
+        selectionEnd != null && selectionEnd > innerHeight / 2 ? innerWidth : 0
 
-      setSelectionEnd(end);
+      setSelectionEnd(end)
       if (selectionStart !== null && selectionEnd !== null) {
-        const min = Math.min(selectionStart, end);
-        const max = Math.max(selectionStart, end);
+        const min = Math.min(selectionStart, end)
+        const max = Math.max(selectionStart, end)
 
         // Convert pixel positions to percentages
-        const dataMin = min / innerWidth;
-        const dataMax = max / innerWidth;
+        const dataMin = min / innerWidth
+        const dataMax = max / innerWidth
 
-        onSelection?.({ min: dataMin, max: dataMax });
+        onSelection?.({ min: dataMin, max: dataMax })
       }
     }
-  };
+  }
 
   // Calculate the maximum bin height for scaling
-  const maxBinHeight = Math.max(...bins);
+  const maxBinHeight = Math.max(...bins)
 
   // Calculate bar width based on the number of bins
-  const barWidth = innerWidth / bins.length;
+  const barWidth = innerWidth / bins.length
 
   return (
     <div className="relative mt-4 h-20 w-full border border-gray-300 rounded-md overflow-hidden">
       <svg
         ref={svgRef}
-        width={"100%"}
-        height={"100%"}
+        width={'100%'}
+        height={'100%'}
         className="overflow-visible"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -145,12 +145,12 @@ export default function HistogramWithSelection({
         {/* Histogram bars */}
         <g transform={`translate(${margin.left}, 0)`}>
           {bins.map((bin, i) => {
-            const barHeight = (bin / maxBinHeight) * innerHeight;
-            const x = i * barWidth;
-            const y = height - margin.bottom - barHeight;
+            const barHeight = (bin / maxBinHeight) * innerHeight
+            const x = i * barWidth
+            const y = height - margin.bottom - barHeight
 
             // Check if this bar is in the selected range
-            const isSelected = false;
+            const isSelected = false
 
             return (
               <rect
@@ -159,11 +159,11 @@ export default function HistogramWithSelection({
                 y={y}
                 width={barWidth - 1}
                 height={barHeight}
-                fill={isSelected ? "rgb(99, 102, 241)" : "rgb(209, 213, 219)"}
+                fill={isSelected ? 'rgb(99, 102, 241)' : 'rgb(209, 213, 219)'}
                 stroke="white"
                 strokeWidth={0.5}
               />
-            );
+            )
           })}
         </g>
 
@@ -201,7 +201,7 @@ export default function HistogramWithSelection({
         </text> */}
       </svg>
     </div>
-  );
+  )
 }
 
 export const NumberFacetSelector = ({
@@ -213,47 +213,47 @@ export const NumberFacetSelector = ({
   valueType,
   defaultOpen,
 }: NumberFacet & {
-  disabled?: boolean;
-  defaultOpen?: boolean;
+  disabled?: boolean
+  defaultOpen?: boolean
 }) => {
-  const [open, setOpen] = useState(defaultOpen);
-  const { updateValue } = useQueryRangeFacet(id);
+  const [open, setOpen] = useState(defaultOpen)
+  const { updateValue } = useQueryRangeFacet(id)
   const { toDisplayValue, fromDisplayValue } = useMemo(
     () => converters(valueType),
-    [valueType]
-  );
+    [valueType],
+  )
   const histogramValue = useMemo(
     () =>
       selected && selected.min !== min && selected.max !== max
         ? { min: selected.min / max, max: selected.max / max }
         : undefined,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selected]
-  );
+    [selected],
+  )
   const sliderChanged = useCallback(
     (min: number, max: number) => {
       // console.log("onChange", min, max);
       updateValue({
         min: fromDisplayValue(min),
         max: fromDisplayValue(max),
-      });
+      })
     },
-    [fromDisplayValue, updateValue]
-  );
+    [fromDisplayValue, updateValue],
+  )
   const invalid = useMemo(() => {
-    if (selected == null) return false;
+    if (selected == null) return false
 
     if (selected.min > max) {
-      return "Search range is invalid (min)";
+      return 'Search range is invalid (min)'
     }
-    return false;
-  }, [selected, max]);
+    return false
+  }, [selected, max])
   // console.log({ selected, limits: { min, max }, histogramValue });
   return (
     <div
       className={cm(
-        "mb-4 border-b border-gray-200 pb-2",
-        disabled && "opacity-50"
+        'mb-4 border-b border-gray-200 pb-2',
+        disabled && 'opacity-50',
       )}
     >
       <button
@@ -263,8 +263,8 @@ export const NumberFacetSelector = ({
         <span>{name}</span>
         <ChevronUp
           className={cm(
-            "size-4 transition-transform",
-            open ? "rotate-0" : "rotate-180"
+            'size-4 transition-transform',
+            open ? 'rotate-0' : 'rotate-180',
           )}
         />
       </button>
@@ -291,14 +291,14 @@ export const NumberFacetSelector = ({
                 const value = {
                   min: Math.floor(max * d.min),
                   max: Math.ceil(max * d.max),
-                };
+                }
 
-                updateValue(value);
+                updateValue(value)
               }}
             />
           )}
         </fieldset>
       )}
     </div>
-  );
-};
+  )
+}

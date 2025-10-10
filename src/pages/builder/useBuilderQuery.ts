@@ -1,26 +1,26 @@
-import { useContext, useMemo } from "react";
-import { BuilderContext } from "./builder-context";
-import { fixSingleArray, isRangeFilter, isStringFilter } from "./builder-utils";
-import { FilteringQuery } from "../../lib/types";
-import { useComponentFilters } from "./useComponentFilters";
-import { ComponentId } from "./builder-types";
+import { useContext, useMemo } from 'react'
+import { BuilderContext } from './builder-context'
+import { fixSingleArray, isRangeFilter, isStringFilter } from './builder-utils'
+import { FilteringQuery } from '../../lib/types'
+import { useComponentFilters } from './useComponentFilters'
+import { ComponentId } from './builder-types'
 
 export const useBuilderQuery = (selectedComponentId?: ComponentId) => {
-  const ctx = useContext(BuilderContext);
+  const ctx = useContext(BuilderContext)
   if (!ctx) {
-    throw new Error("useBuilderQuery must be used within a BuilderProvider");
+    throw new Error('useBuilderQuery must be used within a BuilderProvider')
   }
-  const { components } = ctx;
-  const selectionFilters = useComponentFilters(selectedComponentId);
+  const { components } = ctx
+  const selectionFilters = useComponentFilters(selectedComponentId)
 
   return useMemo(() => {
     const selectedComponent =
-      selectedComponentId != null ? components[selectedComponentId] : undefined;
-    console.log("builder query", {
+      selectedComponentId != null ? components[selectedComponentId] : undefined
+    console.log('builder query', {
       selectedComponentId,
       components,
       selectedComponent,
-    });
+    })
     return {
       selectionFilters,
       component: selectedComponent,
@@ -35,7 +35,7 @@ export const useBuilderQuery = (selectedComponentId?: ComponentId) => {
           ...selectionFilters.filter(isStringFilter).map(fixSingleArray),
           ...(selectedComponent?.filter.string ?? []),
         ],
-      } satisfies Pick<FilteringQuery, "string" | "range">,
-    };
-  }, [selectionFilters, components, selectedComponentId]);
-};
+      } satisfies Pick<FilteringQuery, 'string' | 'range'>,
+    }
+  }, [selectionFilters, components, selectedComponentId])
+}

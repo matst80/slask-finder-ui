@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  ref?: React.Ref<HTMLInputElement>;
+  ref?: React.Ref<HTMLInputElement>
 }
 
 export const Input: React.FC<InputProps> = ({
-  className = "",
+  className = '',
   ref,
   ...props
 }) => {
@@ -29,5 +29,5 @@ export const Input: React.FC<InputProps> = ({
       `}
       {...props}
     />
-  );
-};
+  )
+}

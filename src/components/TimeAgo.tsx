@@ -1,6 +1,6 @@
 //import { useState, useEffect } from "react";
 
-import { getLocale } from "../utils";
+import { getLocale } from '../utils'
 
 // const utcNow = () => {
 //   const d = new Date();
@@ -15,12 +15,12 @@ const ranges = {
   hours: 3600,
   minutes: 60,
   seconds: 1,
-} as const;
+} as const
 
 export const TimeAgo = ({ ts }: { ts?: number }) => {
   //const now = utcNow();
   //const [diff, setDiff] = useState(now - (ts ?? 0));
-  const date = new Date(ts ?? 0);
+  const date = new Date(ts ?? 0)
   // useEffect(() => {
   //   if (ts == null) {
   //     return;
@@ -41,19 +41,19 @@ export const TimeAgo = ({ ts }: { ts?: number }) => {
   //   };
   // }, [ts]);
   if (ts == null) {
-    return null;
+    return null
   }
-  const locale = getLocale();
-  const formatter = new Intl.RelativeTimeFormat(locale);
+  const locale = getLocale()
+  const formatter = new Intl.RelativeTimeFormat(locale)
 
-  const secondsElapsed = (date.getTime() - Date.now()) / 1000;
+  const secondsElapsed = (date.getTime() - Date.now()) / 1000
   for (const [key, range] of Object.entries(ranges)) {
     if (range < Math.abs(secondsElapsed)) {
-      const delta = secondsElapsed / range;
+      const delta = secondsElapsed / range
       return formatter.format(
         Math.round(delta),
-        key as Intl.RelativeTimeFormatUnit
-      );
+        key as Intl.RelativeTimeFormatUnit,
+      )
     }
   }
 
@@ -74,4 +74,4 @@ export const TimeAgo = ({ ts }: { ts?: number }) => {
   //   return <span>{minutes} minuter sedan</span>;
   // }
   // return <span>{seconds} sekunder sedan</span>;
-};
+}

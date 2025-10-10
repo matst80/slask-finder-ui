@@ -1,83 +1,83 @@
-import { motion } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
-import { Item } from "../lib/types";
-import { useAddToCart } from "../hooks/cartHooks";
-import { toEcomTrackingEvent } from "./toImpression";
-import { makeImageUrl } from "../utils";
+import { motion } from 'framer-motion'
+import { useRef, useState, useEffect } from 'react'
+import { Item } from '../lib/types'
+import { useAddToCart } from '../hooks/cartHooks'
+import { toEcomTrackingEvent } from './toImpression'
+import { makeImageUrl } from '../utils'
 
 export const Banner = ({ item: data }: { item: Item }) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const contentSvgRef = useRef<SVGSVGElement>(null);
-  const { trigger, isMutating } = useAddToCart();
-  const [textVisible, setTextVisible] = useState(false);
+  const svgRef = useRef<SVGSVGElement>(null)
+  const contentSvgRef = useRef<SVGSVGElement>(null)
+  const { trigger, isMutating } = useAddToCart()
+  const [textVisible, setTextVisible] = useState(false)
 
   useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
+    const svg = svgRef.current
+    if (!svg) return
 
     // Animation for the curved shape
     const animate = () => {
-      const path = svg.querySelector("#curved-shape") as SVGPathElement;
-      if (!path) return;
+      const path = svg.querySelector('#curved-shape') as SVGPathElement
+      if (!path) return
 
-      let progress = 0;
-      let direction = 1;
+      let progress = 0
+      let direction = 1
 
       const animation = () => {
         // Subtle movement of the curved shape
-        progress += 0.0005 * direction;
+        progress += 0.0005 * direction
 
         if (progress > 1) {
-          progress = 1;
-          direction = -1;
+          progress = 1
+          direction = -1
         } else if (progress < 0) {
-          progress = 0;
-          direction = 1;
+          progress = 0
+          direction = 1
         }
         // Animate the curve by changing the control point
-        const baseControlX = 900;
-        const baseControlY = 400;
-        const animationRange = 90;
+        const baseControlX = 900
+        const baseControlY = 400
+        const animationRange = 90
 
         // Calculate the animated control point position
         const animatedControlX =
-          baseControlX + animationRange * Math.sin(progress * Math.PI * 2);
+          baseControlX + animationRange * Math.sin(progress * Math.PI * 2)
         const animatedControlY =
-          baseControlY + animationRange * Math.cos(progress * Math.PI * 2);
+          baseControlY + animationRange * Math.cos(progress * Math.PI * 2)
 
         // Update the path with the animated control point
         path.setAttribute(
-          "d",
-          `M400,0 Q${animatedControlX},${animatedControlY} 300,1000 L1000,1000 L1000,0 Z`
-        );
-        path.setAttribute("opacity", `${0.5 + progress / 2}`);
-        requestAnimationFrame(animation);
-      };
+          'd',
+          `M400,0 Q${animatedControlX},${animatedControlY} 300,1000 L1000,1000 L1000,0 Z`,
+        )
+        path.setAttribute('opacity', `${0.5 + progress / 2}`)
+        requestAnimationFrame(animation)
+      }
 
-      requestAnimationFrame(animation);
-    };
+      requestAnimationFrame(animation)
+    }
 
-    animate();
+    animate()
     // Trigger text animation after a short delay
     const timer = setTimeout(() => {
-      setTextVisible(true);
-    }, 500);
+      setTextVisible(true)
+    }, 500)
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => clearTimeout(timer)
+  }, [])
 
   // Parse bullet points
-  const bulletPoints = data?.bp ? data.bp.split("\n") : [];
+  const bulletPoints = data?.bp ? data.bp.split('\n') : []
 
   // Calculate vertical spacing for centered bullet points
-  const topMargin = 400; // Space for title
-  const bottomMargin = 340; // Space at bottom
-  const availableHeight = 1000 - topMargin - bottomMargin;
-  const totalBulletPoints = bulletPoints.length;
+  const topMargin = 400 // Space for title
+  const bottomMargin = 340 // Space at bottom
+  const availableHeight = 1000 - topMargin - bottomMargin
+  const totalBulletPoints = bulletPoints.length
   const bulletSpacing =
     totalBulletPoints > 1
       ? availableHeight / (totalBulletPoints - 1)
-      : availableHeight;
+      : availableHeight
 
   return (
     <div className="relative w-full aspect-video bg-[#0a1744]">
@@ -175,7 +175,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
 
         {/* Curved diagonal shape with slightly lighter blue */}
         <path
-          style={{ boxShadow: "inset -10px -10px 30px rgba(0, 0, 0, 0.9)" }}
+          style={{ boxShadow: 'inset -10px -10px 30px rgba(0, 0, 0, 0.9)' }}
           id="curved-shape"
           d="M500,0 Q600,500 500,1000 L1000,1000 L1000,0 Z"
           fill="url(#curve-gradient)"
@@ -252,13 +252,13 @@ export const Banner = ({ item: data }: { item: Item }) => {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: textVisible ? 1 : 0, y: textVisible ? 0 : 50 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          style={{ cursor: isMutating ? "wait" : "pointer" }}
+          style={{ cursor: isMutating ? 'wait' : 'pointer' }}
           onClick={() => {
             if (!isMutating) {
               trigger(
                 { sku: data.sku, quantity: 1 },
-                toEcomTrackingEvent(data, 10)
-              );
+                toEcomTrackingEvent(data, 10),
+              )
             }
           }}
         >
@@ -272,7 +272,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
             ry="40"
             fill="url(#button-gradient)"
             className={`transition-opacity duration-300 ${
-              isMutating ? "opacity-80" : "hover:opacity-90"
+              isMutating ? 'opacity-80' : 'hover:opacity-90'
             }`}
           />
 
@@ -317,7 +317,7 @@ export const Banner = ({ item: data }: { item: Item }) => {
             transition={{
               opacity: { duration: 0.2 },
               scale: { duration: 0.2 },
-              rotate: { duration: 1.5, repeat: Infinity, ease: "linear" },
+              rotate: { duration: 1.5, repeat: Infinity, ease: 'linear' },
             }}
           >
             {/* Spinner circle */}
@@ -359,5 +359,5 @@ export const Banner = ({ item: data }: { item: Item }) => {
         )}
       </motion.div>
     </div>
-  );
-};
+  )
+}

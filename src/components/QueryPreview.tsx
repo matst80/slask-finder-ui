@@ -1,23 +1,23 @@
-import { useState, useMemo } from "react";
-import { ChevronUp } from "lucide-react";
-import { QueryProvider } from "../lib/hooks/QueryProvider";
-import { ResultCarousel } from "./ItemDetails";
-import { TotalResultText } from "./ResultHeader";
-import { ItemsQuery, RelationMatch } from "../lib/types";
-import { QueryUpdater } from "./QueryMerger";
+import { useState, useMemo } from 'react'
+import { ChevronUp } from 'lucide-react'
+import { QueryProvider } from '../lib/hooks/QueryProvider'
+import { ResultCarousel } from './ItemDetails'
+import { TotalResultText } from './ResultHeader'
+import { ItemsQuery, RelationMatch } from '../lib/types'
+import { QueryUpdater } from './QueryMerger'
 
 const hasValue = (
-  relation: RelationMatch
-): relation is Omit<RelationMatch, "value"> & { value: string | string[] } => {
-  if (relation.value == null) return false;
+  relation: RelationMatch,
+): relation is Omit<RelationMatch, 'value'> & { value: string | string[] } => {
+  if (relation.value == null) return false
   if (Array.isArray(relation.value)) {
-    return relation.value.length > 0;
+    return relation.value.length > 0
   }
-  return true;
-};
+  return true
+}
 
 export const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
   const query = useMemo<ItemsQuery>(() => {
     return {
       string: matches
@@ -27,8 +27,8 @@ export const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
           exclude: exclude,
           value: Array.isArray(value) ? value : [value],
         })),
-    };
-  }, [matches]);
+    }
+  }, [matches])
 
   return (
     <QueryProvider initialQuery={query}>
@@ -44,7 +44,7 @@ export const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
           </div>
           <ChevronUp
             className={`size-4 text-gray-500 transition-transform ${
-              open ? "rotate-0" : "rotate-180"
+              open ? 'rotate-0' : 'rotate-180'
             }`}
           />
         </div>
@@ -55,5 +55,5 @@ export const QueryPreview = ({ matches }: { matches: RelationMatch[] }) => {
         )}
       </div>
     </QueryProvider>
-  );
-};
+  )
+}

@@ -5,46 +5,46 @@ import {
   useImperativeHandle,
   useRef,
   useState,
-} from "react";
-import * as api from "../datalayer/api";
+} from 'react'
+import * as api from '../datalayer/api'
 import {
   Item,
   ItemsQuery,
   isNumberValue,
   NumberField,
   HistoryQuery,
-} from "../types";
+} from '../types'
 import {
   facetQueryToHash,
   queryFromHash,
   queryToHash,
   toQuery,
-} from "../../hooks/searchHooks";
-import { mergeFilters } from "./queryUtils";
-import { AddPageResult, QueryContext } from "./queryContext";
+} from '../../hooks/searchHooks'
+import { mergeFilters } from './queryUtils'
+import { AddPageResult, QueryContext } from './queryContext'
 
-const itemsCache = new Map<string, Item[]>();
+const itemsCache = new Map<string, Item[]>()
 
 export type QueryProviderRef = {
-  mergeQuery: (query: ItemsQuery) => void;
-  setQuery: (query: ItemsQuery) => void;
-};
+  mergeQuery: (query: ItemsQuery) => void
+  setQuery: (query: ItemsQuery) => void
+}
 
 const loadQueryFromHash = (): ItemsQuery => {
-  const hash = window.location.hash.substring(1);
+  const hash = window.location.hash.substring(1)
   if (!hash) {
     return {
       page: 0,
       pageSize: 20,
       range: [],
       //query: "*",
-      sort: "popular",
+      sort: 'popular',
       string: [],
       stock: [],
-    };
+    }
   }
-  return queryFromHash(hash);
-};
+  return queryFromHash(hash)
+}
 
 export const QueryProvider = ({
   initialQuery,
@@ -52,48 +52,48 @@ export const QueryProvider = ({
   attachToHash = false,
   ref,
 }: PropsWithChildren<{
-  initialQuery?: ItemsQuery;
-  attachToHash?: boolean;
-  ref?: React.Ref<QueryProviderRef>;
+  initialQuery?: ItemsQuery
+  attachToHash?: boolean
+  ref?: React.Ref<QueryProviderRef>
 }>) => {
-  const virtualPage = useRef(0);
+  const virtualPage = useRef(0)
   //const [virtualPage, setVirtualPage] = useState(0);
-  const [queryHistory, setQueryHistory] = useState<HistoryQuery[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [queryHistory, setQueryHistory] = useState<HistoryQuery[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
-  const [itemsKey, setItemsKey] = useState<string | null>(null);
+  const [itemsKey, setItemsKey] = useState<string | null>(null)
 
-  const [hits, setHits] = useState<Item[]>([]);
-  const [totalHits, setTotalHits] = useState<number>(0);
+  const [hits, setHits] = useState<Item[]>([])
+  const [totalHits, setTotalHits] = useState<number>(0)
   const [query, setQuery] = useState<ItemsQuery>(
     initialQuery ?? (attachToHash ? loadQueryFromHash() : {}),
-  );
+  )
   const setPage = useCallback((page: number) => {
-    setQuery((prev) => ({ ...prev, page }));
-  }, []);
+    setQuery((prev) => ({ ...prev, page }))
+  }, [])
   const setPageSize = useCallback((pageSize: number) => {
-    setQuery((prev) => ({ ...prev, pageSize }));
-  }, []);
+    setQuery((prev) => ({ ...prev, pageSize }))
+  }, [])
   const setSort = useCallback((sort: string) => {
-    setQuery((prev) => ({ ...prev, sort, page: 0 }));
-  }, []);
+    setQuery((prev) => ({ ...prev, sort, page: 0 }))
+  }, [])
   const setStock = useCallback((stock: string[]) => {
-    (
+    ;(
       globalThis.window as Window & { selectedStoreId?: string }
-    ).selectedStoreId = stock[0];
-    setQuery(({ filter, ...prev }) => ({ ...prev, stock, page: 0 }));
-  }, []);
+    ).selectedStoreId = stock[0]
+    setQuery(({ filter, ...prev }) => ({ ...prev, stock, page: 0 }))
+  }, [])
   const setTerm = useCallback((term: string) => {
-    setQuery(({ filter, ...prev }) => ({ ...prev, query: term, page: 0 }));
-  }, []);
+    setQuery(({ filter, ...prev }) => ({ ...prev, query: term, page: 0 }))
+  }, [])
   const removeFilter = useCallback((id: number) => {
     setQuery(({ filter, ...prev }) => ({
       ...prev,
       string: prev.string?.filter((f) => f.id !== id),
       range: prev.range?.filter((f) => f.id !== id),
       page: 0,
-    }));
-  }, []);
+    }))
+  }, [])
 
   useImperativeHandle(
     ref,
@@ -103,15 +103,15 @@ export const QueryProvider = ({
           ...prev,
           ...mergeFilters(prev, query),
           page: 0,
-        }));
+        }))
       },
       setQuery,
     }),
     [],
-  );
+  )
 
   const setFilter = useCallback(
-    (id: number, value: string[] | Omit<NumberField, "id">) => {
+    (id: number, value: string[] | Omit<NumberField, 'id'>) => {
       if (isNumberValue(value)) {
         setQuery((prev) => ({
           ...prev,
@@ -120,7 +120,7 @@ export const QueryProvider = ({
             ...(prev.range?.filter((r) => r.id !== id) ?? []),
             { id, ...value },
           ],
-        }));
+        }))
       } else {
         setQuery(({ filter, ...prev }) => ({
           ...prev,
@@ -129,11 +129,11 @@ export const QueryProvider = ({
             ...(prev.string?.filter((r) => r.id !== id) ?? []),
             { id, value },
           ],
-        }));
+        }))
       }
     },
     [],
-  );
+  )
 
   const setFilterTerm = useCallback(
     (filter: string) => {
@@ -141,32 +141,32 @@ export const QueryProvider = ({
         ...prev,
         page: 0,
         filter,
-      }));
+      }))
     },
     [setQuery],
-  );
+  )
 
   useEffect(() => {
     setQueryHistory((prev) => {
-      const currentKey = facetQueryToHash(query);
+      const currentKey = facetQueryToHash(query)
       if (prev.some((d) => d.key === currentKey)) {
-        return prev;
+        return prev
       }
       if (prev.length >= 10) {
-        prev.shift();
+        prev.shift()
       }
-      return [...prev, { ...query, key: currentKey }];
-    });
-    virtualPage.current = query.page ?? 0;
+      return [...prev, { ...query, key: currentKey }]
+    })
+    virtualPage.current = query.page ?? 0
     //setVirtualPage(query.page ?? 0);
 
-    setItemsKey(queryToHash(query));
-  }, [query]);
+    setItemsKey(queryToHash(query))
+  }, [query])
 
   const addPage = useCallback(async () => {
-    const virtualQuery = { ...query, page: virtualPage.current + 1 };
+    const virtualQuery = { ...query, page: virtualPage.current + 1 }
 
-    const virtualKey = queryToHash(virtualQuery);
+    const virtualKey = queryToHash(virtualQuery)
     return api
       .streamItems(toQuery(virtualQuery))
       .then((data): AddPageResult => {
@@ -175,71 +175,71 @@ export const QueryProvider = ({
             currentPage: virtualPage.current,
             hasMorePages: false,
             totalPages: virtualPage.current,
-          };
+          }
         }
-        itemsCache.set(virtualKey, data.items);
+        itemsCache.set(virtualKey, data.items)
 
-        virtualPage.current = data.page;
-        setHits((prev) => [...prev, ...data.items]);
+        virtualPage.current = data.page
+        setHits((prev) => [...prev, ...data.items])
         return {
           currentPage: data.page,
           hasMorePages:
             data.page < (data.totalHits ?? 0) / (data.pageSize ?? 20),
           totalPages: Math.ceil((data.totalHits ?? 0) / (data.pageSize ?? 20)),
-        };
-      });
-  }, [query, virtualPage]);
+        }
+      })
+  }, [query, virtualPage])
   useEffect(() => {
     if (!attachToHash) {
-      return;
+      return
     }
     const hashListener = () => {
-      const hash = window.location.hash.substring(1);
+      const hash = window.location.hash.substring(1)
       if (hash) {
-        setQuery(queryFromHash(hash));
+        setQuery(queryFromHash(hash))
       } else {
-        setQuery(initialQuery ?? {});
+        setQuery(initialQuery ?? {})
       }
-    };
-    addEventListener("hashchange", hashListener, false);
+    }
+    addEventListener('hashchange', hashListener, false)
     return () => {
-      removeEventListener("hashchange", hashListener, false);
-    };
-  }, [attachToHash]);
+      removeEventListener('hashchange', hashListener, false)
+    }
+  }, [attachToHash])
 
   useEffect(() => {
     if (itemsKey == null) {
-      return;
+      return
     }
-    if (itemsKey === "page=0&size=20") {
-      return;
+    if (itemsKey === 'page=0&size=20') {
+      return
     }
     if (attachToHash) {
       if (itemsKey !== window.location.hash.substring(1)) {
-        window.history.pushState(null, "hash", `#${itemsKey}`);
+        window.history.pushState(null, 'hash', `#${itemsKey}`)
       }
     }
     //window.location.hash = itemsKey;
 
     if (itemsCache.has(itemsKey)) {
-      setHits(itemsCache.get(itemsKey) ?? []);
+      setHits(itemsCache.get(itemsKey) ?? [])
     }
 
-    setIsLoading(true);
+    setIsLoading(true)
 
     api.streamItems(toQuery(query)).then((data) => {
-      itemsCache.set(itemsKey, data?.items);
-      setHits(data?.items ?? []);
+      itemsCache.set(itemsKey, data?.items)
+      setHits(data?.items ?? [])
       setQuery((prev) => ({
         ...prev,
         page: data?.page ?? prev.page,
         pageSize: data?.pageSize ?? prev.pageSize,
-      }));
-      setTotalHits(data?.totalHits ?? 0);
-      setIsLoading(false);
-    });
+      }))
+      setTotalHits(data?.totalHits ?? 0)
+      setIsLoading(false)
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemsKey]);
+  }, [itemsKey])
 
   return (
     <QueryContext.Provider
@@ -264,5 +264,5 @@ export const QueryProvider = ({
     >
       {children}
     </QueryContext.Provider>
-  );
-};
+  )
+}

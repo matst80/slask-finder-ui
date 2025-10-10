@@ -1,15 +1,15 @@
-import { RefreshCw } from "lucide-react";
-import { ResultItemInner } from "../../components/ResultItem";
-import { Button } from "../../components/ui/button";
-import { useImpression } from "../../lib/hooks/useImpression";
-import { ItemWithComponentId } from "./builder-types";
-import { useBuilderContext } from "./useBuilderContext";
-import { Link, useNavigate } from "react-router-dom";
-import { QuantityInput } from "./QuantityInput";
-import { cm } from "../../utils";
-import { toEcomTrackingEvent } from "../../components/toImpression";
-import { useTracking } from "../../lib/hooks/TrackingContext";
-import { useMemo } from "react";
+import { RefreshCw } from 'lucide-react'
+import { ResultItemInner } from '../../components/ResultItem'
+import { Button } from '../../components/ui/button'
+import { useImpression } from '../../lib/hooks/useImpression'
+import { ItemWithComponentId } from './builder-types'
+import { useBuilderContext } from './useBuilderContext'
+import { Link, useNavigate } from 'react-router-dom'
+import { QuantityInput } from './QuantityInput'
+import { cm } from '../../utils'
+import { toEcomTrackingEvent } from '../../components/toImpression'
+import { useTracking } from '../../lib/hooks/TrackingContext'
+import { useMemo } from 'react'
 
 export const SelectedComponentItem = ({
   componentId,
@@ -18,15 +18,15 @@ export const SelectedComponentItem = ({
   maxQuantity,
   ...item
 }: ItemWithComponentId & { position: number; maxQuantity: number }) => {
-  const { setSelectedItems } = useBuilderContext();
-  const { watch } = useImpression();
-  const navigate = useNavigate();
-  const { track } = useTracking();
+  const { setSelectedItems } = useBuilderContext()
+  const { watch } = useImpression()
+  const navigate = useNavigate()
+  const { track } = useTracking()
   const ecomItem = useMemo(
     () => toEcomTrackingEvent(item, position),
-    [item, position]
-  );
-  const trackItem = () => track({ type: "click", item: ecomItem });
+    [item, position],
+  )
+  const trackItem = () => track({ type: 'click', item: ecomItem })
 
   const setQuantity = (value: number) =>
     setSelectedItems((prev) =>
@@ -39,11 +39,11 @@ export const SelectedComponentItem = ({
                   quantity: value,
                 },
               ]
-            : [];
+            : []
         }
-        return [i];
-      })
-    );
+        return [i]
+      }),
+    )
 
   return (
     <Link
@@ -59,8 +59,8 @@ export const SelectedComponentItem = ({
           onChange={setQuantity}
           maxQuantity={maxQuantity}
           className={cm(
-            "bottom-12 right-3 absolute",
-            quantity < maxQuantity ? "animate-focus" : "animate-pop"
+            'bottom-12 right-3 absolute',
+            quantity < maxQuantity ? 'animate-focus' : 'animate-pop',
           )}
         />
 
@@ -70,14 +70,14 @@ export const SelectedComponentItem = ({
           title="Change component"
           className="absolute top-3 right-3"
           onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            navigate(`/builder/component/${componentId}`);
+            e.stopPropagation()
+            e.preventDefault()
+            navigate(`/builder/component/${componentId}`)
           }}
         >
           <RefreshCw className="size-5" />
         </Button>
       </ResultItemInner>
     </Link>
-  );
-};
+  )
+}

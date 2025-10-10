@@ -13,43 +13,43 @@ import {
   Watch,
   Speaker,
   Bell,
-} from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
-import { Sidebar } from "./ui/sidebar";
-import { useTranslations } from "../lib/hooks/useTranslations";
-import { TranslationKey } from "../translations/translations";
-import { Link, useLocation } from "react-router-dom";
-import { LanguageSelector } from "./LanguageSelector";
-import { useUser } from "../adminHooks";
-import { useAdmin } from "../hooks/appState";
-import { Button } from "./ui/button";
-import { cm } from "../utils";
-import { useCookieAcceptance } from "../CookieConsent";
-import { useFirebaseMessaging } from "../hooks/useFirebaseMessaging";
+} from 'lucide-react'
+import { useState, useEffect, useMemo } from 'react'
+import { Sidebar } from './ui/sidebar'
+import { useTranslations } from '../lib/hooks/useTranslations'
+import { TranslationKey } from '../translations/translations'
+import { Link, useLocation } from 'react-router-dom'
+import { LanguageSelector } from './LanguageSelector'
+import { useUser } from '../adminHooks'
+import { useAdmin } from '../hooks/appState'
+import { Button } from './ui/button'
+import { cm } from '../utils'
+import { useCookieAcceptance } from '../CookieConsent'
+import { useFirebaseMessaging } from '../hooks/useFirebaseMessaging'
 
 type NavigationItemType = {
-  translationKey: TranslationKey;
-  url: string;
-  fullNavigation?: boolean;
-  icon?: React.ReactNode;
-  children?: NavigationItemType[];
-  accessKey?: string;
-  color?: string;
-};
+  translationKey: TranslationKey
+  url: string
+  fullNavigation?: boolean
+  icon?: React.ReactNode
+  children?: NavigationItemType[]
+  accessKey?: string
+  color?: string
+}
 
 // Color palette for menu items
 const menuColors = {
-  search: "from-indigo-500 to-blue-500",
-  config: "from-blue-500 to-indigo-500",
-  dashboard: "from-blue-500 to-cyan-500",
-  builder: "from-cyan-500 to-teal-500",
-  edit: "from-teal-500 to-emerald-500",
-  tracking: "from-emerald-500 to-green-500",
-  checkout: "from-amber-500 to-orange-500",
-  updated: "from-orange-500 to-rose-500",
-  ai: "from-rose-500 to-pink-500",
-  gifts: "from-pink-500 to-purple-500",
-};
+  search: 'from-indigo-500 to-blue-500',
+  config: 'from-blue-500 to-indigo-500',
+  dashboard: 'from-blue-500 to-cyan-500',
+  builder: 'from-cyan-500 to-teal-500',
+  edit: 'from-teal-500 to-emerald-500',
+  tracking: 'from-emerald-500 to-green-500',
+  checkout: 'from-amber-500 to-orange-500',
+  updated: 'from-orange-500 to-rose-500',
+  ai: 'from-rose-500 to-pink-500',
+  gifts: 'from-pink-500 to-purple-500',
+}
 
 const NavigationItem = ({
   translationKey,
@@ -59,13 +59,13 @@ const NavigationItem = ({
   accessKey,
   fullNavigation,
   level,
-  color = "from-blue-500 to-indigo-600",
+  color = 'from-blue-500 to-indigo-600',
 }: NavigationItemType & { level: number }) => {
-  const t = useTranslations();
-  const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
-  const isActive = location.pathname === url;
-  const hasChildren = children && children.length > 0;
+  const t = useTranslations()
+  const location = useLocation()
+  const [isOpen, setIsOpen] = useState(false)
+  const isActive = location.pathname === url
+  const hasChildren = children && children.length > 0
 
   // Automatically open menu items when their children are active
   useEffect(() => {
@@ -80,9 +80,9 @@ const NavigationItem = ({
             )),
       )
     ) {
-      setIsOpen(true);
+      setIsOpen(true)
     }
-  }, [location.pathname, hasChildren, children]);
+  }, [location.pathname, hasChildren, children])
 
   const isChildActive =
     hasChildren &&
@@ -93,7 +93,7 @@ const NavigationItem = ({
           child.children.some(
             (grandchild) => location.pathname === grandchild.url,
           )),
-    );
+    )
 
   const content = useMemo(
     () => (
@@ -102,13 +102,13 @@ const NavigationItem = ({
           <span
             className={`${
               isActive
-                ? "text-white"
-                : "text-gray-500 group-hover:text-gray-700"
+                ? 'text-white'
+                : 'text-gray-500 group-hover:text-gray-700'
             } transition-colors duration-200`}
           >
             {icon}
           </span>
-          <span className={`${level === 0 ? "font-medium" : ""}`}>
+          <span className={`${level === 0 ? 'font-medium' : ''}`}>
             {t(translationKey)}
           </span>
           {isActive && level === 0 && (
@@ -118,7 +118,7 @@ const NavigationItem = ({
       </>
     ),
     [icon, isActive, level, t, translationKey],
-  );
+  )
 
   // {
   //   hasChildren && (
@@ -132,8 +132,8 @@ const NavigationItem = ({
   // }
 
   return (
-    <li className={`mb-2 ${level > 0 ? "mt-1" : "mt-0"}`}>
-      <div className={`group ${hasChildren ? "cursor-pointer" : ""}`}>
+    <li className={`mb-2 ${level > 0 ? 'mt-1' : 'mt-0'}`}>
+      <div className={`group ${hasChildren ? 'cursor-pointer' : ''}`}>
         {fullNavigation ? (
           <a
             href={url}
@@ -143,14 +143,14 @@ const NavigationItem = ({
               isActive
                 ? `bg-gradient-to-r ${color} text-white font-medium shadow-sm`
                 : isChildActive
-                  ? "bg-gray-50 text-gray-900"
-                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  ? 'bg-gray-50 text-gray-900'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
             }`}
             onClick={
               hasChildren
                 ? (e) => {
-                    e.preventDefault();
-                    setIsOpen(!isOpen);
+                    e.preventDefault()
+                    setIsOpen(!isOpen)
                   }
                 : undefined
             }
@@ -166,14 +166,14 @@ const NavigationItem = ({
               isActive
                 ? `bg-gradient-to-r ${color} text-white font-medium shadow-sm`
                 : isChildActive
-                  ? "bg-gray-50 text-gray-900"
-                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  ? 'bg-gray-50 text-gray-900'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
             }`}
             onClick={
               hasChildren
                 ? (e) => {
-                    e.preventDefault();
-                    setIsOpen(!isOpen);
+                    e.preventDefault()
+                    setIsOpen(!isOpen)
                   }
                 : undefined
             }
@@ -186,7 +186,7 @@ const NavigationItem = ({
       {hasChildren && (
         <ul
           className={`pl-3 mt-1 overflow-hidden transition-all duration-300 ease-in-out border-l-2 border-gray-100 ml-2
-            ${isOpen ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"}`}
+            ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}
         >
           {children.map((child) => (
             <NavigationItem
@@ -199,180 +199,180 @@ const NavigationItem = ({
         </ul>
       )}
     </li>
-  );
-};
+  )
+}
 
 const menu: NavigationItemType[] = [
   {
-    translationKey: "menu.search",
-    url: "/",
-    accessKey: "1",
+    translationKey: 'menu.search',
+    url: '/',
+    accessKey: '1',
     icon: <Search size={20} />,
     color: menuColors.search,
   },
   {
-    translationKey: "menu.config",
-    url: "/config/PFT6938",
-    accessKey: "c",
+    translationKey: 'menu.config',
+    url: '/config/PFT6938',
+    accessKey: 'c',
     icon: <Watch size={20} />,
     color: menuColors.config,
   },
   {
-    translationKey: "menu.ai",
-    url: "/ai",
+    translationKey: 'menu.ai',
+    url: '/ai',
     icon: <BotMessageSquare size={20} />,
     color: menuColors.ai,
   },
   {
-    translationKey: "menu.gifts",
-    url: "/gifts",
+    translationKey: 'menu.gifts',
+    url: '/gifts',
     icon: <Box size={20} />,
     color: menuColors.gifts,
   },
   {
-    translationKey: "admin_menu.edit",
-    url: "/edit",
+    translationKey: 'admin_menu.edit',
+    url: '/edit',
 
     icon: <Edit size={20} />,
     color: menuColors.edit,
     children: [
       {
-        translationKey: "admin_menu.facets",
-        accessKey: "2",
-        url: "/edit/facets",
+        translationKey: 'admin_menu.facets',
+        accessKey: '2',
+        url: '/edit/facets',
       },
       {
-        translationKey: "admin_menu.facet_groups",
-        accessKey: "3",
-        url: "/edit/facet_groups",
+        translationKey: 'admin_menu.facet_groups',
+        accessKey: '3',
+        url: '/edit/facet_groups',
       },
       {
-        translationKey: "admin_menu.words",
-        accessKey: "3",
-        url: "/edit/words",
+        translationKey: 'admin_menu.words',
+        accessKey: '3',
+        url: '/edit/words',
       },
       {
-        translationKey: "admin_menu.rules",
-        accessKey: "r",
-        url: "/edit/rules",
+        translationKey: 'admin_menu.rules',
+        accessKey: 'r',
+        url: '/edit/rules',
       },
       {
-        translationKey: "admin_menu.relations",
-        accessKey: "l",
-        url: "/edit/relations",
+        translationKey: 'admin_menu.relations',
+        accessKey: 'l',
+        url: '/edit/relations',
       },
       {
-        translationKey: "admin_menu.fields",
-        url: "/edit/fields",
+        translationKey: 'admin_menu.fields',
+        url: '/edit/fields',
       },
       {
-        translationKey: "admin_menu.dataset",
-        url: "/edit/dataset",
+        translationKey: 'admin_menu.dataset',
+        url: '/edit/dataset',
       },
       {
-        translationKey: "admin_menu.csp",
-        accessKey: "c",
-        url: "/edit/csp",
+        translationKey: 'admin_menu.csp',
+        accessKey: 'c',
+        url: '/edit/csp',
       },
       {
-        translationKey: "admin_menu.missing_facets",
-        url: "/edit/missing_fields",
+        translationKey: 'admin_menu.missing_facets',
+        url: '/edit/missing_fields',
       },
       {
-        translationKey: "admin_menu.users",
-        url: "/edit/users",
+        translationKey: 'admin_menu.users',
+        url: '/edit/users',
       },
     ],
   },
   {
-    translationKey: "menu.tracking",
-    url: "/stats",
+    translationKey: 'menu.tracking',
+    url: '/stats',
     icon: <BarChart2 size={20} />,
     color: menuColors.tracking,
     children: [
-      { translationKey: "tracking.menu.sessions", url: "/stats/sessions" },
+      { translationKey: 'tracking.menu.sessions', url: '/stats/sessions' },
       {
-        translationKey: "tracking.menu.queries",
-        url: "/stats/queries",
+        translationKey: 'tracking.menu.queries',
+        url: '/stats/queries',
       },
       {
-        translationKey: "tracking.emptyqueries.title",
-        url: "/stats/empty",
+        translationKey: 'tracking.emptyqueries.title',
+        url: '/stats/empty',
       },
       {
-        translationKey: "tracking.menu.items",
-        accessKey: "p",
-        url: "/stats/popular",
+        translationKey: 'tracking.menu.items',
+        accessKey: 'p',
+        url: '/stats/popular',
       },
       {
-        translationKey: "tracking.menu.facets",
-        accessKey: "t",
-        url: "/stats/facets",
+        translationKey: 'tracking.menu.facets',
+        accessKey: 't',
+        url: '/stats/facets',
       },
       {
-        translationKey: "tracking.menu.funnels",
-        url: "/stats/funnels",
+        translationKey: 'tracking.menu.funnels',
+        url: '/stats/funnels',
       },
     ],
   },
   {
-    translationKey: "menu.builder",
-    url: "/builder",
+    translationKey: 'menu.builder',
+    url: '/builder',
     icon: <Box size={20} />,
     color: menuColors.builder,
     children: [
       {
-        translationKey: "builder.start.title",
-        accessKey: "b",
-        url: "/builder",
+        translationKey: 'builder.start.title',
+        accessKey: 'b',
+        url: '/builder',
       },
       {
-        translationKey: "builder.overview",
-        url: "/builder/overview",
+        translationKey: 'builder.overview',
+        url: '/builder/overview',
       },
       {
-        translationKey: "builder.kit.title",
-        url: "/builder/kit",
+        translationKey: 'builder.kit.title',
+        url: '/builder/kit',
       },
     ],
   },
   {
-    translationKey: "menu.dashboard",
-    url: "/dashboard",
-    accessKey: "d",
+    translationKey: 'menu.dashboard',
+    url: '/dashboard',
+    accessKey: 'd',
     icon: <LayoutDashboard size={20} />,
     color: menuColors.dashboard,
   },
   {
-    translationKey: "menu.checkout",
-    url: "/checkout",
-    accessKey: "c",
+    translationKey: 'menu.checkout',
+    url: '/checkout',
+    accessKey: 'c',
     icon: <ShoppingCart size={20} />,
     fullNavigation: true,
     color: menuColors.checkout,
   },
   {
-    translationKey: "menu.natural",
-    url: "/natural",
+    translationKey: 'menu.natural',
+    url: '/natural',
     icon: <Speaker size={20} />,
     color: menuColors.updated,
   },
-];
+]
 
 const UserButton = () => {
   //const { isSupported, initiateWebAuthnLogin } = useWebAuthn();
-  const { accepted } = useCookieAcceptance();
-  const { data, isLoading } = useUser();
-  const [, setIsAdmin] = useAdmin();
-  const loggedIn = data?.role != null;
+  const { accepted } = useCookieAcceptance()
+  const { data, isLoading } = useUser()
+  const [, setIsAdmin] = useAdmin()
+  const loggedIn = data?.role != null
   useEffect(() => {
     // console.log("user changed", data);
     if (data != null) {
-      setIsAdmin(data?.role != null);
+      setIsAdmin(data?.role != null)
     }
-  }, [data, setIsAdmin]);
-  if (accepted === "none" || accepted === null) {
-    return null;
+  }, [data, setIsAdmin])
+  if (accepted === 'none' || accepted === null) {
+    return null
   }
 
   // const handleWebAuthnLogin = (e: React.MouseEvent) => {
@@ -385,26 +385,26 @@ const UserButton = () => {
 
   return (
     <a
-      href={loggedIn ? "/admin/logout" : "/admin/login"}
+      href={loggedIn ? '/admin/logout' : '/admin/login'}
       //onClick={handleWebAuthnLogin}
     >
       <Button
-        variant={loggedIn ? "outline" : "ghost"}
+        variant={loggedIn ? 'outline' : 'ghost'}
         size="icon"
-        title={data?.name ?? "Logga in"}
+        title={data?.name ?? 'Logga in'}
       >
         {isLoading ? (
           <LoaderCircle className="size-5 animate-spin inline-block ml-2" />
         ) : (
-          <User className={cm("size-5", loggedIn ? "text-blue-600" : "")} />
+          <User className={cm('size-5', loggedIn ? 'text-blue-600' : '')} />
         )}
       </Button>
     </a>
-  );
-};
+  )
+}
 
 const NotificationBell = () => {
-  const { isSubscribed, subscribe, error } = useFirebaseMessaging();
+  const { isSubscribed, subscribe, error } = useFirebaseMessaging()
 
   return (
     <div className="flex items-center gap-2">
@@ -412,19 +412,19 @@ const NotificationBell = () => {
         onClick={subscribe}
         disabled={isSubscribed}
         size="icon"
-        variant={isSubscribed ? "outline" : "ghost"}
-        title={isSubscribed ? "Subscribed" : "Subscribe"}
+        variant={isSubscribed ? 'outline' : 'ghost'}
+        title={isSubscribed ? 'Subscribed' : 'Subscribe'}
       >
         <Bell className="size-5" />
       </Button>
       {error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
-  );
-};
+  )
+}
 
 export const NavMenu = () => {
-  const { accepted, manageConsent } = useCookieAcceptance();
-  const t = useTranslations();
+  const { accepted, manageConsent } = useCookieAcceptance()
+  const t = useTranslations()
   return (
     <div className="flex flex-col justify-between gap-2 h-full bg-white">
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-6 px-6 mb-4">
@@ -447,18 +447,18 @@ export const NavMenu = () => {
       </nav>
       <div className="pt-4 border-t border-gray-100 mt-auto p-4 bg-gray-50">
         <div className="text-xs text-gray-500">
-          s10r UI (dev){" "}
+          s10r UI (dev){' '}
           {accepted != null && (
-            <button onClick={manageConsent}>{t("menu.cookies")}</button>
+            <button onClick={manageConsent}>{t('menu.cookies')}</button>
           )}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const SidebarMenu = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
   return (
     <>
       <Sidebar open={open} setOpen={setOpen} side="left">
@@ -479,5 +479,5 @@ export const SidebarMenu = () => {
         <span className="sr-only">Open sidebar</span>
       </button>
     </>
-  );
-};
+  )
+}

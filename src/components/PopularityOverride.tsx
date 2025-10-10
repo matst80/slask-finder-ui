@@ -1,37 +1,37 @@
-import { Star, Save } from "lucide-react";
-import { useState, useMemo, useCallback } from "react";
+import { Star, Save } from 'lucide-react'
+import { useState, useMemo, useCallback } from 'react'
 import {
   useItemsPopularity,
   useUpdatePopularity,
-} from "../hooks/popularityHooks";
-import { useAdmin } from "../hooks/appState";
+} from '../hooks/popularityHooks'
+import { useAdmin } from '../hooks/appState'
 
 const useItemPopularity = (id: string) => {
-  const { data: popularity, mutate } = useItemsPopularity();
-  const { trigger: updatePopularity } = useUpdatePopularity();
-  const [dirty, setDirty] = useState(false);
-  const value = useMemo(() => popularity?.[id], [id, popularity]);
+  const { data: popularity, mutate } = useItemsPopularity()
+  const { trigger: updatePopularity } = useUpdatePopularity()
+  const [dirty, setDirty] = useState(false)
+  const value = useMemo(() => popularity?.[id], [id, popularity])
   const setValue = useCallback(
     (value: number) => {
-      mutate({ ...popularity, [id]: value }, { revalidate: false });
-      setDirty(true);
+      mutate({ ...popularity, [id]: value }, { revalidate: false })
+      setDirty(true)
     },
-    [id, popularity, mutate]
-  );
+    [id, popularity, mutate],
+  )
   const commit = useCallback(() => {
     if (dirty && popularity != null) {
       updatePopularity(popularity).then(() => {
-        setDirty(false);
-      });
+        setDirty(false)
+      })
     }
-  }, [popularity, dirty, updatePopularity]);
-  return { value, setValue, commit, dirty };
-};
+  }, [popularity, dirty, updatePopularity])
+  return { value, setValue, commit, dirty }
+}
 
 export const PopularityOverride = ({ id }: { id: string }) => {
-  const [admin] = useAdmin();
-  const { value, setValue, dirty, commit } = useItemPopularity(id);
-  if (!admin) return null;
+  const [admin] = useAdmin()
+  const { value, setValue, dirty, commit } = useItemPopularity(id)
+  if (!admin) return null
   return (
     <div
       className="absolute top-0 left-0 bg-gray-200 p-1 rounded-br-md flex items-center"
@@ -52,5 +52,5 @@ export const PopularityOverride = ({ id }: { id: string }) => {
         </button>
       )}
     </div>
-  );
-};
+  )
+}

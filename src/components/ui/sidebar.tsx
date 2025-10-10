@@ -1,53 +1,51 @@
-import { PropsWithChildren, useEffect, useRef } from "react";
+import { PropsWithChildren, useEffect, useRef } from 'react'
 
 type SidebarProps = {
-  open: boolean;
-  side?: "left" | "right";
-  setOpen: (open: boolean) => void;
-};
+  open: boolean
+  side?: 'left' | 'right'
+  setOpen: (open: boolean) => void
+}
 
 export const Sidebar = ({
   open,
-  side = "left",
+  side = 'left',
   setOpen,
   children,
 }: PropsWithChildren<SidebarProps>) => {
-  const ref = useRef<HTMLDialogElement>(null);
+  const ref = useRef<HTMLDialogElement>(null)
   useEffect(() => {
     if (ref.current) {
       if (open) {
-        requestAnimationFrame(() =>
-          ref.current?.showModal()
-        );
+        requestAnimationFrame(() => ref.current?.showModal())
       } else {
-        ref.current.close();
+        ref.current.close()
       }
     }
-  }, [open]);
+  }, [open])
   // useSwipeAway(ref, () => {
   //   ref.current?.close();
   // });
   useEffect(() => {
     if (ref.current) {
-      const c = ref.current;
-      const handleClose = () => setOpen(false);
+      const c = ref.current
+      const handleClose = () => setOpen(false)
 
-      c.addEventListener("click", (e) => {
+      c.addEventListener('click', (e) => {
         if (e.target === c) {
-          c.close();
+          c.close()
         }
-      });
-      c.addEventListener("cancel", handleClose);
-      c.addEventListener("close", handleClose);
+      })
+      c.addEventListener('cancel', handleClose)
+      c.addEventListener('close', handleClose)
       return () => {
-        c?.removeEventListener("close", handleClose);
-        c?.removeEventListener("cancel", handleClose);
-      };
+        c?.removeEventListener('close', handleClose)
+        c?.removeEventListener('cancel', handleClose)
+      }
     }
-  }, [ref]);
+  }, [ref])
   return (
     <dialog ref={ref} className={side}>
       {children}
     </dialog>
-  );
-};
+  )
+}

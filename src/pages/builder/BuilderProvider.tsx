@@ -1,20 +1,20 @@
-import { PropsWithChildren, useState, useMemo } from "react";
-import { BuilderContext } from "./builder-context";
+import { PropsWithChildren, useState, useMemo } from 'react'
+import { BuilderContext } from './builder-context'
 import {
   Component,
   ComponentId,
   ItemWithComponentId,
   Rule,
   RuleId,
-} from "./builder-types";
-import { defaultComponentOrder } from "./rules";
-import { flattenComponents } from "./builder-utils";
+} from './builder-types'
+import { defaultComponentOrder } from './rules'
+import { flattenComponents } from './builder-utils'
 
 type BuilderProps = {
-  initialItems?: ItemWithComponentId[];
-  initialRules: Rule[];
-  initialOrder?: RuleId[];
-};
+  initialItems?: ItemWithComponentId[]
+  initialRules: Rule[]
+  initialOrder?: RuleId[]
+}
 
 export const BuilderProvider = ({
   initialItems,
@@ -23,27 +23,30 @@ export const BuilderProvider = ({
   initialOrder,
 }: PropsWithChildren<BuilderProps>) => {
   const [order, setOrder] = useState<RuleId[]>(
-    initialOrder ?? defaultComponentOrder
-  );
-  const [rules, updateRules] = useState<Rule[]>(initialRules);
+    initialOrder ?? defaultComponentOrder,
+  )
+  const [rules, updateRules] = useState<Rule[]>(initialRules)
 
   const [selectedItems, setSelectedItems] = useState<ItemWithComponentId[]>(
-    initialItems ?? []
-  );
+    initialItems ?? [],
+  )
 
   const reset = () => {
-    setOrder(defaultComponentOrder);
-    setSelectedItems([]);
-  };
+    setOrder(defaultComponentOrder)
+    setSelectedItems([])
+  }
 
   const components = useMemo(() => {
-    return rules.flatMap(flattenComponents).reduce((acc, d) => {
-      return {
-        ...acc,
-        [d.id]: d,
-      };
-    }, {} as Record<ComponentId, Component>);
-  }, [rules]);
+    return rules.flatMap(flattenComponents).reduce(
+      (acc, d) => {
+        return {
+          ...acc,
+          [d.id]: d,
+        }
+      },
+      {} as Record<ComponentId, Component>,
+    )
+  }, [rules])
 
   return (
     <BuilderContext.Provider
@@ -60,5 +63,5 @@ export const BuilderProvider = ({
     >
       {children}
     </BuilderContext.Provider>
-  );
-};
+  )
+}

@@ -1,28 +1,28 @@
-import { Filter } from "lucide-react";
-import { cm } from "../utils";
-import { useQuery } from "../lib/hooks/useQuery";
-import { useDeferredValue, useEffect, useState } from "react";
+import { Filter } from 'lucide-react'
+import { cm } from '../utils'
+import { useQuery } from '../lib/hooks/useQuery'
+import { useDeferredValue, useEffect, useState } from 'react'
 
 type Props = {
-  show: boolean;
-};
+  show: boolean
+}
 
 export const FilterQuery = ({ show }: Props) => {
   const {
     query: { filter },
     setFilterTerm,
-  } = useQuery();
-  const [value, setValue] = useState<string>(filter ?? "");
-  const toFind = useDeferredValue(value);
+  } = useQuery()
+  const [value, setValue] = useState<string>(filter ?? '')
+  const toFind = useDeferredValue(value)
   useEffect(() => {
-    setFilterTerm(toFind);
-  }, [toFind]);
-  const doShow = show || !!filter?.length;
+    setFilterTerm(toFind)
+  }, [toFind])
+  const doShow = show || !!filter?.length
   return (
     <div
       className={cm(
-        "hidden md:block relative flex-1 mb-4 transition-all overflow-hidden",
-        doShow ? "h-11 opacity-100" : "h-0 opacity-0"
+        'hidden md:block relative flex-1 mb-4 transition-all overflow-hidden',
+        doShow ? 'h-11 opacity-100' : 'h-0 opacity-0',
       )}
     >
       <input
@@ -37,5 +37,5 @@ export const FilterQuery = ({ show }: Props) => {
         size={20}
       />
     </div>
-  );
-};
+  )
+}

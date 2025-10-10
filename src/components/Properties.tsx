@@ -1,51 +1,51 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { useAdmin } from "../hooks/appState";
-import { useFacetMap } from "../hooks/searchHooks";
-import { useQuery } from "../lib/hooks/useQuery";
-import { ItemDetail, ItemsQuery } from "../lib/types";
-import { isDefined, byPriority, cm } from "../utils";
-import { PlusIcon } from "lucide-react";
-import { QueryProvider } from "../lib/hooks/QueryProvider";
-import { TotalResultText } from "./ResultHeader";
-import { QueryUpdater } from "./QueryMerger";
-import { ButtonLink } from "./ui/button";
-import { useTranslations } from "../lib/hooks/useTranslations";
-import { useClipboard } from "../lib/hooks/useClipboard";
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useAdmin } from '../hooks/appState'
+import { useFacetMap } from '../hooks/searchHooks'
+import { useQuery } from '../lib/hooks/useQuery'
+import { ItemDetail, ItemsQuery } from '../lib/types'
+import { isDefined, byPriority, cm } from '../utils'
+import { PlusIcon } from 'lucide-react'
+import { QueryProvider } from '../lib/hooks/QueryProvider'
+import { TotalResultText } from './ResultHeader'
+import { QueryUpdater } from './QueryMerger'
+import { ButtonLink } from './ui/button'
+import { useTranslations } from '../lib/hooks/useTranslations'
+import { useClipboard } from '../lib/hooks/useClipboard'
 
-const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13];
+const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13]
 
 type SelectedFacet = {
-  id: number;
-  value: string[];
-};
+  id: number
+  value: string[]
+}
 
 const isValidKeyFilter = (
-  value: string[] | string | number | null | undefined
+  value: string[] | string | number | null | undefined,
 ) => {
   if (value == null) {
-    return false;
+    return false
   }
   if (Array.isArray(value)) {
-    return value.length > 0;
+    return value.length > 0
   }
-  if (typeof value === "string") {
-    return value.length > 0;
+  if (typeof value === 'string') {
+    return value.length > 0
   }
 
-  return false;
-};
+  return false
+}
 
-export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
-  const { setQuery } = useQuery();
-  const toClipboard = useClipboard();
-  const [selected, setSelected] = useState<SelectedFacet[]>([]);
-  const { data } = useFacetMap();
-  const [isAdmin] = useAdmin();
-  const t = useTranslations();
+export const Properties = ({ values }: Pick<ItemDetail, 'values'>) => {
+  const { setQuery } = useQuery()
+  const toClipboard = useClipboard()
+  const [selected, setSelected] = useState<SelectedFacet[]>([])
+  const { data } = useFacetMap()
+  const [isAdmin] = useAdmin()
+  const t = useTranslations()
   const customQuery = useMemo<ItemsQuery | null>(() => {
     if (selected.length === 0) {
-      return null;
+      return null
     }
     const query: ItemsQuery = {
       page: 0,
@@ -53,31 +53,31 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
         id: s.id,
         value: s.value,
       })),
-    };
-    return query;
-  }, [selected]);
+    }
+    return query
+  }, [selected])
   const fields = useMemo(() => {
     return Object.entries(values)
       .map(([id, value]) => {
-        const facet = data?.[id];
+        const facet = data?.[id]
         if (!facet || ignoreFaceIds.includes(facet.id)) {
-          return null;
+          return null
         }
         if (!isAdmin && facet.hide) {
-          return null;
+          return null
         }
         return {
           ...facet,
           value,
-        };
+        }
       })
       .filter(isDefined)
-      .sort(byPriority);
-  }, [values, data, isAdmin]);
+      .sort(byPriority)
+  }, [values, data, isAdmin])
   return (
     <div className="md:bg-white md:rounded-lg md:shadow-xs md:border border-gray-100 md:p-4 relative">
       <h3 className="text-2xl font-bold text-gray-900 mb-4">
-        {t("product.properties")}
+        {t('product.properties')}
         <span className="ml-2 text-gray-500 text-lg">({fields.length})</span>
       </h3>
       {customQuery != null && (
@@ -87,13 +87,13 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
             <TotalResultText className="text-sm" />
           </QueryProvider>
           <ButtonLink onClick={() => setQuery(customQuery)} to="/">
-            {t("common.search")}
+            {t('common.search')}
           </ButtonLink>
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
         {fields.map((field) => {
-          const isSelected = selected.some((s) => s.id === field.id);
+          const isSelected = selected.some((s) => s.id === field.id)
           return (
             <div
               key={`prop-${field.id}-${field.valueType}`}
@@ -106,10 +106,10 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                     if (field.value != null) {
                       setSelected((prev) => {
                         const newSelected = prev.filter(
-                          (s) => s.id !== field.id
-                        );
+                          (s) => s.id !== field.id,
+                        )
                         if (isSelected) {
-                          return newSelected;
+                          return newSelected
                         } else {
                           return [
                             ...newSelected,
@@ -119,16 +119,16 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                                 ? field.value
                                 : [String(field.value)],
                             },
-                          ];
+                          ]
                         }
-                      });
+                      })
                     }
                   }}
                 >
                   <PlusIcon
                     className={cm(
-                      " hover:text-gray-700 cursor-pointer size-5",
-                      isSelected ? "text-blue-500" : "text-gray-500"
+                      ' hover:text-gray-700 cursor-pointer size-5',
+                      isSelected ? 'text-blue-500' : 'text-gray-500',
                     )}
                   />
                 </button>
@@ -146,9 +146,9 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                             : [String(field.value)],
                         },
                         null,
-                        2
-                      )
-                    );
+                        2,
+                      ),
+                    )
                   }}
                 >
                   {field.name}
@@ -160,7 +160,7 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
               <div className="flex flex-col gap-1">
                 <p className="text-gray-700">
                   {Array.isArray(field.value)
-                    ? field.value.join(", ")
+                    ? field.value.join(', ')
                     : String(field.value)}
                 </p>
 
@@ -183,11 +183,11 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                                   : [String(field.value)],
                               },
                             ],
-                          });
+                          })
                         }
                       }}
                     >
-                      {t("common.show_compatible")}
+                      {t('common.show_compatible')}
                       <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
                         {field.linkedId}
                       </span>
@@ -195,9 +195,9 @@ export const Properties = ({ values }: Pick<ItemDetail, "values">) => {
                   )}
               </div>
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}

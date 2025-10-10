@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { useAdmin } from "../hooks/appState";
-import { queryToHash, useFacetGroups, useFacetMap } from "../hooks/searchHooks";
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useAdmin } from '../hooks/appState'
+import { queryToHash, useFacetGroups, useFacetMap } from '../hooks/searchHooks'
 import {
   FacetGroup,
   FacetListItem,
@@ -9,99 +9,99 @@ import {
   ItemsQuery,
   RelationGroup,
   RelationMatch,
-} from "../lib/types";
-import { isDefined, byPriority, cm } from "../utils";
+} from '../lib/types'
+import { isDefined, byPriority, cm } from '../utils'
 import {
   InfoIcon,
   ListFilterPlus,
   PlugZapIcon,
   PlusIcon,
   Search,
-} from "lucide-react";
-import { QueryProvider } from "../lib/hooks/QueryProvider";
-import { TotalResultText } from "./ResultHeader";
-import { QueryUpdater } from "./QueryMerger";
-import { useTranslations } from "../lib/hooks/useTranslations";
-import { useClipboard } from "../lib/hooks/useClipboard";
-import { Tooltip } from "./Tooltip";
-import { useGroupDesigner } from "../lib/hooks/GroupDesignerProvider";
-import { useNotifications } from "./ui-notifications/useNotifications";
+} from 'lucide-react'
+import { QueryProvider } from '../lib/hooks/QueryProvider'
+import { TotalResultText } from './ResultHeader'
+import { QueryUpdater } from './QueryMerger'
+import { useTranslations } from '../lib/hooks/useTranslations'
+import { useClipboard } from '../lib/hooks/useClipboard'
+import { Tooltip } from './Tooltip'
+import { useGroupDesigner } from '../lib/hooks/GroupDesignerProvider'
+import { useNotifications } from './ui-notifications/useNotifications'
 
 const ignoreFaceIds = [
   3, 4, 5, 6, 10, 11, 12, 13, 20, 1, 30, 31, 32, 33, 35, 36, 23, 9, 24,
-];
+]
 
 type SelectedFacet = {
-  id: number;
-  value: string[];
-};
+  id: number
+  value: string[]
+}
 
 type SelectedNumberFacet = {
-  id: number;
-  min: number;
-  max: number;
-};
+  id: number
+  min: number
+  max: number
+}
 
 const isValidKeyFilter = (
-  value: string[] | string | number | null | undefined
+  value: string[] | string | number | null | undefined,
 ) => {
   if (value == null) {
-    return false;
+    return false
   }
   if (Array.isArray(value)) {
-    return value.length > 0;
+    return value.length > 0
   }
-  if (typeof value === "string") {
-    return value.length > 0;
+  if (typeof value === 'string') {
+    return value.length > 0
   }
 
-  return false;
-};
+  return false
+}
 
 type Facet = FacetListItem & {
-  ignore?: boolean;
-  value: string[] | string | number;
-};
+  ignore?: boolean
+  value: string[] | string | number
+}
 
-type GroupedFacets = Record<string, Facet[]>;
+type GroupedFacets = Record<string, Facet[]>
 
 const byGroup =
   (groups: FacetGroup[] | undefined, defaultGroupName: string) =>
   (acc: GroupedFacets, item: Facet): GroupedFacets => {
     const group: string =
-      groups?.find((g) => g.id === item.groupId)?.name ?? defaultGroupName;
+      groups?.find((g) => g.id === item.groupId)?.name ?? defaultGroupName
     const addKey: GroupedFacets = item.isKey
       ? {
           Nyckelspecifikationer: [...(acc.Nyckelspecifikationer ?? []), item],
         }
-      : {};
+      : {}
     if (!acc[group]) {
       return {
         ...acc,
         ...addKey,
         [group]: [item],
-      };
+      }
     }
     return {
       ...acc,
       ...addKey,
       [group]: [...acc[group], item],
-    };
-  };
+    }
+  }
 
-export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
-  const [selected, setSelected] = useState<SelectedFacet[]>([]);
-  const [selectedRange, setSelectedRange] = useState<SelectedNumberFacet[]>([]);
-  const { showNotification } = useNotifications();
-  const { setGroup } = useGroupDesigner();
-  const { data: groups } = useFacetGroups();
-  const { data } = useFacetMap();
-  const [isAdmin] = useAdmin();
-  const copyToClipboard = useClipboard();
-  const t = useTranslations();
+export const GroupedProperties = ({ values }: Pick<ItemDetail, 'values'>) => {
+  const [selected, setSelected] = useState<SelectedFacet[]>([])
+  const [selectedRange, setSelectedRange] = useState<SelectedNumberFacet[]>([])
+  const { showNotification } = useNotifications()
+  const { setGroup } = useGroupDesigner()
+  const { data: groups } = useFacetGroups()
+  const { data } = useFacetMap()
+  const [isAdmin] = useAdmin()
+  const copyToClipboard = useClipboard()
+  const t = useTranslations()
   const customQuery = useMemo<ItemsQuery | null>(() => {
     if (selected.length === 0 && selectedRange.length === 0) {
-      return null;
+      return null
     }
     const query: ItemsQuery = {
       page: 0,
@@ -114,39 +114,39 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
         min: s.min,
         max: s.max,
       })),
-    };
-    return query;
-  }, [selected]);
+    }
+    return query
+  }, [selected])
   const fields = useMemo(() => {
     return Object.entries(values)
       .map(([id, value]) => {
-        const facet = data?.[id];
+        const facet = data?.[id]
         if (!facet || value == null) {
-          return null;
+          return null
         }
         if (ignoreFaceIds.includes(facet.id)) {
           if (!isAdmin) {
-            return null;
+            return null
           }
           return {
             ...facet,
             ignore: true,
             value,
-          };
+          }
         }
         return {
           ...facet,
           ignore: false,
           value,
-        } satisfies Facet & { ignore: boolean };
+        } satisfies Facet & { ignore: boolean }
       })
       .filter(isDefined)
       .sort(byPriority)
-      .reduce<GroupedFacets>(byGroup(groups, "Funktioner och egenskaper"), {});
-  }, [values, data, groups, isAdmin]);
+      .reduce<GroupedFacets>(byGroup(groups, 'Funktioner och egenskaper'), {})
+  }, [values, data, groups, isAdmin])
   const setInGroup =
     (
-      group: keyof Pick<RelationGroup, "additionalQueries" | "requiredForItem">
+      group: keyof Pick<RelationGroup, 'additionalQueries' | 'requiredForItem'>,
     ) =>
     () => {
       setGroup((prev) => {
@@ -157,41 +157,41 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
               facetId: id,
               exclude: false,
               value,
-            })
+            }),
           ),
-        };
-        return newGroup;
-      });
+        }
+        return newGroup
+      })
       showNotification({
-        title: t("groupDesigner.groupSaved"),
-        message: t("groupDesigner.groupSavedMessage"),
-        variant: "success",
-      });
-    };
+        title: t('groupDesigner.groupSaved'),
+        message: t('groupDesigner.groupSavedMessage'),
+        variant: 'success',
+      })
+    }
   return (
     <div className="md:bg-white md:rounded-lg md:shadow-xs md:border border-gray-100 md:p-4 relative">
       <h3 className="text-2xl font-bold text-gray-900 mb-4">
-        {t("product.properties")}
+        {t('product.properties')}
         {/* <span className="ml-2 text-gray-500 text-lg">({fields.length})</span> */}
       </h3>
       {customQuery != null && (
         <div className="absolute z-10 top-1 right-1 max-w-[400px] p-3 flex flex-col gap-2 items-center animate-pop">
           <div className="button-group">
             <Link
-              aria-label={t("common.search")}
+              aria-label={t('common.search')}
               to={`/#${queryToHash(customQuery)}`}
             >
               <Search className="size-5" />
             </Link>
             <button
-              title={"Set as item requirement"}
-              onClick={setInGroup("requiredForItem")}
+              title={'Set as item requirement'}
+              onClick={setInGroup('requiredForItem')}
             >
               <PlugZapIcon className="size-5" />
             </button>
             <button
-              title={"Set as additional query"}
-              onClick={setInGroup("additionalQueries")}
+              title={'Set as additional query'}
+              onClick={setInGroup('additionalQueries')}
             >
               <ListFilterPlus className="size-5" />
             </button>
@@ -209,14 +209,14 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
               <h3 className="text-xl font-bold mb-4">{groupName}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
                 {fields.map((field) => {
-                  const isSelected = selected.some((s) => s.id === field.id);
+                  const isSelected = selected.some((s) => s.id === field.id)
                   return (
                     <div
                       key={`prop-${field.id}-${field.valueType}`}
                       className={cm(
-                        "py-2 md:p-3 md:rounded-lg md:hover:bg-gray-50 transition-all relative",
+                        'py-2 md:p-3 md:rounded-lg md:hover:bg-gray-50 transition-all relative',
                         (field.hide || field.ignore || field.internal) &&
-                          "opacity-50 hover:opacity-100"
+                          'opacity-50 hover:opacity-100',
                       )}
                     >
                       {isValidKeyFilter(field.value) ? (
@@ -226,10 +226,10 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                             if (field.value != null) {
                               setSelected((prev) => {
                                 const newSelected = prev.filter(
-                                  (s) => s.id !== field.id
-                                );
+                                  (s) => s.id !== field.id,
+                                )
                                 if (isSelected) {
-                                  return newSelected;
+                                  return newSelected
                                 } else {
                                   return [
                                     ...newSelected,
@@ -239,16 +239,16 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                                         ? field.value
                                         : [String(field.value)],
                                     },
-                                  ];
+                                  ]
                                 }
-                              });
+                              })
                             }
                           }}
                         >
                           <PlusIcon
                             className={cm(
-                              "hover:text-gray-700 cursor-pointer size-5",
-                              isSelected ? "text-blue-500" : "text-gray-500"
+                              'hover:text-gray-700 cursor-pointer size-5',
+                              isSelected ? 'text-blue-500' : 'text-gray-500',
                             )}
                           />
                         </button>
@@ -268,8 +268,8 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                                         : Number(field.value),
                                       min: 0,
                                     },
-                                  ];
-                                });
+                                  ]
+                                })
                               }
                             }}
                           >
@@ -291,8 +291,8 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                                         : Number(field.value),
                                       max: 999999999,
                                     },
-                                  ];
-                                });
+                                  ]
+                                })
                               }
                             }}
                           >
@@ -307,7 +307,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                           className="text-lg font-semibold text-gray-900"
                           onClick={() =>
                             copyToClipboard(
-                              JSON.stringify({ ...field }, null, 2)
+                              JSON.stringify({ ...field }, null, 2),
                             )
                           }
                         >
@@ -325,7 +325,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                       <div className="flex justify-between gap-1">
                         <p className="text-gray-700">
                           {Array.isArray(field.value)
-                            ? field.value.join(", ")
+                            ? field.value.join(', ')
                             : String(field.value)}
                         </p>
 
@@ -347,7 +347,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                                 ],
                               })}`}
                             >
-                              {t("common.show_compatible")}
+                              {t('common.show_compatible')}
                               {/* <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
                                 {field.linkedId}
                               </span> */}
@@ -355,13 +355,13 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, "values">) => {
                           )}
                       </div>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}

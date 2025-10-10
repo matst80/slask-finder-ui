@@ -1,10 +1,10 @@
-import { SquareMinus, SquarePlus } from "lucide-react";
-import { useState } from "react";
-import { Category } from "../lib/types";
-import { textSize } from "../utils";
-import { useQuery } from "../lib/hooks/useQuery";
+import { SquareMinus, SquarePlus } from 'lucide-react'
+import { useState } from 'react'
+import { Category } from '../lib/types'
+import { textSize } from '../utils'
+import { useQuery } from '../lib/hooks/useQuery'
 
-const byName = (a: Category, b: Category) => a.value.localeCompare(b.value);
+const byName = (a: Category, b: Category) => a.value.localeCompare(b.value)
 
 export const CategoryItem = ({
   value,
@@ -12,12 +12,12 @@ export const CategoryItem = ({
   level,
   defaultOpen = false,
 }: Category & { level: number; defaultOpen?: boolean }) => {
-  const { setQuery } = useQuery();
-  const [open, setOpen] = useState(defaultOpen);
+  const { setQuery } = useQuery()
+  const [open, setOpen] = useState(defaultOpen)
   const addKeyFilter = (id: number, value: string[]) =>
     setQuery((state) => {
-      return { ...state, string: [{ id, value }] };
-    });
+      return { ...state, string: [{ id, value }] }
+    })
   return (
     <li>
       <div className="flex gap-4 items-center">
@@ -48,5 +48,5 @@ export const CategoryItem = ({
         </ul>
       )}
     </li>
-  );
-};
+  )
+}

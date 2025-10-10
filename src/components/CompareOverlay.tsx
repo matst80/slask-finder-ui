@@ -1,31 +1,27 @@
-import { MessageSquareMore, X } from "lucide-react";
-import { useCompareContext } from "../lib/hooks/CompareProvider";
-import { cm, isDefined, makeImageUrl } from "../utils";
-import { useCallback, useMemo, useState } from "react";
-import { useFacetMap } from "../hooks/searchHooks";
-import { FacetListItem, Item } from "../lib/types";
-import { ResultItemInner } from "./ResultItem";
-import { Dialog } from "./ui/dialog";
-import { matchValue } from "../lib/utils";
-import { convertItemSimple } from "../pages/tools";
-import {
-  AiShoppingProvider,
-  MessageList,
-  QueryInput,
-} from "../pages/AiShopper";
+import { MessageSquareMore, X } from 'lucide-react'
+import { useCompareContext } from '../lib/hooks/CompareProvider'
+import { cm, isDefined, makeImageUrl } from '../utils'
+import { useCallback, useMemo, useState } from 'react'
+import { useFacetMap } from '../hooks/searchHooks'
+import { FacetListItem, Item } from '../lib/types'
+import { ResultItemInner } from './ResultItem'
+import { Dialog } from './ui/dialog'
+import { matchValue } from '../lib/utils'
+import { convertItemSimple } from '../pages/tools'
+import { AiShoppingProvider, MessageList, QueryInput } from '../pages/AiShopper'
 
 const FacetCells = ({
   facet,
   showDifferances,
   values,
 }: {
-  facet: FacetListItem;
-  showDifferances: boolean;
-  values: (string | string[] | number | undefined)[];
+  facet: FacetListItem
+  showDifferances: boolean
+  values: (string | string[] | number | undefined)[]
 }) => {
-  const isSameValue = values.every((v) => matchValue(v, values[0] ?? ""));
+  const isSameValue = values.every((v) => matchValue(v, values[0] ?? ''))
   if (showDifferances && isSameValue) {
-    return null;
+    return null
   }
   return (
     <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
@@ -36,34 +32,34 @@ const FacetCells = ({
         <td
           key={idx}
           className={`px-3 py-1 lg:py-3 ${
-            isSameValue ? "text-gray-500" : "font-semibold text-gray-800"
+            isSameValue ? 'text-gray-500' : 'font-semibold text-gray-800'
           }`}
         >
-          {v != null ? (Array.isArray(v) ? v.join(",") : String(v)) : ""}
+          {v != null ? (Array.isArray(v) ? v.join(',') : String(v)) : ''}
         </td>
       ))}
     </tr>
-  );
-};
+  )
+}
 
 const AiChatForCompare = ({ items }: { items: Item[] }) => {
-  const { data: facets } = useFacetMap();
-  const convertItem = useCallback(convertItemSimple(facets ?? {}), [facets]);
+  const { data: facets } = useFacetMap()
+  const convertItem = useCallback(convertItemSimple(facets ?? {}), [facets])
   const contextItems = useMemo(() => {
-    return items.map(convertItem).slice(0, 10);
-  }, [items, facets]);
+    return items.map(convertItem).slice(0, 10)
+  }, [items, facets])
   if (contextItems.length === 0) {
-    return null;
+    return null
   }
   return (
     <AiShoppingProvider
       messages={[
         {
-          role: "system",
+          role: 'system',
           content:
-            "You should help the user to show the main differences between these products!\n```json\n" +
+            'You should help the user to show the main differences between these products!\n```json\n' +
             JSON.stringify(contextItems) +
-            "\n```",
+            '\n```',
         },
       ]}
     >
@@ -75,17 +71,16 @@ const AiChatForCompare = ({ items }: { items: Item[] }) => {
         <QueryInput placeholderText="Ask questions regarding these products" />
       </div>
     </AiShoppingProvider>
-  );
-};
+  )
+}
 
-const ignoredFacets = new Set([1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14]);
+const ignoredFacets = new Set([1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14])
 
 export const CompareOverlay = () => {
-  const { data } = useFacetMap();
-  const { items, setItems, matchingFacetIds, diffWarning } =
-    useCompareContext();
-  const [open, setOpen] = useState(false);
-  const [showDifferances, setShowDifferences] = useState(false);
+  const { data } = useFacetMap()
+  const { items, setItems, matchingFacetIds, diffWarning } = useCompareContext()
+  const [open, setOpen] = useState(false)
+  const [showDifferances, setShowDifferences] = useState(false)
 
   const facets = useMemo(() => {
     return Array.from(matchingFacetIds)
@@ -94,12 +89,12 @@ export const CompareOverlay = () => {
       .filter(isDefined)
       .filter((d) => !d.hide && !d.internal)
       .sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
-  }, [matchingFacetIds, data]);
+        return a.name.localeCompare(b.name)
+      })
+  }, [matchingFacetIds, data])
 
   if (items.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -123,7 +118,7 @@ export const CompareOverlay = () => {
                 <button
                   className="text-gray-600 transition-all hover:text-red-500 p-1 rounded-full hover:bg-gray-100 absolute top-0 right-0"
                   onClick={() => {
-                    setItems((prev) => prev.filter((i) => i.id !== item.id));
+                    setItems((prev) => prev.filter((i) => i.id !== item.id))
                   }}
                   aria-label="Remove item"
                 >
@@ -137,10 +132,10 @@ export const CompareOverlay = () => {
         {items.length > 1 && (
           <button
             className={cm(
-              "text-white px-4 lg:px-6 py-2 font-medium transition-colors shadow-sm flex-shrink-0 flex gap-1 items-center justify-center",
+              'text-white px-4 lg:px-6 py-2 font-medium transition-colors shadow-sm flex-shrink-0 flex gap-1 items-center justify-center',
               diffWarning
-                ? "bg-red-600 hover:bg-red-700"
-                : "bg-blue-600 hover:bg-blue-700"
+                ? 'bg-red-600 hover:bg-red-700'
+                : 'bg-blue-600 hover:bg-blue-700',
             )}
             onClick={() => setOpen(true)}
           >
@@ -211,7 +206,7 @@ export const CompareOverlay = () => {
               <button
                 className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md font-medium transition-colors mr-2"
                 onClick={() => {
-                  setShowDifferences((prev) => !prev);
+                  setShowDifferences((prev) => !prev)
                 }}
               >
                 Toggle diff
@@ -220,8 +215,8 @@ export const CompareOverlay = () => {
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
                 onClick={() => {
                   // Add an action here if needed
-                  setItems([]);
-                  setOpen(false);
+                  setItems([])
+                  setOpen(false)
                 }}
               >
                 Done
@@ -231,5 +226,5 @@ export const CompareOverlay = () => {
         </Dialog>
       )}
     </div>
-  );
-};
+  )
+}

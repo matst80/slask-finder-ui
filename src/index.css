@@ -1,12 +1,13 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @font-face {
-  font-family: 'headline';
-  src: url('https://www.elgiganten.se/_next/static/media/cf793e6f0e4f1050-s.p.woff2') format('woff2'),
-    url('https://www.elgiganten.se/_next/static/media/cf793e6f0e4f1050-s.p.woff') format('woff');
+  font-family: "headline";
+  src:
+    url("https://www.elgiganten.se/_next/static/media/cf793e6f0e4f1050-s.p.woff2")
+    format("woff2"),
+    url("https://www.elgiganten.se/_next/static/media/cf793e6f0e4f1050-s.p.woff")
+    format("woff");
 }
-
-
 
 :root {
   --dialog-duration: 0.4s;
@@ -125,7 +126,6 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-
   *,
   ::after,
   ::before,
@@ -146,7 +146,6 @@
     100% {
       box-shadow: 8px 0px 20px rgba(0, 0, 0, 0.4);
     }
-
   }
 
   .ai-response {
@@ -205,11 +204,11 @@
     margin: 0;
     padding: 0;
 
-    &>thead {
+    & > thead {
       background-color: var(--color-gray-200);
     }
 
-    &>tbody {
+    & > tbody {
       background-color: var(--color-white);
     }
 
@@ -280,7 +279,6 @@
     top: calc(anchor(bottom) + 1px);
     left: anchor(left);
     right: anchor(right);
-
   }
 
   .dropdown {
@@ -333,8 +331,8 @@
     gap: 3px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 
-    &>button,
-    &>a {
+    & > button,
+    & > a {
       cursor: pointer;
       background-color: var(--color-blue-200);
       transition: all 0.2s ease-in-out;
@@ -358,7 +356,6 @@
       }
 
       &:last-child {
-
         border-top-right-radius: 8px;
         border-bottom-right-radius: 8px;
       }
@@ -367,7 +364,7 @@
         background-color: var(--color-blue-500);
         color: var(--color-white);
         outline: none;
-        box-shadow: 1px 1px 0 2px var(--color-blue-300)/0.5;
+        box-shadow: 1px 1px 0 2px var(--color-blue-300) / 0.5;
       }
 
       &:hover {
@@ -382,22 +379,20 @@
     }
 
     /* Active button state */
-    &>.active {
+    & > .active {
       background-color: var(--color-blue-600);
       color: var(--color-white);
       box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
     /* Disabled button state */
-    &>*:disabled {
+    & > *:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       background-color: var(--color-gray-200);
       color: var(--color-gray-600);
       transform: none;
     }
-
-
   }
 
   .has-attachments:has(input[aria-expanded="true"]) {
@@ -420,8 +415,7 @@
   .button-group.vertical {
     flex-direction: column;
 
-    &>* {
-
+    & > * {
       &:first-child {
         border-radius: 8px 8px 0 0;
       }
@@ -467,7 +461,7 @@
     }
   }
 
-  @media(prefers-reduced-motion: no-preference) {
+  @media (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: view()) {
       .animating-element {
         animation: animate-in ease-in forwards;
@@ -484,9 +478,11 @@
 
   .progress {
     height: 4px;
-    background: linear-gradient(to right,
-        var(--color-yellow-500) 0%,
-        var(--color-green-500) 100%);
+    background: linear-gradient(
+      to right,
+      var(--color-yellow-500) 0%,
+      var(--color-green-500) 100%
+    );
     position: fixed;
     bottom: 0;
     z-index: 20;
@@ -514,10 +510,10 @@
     }
   }
 
-
-
   dialog::backdrop {
-    transition: display var(--dialog-duration) allow-discrete, overlay var(--dialog-duration) allow-discrete;
+    transition:
+      display var(--dialog-duration) allow-discrete,
+      overlay var(--dialog-duration) allow-discrete;
     animation: backdrop-close var(--dialog-duration) forwards;
     margin: 0;
     padding: 0;
@@ -549,7 +545,9 @@
     top: 50%;
     max-height: calc(100vh - 2rem);
     transform: translate(-50%, -50%);
-    transition: display var(--dialog-duration) allow-discrete, overlay var(--dialog-duration) allow-discrete;
+    transition:
+      display var(--dialog-duration) allow-discrete,
+      overlay var(--dialog-duration) allow-discrete;
     animation: close-dialog var(--dialog-duration) forwards;
 
     &[open] {
@@ -576,7 +574,9 @@
     left: 0px;
     right: auto;
     height: 100%;
-    transition: display var(--dialog-duration) allow-discrete, overlay var(--dialog-duration) allow-discrete;
+    transition:
+      display var(--dialog-duration) allow-discrete,
+      overlay var(--dialog-duration) allow-discrete;
     animation: close-left var(--dialog-duration) forwards;
 
     &[open] {
@@ -588,7 +588,9 @@
     left: auto;
     right: 0px;
     height: 100%;
-    transition: display var(--dialog-duration) allow-discrete, overlay var(--dialog-duration) allow-discrete;
+    transition:
+      display var(--dialog-duration) allow-discrete,
+      overlay var(--dialog-duration) allow-discrete;
     animation: close-right var(--dialog-duration) forwards;
 
     &[open] {
@@ -656,8 +658,6 @@
       translate: 0 100px;
       opacity: 0;
     }
-
-
   }
 
   @keyframes close-left {
@@ -731,17 +731,15 @@ input[type="number"] {
   opacity: 0;
 }
 
-
-
 @layer utilities {
-
   .center-container {
     max-width: 1280px;
     margin: 0 auto;
   }
 
   .banner-reflect {
-    -webkit-box-reflect: below 10px linear-gradient(transparent, rgba(255, 255, 255, 0.3));
+    -webkit-box-reflect: below 10px
+      linear-gradient(transparent, rgba(255, 255, 255, 0.3));
   }
 
   .thin-scrollbar {
@@ -761,7 +759,6 @@ input[type="number"] {
     scrollbar-color: var(--color-gray-300) transparent;
 
     &::scroll-button(*) {
-
       position: absolute;
       top: calc(50% - 15px);
       font-weight: bold;
@@ -794,6 +791,5 @@ input[type="number"] {
       content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M8.59 7.41L13.17 12l-4.58 4.59L10 18l6-6-6-6z"/></svg>');
       right: 0rem;
     }
-
   }
 }

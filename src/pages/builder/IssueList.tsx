@@ -1,23 +1,23 @@
-import { useMemo } from "react";
-import { useFacetMap } from "../../hooks/searchHooks";
-import { cm } from "../../utils";
-import { Issue } from "./builder-types";
+import { useMemo } from 'react'
+import { useFacetMap } from '../../hooks/searchHooks'
+import { cm } from '../../utils'
+import { Issue } from './builder-types'
 
 export const IssueList = ({ issues }: { issues: Issue[] }) => {
-  const { data } = useFacetMap();
+  const { data } = useFacetMap()
   const toShow = useMemo(
     () =>
       issues?.map((issue) => {
-        const facet = data?.[issue.facetId];
+        const facet = data?.[issue.facetId]
         return {
           ...issue,
-          name: facet?.name ?? "...",
-        };
+          name: facet?.name ?? '...',
+        }
       }) ?? [],
-    [issues, data]
-  );
+    [issues, data],
+  )
   if (issues.length < 1 || data == null) {
-    return null;
+    return null
   }
   return (
     <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center gap-1 p-3">
@@ -25,23 +25,23 @@ export const IssueList = ({ issues }: { issues: Issue[] }) => {
         <span
           key={idx}
           onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
+            e.stopPropagation()
+            e.preventDefault()
             globalThis.navigator.clipboard.writeText(
-              `${issue.facetId} ${issue.message} in "${issue.name}"`
-            );
+              `${issue.facetId} ${issue.message} in "${issue.name}"`,
+            )
           }}
           title={String(issue.facetId)}
           className={cm(
-            "text-xs overflow-hidden text-ellipsis line-clamp-1 px-2 py-1 rounded-md cursor-copy",
-            issue.type === "error"
-              ? "bg-red-100 text-red-800"
-              : "bg-indigo-100 text-indigo-800"
+            'text-xs overflow-hidden text-ellipsis line-clamp-1 px-2 py-1 rounded-md cursor-copy',
+            issue.type === 'error'
+              ? 'bg-red-100 text-red-800'
+              : 'bg-indigo-100 text-indigo-800',
           )}
         >
           {issue.message} in "{issue.name}"
         </span>
       ))}
     </div>
-  );
-};
+  )
+}

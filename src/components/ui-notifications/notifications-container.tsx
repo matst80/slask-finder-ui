@@ -1,10 +1,10 @@
-"use client";
-import { Notification } from "./notification";
-import type { NotificationType } from "./types";
+'use client'
+import { Notification } from './notification'
+import type { NotificationType } from './types'
 
 interface NotificationsContainerProps {
-  notifications: NotificationType[];
-  dismissNotification: (id: string) => void;
+  notifications: NotificationType[]
+  dismissNotification: (id: string) => void
 }
 
 export const NotificationsContainer = ({
@@ -21,5 +21,5 @@ export const NotificationsContainer = ({
         />
       ))}
     </div>
-  );
-};
+  )
+}

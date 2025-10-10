@@ -1,10 +1,10 @@
-import useSWR from "swr";
-import { toJson } from "../../lib/datalayer/api";
-import { Order } from "./order-types";
-import { PriceValue } from "../../components/Price";
+import useSWR from 'swr'
+import { toJson } from '../../lib/datalayer/api'
+import { Order } from './order-types'
+import { PriceValue } from '../../components/Price'
 
 const OrderItem = ({ order }: { order: Order }) => {
-  const { order_id, order_amount, status, billing_address } = order;
+  const { order_id, order_amount, status, billing_address } = order
   return (
     <tr>
       <td>{order_id}</td>
@@ -14,13 +14,13 @@ const OrderItem = ({ order }: { order: Order }) => {
       </td>
       <td>{status}</td>
     </tr>
-  );
-};
+  )
+}
 
 export const OrdersView = () => {
-  const { data } = useSWR("/admin/orders", () =>
-    fetch("/api/orders").then((res) => toJson<Order[]>(res))
-  );
+  const { data } = useSWR('/admin/orders', () =>
+    fetch('/api/orders').then((res) => toJson<Order[]>(res)),
+  )
 
   return (
     <div>
@@ -41,5 +41,5 @@ export const OrdersView = () => {
         </tbody>
       </table>
     </div>
-  );
-};
+  )
+}

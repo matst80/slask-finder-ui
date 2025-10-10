@@ -1,23 +1,23 @@
-import { useFocusTracking } from "../hooks/appState";
-import { AutoSuggest } from "../components/AutoSuggest";
-import { CurrentFilters } from "../components/CurrentFilters";
-import { ResultHeader } from "../components/ResultHeader";
-import { SearchResultList } from "../components/SearchResultList";
-import { Facets } from "../components/Facets";
-import { SuggestionProvider } from "../lib/hooks/SuggestionProvider";
-import { FacetProvider } from "../lib/hooks/FacetProvider";
-import { useQuery } from "../lib/hooks/useQuery";
+import { useFocusTracking } from '../hooks/appState'
+import { AutoSuggest } from '../components/AutoSuggest'
+import { CurrentFilters } from '../components/CurrentFilters'
+import { ResultHeader } from '../components/ResultHeader'
+import { SearchResultList } from '../components/SearchResultList'
+import { Facets } from '../components/Facets'
+import { SuggestionProvider } from '../lib/hooks/SuggestionProvider'
+import { FacetProvider } from '../lib/hooks/FacetProvider'
+import { useQuery } from '../lib/hooks/useQuery'
 
 function App() {
-  useFocusTracking();
-  const { setQuery } = useQuery();
+  useFocusTracking()
+  const { setQuery } = useQuery()
 
   return (
     <SuggestionProvider
       config={[
-        { type: "query", maxAmount: 5 },
+        { type: 'query', maxAmount: 5 },
         {
-          type: "refinement",
+          type: 'refinement',
           maxAmount: 10,
           facetConfig: {
             2: { flat: true, maxHits: 2 },
@@ -26,7 +26,7 @@ function App() {
             11: { flat: true, maxHits: 1 },
           },
         },
-        { type: "product", maxAmount: 20 },
+        { type: 'product', maxAmount: 20 },
         //{ type: "content", maxAmount: 5 },
       ]}
     >
@@ -34,7 +34,7 @@ function App() {
         <div className="max-w-[1920px] mx-auto md:relative md:px-6">
           <AutoSuggest
             onSearch={setQuery}
-            onClear={() => setQuery((prev) => ({ ...prev, query: "" }))}
+            onClear={() => setQuery((prev) => ({ ...prev, query: '' }))}
           />
         </div>
       </div>
@@ -56,7 +56,7 @@ function App() {
 
       <div className="progress z-40" />
     </SuggestionProvider>
-  );
+  )
 }
 
-export default App;
+export default App

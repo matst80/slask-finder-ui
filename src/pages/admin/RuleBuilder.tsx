@@ -1,10 +1,7 @@
-import { PropsWithChildren, useEffect, useMemo, useState } from "react";
-import { useFacetList } from "../../hooks/searchHooks";
-import {
-  getPopularityRules,
-  setPopularityRules,
-} from "../../lib/datalayer/api";
-import useSWR from "swr";
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
+import { useFacetList } from '../../hooks/searchHooks'
+import { getPopularityRules, setPopularityRules } from '../../lib/datalayer/api'
+import useSWR from 'swr'
 import {
   Rule,
   MatchRule,
@@ -17,87 +14,87 @@ import {
   RatingRule,
   Rules,
   NumberComparitor,
-} from "../../lib/types";
-import useSWRMutation from "swr/mutation";
+} from '../../lib/types'
+import useSWRMutation from 'swr/mutation'
 import {
   CustomDropdown,
   DropdownItem,
-} from "../../components/ui/custom-dropdown";
-import { Input } from "../../components/ui/input";
+} from '../../components/ui/custom-dropdown'
+import { Input } from '../../components/ui/input'
 
 type EditorProps<T extends Rule> = T & {
-  onChange: (data: T) => void;
-};
+  onChange: (data: T) => void
+}
 
 const itemProperties = [
-  "Url",
-  "Disclaimer",
-  "ReleaseDate",
-  "SaleStatus",
-  "MarginPercent",
-  "PresaleDate",
-  "Restock",
-  "AdvertisingText",
-  "Img",
-  "BadgeUrl",
-  "EnergyRating",
-  "BulletPoints",
-  "LastUpdate",
-  "Created",
-  "Buyable",
-  "Description",
-  "BuyableInStore",
-  "BoxSize",
-  "CheapestBItem",
-  "AItem",
-  "ArticleType",
-  "StockLevel",
-  "Stock",
-  "Id",
-  "Sku",
-  "Title",
-];
+  'Url',
+  'Disclaimer',
+  'ReleaseDate',
+  'SaleStatus',
+  'MarginPercent',
+  'PresaleDate',
+  'Restock',
+  'AdvertisingText',
+  'Img',
+  'BadgeUrl',
+  'EnergyRating',
+  'BulletPoints',
+  'LastUpdate',
+  'Created',
+  'Buyable',
+  'Description',
+  'BuyableInStore',
+  'BoxSize',
+  'CheapestBItem',
+  'AItem',
+  'ArticleType',
+  'StockLevel',
+  'Stock',
+  'Id',
+  'Sku',
+  'Title',
+]
 
 const FieldSelector = ({
   onChange,
   ...selection
 }: ValueMatch & { onChange: (data: ValueMatch) => void }) => {
-  const { data } = useFacetList();
+  const { data } = useFacetList()
   const items = useMemo<DropdownItem<ValueMatch>[]>(() => {
     return [
       ...itemProperties.map((d) => ({
         key: d,
-        type: "Property",
-        data: { source: "property", property: d } satisfies ValueMatch,
+        type: 'Property',
+        data: { source: 'property', property: d } satisfies ValueMatch,
         text: d,
       })),
       ...(data?.map((field) => ({
         key: String(field.id),
-        type: "Field",
-        data: { source: "fieldId", fieldId: field.id } satisfies ValueMatch,
+        type: 'Field',
+        data: { source: 'fieldId', fieldId: field.id } satisfies ValueMatch,
         text: field.name,
       })) ?? []),
-    ];
-  }, [data]);
+    ]
+  }, [data])
 
-  const [selectedValue, setSelectedValue] = useState<string | undefined>();
+  const [selectedValue, setSelectedValue] = useState<string | undefined>()
 
   useEffect(() => {
-    const { source } = selection;
+    const { source } = selection
     setSelectedValue(
-      source == "fieldId" ? String(selection.fieldId) : selection.property
-    );
-  }, [selection]);
+      source == 'fieldId' ? String(selection.fieldId) : selection.property,
+    )
+  }, [selection])
 
   const selectedItem = useMemo(
     () => items.find((item) => item.key === selectedValue),
-    [items, selectedValue]
-  );
+    [items, selectedValue],
+  )
 
   const handleSelect = (item: (typeof items)[number]) => {
-    setSelectedValue(item.key);
-    onChange(item.data);
-  };
+    setSelectedValue(item.key)
+    onChange(item.data)
+  }
 
   return (
     <div className="mb-4">
@@ -109,8 +106,8 @@ const FieldSelector = ({
         label="Source Field"
       />
     </div>
-  );
-};
+  )
+}
 
 const LabelFor = ({
   children,
@@ -123,8 +120,8 @@ const LabelFor = ({
       </label>
       <div>{children}</div>
     </div>
-  );
-};
+  )
+}
 
 const InputWithLabel = ({
   label,
@@ -137,8 +134,8 @@ const InputWithLabel = ({
     <LabelFor label={label}>
       <Input {...inputProps} />
     </LabelFor>
-  );
-};
+  )
+}
 
 const DiscountRuleEditor = ({
   onChange,
@@ -176,8 +173,8 @@ const DiscountRuleEditor = ({
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 const NumberLimitRuleEditor = ({
   onChange,
@@ -220,7 +217,7 @@ const NumberLimitRuleEditor = ({
             Comparator
           </label>
           <select
-            value={rule.comparator || ">"}
+            value={rule.comparator || '>'}
             onChange={(e) =>
               onChange({
                 ...rule,
@@ -256,8 +253,8 @@ const NumberLimitRuleEditor = ({
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 const PercentMultiplierRuleEditor = ({
   onChange,
@@ -303,8 +300,8 @@ const PercentMultiplierRuleEditor = ({
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 const MatchRuleEditor = ({ onChange, ...rule }: EditorProps<MatchRule>) => {
   return (
@@ -324,7 +321,7 @@ const MatchRuleEditor = ({ onChange, ...rule }: EditorProps<MatchRule>) => {
 
         <InputWithLabel
           type="text"
-          value={String(rule.match || "")}
+          value={String(rule.match || '')}
           onChange={(e) => onChange({ ...rule, match: e.target.value })}
           label="Match Value"
           placeholder="Value to match"
@@ -365,8 +362,8 @@ const MatchRuleEditor = ({ onChange, ...rule }: EditorProps<MatchRule>) => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 const OutOfStockRuleEditor = ({
   onChange,
@@ -403,8 +400,8 @@ const OutOfStockRuleEditor = ({
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 const RatingRuleEditor = ({ onChange, ...rule }: EditorProps<RatingRule>) => {
   return (
@@ -447,35 +444,35 @@ const RatingRuleEditor = ({ onChange, ...rule }: EditorProps<RatingRule>) => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 const RuleComponent = (props: EditorProps<Rule>) => {
   switch (props.$type) {
-    case "MatchRule":
-      return <MatchRuleEditor {...(props as EditorProps<MatchRule>)} />;
-    case "DiscountRule":
-      return <DiscountRuleEditor {...(props as EditorProps<DiscountRule>)} />;
-    case "OutOfStockRule":
+    case 'MatchRule':
+      return <MatchRuleEditor {...(props as EditorProps<MatchRule>)} />
+    case 'DiscountRule':
+      return <DiscountRuleEditor {...(props as EditorProps<DiscountRule>)} />
+    case 'OutOfStockRule':
       return (
         <OutOfStockRuleEditor {...(props as EditorProps<OutOfStockRule>)} />
-      );
-    case "NumberLimitRule":
+      )
+    case 'NumberLimitRule':
       return (
         <NumberLimitRuleEditor {...(props as EditorProps<NumberLimitRule>)} />
-      );
-    case "PercentMultiplierRule":
+      )
+    case 'PercentMultiplierRule':
       return (
         <PercentMultiplierRuleEditor
           {...(props as EditorProps<PercentMultiplierRule>)}
         />
-      );
-    case "RatingRule":
-      return <RatingRuleEditor {...(props as EditorProps<RatingRule>)} />;
+      )
+    case 'RatingRule':
+      return <RatingRuleEditor {...(props as EditorProps<RatingRule>)} />
     default:
-      return <div>Not implemented</div>;
+      return <div>Not implemented</div>
   }
-};
+}
 
 const RuleEditor = (rule: Rule & { onChange: (data: Rule) => void }) => {
   return (
@@ -496,52 +493,52 @@ const RuleEditor = (rule: Rule & { onChange: (data: Rule) => void }) => {
           >
             {ruleTypes.map((type) => (
               <option key={type} value={type}>
-                {type.replace(/Rule$/, "")}
+                {type.replace(/Rule$/, '')}
               </option>
             ))}
           </select>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const RuleBuilder = () => {
-  const { data, isLoading, mutate } = useSWR("popularityRules", () =>
-    getPopularityRules()
-  );
+  const { data, isLoading, mutate } = useSWR('popularityRules', () =>
+    getPopularityRules(),
+  )
   const update = useSWRMutation(
-    "popularityRules",
-    (_, { arg }: { arg: Rules }) => setPopularityRules(arg)
-  );
+    'popularityRules',
+    (_, { arg }: { arg: Rules }) => setPopularityRules(arg),
+  )
 
   const updateRule = (index: number) => (rule: Rule) => {
-    const payload = data?.map((r, i) => (i === index ? rule : r)) ?? [];
+    const payload = data?.map((r, i) => (i === index ? rule : r)) ?? []
     //mutate(payload, { revalidate: false });
-    update.trigger(payload, { revalidate: false });
-  };
+    update.trigger(payload, { revalidate: false })
+  }
 
   const addNewRule = () => {
     const newRule: MatchRule = {
-      $type: "MatchRule",
-      match: "",
-      source: "property",
-      property: "Title",
+      $type: 'MatchRule',
+      match: '',
+      source: 'property',
+      property: 'Title',
       value: 1,
       valueIfNotMatch: 0,
-    };
+    }
 
-    const newRules = [...(data || []), newRule];
-    mutate(newRules, { revalidate: false });
-    update.trigger(newRules);
-  };
+    const newRules = [...(data || []), newRule]
+    mutate(newRules, { revalidate: false })
+    update.trigger(newRules)
+  }
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
       </div>
-    );
+    )
   }
 
   return (
@@ -584,5 +581,5 @@ export const RuleBuilder = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

@@ -1,77 +1,77 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./pages/App.tsx";
-import "./index.css";
-import { RouterProvider } from "react-router/dom";
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './pages/App.tsx'
+import './index.css'
+import { RouterProvider } from 'react-router/dom'
 import {
   createBrowserRouter,
   Outlet,
   useLoaderData,
   useRouteError,
-} from "react-router";
-import { Admin } from "./pages/Admin.tsx";
-import { EditFacetsView } from "./pages/admin/EditFacetsView.tsx";
-import { SWRConfig } from "swr";
-import { getRawData, getTrackingSession } from "./lib/datalayer/api.ts";
-import { ProductPage } from "./components/ProductPage.tsx";
-import { SessionView } from "./components/Sessions.tsx";
-import { QueriesView } from "./pages/tracking/queries.tsx";
-import { PopularItemsView } from "./pages/tracking/popular-items.tsx";
-import { PopularFacetsView } from "./pages/tracking/popular-facets.tsx";
-import { DashboardView } from "./pages/Dashboard.tsx";
-import { PageContainer } from "./PageContainer.tsx";
-import { RuleBuilder } from "./pages/admin/RuleBuilder.tsx";
-import { QueryProvider } from "./lib/hooks/QueryProvider.tsx";
-import { ImpressionProvider } from "./lib/hooks/ImpressionProvider.tsx";
+} from 'react-router'
+import { Admin } from './pages/Admin.tsx'
+import { EditFacetsView } from './pages/admin/EditFacetsView.tsx'
+import { SWRConfig } from 'swr'
+import { getRawData, getTrackingSession } from './lib/datalayer/api.ts'
+import { ProductPage } from './components/ProductPage.tsx'
+import { SessionView } from './components/Sessions.tsx'
+import { QueriesView } from './pages/tracking/queries.tsx'
+import { PopularItemsView } from './pages/tracking/popular-items.tsx'
+import { PopularFacetsView } from './pages/tracking/popular-facets.tsx'
+import { DashboardView } from './pages/Dashboard.tsx'
+import { PageContainer } from './PageContainer.tsx'
+import { RuleBuilder } from './pages/admin/RuleBuilder.tsx'
+import { QueryProvider } from './lib/hooks/QueryProvider.tsx'
+import { ImpressionProvider } from './lib/hooks/ImpressionProvider.tsx'
 import {
   EditFieldsView,
   MissingFieldsView,
-} from "./pages/admin/EditFieldsView.tsx";
-import { RelationGroupEditor } from "./pages/admin/RelationGroupEditor.tsx";
-import { FunnelsView } from "./pages/tracking/funnels-view.tsx";
-import { BuilderMain } from "./pages/builder/BuilderMain.tsx";
-import { BuilderStartPage } from "./pages/builder/BuilderStartPage.tsx";
-import { BuilderComponentFilter } from "./pages/builder/BuilderComponentFilter.tsx";
-import { BuilderOverview } from "./pages/builder/BuilderOverview.tsx";
-import { componentRules } from "./pages/builder/rules.ts";
-import { BuilderComponentSelector } from "./pages/builder/BuilderComponentSelector.tsx";
-import { BuilderKit } from "./pages/builder/BuilderKit.tsx";
-import { BuilderProductPage } from "./pages/builder/BuilderProductPage.tsx";
-import { NotificationsProvider } from "./components/ui-notifications/notifications-provider.tsx";
-import ScrollToTop from "./components/ScrollToTop.tsx";
-import { TranslationProvider } from "./lib/hooks/TranslationProvider.tsx";
-import { english } from "./translations/english.ts";
-import { swedish } from "./translations/swedish.ts";
-import { FacetGroups } from "./pages/admin/FacetGroups.tsx";
-import { getLocale } from "./utils.ts";
-import { CspReport } from "./pages/tracking/csp-report.tsx";
-import { SessionList } from "./components/SessionList.tsx";
-import { Banner } from "./components/Banner.tsx";
-import { TrackingProvider } from "./lib/hooks/TrackingContext.tsx";
-import { slaskTracker } from "./tracking/slaskTracker.ts";
-import { ProductConfigurator } from "./pages/ProductConfigurator.tsx";
-import { EmptyQueriesView } from "./pages/tracking/empty-queries.tsx";
-import { CompareProvider } from "./lib/hooks/CompareProvider.tsx";
-import { GroupDesignerProvider } from "./lib/hooks/GroupDesignerProvider.tsx";
-import { SidebarMenu } from "./components/SidebarMenu.tsx";
-import { JsonView } from "./pages/tracking/JsonView.tsx";
-import { AiShopper } from "./pages/AiShopper.tsx";
-import { CookieConsent } from "./CookieConsent.tsx";
-import { Words } from "./pages/admin/Words.tsx";
-import { OrdersView } from "./pages/admin/OrdersView.tsx";
-import { useItemData } from "./hooks/trackingHooks.ts";
-import { GiftAssistant } from "./pages/gifts.tsx";
-import { Shipping } from "./pages/Shipping.tsx";
-import { NaturalLanguageSearch } from "./pages/natural-language-search.tsx";
-import { DatasetViewer } from "./pages/admin/DatasetViewer.tsx";
-import Register from "./pages/Register.tsx";
-import { UsersView } from "./pages/admin/UsersView.tsx";
-import PWAInstallPrompt from "./components/PWAInstallPrompt.tsx";
-import OfflineIndicator from "./components/OfflineIndicator.tsx";
+} from './pages/admin/EditFieldsView.tsx'
+import { RelationGroupEditor } from './pages/admin/RelationGroupEditor.tsx'
+import { FunnelsView } from './pages/tracking/funnels-view.tsx'
+import { BuilderMain } from './pages/builder/BuilderMain.tsx'
+import { BuilderStartPage } from './pages/builder/BuilderStartPage.tsx'
+import { BuilderComponentFilter } from './pages/builder/BuilderComponentFilter.tsx'
+import { BuilderOverview } from './pages/builder/BuilderOverview.tsx'
+import { componentRules } from './pages/builder/rules.ts'
+import { BuilderComponentSelector } from './pages/builder/BuilderComponentSelector.tsx'
+import { BuilderKit } from './pages/builder/BuilderKit.tsx'
+import { BuilderProductPage } from './pages/builder/BuilderProductPage.tsx'
+import { NotificationsProvider } from './components/ui-notifications/notifications-provider.tsx'
+import ScrollToTop from './components/ScrollToTop.tsx'
+import { TranslationProvider } from './lib/hooks/TranslationProvider.tsx'
+import { english } from './translations/english.ts'
+import { swedish } from './translations/swedish.ts'
+import { FacetGroups } from './pages/admin/FacetGroups.tsx'
+import { getLocale } from './utils.ts'
+import { CspReport } from './pages/tracking/csp-report.tsx'
+import { SessionList } from './components/SessionList.tsx'
+import { Banner } from './components/Banner.tsx'
+import { TrackingProvider } from './lib/hooks/TrackingContext.tsx'
+import { slaskTracker } from './tracking/slaskTracker.ts'
+import { ProductConfigurator } from './pages/ProductConfigurator.tsx'
+import { EmptyQueriesView } from './pages/tracking/empty-queries.tsx'
+import { CompareProvider } from './lib/hooks/CompareProvider.tsx'
+import { GroupDesignerProvider } from './lib/hooks/GroupDesignerProvider.tsx'
+import { SidebarMenu } from './components/SidebarMenu.tsx'
+import { JsonView } from './pages/tracking/JsonView.tsx'
+import { AiShopper } from './pages/AiShopper.tsx'
+import { CookieConsent } from './CookieConsent.tsx'
+import { Words } from './pages/admin/Words.tsx'
+import { OrdersView } from './pages/admin/OrdersView.tsx'
+import { useItemData } from './hooks/trackingHooks.ts'
+import { GiftAssistant } from './pages/gifts.tsx'
+import { Shipping } from './pages/Shipping.tsx'
+import { NaturalLanguageSearch } from './pages/natural-language-search.tsx'
+import { DatasetViewer } from './pages/admin/DatasetViewer.tsx'
+import Register from './pages/Register.tsx'
+import { UsersView } from './pages/admin/UsersView.tsx'
+import PWAInstallPrompt from './components/PWAInstallPrompt.tsx'
+import OfflineIndicator from './components/OfflineIndicator.tsx'
 // Import the functions you need from the SDKs you need
 
 const BubbleError = () => {
-  const error = useRouteError();
+  const error = useRouteError()
   return (
     <PageContainer>
       <SidebarMenu />
@@ -82,21 +82,21 @@ const BubbleError = () => {
         </div>
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
 const BannerLoader = () => {
-  const id = useLoaderData();
-  const { data } = useItemData(id);
+  const id = useLoaderData()
+  const { data } = useItemData(id)
   if (data == null) {
-    return null;
+    return null
   }
-  return <Banner item={data} />;
-};
+  return <Banner item={data} />
+}
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: (
       <PageContainer>
         <QueryProvider attachToHash>
@@ -107,7 +107,7 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "/register",
+    path: '/register',
     element: (
       <PageContainer>
         <Register />
@@ -116,7 +116,7 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "/natural",
+    path: '/natural',
     element: (
       <PageContainer>
         <NaturalLanguageSearch />
@@ -125,7 +125,7 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "/gifts",
+    path: '/gifts',
     element: (
       <PageContainer>
         <GiftAssistant />
@@ -134,7 +134,7 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "/shipping",
+    path: '/shipping',
     element: (
       <PageContainer>
         <Shipping />
@@ -143,9 +143,9 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "banner/:id",
+    path: 'banner/:id',
     loader: ({ params }) => {
-      return Promise.resolve(params.id);
+      return Promise.resolve(params.id)
     },
 
     element: (
@@ -157,7 +157,7 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "ai",
+    path: 'ai',
     element: (
       <PageContainer>
         <AiShopper />
@@ -166,9 +166,9 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "config/:pft",
+    path: 'config/:pft',
     loader: ({ params }) => {
-      return Promise.resolve(params.pft);
+      return Promise.resolve(params.pft)
     },
     element: (
       <PageContainer>
@@ -178,7 +178,7 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "dashboard",
+    path: 'dashboard',
     element: (
       <PageContainer>
         <DashboardView />
@@ -187,7 +187,7 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "builder",
+    path: 'builder',
     element: <BuilderMain />,
     errorElement: <BubbleError />,
     children: [
@@ -196,12 +196,12 @@ const router = createBrowserRouter([
         element: <BuilderStartPage />,
       },
       {
-        path: "component/:id",
+        path: 'component/:id',
         loader: ({ params: { id } }) => Promise.resolve(id),
         element: <BuilderComponentFilter />,
       },
       {
-        path: "product/:componentId/:id",
+        path: 'product/:componentId/:id',
         loader: ({ params: { id, componentId } }) =>
           id != null
             ? getRawData(id).then((d) => ({
@@ -217,24 +217,24 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "selection/:id",
+        path: 'selection/:id',
         loader: ({ params: { id } }) =>
           Promise.resolve(componentRules.find((d) => d.id === id)),
         element: <BuilderComponentSelector />,
       },
       {
-        path: "overview",
+        path: 'overview',
         element: <BuilderOverview />,
       },
       {
-        path: "kit",
+        path: 'kit',
         element: <BuilderKit />,
       },
     ],
   },
 
   {
-    path: "edit",
+    path: 'edit',
     element: (
       <PageContainer>
         <Admin />
@@ -243,54 +243,54 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
     children: [
       {
-        path: "rules",
+        path: 'rules',
         element: <RuleBuilder />,
       },
       {
-        path: "facet_groups",
+        path: 'facet_groups',
         element: <FacetGroups />,
       },
       {
-        path: "facets",
+        path: 'facets',
         index: true,
         element: <EditFacetsView />,
       },
       {
-        path: "fields",
+        path: 'fields',
         element: <EditFieldsView />,
       },
       {
-        path: "missing_fields",
+        path: 'missing_fields',
         element: <MissingFieldsView />,
       },
       {
-        path: "words",
+        path: 'words',
         element: <Words />,
       },
       {
-        path: "relations",
+        path: 'relations',
         element: <RelationGroupEditor />,
       },
       {
-        path: "dataset",
+        path: 'dataset',
         element: <DatasetViewer />,
       },
       {
-        path: "orders",
+        path: 'orders',
         element: <OrdersView />,
       },
       {
-        path: "csp",
+        path: 'csp',
         element: <CspReport />,
       },
       {
-        path: "users",
+        path: 'users',
         element: <UsersView />,
       },
     ],
   },
   {
-    path: "product/:id",
+    path: 'product/:id',
     loader: ({ params: { id } }) =>
       id != null ? getRawData(id) : Promise.resolve(null),
     element: (
@@ -302,40 +302,40 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: "stats",
+    path: 'stats',
     element: (
       <PageContainer>
         <Outlet />
       </PageContainer>
     ),
     children: [
-      { path: "sessions", element: <SessionList /> },
+      { path: 'sessions', element: <SessionList /> },
       {
-        path: "session/:id",
+        path: 'session/:id',
         loader: ({ params: { id } }) => {
-          return id != null ? getTrackingSession(id) : Promise.reject();
+          return id != null ? getTrackingSession(id) : Promise.reject()
         },
         errorElement: <div>Session not found</div>,
         element: <SessionView />,
       },
       {
-        path: "queries",
+        path: 'queries',
         element: <QueriesView />,
       },
       {
-        path: "empty",
+        path: 'empty',
         element: <EmptyQueriesView />,
       },
       {
-        path: "popular",
+        path: 'popular',
         element: <PopularItemsView />,
       },
       {
-        path: "facets",
+        path: 'facets',
         element: <PopularFacetsView />,
       },
       {
-        path: "funnels",
+        path: 'funnels',
         element: <FunnelsView />,
       },
     ],
@@ -372,15 +372,15 @@ const router = createBrowserRouter([
   //     </PageContainer>
   //   ),
   // },
-]);
+])
 
 const getBrowserTranslations = () => {
-  const lang = getLocale();
-  if (lang.startsWith("sv")) return swedish;
-  return english;
-};
+  const lang = getLocale()
+  if (lang.startsWith('sv')) return swedish
+  return english
+}
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <SWRConfig value={{ keepPreviousData: true }}>
       <TrackingProvider handlers={[slaskTracker()]}>
@@ -401,4 +401,4 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       </TrackingProvider>
     </SWRConfig>
   </React.StrictMode>,
-);
+)

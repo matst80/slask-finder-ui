@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWR from 'swr'
 import {
   getAdminRelations,
   getCompatible,
@@ -10,64 +10,64 @@ import {
   getRelations,
   getYourPopularItems,
   streamItems,
-} from "../lib/datalayer/api";
+} from '../lib/datalayer/api'
 import {
   FacetQuery,
   FilteringQuery,
   ItemsQuery,
   RelationGroup,
-} from "../lib/types";
-import { isDefined } from "../utils";
+} from '../lib/types'
+import { isDefined } from '../utils'
 
-const FIELD_SEPARATOR = ":";
-const ID_VALUE_SEPARATOR = "=";
+const FIELD_SEPARATOR = ':'
+const ID_VALUE_SEPARATOR = '='
 
 export const queryFromHash = (hash: string): ItemsQuery => {
-  const hashData = Object.fromEntries(new URLSearchParams(hash).entries());
+  const hashData = Object.fromEntries(new URLSearchParams(hash).entries())
   const integer = (hashData.i as string | undefined)
     ?.split(FIELD_SEPARATOR)
     .map((i) => {
-      const [id, range] = i.split(ID_VALUE_SEPARATOR);
-      const [min, max] = range.split("-").map(Number);
-      return { id: Number(id), min, max };
-    });
+      const [id, range] = i.split(ID_VALUE_SEPARATOR)
+      const [min, max] = range.split('-').map(Number)
+      return { id: Number(id), min, max }
+    })
   const number = (hashData.n as string | undefined)
     ?.split(FIELD_SEPARATOR)
     .map((n) => {
-      const [id, range] = n.split(ID_VALUE_SEPARATOR);
-      const [min, max] = range.split("-").map(Number);
-      return { id: Number(id), min, max };
-    });
+      const [id, range] = n.split(ID_VALUE_SEPARATOR)
+      const [min, max] = range.split('-').map(Number)
+      return { id: Number(id), min, max }
+    })
 
-  const range = [...(integer ?? []), ...(number ?? [])];
+  const range = [...(integer ?? []), ...(number ?? [])]
 
   const string = (hashData.s as string | undefined)
     ?.split(FIELD_SEPARATOR)
     .map((s) => {
-      const [id, value] = s.split(ID_VALUE_SEPARATOR);
-      const exclude = value[0] === "!";
-      const valueWithoutExclude = exclude ? value.substring(1) : value;
+      const [id, value] = s.split(ID_VALUE_SEPARATOR)
+      const exclude = value[0] === '!'
+      const valueWithoutExclude = exclude ? value.substring(1) : value
       return {
         id: Number(id),
         exclude,
-        value: valueWithoutExclude.includes("||")
-          ? valueWithoutExclude.split("||")
+        value: valueWithoutExclude.includes('||')
+          ? valueWithoutExclude.split('||')
           : [valueWithoutExclude],
-      };
-    });
-  const query = hashData.q;
-  const stock = hashData.stock?.split(FIELD_SEPARATOR) ?? [];
-  const sort = hashData.sort ?? "popular";
-  let page = Number(hashData.page) ?? 0;
-  let pageSize = Number(hashData.size) ?? 40;
+      }
+    })
+  const query = hashData.q
+  const stock = hashData.stock?.split(FIELD_SEPARATOR) ?? []
+  const sort = hashData.sort ?? 'popular'
+  let page = Number(hashData.page) ?? 0
+  let pageSize = Number(hashData.size) ?? 40
   if (isNaN(pageSize)) {
-    pageSize = 40;
+    pageSize = 40
   }
   if (isNaN(page)) {
-    page = 0;
+    page = 0
   }
-  return { range, sort, page, pageSize, query, stock, string };
-};
+  return { range, sort, page, pageSize, query, stock, string }
+}
 
 export const queryToHash = ({
   range,
@@ -84,21 +84,21 @@ export const queryToHash = ({
     stock,
     query,
     string,
-  });
-  if (sort != null && sort !== "popular") {
-    filterObj.sort = sort;
+  })
+  if (sort != null && sort !== 'popular') {
+    filterObj.sort = sort
   }
   if (page != null) {
-    filterObj.page = page.toString();
+    filterObj.page = page.toString()
   }
   if (pageSize != null && pageSize !== 40) {
-    filterObj.size = pageSize.toString();
+    filterObj.size = pageSize.toString()
   }
   if (filter != null && filter.length > 0) {
-    filterObj.filter = filter;
+    filterObj.filter = filter
   }
-  return new URLSearchParams(filterObj).toString();
-};
+  return new URLSearchParams(filterObj).toString()
+}
 
 export const filteringQueryToHash = ({
   range,
@@ -106,19 +106,19 @@ export const filteringQueryToHash = ({
   query,
   stock,
 }: FilteringQuery): Record<string, string> => {
-  const result: Record<string, string> = {};
+  const result: Record<string, string> = {}
   if (stock != null && stock.length > 0) {
-    result.stock = stock.join(FIELD_SEPARATOR);
+    result.stock = stock.join(FIELD_SEPARATOR)
   }
   if (query != null && query.length > 0) {
-    result.q = query;
+    result.q = query
   }
   const ints =
     range?.map(({ id, min, max }) => {
-      return `${id}${ID_VALUE_SEPARATOR}${min}-${max}`;
-    }) ?? [];
+      return `${id}${ID_VALUE_SEPARATOR}${min}-${max}`
+    }) ?? []
   if (ints.length > 0) {
-    result.i = ints.join(FIELD_SEPARATOR);
+    result.i = ints.join(FIELD_SEPARATOR)
   }
 
   // const nums =
@@ -133,17 +133,17 @@ export const filteringQueryToHash = ({
     string?.map(({ id, exclude = false, value }) => {
       if (Array.isArray(value) && value.length === 0) {
         // console.log("Empty value for id:", id);
-        return undefined;
+        return undefined
       }
-      return `${id}${ID_VALUE_SEPARATOR}${exclude ? "!" : ""}${
-        Array.isArray(value) ? value.join("||") : value
-      }`;
-    }) ?? [];
+      return `${id}${ID_VALUE_SEPARATOR}${exclude ? '!' : ''}${
+        Array.isArray(value) ? value.join('||') : value
+      }`
+    }) ?? []
   if (strs.length) {
-    result.s = strs.filter(isDefined).join(FIELD_SEPARATOR);
+    result.s = strs.filter(isDefined).join(FIELD_SEPARATOR)
   }
-  return result;
-};
+  return result
+}
 
 export const facetQueryToHash = ({
   range,
@@ -151,71 +151,62 @@ export const facetQueryToHash = ({
   stock,
   string,
 }: FacetQuery): string => {
-  const obj = filteringQueryToHash({ range, stock, string, query });
-  return new URLSearchParams(obj).toString();
-};
+  const obj = filteringQueryToHash({ range, stock, string, query })
+  return new URLSearchParams(obj).toString()
+}
 
-const itemsKey = (data: ItemsQuery) => `items-` + queryToHash(data);
+const itemsKey = (data: ItemsQuery) => `items-` + queryToHash(data)
 
 //const facetsKey = (data: FacetQuery) => "facets-" + facetQueryToHash(data);
 
 export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
-  const {
-    range,
-    sort,
-    page = 0,
-    pageSize,
-    query,
-    stock,
-    string,
-    filter,
-  } = data;
+  const { range, sort, page = 0, pageSize, query, stock, string, filter } = data
 
   const result = new URLSearchParams({
     page: page.toString(),
     size: (pageSize ?? 40)?.toString(),
-    sort: sort ?? "popular",
-    query: query ?? "",
-  });
+    sort: sort ?? 'popular',
+    query: query ?? '',
+  })
   range?.forEach(({ id, min, max }) => {
-    result.append("rng", `${id}:${min}-${max}`);
-  });
+    result.append('rng', `${id}:${min}-${max}`)
+  })
 
   if (ignoredFacets != null && ignoredFacets.length > 0) {
-    ignoredFacets.forEach((value) => result.append("sf", String(value)));
+    ignoredFacets.forEach((value) => result.append('sf', String(value)))
   }
 
   string
     ?.filter(({ value }) => Array.isArray(value) && value.length > 0)
     .forEach(({ id, exclude, value }) => {
       result.append(
-        "str",
-        `${id}:${exclude ? "!" : ""}${
-          Array.isArray(value) ? value.join("||") : value
-        }`
-      );
-    });
+        'str',
+        `${id}:${exclude ? '!' : ''}${
+          Array.isArray(value) ? value.join('||') : value
+        }`,
+      )
+    })
   if (filter?.length) {
-    result.append("filter", filter);
+    result.append('filter', filter)
   }
   stock?.forEach((s) => {
-    result.append("stock", s);
-  });
+    result.append('stock', s)
+  })
 
-  return result.toString();
-};
+  return result.toString()
+}
 
 export const useItemsSearch = (query: ItemsQuery) => {
   return useSWR(
     itemsKey(query),
     () => {
-      return streamItems(toQuery(query));
+      return streamItems(toQuery(query))
     },
     {
       keepPreviousData: true,
-    }
-  );
-};
+    },
+  )
+}
 
 // const delay = <T>(fn: () => Promise<T>, ms: number): (() => Promise<T>) => {
 //   return () =>
@@ -392,28 +383,28 @@ export const useItemsSearch = (query: ItemsQuery) => {
 // };
 
 export const useFacetMap = () => {
-  return useSWR("facet-map", getFacetMap, {
+  return useSWR('facet-map', getFacetMap, {
     revalidateOnFocus: false,
     refreshInterval: 0,
     keepPreviousData: true,
     revalidateIfStale: false,
     focusThrottleInterval: 3600,
-  });
-};
+  })
+}
 
 const getKey = (group: RelationGroup, idx: number) => {
-  return `${group.groupId}-${idx}`;
-};
+  return `${group.groupId}-${idx}`
+}
 
 export const useRelationGroups = () => {
   return useSWR(
-    "relationGroups",
+    'relationGroups',
     () =>
       getRelations().then((data) =>
         data.map((d, i) => ({
           ...d,
           key: getKey(d, i),
-        }))
+        })),
       ),
     {
       revalidateOnFocus: false,
@@ -421,76 +412,76 @@ export const useRelationGroups = () => {
       keepPreviousData: true,
       revalidateIfStale: false,
       focusThrottleInterval: 3600,
-    }
-  );
-};
+    },
+  )
+}
 
 export const useAdminRelationGroups = () => {
   return useSWR(
-    "admin-relationGroups",
+    'admin-relationGroups',
     () =>
       getAdminRelations().then((data) =>
         data.map((d, i) => ({
           ...d,
           key: getKey(d, i),
-        }))
+        })),
       ),
     {
       revalidateOnFocus: false,
       refreshInterval: 0,
       focusThrottleInterval: 3600,
-    }
-  );
-};
+    },
+  )
+}
 
 export const useFacetList = () => {
-  return useSWR("facet-list", getFacetList, {
+  return useSWR('facet-list', getFacetList, {
     revalidateOnFocus: false,
     refreshInterval: 0,
     focusThrottleInterval: 3600,
-  });
-};
+  })
+}
 
 export const useFacetGroups = () => {
-  return useSWR("facet-groups", getFacetGroups, {
+  return useSWR('facet-groups', getFacetGroups, {
     revalidateOnFocus: false,
     refreshInterval: 0,
     focusThrottleInterval: 3600,
-  });
-};
+  })
+}
 
 export const useRelatedItems = (id: number) => {
   return useSWR(`related-items-${id}`, () => getRelated(id), {
     revalidateOnFocus: false,
     refreshInterval: 0,
     focusThrottleInterval: 3600,
-  });
-};
+  })
+}
 
 export const useCosineRelatedItems = (id: number) => {
   return useSWR(`cosine-related-items-${id}`, () => getCosineRelated(id), {
     revalidateOnFocus: false,
     refreshInterval: 0,
     focusThrottleInterval: 3600,
-  });
-};
+  })
+}
 
 export const useCompatibleItems = (id: number, otherIds: number[]) => {
   return useSWR(
-    `compatible-items-${id}-${otherIds?.join("-") ?? ""}`,
+    `compatible-items-${id}-${otherIds?.join('-') ?? ''}`,
     () => getCompatible(id, otherIds),
     {
       revalidateOnFocus: false,
       refreshInterval: 0,
       focusThrottleInterval: 3600,
-    }
-  );
-};
+    },
+  )
+}
 
 export const useYourPopularItems = () => {
-  return useSWR("your-popular-items", () => getYourPopularItems(), {
+  return useSWR('your-popular-items', () => getYourPopularItems(), {
     revalidateOnFocus: false,
     refreshInterval: 0,
     focusThrottleInterval: 3600,
-  });
-};
+  })
+}

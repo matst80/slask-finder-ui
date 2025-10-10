@@ -1,52 +1,48 @@
-import { PropsWithChildren, useCallback, useMemo, useState } from "react";
-import { Sorting } from "./Sorting";
-import { useQuery } from "../lib/hooks/useQuery";
-import { FilterQuery } from "./FilterQuery";
-import { useTranslations } from "../lib/hooks/useTranslations";
-import { Button } from "./ui/button";
-import { BotMessageSquare } from "lucide-react";
-import { Sidebar } from "./ui/sidebar";
-import { useFacetMap } from "../hooks/searchHooks";
-import { convertItemSimple } from "../pages/tools";
-import {
-  AiShoppingProvider,
-  MessageList,
-  QueryInput,
-} from "../pages/AiShopper";
+import { PropsWithChildren, useCallback, useMemo, useState } from 'react'
+import { Sorting } from './Sorting'
+import { useQuery } from '../lib/hooks/useQuery'
+import { FilterQuery } from './FilterQuery'
+import { useTranslations } from '../lib/hooks/useTranslations'
+import { Button } from './ui/button'
+import { BotMessageSquare } from 'lucide-react'
+import { Sidebar } from './ui/sidebar'
+import { useFacetMap } from '../hooks/searchHooks'
+import { convertItemSimple } from '../pages/tools'
+import { AiShoppingProvider, MessageList, QueryInput } from '../pages/AiShopper'
 
 export const TotalResultText = ({
-  className = "md:text-2xl font-bold",
+  className = 'md:text-2xl font-bold',
 }: {
-  className?: string;
+  className?: string
 }) => {
-  const t = useTranslations();
-  const { totalHits } = useQuery();
+  const t = useTranslations()
+  const { totalHits } = useQuery()
   return (
     <h1 className={className}>
-      {t("result.header", { hits: totalHits ?? "~" })}
+      {t('result.header', { hits: totalHits ?? '~' })}
     </h1>
-  );
-};
+  )
+}
 
 const AiChatForResults = () => {
-  const { hits } = useQuery();
-  const { data: facets } = useFacetMap();
-  const convertItem = useCallback(convertItemSimple(facets ?? {}), [facets]);
+  const { hits } = useQuery()
+  const { data: facets } = useFacetMap()
+  const convertItem = useCallback(convertItemSimple(facets ?? {}), [facets])
   const contextItems = useMemo(() => {
-    return hits.map(convertItem).slice(0, 10);
-  }, [hits, facets]);
+    return hits.map(convertItem).slice(0, 10)
+  }, [hits, facets])
   if (contextItems.length === 0) {
-    return null;
+    return null
   }
   return (
     <AiShoppingProvider
       messages={[
         {
-          role: "system",
+          role: 'system',
           content:
-            "The user needs some help, use items listed here dont search for new ones!\n```json\n" +
+            'The user needs some help, use items listed here dont search for new ones!\n```json\n' +
             JSON.stringify(contextItems) +
-            "\n```",
+            '\n```',
         },
       ]}
     >
@@ -58,14 +54,14 @@ const AiChatForResults = () => {
         <QueryInput />
       </div>
     </AiShoppingProvider>
-  );
-};
+  )
+}
 
 export const ResultHeader = ({ children }: PropsWithChildren) => {
-  const { totalHits, query } = useQuery();
-  const [open, setOpen] = useState(false);
+  const { totalHits, query } = useQuery()
+  const [open, setOpen] = useState(false)
   if (totalHits === 0 && !query.filter) {
-    return null;
+    return null
   }
 
   return (
@@ -93,5 +89,5 @@ export const ResultHeader = ({ children }: PropsWithChildren) => {
       </header>
       <FilterQuery show={!!query.filter || (totalHits ?? 0) > 40} />
     </>
-  );
-};
+  )
+}

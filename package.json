@@ -30,6 +30,7 @@
     "tailwind-scrollbar": "^4.0.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.2.5",
     "@tailwindcss/postcss": "^4.1.4",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
@@ -52,16 +53,8 @@
     "vite-plugin-pwa": "^1.0.3"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix --max-warnings 0",
-      "prettier --write"
-    ],
-    "*.{js,jsx}": [
-      "eslint --fix --max-warnings 0",
-      "prettier --write"
-    ],
-    "*.{json,css,md}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx}": ["eslint --fix --max-warnings 0", "prettier --write"],
+    "*.{js,jsx}": ["eslint --fix --max-warnings 0", "prettier --write"],
+    "*.{json,css,md}": ["prettier --write"]
   }
 }

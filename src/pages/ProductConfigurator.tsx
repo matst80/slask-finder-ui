@@ -1,35 +1,31 @@
-import { QueryProvider } from "../lib/hooks/QueryProvider";
-import { useQuery } from "../lib/hooks/useQuery";
-import { useMemo } from "react";
-import { Facet, isKeyFacet, KeyFacet } from "../lib/types";
-import { useQueryKeyFacet } from "../lib/hooks/useQueryKeyFacet";
+import { QueryProvider } from '../lib/hooks/QueryProvider'
+import { useQuery } from '../lib/hooks/useQuery'
+import { useMemo } from 'react'
+import { Facet, isKeyFacet, KeyFacet } from '../lib/types'
+import { useQueryKeyFacet } from '../lib/hooks/useQueryKeyFacet'
 
-import { Button } from "../components/ui/button";
-import { makeImageUrl } from "../utils";
-import { FacetProvider } from "../lib/hooks/FacetProvider";
-import { useFacets } from "../lib/hooks/useFacets";
-import { useLoaderData } from "react-router-dom";
-import { NumberFacetSelector } from "../components/facets/NumericFacetSelectors";
+import { Button } from '../components/ui/button'
+import { makeImageUrl } from '../utils'
+import { FacetProvider } from '../lib/hooks/FacetProvider'
+import { useFacets } from '../lib/hooks/useFacets'
+import { useLoaderData } from 'react-router-dom'
+import { NumberFacetSelector } from '../components/facets/NumericFacetSelectors'
 
 const ignoredFacets = [
   2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559, 31158, 31693,
   34137, 30648, 30382, 31684, 30657,
-];
+]
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
     .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([value, count]) => ({ value, count }));
+    .map(([value, count]) => ({ value, count }))
 
 export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
-  const { values } = result;
-  const {
-    filter: filterValue,
-    updateValue,
-    removeValue,
-  } = useQueryKeyFacet(id);
+  const { values } = result
+  const { filter: filterValue, updateValue, removeValue } = useQueryKeyFacet(id)
 
-  const allSorted = useMemo(() => toSorted(values), [values]);
+  const allSorted = useMemo(() => toSorted(values), [values])
 
   //const { data: popularValues } = useKeyFacetValuePopularity(id);
 
@@ -40,7 +36,7 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
         {allSorted.map(({ value }) => {
           return (
             <Button
-              variant={filterValue.has(value) ? "default" : "outline"}
+              variant={filterValue.has(value) ? 'default' : 'outline'}
               size="sm"
               onClick={() =>
                 filterValue.has(value)
@@ -54,18 +50,18 @@ export const KeyFacetSelector = ({ name, id, result }: KeyFacet) => {
                 <span className="text-sm text-gray-400">({count})</span>
               )} */}
             </Button>
-          );
+          )
         })}
       </fieldset>
     </div>
-  );
-};
+  )
+}
 
 export const FacetSelector = () => {
-  const { facets } = useFacets();
+  const { facets } = useFacets()
   const toShow = useMemo<Facet[]>(() => {
-    return facets.filter((facet) => !ignoredFacets.includes(facet.id));
-  }, [facets]);
+    return facets.filter((facet) => !ignoredFacets.includes(facet.id))
+  }, [facets])
   return (
     <div className="flex flex-col gap-3">
       {toShow.map((facet) =>
@@ -76,16 +72,16 @@ export const FacetSelector = () => {
         ),
       )}
     </div>
-  );
-};
+  )
+}
 
 const ResultItem = () => {
-  const { hits, totalHits } = useQuery();
-  const [first] = hits;
+  const { hits, totalHits } = useQuery()
+  const [first] = hits
   if (!first) {
-    return <div className="flex items-center justify-center h-full"></div>;
+    return <div className="flex items-center justify-center h-full"></div>
   }
-  const { title, img } = first;
+  const { title, img } = first
 
   return (
     <div className="flex items-center justify-center h-full p-6 relative">
@@ -98,11 +94,11 @@ const ResultItem = () => {
         alt={title}
       />
     </div>
-  );
-};
+  )
+}
 
 export const ProductConfigurator = () => {
-  const pft = useLoaderData();
+  const pft = useLoaderData()
   return (
     <div className="grid grid-cols-1 md:grid-cols-[300px_auto] gap-2 h-screen">
       <QueryProvider
@@ -120,5 +116,5 @@ export const ProductConfigurator = () => {
         {/* <SearchResultList /> */}
       </QueryProvider>
     </div>
-  );
-};
+  )
+}

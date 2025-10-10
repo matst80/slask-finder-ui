@@ -1,25 +1,25 @@
-import fuzzysort from "fuzzysort";
-import { useState, useMemo } from "react";
-import { useTranslations } from "../../lib/hooks/useTranslations";
-import { useFacetGroups, useFacetList } from "../../hooks/searchHooks";
-import { updateFacetGroups } from "../../lib/datalayer/api";
-import { useNotifications } from "../../components/ui-notifications/useNotifications";
+import fuzzysort from 'fuzzysort'
+import { useState, useMemo } from 'react'
+import { useTranslations } from '../../lib/hooks/useTranslations'
+import { useFacetGroups, useFacetList } from '../../hooks/searchHooks'
+import { updateFacetGroups } from '../../lib/datalayer/api'
+import { useNotifications } from '../../components/ui-notifications/useNotifications'
 
 // UI Components
-import { Input } from "../../components/ui/input";
-import { Button } from "../../components/ui/button";
+import { Input } from '../../components/ui/input'
+import { Button } from '../../components/ui/button'
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "../../components/ui/card";
-import { Label } from "../../components/ui/label";
-import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
-import { Checkbox } from "../../components/ui/checkbox";
-import { Badge } from "../../components/ui/badge";
-import { Separator } from "../../components/ui/separator";
+} from '../../components/ui/card'
+import { Label } from '../../components/ui/label'
+import { RadioGroup, RadioGroupItem } from '../../components/ui/radio-group'
+import { Checkbox } from '../../components/ui/checkbox'
+import { Badge } from '../../components/ui/badge'
+import { Separator } from '../../components/ui/separator'
 
 // Icons
 import {
@@ -31,45 +31,45 @@ import {
   Filter,
   AlertCircle,
   Loader2,
-} from "lucide-react";
+} from 'lucide-react'
 
 export const FacetGroups = () => {
-  const t = useTranslations();
+  const t = useTranslations()
   const [request, setRequest] = useState<{
-    group_id: number;
-    group_name: string;
-  }>({ group_id: 0, group_name: "" });
-  const { showNotification } = useNotifications();
-  const [filter, setFilter] = useState<string>("");
-  const [ids, setIds] = useState<number[]>([]);
-  const [saving, setSaving] = useState(false);
-  const { data: facets, isLoading: loadingFacets } = useFacetList();
-  const { data: groups, isLoading: loadingGroups } = useFacetGroups();
+    group_id: number
+    group_name: string
+  }>({ group_id: 0, group_name: '' })
+  const { showNotification } = useNotifications()
+  const [filter, setFilter] = useState<string>('')
+  const [ids, setIds] = useState<number[]>([])
+  const [saving, setSaving] = useState(false)
+  const { data: facets, isLoading: loadingFacets } = useFacetList()
+  const { data: groups, isLoading: loadingGroups } = useFacetGroups()
 
   const updateGroups = () => {
-    setSaving(true);
+    setSaving(true)
     updateFacetGroups({ ...request, facet_ids: ids })
       .then((ok) => {
         showNotification({
-          variant: ok ? "success" : "error",
+          variant: ok ? 'success' : 'error',
           title: ok
-            ? t("facet_groups.update_success_title")
-            : t("facet_groups.update_error_title"),
+            ? t('facet_groups.update_success_title')
+            : t('facet_groups.update_error_title'),
           message: ok
-            ? t("facet_groups.update_success")
-            : t("facet_groups.update_error"),
-        });
+            ? t('facet_groups.update_success')
+            : t('facet_groups.update_error'),
+        })
       })
       .finally(() => {
-        setSaving(false);
-      });
-  };
+        setSaving(false)
+      })
+  }
 
   const filteredFacets = useMemo(
     () =>
       fuzzysort
         .go(filter, facets ?? [], {
-          keys: ["name", "id"],
+          keys: ['name', 'id'],
           threshold: 0.2,
           limit: 1000,
         })
@@ -77,16 +77,16 @@ export const FacetGroups = () => {
           ...obj,
           selected: ids.includes(obj.id),
         })),
-    [filter, facets, ids]
-  );
+    [filter, facets, ids],
+  )
 
   const handleSelectAll = () => {
-    setIds(filteredFacets.map((facet) => facet.id));
-  };
+    setIds(filteredFacets.map((facet) => facet.id))
+  }
 
   const handleClearAll = () => {
-    setIds([]);
-  };
+    setIds([])
+  }
 
   return (
     <div className="center-container px-4 py-8">
@@ -98,7 +98,7 @@ export const FacetGroups = () => {
             <CardHeader className="bg-gradient-to-b from-slate-50 to-white pb-6">
               <div className="flex items-center mb-2">
                 <Layers className="text-blue-500 mr-2 h-5 w-5" />
-                <CardTitle>{t("facet_groups.list")}</CardTitle>
+                <CardTitle>{t('facet_groups.list')}</CardTitle>
               </div>
               <CardDescription>
                 Select an existing group or create a new one
@@ -118,13 +118,13 @@ export const FacetGroups = () => {
                   <RadioGroup
                     value={request.group_id.toString()}
                     onValueChange={(value) => {
-                      const groupId = parseInt(value);
-                      const group = groups?.find((g) => g.id === groupId);
-                      setIds([]);
+                      const groupId = parseInt(value)
+                      const group = groups?.find((g) => g.id === groupId)
+                      setIds([])
                       setRequest({
                         group_id: groupId,
-                        group_name: group?.name || "",
-                      });
+                        group_name: group?.name || '',
+                      })
                     }}
                     className="space-y-2.5"
                   >
@@ -157,7 +157,7 @@ export const FacetGroups = () => {
                         htmlFor="group-name"
                         className="block text-slate-700 font-medium"
                       >
-                        {t("facet_groups.group_name")}
+                        {t('facet_groups.group_name')}
                       </Label>
                       <Input
                         id="group-name"
@@ -175,7 +175,7 @@ export const FacetGroups = () => {
                         htmlFor="group-id"
                         className="block text-slate-700 font-medium"
                       >
-                        {t("facet_groups.group_id")}
+                        {t('facet_groups.group_id')}
                       </Label>
                       <Input
                         id="group-id"
@@ -205,7 +205,7 @@ export const FacetGroups = () => {
             <CardHeader className="bg-gradient-to-b from-slate-50 to-white pb-6">
               <div className="flex items-center mb-2">
                 <CheckCircle2 className="text-purple-500 mr-2 h-5 w-5" />
-                <CardTitle>{t("facet_groups.facets")}</CardTitle>
+                <CardTitle>{t('facet_groups.facets')}</CardTitle>
               </div>
               <CardDescription>
                 Select facets to include in this group
@@ -255,8 +255,8 @@ export const FacetGroups = () => {
                           key={facet.id}
                           className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 ${
                             facet.selected
-                              ? "bg-purple-50 border border-purple-200"
-                              : "hover:bg-slate-50 border border-transparent hover:border-slate-200"
+                              ? 'bg-purple-50 border border-purple-200'
+                              : 'hover:bg-slate-50 border border-transparent hover:border-slate-200'
                           }`}
                         >
                           <Checkbox
@@ -266,8 +266,8 @@ export const FacetGroups = () => {
                               setIds((prev) =>
                                 checked
                                   ? [...prev, facet.id]
-                                  : prev.filter((id) => id !== facet.id)
-                              );
+                                  : prev.filter((id) => id !== facet.id),
+                              )
                             }}
                             className="border-2 border-purple-400 data-[state=checked]:bg-purple-600"
                           />
@@ -311,11 +311,11 @@ export const FacetGroups = () => {
           ) : (
             <>
               <Save className="mr-2 h-4 w-4" />
-              {t("common.save")}
+              {t('common.save')}
             </>
           )}
         </Button>
       </div>
     </div>
-  );
-};
+  )
+}

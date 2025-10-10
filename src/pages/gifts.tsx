@@ -1,62 +1,62 @@
-import { useMemo, useState } from "react";
-import { Facets } from "../components/Facets";
-import { SearchResultList } from "../components/SearchResultList";
-import { FacetProvider } from "../lib/hooks/FacetProvider";
-import { QueryProvider } from "../lib/hooks/QueryProvider";
-import { ItemsQuery, NumberValue } from "../lib/types";
-import { QueryUpdater } from "../components/QueryMerger";
-import { Slider } from "../components/facets/Slider";
-import { AiShoppingProvider, MessageList, QueryInput } from "./AiShopper";
+import { useMemo, useState } from 'react'
+import { Facets } from '../components/Facets'
+import { SearchResultList } from '../components/SearchResultList'
+import { FacetProvider } from '../lib/hooks/FacetProvider'
+import { QueryProvider } from '../lib/hooks/QueryProvider'
+import { ItemsQuery, NumberValue } from '../lib/types'
+import { QueryUpdater } from '../components/QueryMerger'
+import { Slider } from '../components/facets/Slider'
+import { AiShoppingProvider, MessageList, QueryInput } from './AiShopper'
 
 type Persona = Partial<ItemsQuery> & {
-  title: string;
-  id: string;
-};
+  title: string
+  id: string
+}
 
 const personas: Record<string, Persona> = {
   gamer: {
-    title: "Gamer",
-    string: [{ id: 10, value: ["Gaming"] }],
-    id: "gamer",
+    title: 'Gamer',
+    string: [{ id: 10, value: ['Gaming'] }],
+    id: 'gamer',
   },
   all: {
-    title: "Everyone",
-    string: [{ id: 10, value: ["Outlet"], exclude: true }],
-    id: "all",
+    title: 'Everyone',
+    string: [{ id: 10, value: ['Outlet'], exclude: true }],
+    id: 'all',
   },
   homeOwner: {
-    title: "Home Owner",
-    string: [{ id: 30, value: ["PT100"] }],
-    id: "homeOwner",
+    title: 'Home Owner',
+    string: [{ id: 30, value: ['PT100'] }],
+    id: 'homeOwner',
   },
   husband: {
-    title: "Husband",
+    title: 'Husband',
     string: [
       //{ id: 10, value: ["Outlet"], exclude: true },
-      { id: 31, value: ["PT221"] },
+      { id: 31, value: ['PT221'] },
     ],
-    id: "husband",
+    id: 'husband',
   },
   wife: {
-    title: "Wife",
+    title: 'Wife',
     string: [
       //{ id: 10, value: ["Outlet"], exclude: true },
 
       //32:PT424
-      { id: 30, value: ["PT106"] },
-      { id: 32, value: ["PT424"], exclude: true },
+      { id: 30, value: ['PT106'] },
+      { id: 32, value: ['PT424'], exclude: true },
     ],
-    id: "wife",
+    id: 'wife',
   },
-};
+}
 
 export const GiftAssistant = () => {
-  const [persona, setPersona] = useState<Persona>(personas.all);
-  const [numberOfGifters, setNumberOfGifter] = useState(1);
+  const [persona, setPersona] = useState<Persona>(personas.all)
+  const [numberOfGifters, setNumberOfGifter] = useState(1)
   const [priceFilter, setPriceFilter] = useState<NumberValue>({
     min: 200,
     max: 500,
-  });
+  })
 
   const query = useMemo<ItemsQuery>(() => {
     return {
@@ -70,11 +70,11 @@ export const GiftAssistant = () => {
       ],
       string: [
         ...(persona.string ?? []),
-        { id: 32, value: ["PT320"], exclude: true },
+        { id: 32, value: ['PT320'], exclude: true },
       ],
       pageSize: 20,
-    } satisfies ItemsQuery;
-  }, [priceFilter, numberOfGifters, persona]);
+    } satisfies ItemsQuery
+  }, [priceFilter, numberOfGifters, persona])
   return (
     <QueryProvider initialQuery={query}>
       <QueryUpdater query={query} />
@@ -121,7 +121,7 @@ export const GiftAssistant = () => {
                 id="persona"
                 value={persona.id}
                 onChange={(e) => {
-                  setPersona(personas[e.target.value]);
+                  setPersona(personas[e.target.value])
                 }}
                 className="border border-gray-300 rounded px-2 py-1"
               >
@@ -136,7 +136,7 @@ export const GiftAssistant = () => {
               //customTools={[{}]}
               messages={[
                 {
-                  role: "system",
+                  role: 'system',
                   content: `You are a gift assistant. use the tools to find the perfect gift, start by identifying who should receive the gift, price id 4 is in öre, use filter refinement based on string cgm id:37 values for the cgms (dont use the cgm name, and skip the q parameter to start with) [
 	{
 		"value": "511",
@@ -583,5 +583,5 @@ export const GiftAssistant = () => {
         </div>
       </div>
     </QueryProvider>
-  );
-};
+  )
+}

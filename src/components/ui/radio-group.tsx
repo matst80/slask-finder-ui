@@ -1,33 +1,33 @@
-import * as React from "react";
+import * as React from 'react'
 
 interface RadioGroupContextValue {
-  value: string;
-  name: string;
-  onValueChange: (value: string) => void;
+  value: string
+  name: string
+  onValueChange: (value: string) => void
 }
 
 const RadioGroupContext = React.createContext<
   RadioGroupContextValue | undefined
->(undefined);
+>(undefined)
 
 const useRadioGroup = () => {
-  const context = React.useContext(RadioGroupContext);
+  const context = React.useContext(RadioGroupContext)
   if (!context) {
     throw new Error(
-      "RadioGroup components must be used within a RadioGroup provider"
-    );
+      'RadioGroup components must be used within a RadioGroup provider',
+    )
   }
-  return context;
-};
+  return context
+}
 
 interface RadioGroupProps extends React.HTMLAttributes<HTMLDivElement> {
-  value: string;
-  onValueChange: (value: string) => void;
+  value: string
+  onValueChange: (value: string) => void
 }
 
 const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
   ({ value, onValueChange, className, children, ...props }, ref) => {
-    const name = React.useId();
+    const name = React.useId()
     return (
       <RadioGroupContext.Provider value={{ value, onValueChange, name }}>
         <div
@@ -39,20 +39,20 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
           {children}
         </div>
       </RadioGroupContext.Provider>
-    );
-  }
-);
-RadioGroup.displayName = "RadioGroup";
+    )
+  },
+)
+RadioGroup.displayName = 'RadioGroup'
 
 interface RadioGroupItemProps extends React.HTMLAttributes<HTMLDivElement> {
-  value: string;
-  id?: string;
+  value: string
+  id?: string
 }
 
 const RadioGroupItem = React.forwardRef<HTMLDivElement, RadioGroupItemProps>(
   ({ className, id, value, ...props }, ref) => {
-    const { value: groupValue, onValueChange, name } = useRadioGroup();
-    const checked = value === groupValue;
+    const { value: groupValue, onValueChange, name } = useRadioGroup()
+    const checked = value === groupValue
 
     return (
       <>
@@ -64,13 +64,13 @@ const RadioGroupItem = React.forwardRef<HTMLDivElement, RadioGroupItemProps>(
           name={name}
           className="hidden"
           onChange={(e) => {
-            if (e.target.checked) onValueChange(value);
+            if (e.target.checked) onValueChange(value)
           }}
         />
         <div
           ref={ref}
           className={`aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-            checked ? "bg-primary" : "bg-background"
+            checked ? 'bg-primary' : 'bg-background'
           } ${className}`}
           onClick={() => onValueChange(value)}
           aria-checked={checked}
@@ -85,9 +85,9 @@ const RadioGroupItem = React.forwardRef<HTMLDivElement, RadioGroupItemProps>(
           )}
         </div>
       </>
-    );
-  }
-);
-RadioGroupItem.displayName = "RadioGroupItem";
+    )
+  },
+)
+RadioGroupItem.displayName = 'RadioGroupItem'
 
-export { RadioGroup, RadioGroupItem };
+export { RadioGroup, RadioGroupItem }

@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useMemo } from 'react'
 
 interface FunnelItem {
   id: string | number
@@ -21,7 +21,7 @@ export const FunnelChart = ({
   data,
   width = 600,
   height = 400,
-  className = "",
+  className = '',
   showLabels = true,
   showValues = true,
   showPercentages = true,
@@ -40,12 +40,12 @@ export const FunnelChart = ({
 
   // Enhanced color palette
   const defaultColors = [
-    "#4338ca", // indigo-700
-    "#4f46e5", // indigo-600
-    "#6366f1", // indigo-500
-    "#818cf8", // indigo-400
-    "#a5b4fc", // indigo-300
-    "#c7d2fe", // indigo-200
+    '#4338ca', // indigo-700
+    '#4f46e5', // indigo-600
+    '#6366f1', // indigo-500
+    '#818cf8', // indigo-400
+    '#a5b4fc', // indigo-300
+    '#c7d2fe', // indigo-200
   ]
 
   // Calculate trapezoid points for each segment
@@ -57,7 +57,9 @@ export const FunnelChart = ({
     const availableWidth = width - padding * 2
 
     return sortedData.map((item, index) => {
-      const topWidth = availableWidth * (index === 0 ? 1 : sortedData[index - 1].value / maxValue)
+      const topWidth =
+        availableWidth *
+        (index === 0 ? 1 : sortedData[index - 1].value / maxValue)
       const bottomWidth = availableWidth * (item.value / maxValue)
 
       const x1 = (width - topWidth) / 2
@@ -70,8 +72,9 @@ export const FunnelChart = ({
 
       // Calculate drop rate from previous step
       const prevValue = index > 0 ? sortedData[index - 1].value : item.value
-      const dropRate = prevValue > 0 ? ((prevValue - item.value) / prevValue) * 100 : 0
-      
+      const dropRate =
+        prevValue > 0 ? ((prevValue - item.value) / prevValue) * 100 : 0
+
       return {
         points: `${x1},${y1} ${x2},${y1} ${x4},${y2} ${x3},${y2}`,
         item,
@@ -86,12 +89,22 @@ export const FunnelChart = ({
   }, [sortedData, width, height, maxValue, totalValue, defaultColors])
 
   if (data.length === 0) {
-    return <div className="text-center p-4 text-gray-500">No data available for visualization</div>
+    return (
+      <div className="text-center p-4 text-gray-500">
+        No data available for visualization
+      </div>
+    )
   }
 
   return (
     <div className={`relative ${className}`}>
-      <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible" preserveAspectRatio="xMidYMid meet">
+      <svg
+        width="100%"
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        className="overflow-visible"
+        preserveAspectRatio="xMidYMid meet"
+      >
         <defs>
           {segments.map((segment) => (
             <linearGradient
@@ -107,7 +120,7 @@ export const FunnelChart = ({
             </linearGradient>
           ))}
         </defs>
-        
+
         {/* Draw shadows for depth */}
         {segments.map((segment) => (
           <polygon
@@ -117,7 +130,7 @@ export const FunnelChart = ({
             transform="translate(3, 3)"
           />
         ))}
-        
+
         {/* Draw segments with gradients */}
         {segments.map((segment, index) => (
           <g key={segment.item.id}>
@@ -143,7 +156,7 @@ export const FunnelChart = ({
                 fontSize="14"
                 fontWeight="bold"
                 className="pointer-events-none"
-                style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}
+                style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
               >
                 {segment.item.label}
                 {showValues && ` (${segment.item.value.toLocaleString()})`}
@@ -152,22 +165,22 @@ export const FunnelChart = ({
             )}
           </g>
         ))}
-        
+
         {/* Add connecting lines between segments */}
         {segments.map((segment, index) => {
           if (index === segments.length - 1) return null
-          
+
           const nextSegment = segments[index + 1]
           if (!nextSegment) return null
-          
+
           const points = segment.points.split(' ')
           const nextPoints = nextSegment.points.split(' ')
-          
+
           const bottomLeft = points[3].split(',')
           const bottomRight = points[2].split(',')
           const topLeft = nextPoints[0].split(',')
           const topRight = nextPoints[1].split(',')
-          
+
           return (
             <line
               key={`connector-${segment.item.id}`}

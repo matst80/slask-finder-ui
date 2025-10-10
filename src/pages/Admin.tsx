@@ -1,8 +1,8 @@
-import { Outlet } from "react-router-dom";
-import { useKeyboardAdminToggle } from "../hooks/appState";
+import { Outlet } from 'react-router-dom'
+import { useKeyboardAdminToggle } from '../hooks/appState'
 
 export const Admin = () => {
-  useKeyboardAdminToggle();
+  useKeyboardAdminToggle()
   return (
     <>
       {/* <AdminNavBar /> */}
@@ -11,5 +11,5 @@ export const Admin = () => {
         {/* <SaveButton /> */}
       </div>
     </>
-  );
-};
+  )
+}
