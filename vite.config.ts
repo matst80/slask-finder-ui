@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target, //: localTarget,
+        target: localTarget,
         changeOrigin: true,
       },
       "/cart": {
