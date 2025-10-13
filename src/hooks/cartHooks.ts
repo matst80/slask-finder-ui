@@ -2,6 +2,7 @@ import useSWR from "swr";
 import { clearCart } from "../lib/datalayer/api";
 import {
   addToCart,
+  addToCartMultiple,
   changeQuantity,
   getCart,
   removeFromCart,
@@ -30,38 +31,27 @@ export const useResetCart = () => {
 export const useAddMultipleToCart = () => {
   const { showNotification } = useNotifications();
   return useFetchMutation(cartKey, (items: (Item & { quantity?: number })[]) =>
-    Promise.all(
-      items.map((item, idx) =>
-        addToCart({ sku: item.sku, quantity: item.quantity ?? 1 })
-          .then((cart) => {
-            showNotification({
-              title: "Added to cart",
-              message: `${item.title} has been added to your cart.`,
-              variant: "success",
-            });
-            trackCart({
-              ...toEcomTrackingEvent(item, idx),
-              quantity: item.quantity ?? 1,
-              type: "add",
-            });
-            return cart;
-          })
-          .catch(() => {
-            showNotification({
-              title: "Error",
-              message: `Failed to add ${item.title} to your cart.`,
-              variant: "error",
-            });
-            return null;
-          }),
-      ),
-    ).then((r) => {
-      const carts = r.filter(isDefined);
-      return carts[carts.length - 1];
-    }),
-  {
-    revalidate: true,
-  });
+    addToCartMultiple(
+      items.map((d) => ({ sku: d.sku, quantity: d.quantity || 1 })),
+    )
+      .then((data) => {
+        showNotification({
+          title: "Success",
+          message: `Added ${items.length} items to cart.`,
+          variant: "success",
+        });
+        return data;
+      })
+      .catch((error) => {
+        //console.warn(error);
+        showNotification({
+          title: "Error",
+          message: `Failed to add ${items.length} items to cart.`,
+          variant: "error",
+        });
+        return error;
+      }),
+  );
 };
 
 export const useAddToCart = () => {
