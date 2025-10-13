@@ -5,104 +5,99 @@ import {
   useEffect,
   useMemo,
   useState,
-} from "react";
-import { Input } from "../components/ui/input";
-import { useCart } from "../hooks/cartHooks";
-import { toJson } from "../lib/datalayer/api";
-import { Label } from "../components/ui/label";
-import { isDefined } from "../utils";
-import {
-  ShippingOption,
-  CheckoutTexts,
-  Day,
-  TimeRange,
-} from "./shipping-types";
+} from 'react'
+import { Input } from '../components/ui/input'
+import { useCart } from '../hooks/cartHooks'
+import { toJson } from '../lib/datalayer/api'
+import { Label } from '../components/ui/label'
+import { isDefined } from '../utils'
+import { ShippingOption, CheckoutTexts, Day, TimeRange } from './shipping-types'
 
 type ShippingContextProps = {
-  options: ShippingOption[];
-  isLoading: boolean;
-  setDeliveryOption: (optionId: string) => void;
-  checkOptions: (zip: string) => void;
-};
+  options: ShippingOption[]
+  isLoading: boolean
+  setDeliveryOption: (optionId: string) => void
+  checkOptions: (zip: string) => void
+}
 
-const ShippingContext = createContext<ShippingContextProps | null>(null);
+const ShippingContext = createContext<ShippingContextProps | null>(null)
 
 export const ShippingProvider = ({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) => {
-  const { data, isLoading, mutate } = useCart();
+  const { data, isLoading, mutate } = useCart()
 
   const [options, setOptions] = useState<
     (ShippingOption & { selected?: boolean })[]
-  >([]);
-  const [loadingOptions, setLoadingOptions] = useState<boolean>(false);
-  const { id, deliveries } = data ?? {};
+  >([])
+  const [loadingOptions, setLoadingOptions] = useState<boolean>(false)
+  const { id, deliveries } = data ?? {}
   useEffect(() => {
     if (deliveries) {
-      const optionTypes = new Set(deliveries.map((d) => d.provider));
+      const optionTypes = new Set(deliveries.map((d) => d.provider))
       if (options) {
         setOptions(
           options.map((option) => ({
             ...option,
             selected: optionTypes.has(option.type),
-          }))
-        );
+          })),
+        )
       }
     }
-  }, [deliveries]);
+  }, [deliveries])
   useEffect(() => {
     if (id && !options.length) {
-      setLoadingOptions(true);
+      setLoadingOptions(true)
       fetch(`/api/shipping-options/${id}`)
         .then((response) => toJson<ShippingOption[]>(response))
         .then((opts) => {
-          const optionTypes = new Set(deliveries?.map((d) => d.provider));
+          const optionTypes = new Set(deliveries?.map((d) => d.provider))
           setOptions(
             opts.map((d) => ({
               ...d,
               selected: optionTypes.has(d.type),
-            })) || []
-          );
+            })) || [],
+          )
         })
         .finally(() => {
-          setLoadingOptions(false);
-        });
+          setLoadingOptions(false)
+        })
     }
-  }, [id]);
+  }, [id])
   const checkOptions = useCallback(
     (zip: string) => {
       if (id && zip) {
         fetch(`/api/shipping-options/${id}/${zip}`)
           .then((response) =>
-            toJson<{ deliveryOptions: ShippingOption[] }>(response)
+            toJson<{ deliveryOptions: ShippingOption[] }>(response),
           )
           .then((opts) => {
-            const optionTypes = new Set(deliveries?.map((d) => d.provider));
+            const optionTypes = new Set(deliveries?.map((d) => d.provider))
             setOptions(
               opts.deliveryOptions.map((d) => ({
                 ...d,
                 selected: optionTypes.has(d.type),
-              })) || []
-            );
-          });
+              })) || [],
+            )
+          })
       }
     },
-    [id]
-  );
+    [id],
+  )
   const setDeliveryOption = useCallback(
     (optionId: string) => {
       if (id && optionId) {
         fetch(`/api/shipping-options/${id}/${optionId}`, {
-          method: "PUT",
+          method: 'PUT',
         }).then((response) => {
-          response.ok && mutate();
-        });
+          response.ok && mutate()
+        })
       }
     },
-    [id]
-  );
+    [id],
+  )
   const value = useMemo(
     () => ({
       cart: data,
@@ -111,28 +106,26 @@ export const ShippingProvider = ({
       setDeliveryOption,
       checkOptions,
     }),
-    [data, options, isLoading, loadingOptions, setDeliveryOption, checkOptions]
-  );
+    [data, options, isLoading, loadingOptions, setDeliveryOption, checkOptions],
+  )
   return (
     <ShippingContext.Provider value={value}>
       {children}
     </ShippingContext.Provider>
-  );
-};
+  )
+}
 
 const useShippingOptions = () => {
-  const ctx = useContext(ShippingContext);
+  const ctx = useContext(ShippingContext)
   if (!ctx) {
-    throw new Error(
-      "useShippingOptions must be used within a ShippingProvider"
-    );
+    throw new Error('useShippingOptions must be used within a ShippingProvider')
   }
-  return ctx;
-};
+  return ctx
+}
 
 export const ShippingInputs = () => {
-  const [zip, setZip] = useState<string>("");
-  const { isLoading, checkOptions } = useShippingOptions();
+  const [zip, setZip] = useState<string>('')
+  const { isLoading, checkOptions } = useShippingOptions()
   return (
     <div className="mb-6 flex items-end gap-4">
       <div>
@@ -145,9 +138,9 @@ export const ShippingInputs = () => {
           maxLength={5}
           autoComplete="postal-code"
           onChange={(e) => {
-            setZip(e.target.value);
+            setZip(e.target.value)
             if (e.target.value.length == 5) {
-              checkOptions(e.target.value);
+              checkOptions(e.target.value)
             }
           }}
           placeholder="Postnummer"
@@ -162,8 +155,8 @@ export const ShippingInputs = () => {
         Check Shipping Options
       </Button> */}
     </div>
-  );
-};
+  )
+}
 
 const ShippingGroup = ({
   defaultOption,
@@ -172,16 +165,16 @@ const ShippingGroup = ({
   onSelect,
   type,
 }: ShippingOption & {
-  selected: boolean;
-  onSelect: () => void;
+  selected: boolean
+  onSelect: () => void
 }) => {
-  const { setDeliveryOption } = useShippingOptions();
+  const { setDeliveryOption } = useShippingOptions()
   const [selectedLocationIdx, setSelectedLocationIdx] = useState<number | null>(
-    null
-  );
+    null,
+  )
   const texts: CheckoutTexts | undefined =
     defaultOption?.descriptiveTexts?.checkout ||
-    additionalOptions?.[0].descriptiveTexts?.checkout;
+    additionalOptions?.[0].descriptiveTexts?.checkout
   const allLocations = useMemo(
     () =>
       [defaultOption, ...additionalOptions]
@@ -189,46 +182,46 @@ const ShippingGroup = ({
           (d) =>
             d != null &&
             d.location?.name != null &&
-            d.location.name.trim() !== ""
+            d.location.name.trim() !== '',
         )
         .filter(isDefined),
-    [defaultOption, additionalOptions]
-  );
+    [defaultOption, additionalOptions],
+  )
 
   const handleLocationSelect = (idx: number, optionId: string) => {
-    setSelectedLocationIdx(idx);
-    onSelect();
-    setDeliveryOption(optionId);
-  };
+    setSelectedLocationIdx(idx)
+    onSelect()
+    setDeliveryOption(optionId)
+  }
   return (
     <div
-      role={selected ? "none" : "button"}
+      role={selected ? 'none' : 'button'}
       aria-selected={selected}
       onClick={() => {
         if (!selected) {
-          onSelect();
+          onSelect()
           if (
             allLocations.length == 0 &&
             defaultOption?.bookingInstructions.deliveryOptionId != null
           ) {
             setDeliveryOption(
-              defaultOption.bookingInstructions.deliveryOptionId
-            );
+              defaultOption.bookingInstructions.deliveryOptionId,
+            )
           }
         }
       }}
       className={
         `rounded-lg p-4 transition-shadow ` +
         (selected
-          ? "border-2 border-blue-600 bg-blue-50 shadow-lg"
-          : "border border-gray-200 bg-white shadow-sm")
+          ? 'border-2 border-blue-600 bg-blue-50 shadow-lg'
+          : 'border border-gray-200 bg-white shadow-sm')
       }
     >
       <div className="flex justify-between items-center">
         <div>
           <div className="font-semibold text-lg">{texts?.title ?? type}</div>
           <div className="text-gray-600 text-sm mb-2">
-            {Object.values(texts || {}).join(" ")}
+            {Object.values(texts || {}).join(' ')}
           </div>
         </div>
       </div>
@@ -242,21 +235,21 @@ const ShippingGroup = ({
                 className={
                   `text-left rounded-md p-3 min-w-[260px] cursor-pointer transition-all ` +
                   (selectedLocationIdx === locIdx
-                    ? "border-2 border-green-500 bg-green-50"
-                    : "border border-gray-300 bg-gray-50 hover:border-green-400")
+                    ? 'border-2 border-green-500 bg-green-50'
+                    : 'border border-gray-300 bg-gray-50 hover:border-green-400')
                 }
                 onClick={() =>
                   handleLocationSelect(
                     locIdx,
-                    locOpt.bookingInstructions.deliveryOptionId
+                    locOpt.bookingInstructions.deliveryOptionId,
                   )
                 }
               >
                 <div className="font-semibold">{locOpt.location.name}</div>
                 <div className="text-gray-700 text-sm">
-                  {locOpt.location.address.streetName}{" "}
-                  {locOpt.location.address.streetNumber},{" "}
-                  {locOpt.location.address.postCode}{" "}
+                  {locOpt.location.address.streetName}{' '}
+                  {locOpt.location.address.streetNumber},{' '}
+                  {locOpt.location.address.postCode}{' '}
                   {locOpt.location.address.city}
                 </div>
                 <div className="text-gray-500 text-xs">
@@ -266,15 +259,15 @@ const ShippingGroup = ({
                   <span className="font-medium">Opening hours:</span>
                   <ul className="ml-2 mt-1">
                     {Object.entries(
-                      locOpt.location.openingHours.regular ?? {}
+                      locOpt.location.openingHours.regular ?? {},
                     ).map(([day, val]: [string, Day]) => (
                       <li key={day}>
-                        <span className="capitalize">{day}</span>:{" "}
+                        <span className="capitalize">{day}</span>:{' '}
                         {val.open && val.timeRanges != null
                           ? val.timeRanges
                               .map((tr: TimeRange) => `${tr.from}-${tr.to}`)
-                              .join(", ")
-                          : "Closed"}
+                              .join(', ')
+                          : 'Closed'}
                       </li>
                     ))}
                   </ul>
@@ -285,21 +278,21 @@ const ShippingGroup = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 export const ShippingOptionList = () => {
   const [selectedOptionIdx, setSelectedOptionIdx] = useState<number | null>(
-    null
-  );
-  const { options, isLoading } = useShippingOptions();
+    null,
+  )
+  const { options, isLoading } = useShippingOptions()
 
   if (isLoading) {
-    return <div>Loading shipping options...</div>;
+    return <div>Loading shipping options...</div>
   }
 
   if (!options || options.length === 0) {
-    return <div>No shipping options available.</div>;
+    return <div>No shipping options available.</div>
   }
 
   return (
@@ -313,8 +306,8 @@ export const ShippingOptionList = () => {
         />
       ))}
     </div>
-  );
-};
+  )
+}
 
 export const Shipping = () => {
   return (
@@ -349,5 +342,5 @@ export const Shipping = () => {
         </div>
       )} */}
     </div>
-  );
-};
+  )
+}

@@ -1,6 +1,6 @@
-import { PropsWithChildren } from "react";
-import { Translations } from "../../translations/translations";
-import { translationContext } from "./translationContext";
+import { PropsWithChildren } from 'react'
+import { Translations } from '../../translations/translations'
+import { translationContext } from './translationContext'
 
 export const TranslationProvider = ({
   language,
@@ -10,5 +10,5 @@ export const TranslationProvider = ({
     <translationContext.Provider value={language}>
       {children}
     </translationContext.Provider>
-  );
-};
+  )
+}

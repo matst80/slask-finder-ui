@@ -1,45 +1,45 @@
-import fuzzysort from "fuzzysort";
-import { useState, useEffect, useRef } from "react";
+import fuzzysort from 'fuzzysort'
+import { useState, useEffect, useRef } from 'react'
 
 export type DropdownItem<T> = {
-  key: string;
-  text: string;
-  type?: string;
-  data: T;
-};
+  key: string
+  text: string
+  type?: string
+  data: T
+}
 
 type DropdownProps<T> = {
-  items: DropdownItem<T>[];
-  selectedItem?: DropdownItem<T>;
-  onSelect: (item: DropdownItem<T>) => void;
-  placeholder?: string;
-  label?: string;
-};
+  items: DropdownItem<T>[]
+  selectedItem?: DropdownItem<T>
+  onSelect: (item: DropdownItem<T>) => void
+  placeholder?: string
+  label?: string
+}
 
 export const CustomDropdown = <T,>({
   items,
   selectedItem,
   onSelect,
-  placeholder = "Select an item",
+  placeholder = 'Select an item',
   label,
 }: DropdownProps<T>) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredItems, setFilteredItems] = useState(items);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filteredItems, setFilteredItems] = useState(items)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setFilteredItems(
       fuzzysort
         .go(searchTerm, items, {
-          keys: ["text"],
+          keys: ['text'],
           limit: 40,
           threshold: 0.2,
           all: searchTerm.length == 0,
         })
         .map((item) => item.obj),
-    );
-  }, [searchTerm, items]);
+    )
+  }, [searchTerm, items])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -47,15 +47,15 @@ export const CustomDropdown = <T,>({
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        setIsOpen(false);
+        setIsOpen(false)
       }
-    };
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
     <div className="relative w-full" ref={dropdownRef}>
@@ -85,7 +85,7 @@ export const CustomDropdown = <T,>({
           {selectedItem ? selectedItem.text : placeholder}
         </span>
         <svg
-          className={`h-5 w-5 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`h-5 w-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
@@ -115,13 +115,13 @@ export const CustomDropdown = <T,>({
                 key={item.key}
                 className={`cursor-pointer px-3 py-2 hover:bg-gray-100 ${
                   selectedItem?.key === item.key
-                    ? "bg-blue-50 text-blue-700"
-                    : "text-gray-900"
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-900'
                 }`}
                 onClick={() => {
-                  onSelect(item);
-                  setIsOpen(false);
-                  setSearchTerm("");
+                  onSelect(item)
+                  setIsOpen(false)
+                  setSearchTerm('')
                 }}
               >
                 <div className="flex items-center">
@@ -131,7 +131,7 @@ export const CustomDropdown = <T,>({
                     </span>
                   )}
                   <span
-                    className={`block truncate ${selectedItem?.key === item.key ? "font-medium" : "font-normal"}`}
+                    className={`block truncate ${selectedItem?.key === item.key ? 'font-medium' : 'font-normal'}`}
                   >
                     {item.text}
                   </span>
@@ -147,5 +147,5 @@ export const CustomDropdown = <T,>({
         </div>
       )}
     </div>
-  );
-};
+  )
+}

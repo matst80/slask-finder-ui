@@ -1,19 +1,19 @@
-import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { Item, ItemValues } from "../../../lib/types";
-import { useQuery } from "../../../lib/hooks/useQuery";
-import { useBuilderContext } from "../useBuilderContext";
-import { ImpressionProvider } from "../../../lib/hooks/ImpressionProvider";
-import { useImpression } from "../../../lib/hooks/useImpression";
-import { ComponentId, FacetId, Issue } from "../builder-types";
-import { cm, isDefined, makeImageUrl } from "../../../utils";
-import { InfiniteHitList } from "../../../components/InfiniteHitList";
-import { useFacetMap } from "../../../hooks/searchHooks";
-import { GroupRenderer } from "./FacetGroupRender";
-import { Price } from "../../../components/Price";
-import { Loader } from "../../../components/Loader";
-import { toEcomTrackingEvent } from "../../../components/toImpression";
-import { useTracking } from "../../../lib/hooks/TrackingContext";
+import { useState, useMemo } from 'react'
+import { Link } from 'react-router-dom'
+import { Item, ItemValues } from '../../../lib/types'
+import { useQuery } from '../../../lib/hooks/useQuery'
+import { useBuilderContext } from '../useBuilderContext'
+import { ImpressionProvider } from '../../../lib/hooks/ImpressionProvider'
+import { useImpression } from '../../../lib/hooks/useImpression'
+import { ComponentId, FacetId, Issue } from '../builder-types'
+import { cm, isDefined, makeImageUrl } from '../../../utils'
+import { InfiniteHitList } from '../../../components/InfiniteHitList'
+import { useFacetMap } from '../../../hooks/searchHooks'
+import { GroupRenderer } from './FacetGroupRender'
+import { Price } from '../../../components/Price'
+import { Loader } from '../../../components/Loader'
+import { toEcomTrackingEvent } from '../../../components/toImpression'
+import { useTracking } from '../../../lib/hooks/TrackingContext'
 
 const TableRowItem = ({
   item,
@@ -23,27 +23,27 @@ const TableRowItem = ({
   importantFacets,
   position,
 }: {
-  item: Item;
-  componentId: ComponentId;
-  importantFacets: FacetId[];
-  isSelected: boolean;
-  validator?: (values: ItemValues) => Issue[];
-  position: number;
+  item: Item
+  componentId: ComponentId
+  importantFacets: FacetId[]
+  isSelected: boolean
+  validator?: (values: ItemValues) => Issue[]
+  position: number
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const { watch } = useImpression();
+  const [isExpanded, setIsExpanded] = useState(false)
+  const { watch } = useImpression()
 
-  const { track } = useTracking();
+  const { track } = useTracking()
   const ecomItem = useMemo(
     () => toEcomTrackingEvent(item, position),
-    [item, position]
-  );
-  const trackItem = () => track({ type: "click", item: ecomItem });
-  const issues = validator?.(item.values) ?? [];
-  const hasError = issues.some((d) => d.type === "error");
-  const isValid = issues.length === 0;
-  const qs = new URLSearchParams(window.location.search);
-  const url = `/builder/product/${componentId}/${item.id}?${qs.toString()}`;
+    [item, position],
+  )
+  const trackItem = () => track({ type: 'click', item: ecomItem })
+  const issues = validator?.(item.values) ?? []
+  const hasError = issues.some((d) => d.type === 'error')
+  const isValid = issues.length === 0
+  const qs = new URLSearchParams(window.location.search)
+  const url = `/builder/product/${componentId}/${item.id}?${qs.toString()}`
 
   return (
     <>
@@ -51,13 +51,13 @@ const TableRowItem = ({
         ref={watch(ecomItem)}
         onClick={() => setIsExpanded((prev) => !prev)}
         className={cm(
-          "transition-all duration-300",
-          isSelected ? "bg-blue-100 hover:bg-blue-200" : "hover:bg-gray-50",
+          'transition-all duration-300',
+          isSelected ? 'bg-blue-100 hover:bg-blue-200' : 'hover:bg-gray-50',
           !isValid && hasError
-            ? "opacity-50"
+            ? 'opacity-50'
             : !isValid
-            ? "opacity-75"
-            : "opacity-100"
+              ? 'opacity-75'
+              : 'opacity-100',
         )}
       >
         <td className="px-6 py-4 whitespace-nowrap">
@@ -74,7 +74,7 @@ const TableRowItem = ({
         <td className="px-6 py-4 whitespace-nowrap">
           <div className="text-sm font-medium text-gray-900">{item.title}</div>
           <div className="text-sm text-gray-500 flex flex-col">
-            {item.bp.split("\n").map((txt, idx) => (
+            {item.bp.split('\n').map((txt, idx) => (
               <span key={idx}>{txt}</span>
             ))}
           </div>
@@ -83,7 +83,7 @@ const TableRowItem = ({
         {importantFacets.map((id) => (
           <td key={id} className="px-6 py-4 whitespace-nowrap">
             <div className="text-sm text-gray-900">
-              {item.values[id] || "No Value"}
+              {item.values[id] || 'No Value'}
             </div>
           </td>
         ))}
@@ -121,41 +121,41 @@ const TableRowItem = ({
         </tr>
       )}
     </>
-  );
-};
+  )
+}
 
 export const ComponentResultTable = ({
   componentId,
   importantFacets,
   validator,
 }: {
-  componentId: ComponentId;
-  importantFacets: FacetId[];
-  validator?: (values: ItemValues) => Issue[];
+  componentId: ComponentId
+  importantFacets: FacetId[]
+  validator?: (values: ItemValues) => Issue[]
 }) => {
-  const { data } = useFacetMap();
-  const { isLoading, hits } = useQuery();
-  const { selectedItems } = useBuilderContext();
+  const { data } = useFacetMap()
+  const { isLoading, hits } = useQuery()
+  const { selectedItems } = useBuilderContext()
   const facets = useMemo(
     () =>
       importantFacets
         ?.map((facet) => {
-          return data?.[facet];
+          return data?.[facet]
         })
         .filter(isDefined),
-    [data, importantFacets]
-  );
+    [data, importantFacets],
+  )
 
   if (isLoading && hits.length < 1) {
-    return <Loader size={"lg"} />;
+    return <Loader size={'lg'} />
   }
 
   const selectedId = selectedItems.find(
-    (i) => i.componentId === componentId
-  )?.id;
+    (i) => i.componentId === componentId,
+  )?.id
 
   if (hits == null || hits.length < 1) {
-    return <div>No matching components</div>;
+    return <div>No matching components</div>
   }
 
   return (
@@ -205,7 +205,7 @@ export const ComponentResultTable = ({
               as="tr"
               loader={
                 <td className="relative" colSpan={4 + importantFacets.length}>
-                  <Loader size={"lg"} variant="overlay" />
+                  <Loader size={'lg'} variant="overlay" />
                 </td>
               }
             >
@@ -225,5 +225,5 @@ export const ComponentResultTable = ({
         </table>
       </div>
     </ImpressionProvider>
-  );
-};
+  )
+}

@@ -1,76 +1,76 @@
-import { MouseEvent, useEffect, useState } from "react";
-import { cookieObject, setCookie } from "./utils";
-import { Dialog } from "./components/ui/dialog";
-import { atom, useAtom } from "jotai";
-import { Button } from "./components/ui/button";
+import { MouseEvent, useEffect, useState } from 'react'
+import { cookieObject, setCookie } from './utils'
+import { Dialog } from './components/ui/dialog'
+import { atom, useAtom } from 'jotai'
+import { Button } from './components/ui/button'
 
-type CookieAcceptanceLevel = "none" | "all" | "essential";
+type CookieAcceptanceLevel = 'none' | 'all' | 'essential'
 
 const getCookieAcceptance = () => {
-  const cookie = cookieObject();
+  const cookie = cookieObject()
   if (cookie.ca == null) {
-    return null;
+    return null
   }
-  if (cookie.ca === "all") {
-    return "all";
+  if (cookie.ca === 'all') {
+    return 'all'
   }
-  if (cookie.ca === "none") {
-    return "none";
+  if (cookie.ca === 'none') {
+    return 'none'
   }
-  return "essential";
-};
+  return 'essential'
+}
 
 const cookieAcceptanceAtom = atom<CookieAcceptanceLevel | null>(
   getCookieAcceptance(),
-);
+)
 
 export const useCookieAcceptance = () => {
-  const [accepted, setAccepted] = useAtom(cookieAcceptanceAtom);
+  const [accepted, setAccepted] = useAtom(cookieAcceptanceAtom)
   const manageConsent = () => {
-    setAccepted(null);
-  };
+    setAccepted(null)
+  }
   const updateAccept = (value: CookieAcceptanceLevel | null) => {
     // console.log("updateAccept", value);
-    if (value === "none") {
-      setCookie("ca", "", -10);
-      setCookie("sfadmin", "", -10);
-      setCookie("locale", "", -10);
-      setCookie("cartid", "", -10);
+    if (value === 'none') {
+      setCookie('ca', '', -10)
+      setCookie('sfadmin', '', -10)
+      setCookie('locale', '', -10)
+      setCookie('cartid', '', -10)
     }
-    if (value === "essential") {
-      setCookie("sid", "", -1);
+    if (value === 'essential') {
+      setCookie('sid', '', -1)
     }
     setCookie(
-      "ca",
-      value ?? "",
-      value == null || value === "none" ? undefined : 365 * 5,
-    );
-    setAccepted(value);
-  };
-  return { accepted, updateAccept, manageConsent };
-};
+      'ca',
+      value ?? '',
+      value == null || value === 'none' ? undefined : 365 * 5,
+    )
+    setAccepted(value)
+  }
+  return { accepted, updateAccept, manageConsent }
+}
 
 export const CookieConsent = () => {
-  const { accepted, updateAccept } = useCookieAcceptance();
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const [open, setOpen] = useState<boolean>(accepted == null);
+  const { accepted, updateAccept } = useCookieAcceptance()
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [open, setOpen] = useState<boolean>(accepted == null)
   const handleAccept = (value: CookieAcceptanceLevel) => (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    updateAccept(value);
-    setOpen(false);
-  };
+    e.preventDefault()
+    e.stopPropagation()
+    updateAccept(value)
+    setOpen(false)
+  }
   const handleReject = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    updateAccept("none");
-    setOpen(false);
-  };
+    e.preventDefault()
+    e.stopPropagation()
+    updateAccept('none')
+    setOpen(false)
+  }
   useEffect(() => {
     if (accepted == null) {
-      setOpen(true);
+      setOpen(true)
     }
-  }, [accepted]);
+  }, [accepted])
 
   return (
     <Dialog open={open} setOpen={setOpen} attached="bottom">
@@ -79,7 +79,7 @@ export const CookieConsent = () => {
           <div className="flex flex-col gap-2">
             <p>
               This site uses cookies, basic function cookies and also optional
-              for improving search results for you and others,{" "}
+              for improving search results for you and others,{' '}
               <a
                 href="#details"
                 onClick={() => setDetailsOpen((p) => !p)}
@@ -106,14 +106,14 @@ export const CookieConsent = () => {
               variant="default"
               type="submit"
               autoFocus
-              onClick={handleAccept("all")}
+              onClick={handleAccept('all')}
               tabIndex={1}
             >
               Accept all
             </Button>
             <Button
               variant="outline"
-              onClick={handleAccept("essential")}
+              onClick={handleAccept('essential')}
               tabIndex={2}
             >
               Accept essential
@@ -125,5 +125,5 @@ export const CookieConsent = () => {
         </div>
       </div>
     </Dialog>
-  );
-};
+  )
+}

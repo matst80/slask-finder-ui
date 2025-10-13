@@ -1,39 +1,36 @@
-import useSWR from "swr";
-import useSWRMutation from "swr/mutation";
-import { useState, useEffect } from "react";
-import { getUsers, updateUser, deleteUser } from "../../lib/datalayer/api";
-import { User, UserUpdateRequest } from "../../lib/types";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Dialog } from "../../components/ui/dialog";
-import { Card, CardContent, CardHeader } from "../../components/ui/card";
-import { Badge } from "../../components/ui/badge";
-import { Trash2, Edit, UserPlus } from "lucide-react";
+import useSWR from 'swr'
+import useSWRMutation from 'swr/mutation'
+import { useState, useEffect } from 'react'
+import { getUsers, updateUser, deleteUser } from '../../lib/datalayer/api'
+import { User, UserUpdateRequest } from '../../lib/types'
+import { Button } from '../../components/ui/button'
+import { Input } from '../../components/ui/input'
+import { Dialog } from '../../components/ui/dialog'
+import { Card, CardContent, CardHeader } from '../../components/ui/card'
+import { Badge } from '../../components/ui/badge'
+import { Trash2, Edit, UserPlus } from 'lucide-react'
 
 const useUsers = () => {
-  return useSWR("/admin/users", getUsers, {
+  return useSWR('/admin/users', getUsers, {
     revalidateOnFocus: false,
     keepPreviousData: true,
-  });
-};
+  })
+}
 
 const useUpdateUser = () => {
   return useSWRMutation(
-    "/admin/users",
+    '/admin/users',
     (_, { arg }: { arg: { id: string; data: UserUpdateRequest } }) => {
-      return updateUser(arg.id, arg.data);
-    }
-  );
-};
+      return updateUser(arg.id, arg.data)
+    },
+  )
+}
 
 const useDeleteUser = () => {
-  return useSWRMutation(
-    "/admin/users",
-    (_, { arg }: { arg: string }) => {
-      return deleteUser(arg);
-    }
-  );
-};
+  return useSWRMutation('/admin/users', (_, { arg }: { arg: string }) => {
+    return deleteUser(arg)
+  })
+}
 
 const UserEditDialog = ({
   user,
@@ -41,12 +38,12 @@ const UserEditDialog = ({
   onClose,
   onSave,
 }: {
-  user: User | null;
-  open: boolean;
-  onClose: () => void;
-  onSave: (id: string, data: UserUpdateRequest) => void;
+  user: User | null
+  open: boolean
+  onClose: () => void
+  onSave: (id: string, data: UserUpdateRequest) => void
 }) => {
-  const [formData, setFormData] = useState<UserUpdateRequest>({});
+  const [formData, setFormData] = useState<UserUpdateRequest>({})
 
   // Initialize form data when user changes
   useEffect(() => {
@@ -56,70 +53,75 @@ const UserEditDialog = ({
         email: user.email,
         displayName: user.displayName,
         isAdmin: user.isAdmin,
-      });
+      })
     }
-  }, [user]);
+  }, [user])
 
   const handleSave = () => {
     if (user) {
-      onSave(user.id, formData);
-      onClose();
+      onSave(user.id, formData)
+      onClose()
     }
-  };
+  }
 
-  const handleChange = (field: keyof UserUpdateRequest, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const handleChange = (
+    field: keyof UserUpdateRequest,
+    value: string | boolean,
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
 
-  if (!user) return null;
+  if (!user) return null
 
   return (
     <Dialog open={open} setOpen={onClose}>
       <div className="p-6 max-w-md mx-auto bg-white rounded-lg">
         <h2 className="text-xl font-bold mb-4">Edit User</h2>
-        
+
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Name</label>
             <Input
-              value={formData.name || ""}
-              onChange={(e) => handleChange("name", e.target.value)}
+              value={formData.name || ''}
+              onChange={(e) => handleChange('name', e.target.value)}
               placeholder="Name"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>
             <Input
               type="email"
-              value={formData.email || ""}
-              onChange={(e) => handleChange("email", e.target.value)}
+              value={formData.email || ''}
+              onChange={(e) => handleChange('email', e.target.value)}
               placeholder="Email"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium mb-1">Display Name</label>
+            <label className="block text-sm font-medium mb-1">
+              Display Name
+            </label>
             <Input
-              value={formData.displayName || ""}
-              onChange={(e) => handleChange("displayName", e.target.value)}
+              value={formData.displayName || ''}
+              onChange={(e) => handleChange('displayName', e.target.value)}
               placeholder="Display Name"
             />
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
               id="isAdmin"
               checked={formData.isAdmin || false}
-              onChange={(e) => handleChange("isAdmin", e.target.checked)}
+              onChange={(e) => handleChange('isAdmin', e.target.checked)}
             />
             <label htmlFor="isAdmin" className="text-sm font-medium">
               Admin User
             </label>
           </div>
         </div>
-        
+
         <div className="flex justify-end space-x-2 mt-6">
           <Button
             onClick={onClose}
@@ -136,17 +138,17 @@ const UserEditDialog = ({
         </div>
       </div>
     </Dialog>
-  );
-};
+  )
+}
 
 const UserRow = ({
   user,
   onEdit,
   onDelete,
 }: {
-  user: User;
-  onEdit: (user: User) => void;
-  onDelete: (id: string) => void;
+  user: User
+  onEdit: (user: User) => void
+  onDelete: (id: string) => void
 }) => {
   return (
     <tr className="hover:bg-gray-50">
@@ -158,11 +160,11 @@ const UserRow = ({
         <Badge
           className={
             user.isAdmin
-              ? "bg-red-100 text-red-800"
-              : "bg-blue-100 text-blue-800"
+              ? 'bg-red-100 text-red-800'
+              : 'bg-blue-100 text-blue-800'
           }
         >
-          {user.isAdmin ? "Admin" : "User"}
+          {user.isAdmin ? 'Admin' : 'User'}
         </Badge>
       </td>
       <td className="px-4 py-2">
@@ -184,55 +186,55 @@ const UserRow = ({
         </div>
       </td>
     </tr>
-  );
-};
+  )
+}
 
 export const UsersView = () => {
-  const { data: users, isLoading, error, mutate } = useUsers();
-  const { trigger: updateUserTrigger } = useUpdateUser();
-  const { trigger: deleteUserTrigger } = useDeleteUser();
-  
-  const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { data: users, isLoading, error, mutate } = useUsers()
+  const { trigger: updateUserTrigger } = useUpdateUser()
+  const { trigger: deleteUserTrigger } = useDeleteUser()
+
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
   const handleEditUser = (user: User) => {
-    setEditingUser(user);
-    setIsEditDialogOpen(true);
-  };
+    setEditingUser(user)
+    setIsEditDialogOpen(true)
+  }
 
   const handleSaveUser = async (id: string, userData: UserUpdateRequest) => {
     try {
-      await updateUserTrigger({ id, data: userData });
-      mutate(); // Refresh the users list
+      await updateUserTrigger({ id, data: userData })
+      mutate() // Refresh the users list
     } catch (error) {
-      console.error("Failed to update user:", error);
+      console.error('Failed to update user:', error)
       // You could add a toast notification here
     }
-  };
+  }
 
   const handleDeleteUser = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
+    if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await deleteUserTrigger(id);
-        mutate(); // Refresh the users list
+        await deleteUserTrigger(id)
+        mutate() // Refresh the users list
       } catch (error) {
-        console.error("Failed to delete user:", error);
+        console.error('Failed to delete user:', error)
         // You could add a toast notification here
       }
     }
-  };
+  }
 
   const handleCloseEditDialog = () => {
-    setIsEditDialogOpen(false);
-    setEditingUser(null);
-  };
+    setIsEditDialogOpen(false)
+    setEditingUser(null)
+  }
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="text-lg text-gray-500">Loading users...</div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -242,7 +244,7 @@ export const UsersView = () => {
           Error loading users: {error.message}
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -253,7 +255,9 @@ export const UsersView = () => {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold">User Management</h1>
-              <p className="text-gray-600">Manage user accounts and permissions</p>
+              <p className="text-gray-600">
+                Manage user accounts and permissions
+              </p>
             </div>
             <Button className="bg-green-500 text-white hover:bg-green-600 flex items-center space-x-2">
               <UserPlus className="w-4 h-4" />
@@ -263,9 +267,7 @@ export const UsersView = () => {
         </CardHeader>
         <CardContent className="p-6">
           {!users || users.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No users found
-            </div>
+            <div className="text-center py-8 text-gray-500">No users found</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full table-auto border-collapse">
@@ -274,9 +276,13 @@ export const UsersView = () => {
                     <th className="text-left px-4 py-3 font-semibold">ID</th>
                     <th className="text-left px-4 py-3 font-semibold">Name</th>
                     <th className="text-left px-4 py-3 font-semibold">Email</th>
-                    <th className="text-left px-4 py-3 font-semibold">Display Name</th>
+                    <th className="text-left px-4 py-3 font-semibold">
+                      Display Name
+                    </th>
                     <th className="text-left px-4 py-3 font-semibold">Role</th>
-                    <th className="text-left px-4 py-3 font-semibold">Actions</th>
+                    <th className="text-left px-4 py-3 font-semibold">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -302,5 +308,5 @@ export const UsersView = () => {
         onSave={handleSaveUser}
       />
     </div>
-  );
-};
+  )
+}

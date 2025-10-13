@@ -1,6 +1,6 @@
-import { Link, Edit, Trash } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Checkbox } from "../../components/ui/checkbox";
+import { Link, Edit, Trash } from 'lucide-react'
+import { Button } from '../../components/ui/button'
+import { Checkbox } from '../../components/ui/checkbox'
 import {
   Table,
   TableHeader,
@@ -8,24 +8,24 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "../../components/ui/table";
-import { useQuery } from "../../lib/hooks/useQuery";
-import { Loader } from "../../components/Loader";
-import { ValueMap } from "../../lib/types";
+} from '../../components/ui/table'
+import { useQuery } from '../../lib/hooks/useQuery'
+import { Loader } from '../../components/Loader'
+import { ValueMap } from '../../lib/types'
 
 export const TableSearchResultList = () => {
   const {
     hits: items,
     isLoading: loadingItems,
     query: { query },
-  } = useQuery();
+  } = useQuery()
 
   if (loadingItems) {
-    return <Loader size="lg" variant="default" />;
+    return <Loader size="lg" variant="default" />
   }
 
   if (!items.length && (query == null || query.length < 1)) {
-    return null;
+    return null
   }
   return (
     <>
@@ -50,7 +50,7 @@ export const TableSearchResultList = () => {
                     <Checkbox name={String(product.id)} />
                   </TableCell>
                   <TableCell className="font-bold">{product.title}</TableCell>
-                  <TableCell>{product.values["10"]}</TableCell>
+                  <TableCell>{product.values['10']}</TableCell>
                   {/* <TableCell>
                     <Input
                       value={popular[Number(product.id)] ?? 0}
@@ -84,9 +84,9 @@ export const TableSearchResultList = () => {
                       />
                     </TableCell>
                   ))} */}
-                  <TableCell>{product.values["4"].toFixed(2)}</TableCell>
+                  <TableCell>{product.values['4'].toFixed(2)}</TableCell>
                   <TableCell>
-                    {product.values[ValueMap.StockLevel] ?? "0"}
+                    {product.values[ValueMap.StockLevel] ?? '0'}
                   </TableCell>
                   <TableCell className="justify-end flex gap-2">
                     <Button variant="ghost" size="icon">
@@ -105,5 +105,5 @@ export const TableSearchResultList = () => {
         </div>
       </form>
     </>
-  );
-};
+  )
+}

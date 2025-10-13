@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react'
 
 interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> {}
 
 export const Table: React.FC<TableProps> = ({
   children,
-  className = "",
+  className = '',
   ...props
 }) => (
   <div className="w-full overflow-auto">
@@ -12,40 +12,40 @@ export const Table: React.FC<TableProps> = ({
       {children}
     </table>
   </div>
-);
+)
 
 interface TableHeaderProps
   extends React.HTMLAttributes<HTMLTableSectionElement> {}
 
 export const TableHeader: React.FC<TableHeaderProps> = ({
   children,
-  className = "",
+  className = '',
   ...props
 }) => (
   <thead className={`[&_tr]:border-b ${className}`} {...props}>
     {children}
   </thead>
-);
+)
 
 interface TableBodyProps
   extends React.HTMLAttributes<HTMLTableSectionElement> {}
 
 export const TableBody: React.FC<TableBodyProps> = ({
   children,
-  className = "",
+  className = '',
   ...props
 }) => (
   <tbody className={`[&_tr:last-child]:border-0 ${className}`} {...props}>
     {children}
   </tbody>
-);
+)
 
 interface TableFooterProps
   extends React.HTMLAttributes<HTMLTableSectionElement> {}
 
 export const TableFooter: React.FC<TableFooterProps> = ({
   children,
-  className = "",
+  className = '',
   ...props
 }) => (
   <tfoot
@@ -54,13 +54,13 @@ export const TableFooter: React.FC<TableFooterProps> = ({
   >
     {children}
   </tfoot>
-);
+)
 
 interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {}
 
 export const TableRow: React.FC<TableRowProps> = ({
   children,
-  className = "",
+  className = '',
   ...props
 }) => (
   <tr
@@ -69,13 +69,13 @@ export const TableRow: React.FC<TableRowProps> = ({
   >
     {children}
   </tr>
-);
+)
 
 interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {}
 
 export const TableHead: React.FC<TableHeadProps> = ({
   children,
-  className = "",
+  className = '',
   ...props
 }) => (
   <th
@@ -84,13 +84,13 @@ export const TableHead: React.FC<TableHeadProps> = ({
   >
     {children}
   </th>
-);
+)
 
 interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {}
 
 export const TableCell: React.FC<TableCellProps> = ({
   children,
-  className = "",
+  className = '',
   ...props
 }) => (
   <td
@@ -99,14 +99,14 @@ export const TableCell: React.FC<TableCellProps> = ({
   >
     {children}
   </td>
-);
+)
 
 interface TableCaptionProps
   extends React.HTMLAttributes<HTMLTableCaptionElement> {}
 
 export const TableCaption: React.FC<TableCaptionProps> = ({
   children,
-  className = "",
+  className = '',
   ...props
 }) => (
   <caption
@@ -115,4 +115,4 @@ export const TableCaption: React.FC<TableCaptionProps> = ({
   >
     {children}
   </caption>
-);
+)

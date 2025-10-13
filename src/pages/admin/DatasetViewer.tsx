@@ -1,5 +1,5 @@
-import useSWR from "swr";
-import { getCurrentDataSet } from "../../lib/datalayer/api";
+import useSWR from 'swr'
+import { getCurrentDataSet } from '../../lib/datalayer/api'
 import {
   Table,
   TableHeader,
@@ -8,43 +8,43 @@ import {
   TableHead,
   TableCell,
   TableCaption,
-} from "../../components/ui/table";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { useState, useMemo } from "react";
-import fuzzysort from "fuzzysort";
-import { SearchIcon } from "lucide-react";
+} from '../../components/ui/table'
+import { Button } from '../../components/ui/button'
+import { Input } from '../../components/ui/input'
+import { useState, useMemo } from 'react'
+import fuzzysort from 'fuzzysort'
+import { SearchIcon } from 'lucide-react'
 
 const useDataset = () =>
-  useSWR("/admin/dataset", getCurrentDataSet, {
+  useSWR('/admin/dataset', getCurrentDataSet, {
     revalidateOnFocus: true,
     refreshInterval: 10000,
     keepPreviousData: true,
-  });
+  })
 
 export const DatasetViewer = () => {
-  const { data, isLoading, error, mutate } = useDataset();
-  const [selectedTriplet, setSelectedTriplet] = useState<number | null>(null);
-  const [filter, setFilter] = useState<string>("");
+  const { data, isLoading, error, mutate } = useDataset()
+  const [selectedTriplet, setSelectedTriplet] = useState<number | null>(null)
+  const [filter, setFilter] = useState<string>('')
 
   // Filtered data using fuzzysort
   const filteredData = useMemo(() => {
-    if (!data || data.length === 0) return [];
+    if (!data || data.length === 0) return []
 
-    if (!filter.trim()) return data;
+    if (!filter.trim()) return data
 
     // Create a list of keys to search in
-    const keys = ["query", "positive", "negative"];
+    const keys = ['query', 'positive', 'negative']
 
     // Prepare data for fuzzysort
     const result = fuzzysort.go(filter, data, {
       keys,
       threshold: -10000, // Adjust the threshold as needed
       limit: 100, // Maximum number of results
-    });
+    })
 
-    return result.map((item) => item.obj);
-  }, [data, filter]);
+    return result.map((item) => item.obj)
+  }, [data, filter])
 
   if (isLoading) {
     return (
@@ -54,7 +54,7 @@ export const DatasetViewer = () => {
           <div className="h-64 w-full max-w-4xl bg-gray-100 rounded"></div>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -63,7 +63,7 @@ export const DatasetViewer = () => {
         <p className="text-red-500">Error loading triplets data</p>
         <Button onClick={() => mutate()}>Retry</Button>
       </div>
-    );
+    )
   }
 
   if (!data || data.length === 0) {
@@ -71,7 +71,7 @@ export const DatasetViewer = () => {
       <div className="p-8 text-center bg-gray-50 rounded-lg shadow-sm">
         <p className="text-gray-500">No triplets data available.</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -99,7 +99,7 @@ export const DatasetViewer = () => {
           {filter && (
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <button
-                onClick={() => setFilter("")}
+                onClick={() => setFilter('')}
                 className="text-gray-400 hover:text-gray-600"
               >
                 <span className="sr-only">Clear search</span>
@@ -142,13 +142,13 @@ export const DatasetViewer = () => {
                       transition-colors border-t border-gray-200
                       ${
                         selectedTriplet === index
-                          ? "bg-blue-50"
-                          : "hover:bg-gray-50"
+                          ? 'bg-blue-50'
+                          : 'hover:bg-gray-50'
                       }
                     `}
                     onClick={() =>
                       setSelectedTriplet(
-                        index === selectedTriplet ? null : index
+                        index === selectedTriplet ? null : index,
                       )
                     }
                   >
@@ -176,5 +176,5 @@ export const DatasetViewer = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

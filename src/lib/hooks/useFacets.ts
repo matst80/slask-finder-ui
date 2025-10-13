@@ -1,10 +1,10 @@
-import { useContext } from "react";
-import { FacetContext } from "./facetContext";
+import { useContext } from 'react'
+import { FacetContext } from './facetContext'
 
 export const useFacets = () => {
-  const context = useContext(FacetContext);
+  const context = useContext(FacetContext)
   if (context == null) {
-    throw new Error("useFacets must be used within a FacetProvider");
+    throw new Error('useFacets must be used within a FacetProvider')
   }
-  return context;
-};
+  return context
+}

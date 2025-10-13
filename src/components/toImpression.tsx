@@ -1,8 +1,8 @@
-import { BaseEcomEvent, Item } from "../lib/types";
+import { BaseEcomEvent, Item } from '../lib/types'
 
 export const toEcomTrackingEvent = (
   item: Item,
-  index: number
+  index: number,
 ): BaseEcomEvent => ({
   item_id: String(item.id),
   index,
@@ -12,8 +12,8 @@ export const toEcomTrackingEvent = (
   item_category3: item.values?.[12],
   item_category4: item.values?.[13],
   //item_category5: item.values?.[14],
-  item_brand: item.values?.["2"],
-  price: item.values?.["4"],
+  item_brand: item.values?.['2'],
+  price: item.values?.['4'],
   //stock: item.stockLevel!=null,
   //img: item.img,
-});
+})

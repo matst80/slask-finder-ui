@@ -1,13 +1,13 @@
-import { Star } from "lucide-react";
+import { Star } from 'lucide-react'
 
 export const Stars = ({
   rating,
   numberOfRatings,
   showText = false,
 }: {
-  rating: number;
-  numberOfRatings: number;
-  showText?: boolean;
+  rating: number
+  numberOfRatings: number
+  showText?: boolean
 }) => {
   return (
     <div className="flex items-center">
@@ -15,7 +15,7 @@ export const Stars = ({
         <Star
           key={star}
           className={`w-4 h-4 ${
-            star <= rating ? "text-yellow-400 fill-current" : "text-gray-300"
+            star <= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
           }`}
         />
       ))}
@@ -25,5 +25,5 @@ export const Stars = ({
         </span>
       )}
     </div>
-  );
-};
+  )
+}

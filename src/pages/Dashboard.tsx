@@ -8,13 +8,13 @@ import {
   Cpu,
   RefreshCw,
   Lightbulb,
-} from "lucide-react";
-import { useDefaultMetricsQuery } from "../hooks/metricsHooks";
-import { useTranslations } from "../lib/hooks/useTranslations";
+} from 'lucide-react'
+import { useDefaultMetricsQuery } from '../hooks/metricsHooks'
+import { useTranslations } from '../lib/hooks/useTranslations'
 
 type CardProps = {
-  title: string;
-};
+  title: string
+}
 
 const StatCard = ({
   title,
@@ -24,24 +24,24 @@ const StatCard = ({
   icon: Icon,
   color,
 }: CardProps & {
-  value: string | number;
-  isLoading: boolean;
-  error?: Error;
-  trend?: number;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
+  value: string | number
+  isLoading: boolean
+  error?: Error
+  trend?: number
+  icon: React.ComponentType<{ className?: string }>
+  color: string
 }) => {
   const getTrendColor = (trend: number) => {
-    if (trend > 0) return "text-green-500";
-    if (trend < 0) return "text-red-500";
-    return "text-gray-500";
-  };
+    if (trend > 0) return 'text-green-500'
+    if (trend < 0) return 'text-red-500'
+    return 'text-gray-500'
+  }
 
   const getTrendIcon = (trend: number) => {
-    if (trend > 0) return <ArrowUp className="size-4" />;
-    if (trend < 0) return <ArrowDown className="size-4" />;
-    return null;
-  };
+    if (trend > 0) return <ArrowUp className="size-4" />
+    if (trend < 0) return <ArrowDown className="size-4" />
+    return null
+  }
 
   return (
     <div
@@ -74,8 +74,8 @@ const StatCard = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const SearchStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
@@ -83,14 +83,14 @@ const SearchStats = ({ title }: CardProps) => {
     ({ data }) => ({
       label: title,
       data,
-    })
-  );
+    }),
+  )
 
-  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
-  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0
   const trend = previousValue
     ? ((currentValue - previousValue) / previousValue) * 100
-    : 0;
+    : 0
 
   return (
     <StatCard
@@ -102,8 +102,8 @@ const SearchStats = ({ title }: CardProps) => {
       icon={Search}
       color="bg-linear-to-br from-blue-50 to-blue-100"
     />
-  );
-};
+  )
+}
 
 const FacetStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
@@ -111,14 +111,14 @@ const FacetStats = ({ title }: CardProps) => {
     ({ data }) => ({
       label: title,
       data,
-    })
-  );
+    }),
+  )
 
-  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
-  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0
   const trend = previousValue
     ? ((currentValue - previousValue) / previousValue) * 100
-    : 0;
+    : 0
 
   return (
     <StatCard
@@ -130,8 +130,8 @@ const FacetStats = ({ title }: CardProps) => {
       icon={Layers}
       color="bg-linear-to-br from-purple-50 to-purple-100"
     />
-  );
-};
+  )
+}
 
 const TrackingEventsStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
@@ -139,14 +139,14 @@ const TrackingEventsStats = ({ title }: CardProps) => {
     ({ data }) => ({
       label: title,
       data,
-    })
-  );
+    }),
+  )
 
-  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
-  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0
   const trend = previousValue
     ? ((currentValue - previousValue) / previousValue) * 100
-    : 0;
+    : 0
 
   return (
     <StatCard
@@ -158,8 +158,8 @@ const TrackingEventsStats = ({ title }: CardProps) => {
       icon={Activity}
       color="bg-linear-to-br from-green-50 to-green-100"
     />
-  );
-};
+  )
+}
 
 const MemoryStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
@@ -167,15 +167,15 @@ const MemoryStats = ({ title }: CardProps) => {
     ({ data }) => ({
       label: title,
       data,
-    })
-  );
+    }),
+  )
 
-  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
-  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0
   const trend = previousValue
     ? ((currentValue - previousValue) / previousValue) * 100
-    : 0;
-  const memoryUsageGB = (currentValue / (1024 * 1024 * 1024)).toFixed(2);
+    : 0
+  const memoryUsageGB = (currentValue / (1024 * 1024 * 1024)).toFixed(2)
 
   return (
     <StatCard
@@ -187,8 +187,8 @@ const MemoryStats = ({ title }: CardProps) => {
       icon={MemoryStick}
       color="bg-linear-to-br from-orange-50 to-orange-100"
     />
-  );
-};
+  )
+}
 
 const CpuStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
@@ -196,15 +196,15 @@ const CpuStats = ({ title }: CardProps) => {
     ({ data }) => ({
       label: title,
       data,
-    })
-  );
+    }),
+  )
 
-  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
-  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0
   const trend = previousValue
     ? ((currentValue - previousValue) / previousValue) * 100
-    : 0;
-  const cpuUsagePercent = (currentValue * 100).toFixed(1);
+    : 0
+  const cpuUsagePercent = (currentValue * 100).toFixed(1)
 
   return (
     <StatCard
@@ -216,8 +216,8 @@ const CpuStats = ({ title }: CardProps) => {
       icon={Cpu}
       color="bg-linear-to-br from-red-50 to-red-100"
     />
-  );
-};
+  )
+}
 
 const UpsertsStats = ({ title }: CardProps) => {
   const { data, isLoading, error } = useDefaultMetricsQuery(
@@ -225,14 +225,14 @@ const UpsertsStats = ({ title }: CardProps) => {
     ({ data }) => ({
       label: title,
       data,
-    })
-  );
+    }),
+  )
 
-  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
-  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0
   const trend = previousValue
     ? ((currentValue - previousValue) / previousValue) * 100
-    : 0;
+    : 0
 
   return (
     <StatCard
@@ -244,8 +244,8 @@ const UpsertsStats = ({ title }: CardProps) => {
       icon={RefreshCw}
       color="bg-linear-to-br from-cyan-50 to-cyan-100"
     />
-  );
-};
+  )
+}
 
 const SuggestStats = ({ title }: CardProps) => {
   const { data, error, isLoading } = useDefaultMetricsQuery(
@@ -253,14 +253,14 @@ const SuggestStats = ({ title }: CardProps) => {
     ({ data }) => ({
       label: title,
       data,
-    })
-  );
+    }),
+  )
 
-  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0;
-  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0;
+  const currentValue = data?.[0]?.data?.[data[0].data.length - 1]?.[1] ?? 0
+  const previousValue = data?.[0]?.data?.[data[0].data.length - 2]?.[1] ?? 0
   const trend = previousValue
     ? ((currentValue - previousValue) / previousValue) * 100
-    : 0;
+    : 0
 
   return (
     <StatCard
@@ -272,23 +272,23 @@ const SuggestStats = ({ title }: CardProps) => {
       color="bg-linear-to-br from-yellow-50 to-yellow-100"
       isLoading={isLoading}
     />
-  );
-};
+  )
+}
 
 export const DashboardView = () => {
-  const t = useTranslations();
+  const t = useTranslations()
   return (
     <div className="container p-4 md:p-10">
-      <h1 className="text-2xl font-bold mb-6">{t("dashboard.title")}</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('dashboard.title')}</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <SearchStats title={t("dashboard.searches")} />
-        <FacetStats title={t("dashboard.facets")} />
-        <TrackingEventsStats title={t("dashboard.tracking_events")} />
-        <MemoryStats title={t("dashboard.memory")} />
-        <CpuStats title={t("dashboard.cpu")} />
-        <UpsertsStats title={t("dashboard.updates")} />
-        <SuggestStats title={t("dashboard.suggestions")} />
+        <SearchStats title={t('dashboard.searches')} />
+        <FacetStats title={t('dashboard.facets')} />
+        <TrackingEventsStats title={t('dashboard.tracking_events')} />
+        <MemoryStats title={t('dashboard.memory')} />
+        <CpuStats title={t('dashboard.cpu')} />
+        <UpsertsStats title={t('dashboard.updates')} />
+        <SuggestStats title={t('dashboard.suggestions')} />
       </div>
     </div>
-  );
-};
+  )
+}

@@ -1,44 +1,44 @@
-import useSWR from "swr";
-import { getWordConfig, WordConfig } from "../../lib/datalayer/api";
-import useSWRMutation from "swr/mutation";
-import { useState } from "react";
-import { Input } from "../../components/ui/input";
-import { Button } from "../../components/ui/button";
-import { X } from "lucide-react";
+import useSWR from 'swr'
+import { getWordConfig, WordConfig } from '../../lib/datalayer/api'
+import useSWRMutation from 'swr/mutation'
+import { useState } from 'react'
+import { Input } from '../../components/ui/input'
+import { Button } from '../../components/ui/button'
+import { X } from 'lucide-react'
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "../../components/ui/card";
+} from '../../components/ui/card'
 
 const useWordConfig = () => {
-  return useSWR("/admin/words", getWordConfig, {
+  return useSWR('/admin/words', getWordConfig, {
     revalidateOnFocus: false,
     keepPreviousData: true,
-  });
-};
+  })
+}
 
 const useWordConfigMutation = () => {
-  return useSWRMutation("/admin/words", (_, { arg }: { arg: WordConfig }) => {
-    return fetch("/admin/words", {
-      method: "POST",
+  return useSWRMutation('/admin/words', (_, { arg }: { arg: WordConfig }) => {
+    return fetch('/admin/words', {
+      method: 'POST',
       body: JSON.stringify(arg),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    }).then((res) => res.json());
-  });
-};
+    }).then((res) => res.json())
+  })
+}
 
 const SplitWordsEditor = ({
   splitWords,
   onChange,
 }: {
-  splitWords: string[];
-  onChange: (data: string[]) => void;
+  splitWords: string[]
+  onChange: (data: string[]) => void
 }) => {
-  const [inputValue, setInputValue] = useState<string>("");
+  const [inputValue, setInputValue] = useState<string>('')
 
   return (
     <>
@@ -48,7 +48,7 @@ const SplitWordsEditor = ({
             <span>{word}</span>
             <button
               onClick={() => {
-                onChange(splitWords.filter((w) => w !== word));
+                onChange(splitWords.filter((w) => w !== word))
               }}
               className="text-red-500 hover:text-red-700"
               aria-label="Delete word"
@@ -67,29 +67,29 @@ const SplitWordsEditor = ({
         />
         <Button
           onClick={() => {
-            if (inputValue.trim() === "") return;
-            onChange([...splitWords, inputValue]);
-            setInputValue("");
+            if (inputValue.trim() === '') return
+            onChange([...splitWords, inputValue])
+            setInputValue('')
           }}
-          disabled={inputValue.trim() === ""}
+          disabled={inputValue.trim() === ''}
           className="bg-blue-500 text-white hover:bg-blue-600"
         >
           Add
         </Button>
       </div>
     </>
-  );
-};
+  )
+}
 
 const WordMappingsEditor = ({
   wordMappings,
   onChange,
 }: {
-  wordMappings: Record<string, string>;
-  onChange: (data: Record<string, string>) => void;
+  wordMappings: Record<string, string>
+  onChange: (data: Record<string, string>) => void
 }) => {
-  const [fromValue, setFromValue] = useState<string>("");
-  const [toValue, setToValue] = useState<string>("");
+  const [fromValue, setFromValue] = useState<string>('')
+  const [toValue, setToValue] = useState<string>('')
 
   return (
     <>
@@ -109,9 +109,9 @@ const WordMappingsEditor = ({
               <td>
                 <button
                   onClick={() => {
-                    const updatedMappings = { ...wordMappings };
-                    delete updatedMappings[key];
-                    onChange(updatedMappings);
+                    const updatedMappings = { ...wordMappings }
+                    delete updatedMappings[key]
+                    onChange(updatedMappings)
                   }}
                   className="text-red-500 hover:text-red-700"
                   aria-label="Delete mapping"
@@ -140,9 +140,9 @@ const WordMappingsEditor = ({
         <Button
           onClick={() => {
             if (fromValue.trim() && toValue.trim()) {
-              onChange({ ...wordMappings, [fromValue]: toValue });
-              setFromValue("");
-              setToValue("");
+              onChange({ ...wordMappings, [fromValue]: toValue })
+              setFromValue('')
+              setToValue('')
             }
           }}
           disabled={!fromValue.trim() || !toValue.trim()}
@@ -152,19 +152,19 @@ const WordMappingsEditor = ({
         </Button>
       </div>
     </>
-  );
-};
+  )
+}
 
 export const Words = () => {
-  const { data, isLoading, error, mutate } = useWordConfig();
-  const { trigger } = useWordConfigMutation();
+  const { data, isLoading, error, mutate } = useWordConfig()
+  const { trigger } = useWordConfigMutation()
   if (isLoading)
-    return <div className="text-center text-gray-500">Loading...</div>;
+    return <div className="text-center text-gray-500">Loading...</div>
   if (error)
     return (
       <div className="text-center text-red-500">Error: {error.message}</div>
-    );
-  if (!data) return <div className="text-center text-gray-500">No data</div>;
+    )
+  if (!data) return <div className="text-center text-gray-500">No data</div>
 
   const onChange =
     (key: keyof WordConfig) => (value: WordConfig[typeof key]) => {
@@ -175,13 +175,13 @@ export const Words = () => {
             wordMappings: {},
             ...prev,
             [key]: value,
-          };
+          }
         },
-        { revalidate: false }
-      );
-    };
+        { revalidate: false },
+      )
+    }
 
-  const { splitWords, wordMappings } = data;
+  const { splitWords, wordMappings } = data
   return (
     <div className="max-w-4xl mx-auto">
       <Card>
@@ -198,7 +198,7 @@ export const Words = () => {
             </p>
             <SplitWordsEditor
               splitWords={splitWords}
-              onChange={onChange("splitWords")}
+              onChange={onChange('splitWords')}
             />
           </div>
 
@@ -209,7 +209,7 @@ export const Words = () => {
             </p>
             <WordMappingsEditor
               wordMappings={wordMappings}
-              onChange={onChange("wordMappings")}
+              onChange={onChange('wordMappings')}
             />
           </div>
         </CardContent>
@@ -218,7 +218,7 @@ export const Words = () => {
             <Button
               onClick={() => {
                 if (data != null) {
-                  trigger(data);
+                  trigger(data)
                 }
               }}
               className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600"
@@ -229,5 +229,5 @@ export const Words = () => {
         </CardFooter>
       </Card>
     </div>
-  );
-};
+  )
+}

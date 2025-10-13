@@ -1,40 +1,40 @@
-import { useMemo, useState } from "react";
-import { isNumberFacet, KeyFacet } from "../lib/types";
-import { ChevronUp, LoaderCircle, X, Store } from "lucide-react";
-import { useQuery } from "../lib/hooks/useQuery";
-import { KeyFacetSelector } from "./facets/KeyFacetSelector";
-import { ColorFacetSelector } from "./facets/ColorFacet";
-import { NumberFacetSelector } from "./facets/NumericFacetSelectors";
-import { cm } from "../utils";
-import { useScreenWidth } from "../lib/hooks/useScreenWidth";
-import { useTranslations } from "../lib/hooks/useTranslations";
-import { useFacets } from "../lib/hooks/useFacets";
-import { StarRatingFacetSelector } from "./facets/RatingFacet";
-import { calculateDistance } from "./map-utils";
-import { useStores } from "../lib/datalayer/stores";
+import { useMemo, useState } from 'react'
+import { isNumberFacet, KeyFacet } from '../lib/types'
+import { ChevronUp, LoaderCircle, X, Store } from 'lucide-react'
+import { useQuery } from '../lib/hooks/useQuery'
+import { KeyFacetSelector } from './facets/KeyFacetSelector'
+import { ColorFacetSelector } from './facets/ColorFacet'
+import { NumberFacetSelector } from './facets/NumericFacetSelectors'
+import { cm } from '../utils'
+import { useScreenWidth } from '../lib/hooks/useScreenWidth'
+import { useTranslations } from '../lib/hooks/useTranslations'
+import { useFacets } from '../lib/hooks/useFacets'
+import { StarRatingFacetSelector } from './facets/RatingFacet'
+import { calculateDistance } from './map-utils'
+import { useStores } from '../lib/datalayer/stores'
 
 const CategoryLevel = ({
   id,
   facets,
   index,
 }: {
-  id: number;
-  facets: KeyFacet[];
-  index: number;
+  id: number
+  facets: KeyFacet[]
+  index: number
 }) => {
-  const { setQuery } = useQuery();
-  const facet = facets[index];
+  const { setQuery } = useQuery()
+  const facet = facets[index]
   if (!facet) {
-    return null;
+    return null
   }
   return (
     <ul className="pl-3">
       {Object.entries(facet.result.values).map(([value, results], idx, all) => {
-        const selected = facet.selected?.includes(value);
+        const selected = facet.selected?.includes(value)
         return (
           <li key={idx}>
             <button
-              className={cm("text-left", selected ? "font-bold" : undefined)}
+              className={cm('text-left', selected ? 'font-bold' : undefined)}
               onClick={() => {
                 setQuery((prev) => ({
                   ...prev,
@@ -45,7 +45,7 @@ const CategoryLevel = ({
                     ) ?? []),
                     { id, value: selected ? [] : [value] },
                   ],
-                }));
+                }))
                 //updateValue(selected ? [] : [value]);
               }}
             >
@@ -60,23 +60,23 @@ const CategoryLevel = ({
                 />
               )}
           </li>
-        );
+        )
       })}
     </ul>
-  );
-};
+  )
+}
 
 const CategoryResult = ({ categories }: { categories: KeyFacet[] }) => {
   const sorted = useMemo(
     () =>
       categories.sort((a, b) => {
-        return (a.categoryLevel ?? 0) - (b.categoryLevel ?? 0);
+        return (a.categoryLevel ?? 0) - (b.categoryLevel ?? 0)
       }),
     [categories],
-  );
+  )
   // console.log("sorted", sorted);
   if (sorted.length === 0 || sorted[0].categoryLevel !== 1) {
-    return null;
+    return null
   }
   return (
     <div className="mb-4 pb-2">
@@ -85,20 +85,20 @@ const CategoryResult = ({ categories }: { categories: KeyFacet[] }) => {
       </div>
       <CategoryLevel facets={sorted} index={0} id={sorted[0].id} />
     </div>
-  );
-};
+  )
+}
 
 type FacetListProps = {
-  facetsToHide?: number[];
-  facetsToDisable?: number[];
-  hideFacetsWithSingleValue?: boolean;
-};
+  facetsToHide?: number[]
+  facetsToDisable?: number[]
+  hideFacetsWithSingleValue?: boolean
+}
 export const FacetList = ({
   facetsToHide,
   facetsToDisable = [],
   hideFacetsWithSingleValue = false,
 }: FacetListProps) => {
-  const { facets } = useFacets();
+  const { facets } = useFacets()
   const allFacets = useMemo(
     () =>
       facets
@@ -106,19 +106,19 @@ export const FacetList = ({
         .map((d) => ({ ...d, disabled: facetsToDisable.includes(d.id) })),
 
     [facets, facetsToHide, facetsToDisable],
-  );
+  )
   return (
     <>
       {allFacets.map((facet) => {
         if (isNumberFacet(facet)) {
-          if (facet.valueType === "rating") {
+          if (facet.valueType === 'rating') {
             return (
               <StarRatingFacetSelector
                 {...facet}
                 defaultOpen={!facet.disabled && facet.selected != null}
                 key={`fld-${facet.id}-${facet.name}`}
               />
-            );
+            )
           }
           return (
             <NumberFacetSelector
@@ -126,18 +126,18 @@ export const FacetList = ({
               defaultOpen={!facet.disabled && facet.selected != null}
               key={`fld-${facet.id}-${facet.name}`}
             />
-          );
+          )
         }
-        if (facet.valueType === "color") {
+        if (facet.valueType === 'color') {
           return (
             <ColorFacetSelector
               {...facet}
               key={`fld-${facet.id}-${facet.name}`}
             />
-          );
+          )
         }
         if (hideFacetsWithSingleValue && facet.result.values.length <= 1) {
-          return null;
+          return null
         }
 
         return (
@@ -146,11 +146,11 @@ export const FacetList = ({
             key={`fld-${facet.id}-${facet.name}`}
             defaultOpen={!facet.disabled && facet.selected != null}
           />
-        );
+        )
       })}
     </>
-  );
-};
+  )
+}
 
 export const Facets = ({
   facetsToHide,
@@ -158,24 +158,24 @@ export const Facets = ({
   hideFacetsWithSingleValue = false,
   hideCategories = false,
 }: FacetListProps & {
-  hideCategories?: boolean;
-  hideFacetsWithSingleValue?: boolean;
+  hideCategories?: boolean
+  hideFacetsWithSingleValue?: boolean
 }) => {
-  const { facets, categoryFacets, isLoadingFacets: isLoading } = useFacets();
-  const t = useTranslations();
-  const [open, setOpen] = useState(false);
+  const { facets, categoryFacets, isLoadingFacets: isLoading } = useFacets()
+  const t = useTranslations()
+  const [open, setOpen] = useState(false)
 
-  const isDesktop = useScreenWidth(768);
+  const isDesktop = useScreenWidth(768)
 
   if (isLoading && facets.length === 0) {
     return (
       <aside className="animate-pulse">
-        <h2 className="text-lg font-semibold my-4">{t("facets.title")}</h2>
+        <h2 className="text-lg font-semibold my-4">{t('facets.title')}</h2>
         <div className="my-10 flex items-center justify-center">
           <LoaderCircle className="size-10 animate-spin" />
         </div>
       </aside>
-    );
+    )
   }
 
   return (
@@ -185,15 +185,15 @@ export const Facets = ({
         onClick={() => setOpen((p) => !p)}
       >
         <span>
-          {t("facets.title")}{" "}
+          {t('facets.title')}{' '}
           {facets.length > 0 && (
             <span className="text-gray-500">({facets.length})</span>
           )}
         </span>
         <ChevronUp
           className={cm(
-            "size-5 transition-transform md:hidden",
-            open ? "rotate-0" : "rotate-180",
+            'size-5 transition-transform md:hidden',
+            open ? 'rotate-0' : 'rotate-180',
           )}
         />
       </button>
@@ -209,59 +209,59 @@ export const Facets = ({
           </div>
 
           <div className="mb-4">
-            <h3 className="font-medium mb-2">{t("facets.stock")}</h3>
+            <h3 className="font-medium mb-2">{t('facets.stock')}</h3>
             <StoreSelector />
           </div>
           <button
             className={cm(
-              "sticky w-full transition-all bottom-2 left-2 z-10 right-2 p-1 bg-blue-100 border rounded-lg border-blue-300 md:hidden animate-pop",
+              'sticky w-full transition-all bottom-2 left-2 z-10 right-2 p-1 bg-blue-100 border rounded-lg border-blue-300 md:hidden animate-pop',
             )}
             onClick={(e) => {
               requestAnimationFrame(() => {
-                globalThis.document.querySelector("#results")?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                  inline: "nearest",
-                });
-                e.preventDefault();
-                e.stopPropagation();
-              });
+                globalThis.document.querySelector('#results')?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start',
+                  inline: 'nearest',
+                })
+                e.preventDefault()
+                e.stopPropagation()
+              })
             }}
           >
-            {t("facets.gotoResults")}
+            {t('facets.gotoResults')}
           </button>
         </div>
       )}
     </aside>
-  );
-};
+  )
+}
 
 const StoreSelector = () => {
   const {
     query: { stock = [] },
     setStock,
-  } = useQuery();
-  const t = useTranslations();
-  const { data: stores } = useStores();
-  const [maxDistance, setMaxDistance] = useState(30);
-  const [isSelectOpen, setIsSelectOpen] = useState(false);
+  } = useQuery()
+  const t = useTranslations()
+  const { data: stores } = useStores()
+  const [maxDistance, setMaxDistance] = useState(30)
+  const [isSelectOpen, setIsSelectOpen] = useState(false)
   const sortedStores = useMemo(() => {
     return Object.values(stores ?? {})
       .map(({ displayName, id }) => ({
         displayName: displayName
-          .replace("Elgiganten ", "")
-          .replace("Elkjøp ", ""),
+          .replace('Elgiganten ', '')
+          .replace('Elkjøp ', ''),
         id,
       }))
-      .sort((a, b) => a.displayName.localeCompare(b.displayName));
-  }, [stores]);
+      .sort((a, b) => a.displayName.localeCompare(b.displayName))
+  }, [stores])
 
   const findCloseStores = (selected: string[]) => {
-    const closeBy = new Set<string>(selected);
+    const closeBy = new Set<string>(selected)
     selected.forEach((storeId) => {
-      const targetStore = stores?.find((d) => d.id === storeId);
-      if (!targetStore) return;
-      const { lat, lng } = targetStore.address.location;
+      const targetStore = stores?.find((d) => d.id === storeId)
+      if (!targetStore) return
+      const { lat, lng } = targetStore.address.location
       stores
         ?.map((store) => {
           return {
@@ -275,17 +275,17 @@ const StoreSelector = () => {
               },
               store.address.location,
             ),
-          };
+          }
         })
         .filter((store) => {
-          return store.distance <= maxDistance;
+          return store.distance <= maxDistance
         })
         .forEach((store) => {
-          closeBy.add(store.id);
-        });
-    });
-    setStock(Array.from(closeBy));
-  };
+          closeBy.add(store.id)
+        })
+    })
+    setStock(Array.from(closeBy))
+  }
 
   return (
     <div className="space-y-4">
@@ -329,27 +329,27 @@ const StoreSelector = () => {
         </label>
         <div className="relative">
           <select
-            value={stock[0] ?? ""}
+            value={stock[0] ?? ''}
             onChange={(e) => {
-              const { value } = e.target;
-              if (value === "") {
-                setStock([]);
+              const { value } = e.target
+              if (value === '') {
+                setStock([])
               } else {
-                findCloseStores([value]);
+                findCloseStores([value])
               }
             }}
             onFocus={() => setIsSelectOpen(true)}
             onBlur={() => setIsSelectOpen(false)}
             className={cm(
-              "w-full px-4 py-3 pr-10 border border-gray-300 bg-white rounded-lg",
-              "appearance-none cursor-pointer transition-all duration-200",
-              "hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200",
-              "text-gray-900 placeholder-gray-500",
-              isSelectOpen && "border-blue-500 ring-2 ring-blue-200",
+              'w-full px-4 py-3 pr-10 border border-gray-300 bg-white rounded-lg',
+              'appearance-none cursor-pointer transition-all duration-200',
+              'hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200',
+              'text-gray-900 placeholder-gray-500',
+              isSelectOpen && 'border-blue-500 ring-2 ring-blue-200',
             )}
           >
             <option value="" className="text-gray-500">
-              {t("facets.stockEmptySelection")}
+              {t('facets.stockEmptySelection')}
             </option>
             {sortedStores.map((store) => (
               <option key={store.id} value={store.id} className="text-gray-900">
@@ -359,8 +359,8 @@ const StoreSelector = () => {
           </select>
           <ChevronUp
             className={cm(
-              "absolute right-3 top-1/2 transform -translate-y-1/2 size-5 text-gray-400 transition-transform duration-200 pointer-events-none",
-              isSelectOpen ? "rotate-0" : "rotate-180",
+              'absolute right-3 top-1/2 transform -translate-y-1/2 size-5 text-gray-400 transition-transform duration-200 pointer-events-none',
+              isSelectOpen ? 'rotate-0' : 'rotate-180',
             )}
           />
         </div>
@@ -378,14 +378,14 @@ const StoreSelector = () => {
                 onClick={() => setStock([])}
                 className="text-xs text-red-600 hover:text-red-800 transition-colors duration-200"
               >
-                {t("common.clear")}
+                {t('common.clear')}
               </button>
             )}
           </div>
           <div className="space-y-2 max-h-screen overflow-y-auto">
             {stock.map((storeId) => {
-              const store = stores?.find((d) => d.id === storeId);
-              if (!store) return null;
+              const store = stores?.find((d) => d.id === storeId)
+              if (!store) return null
               return (
                 <div
                   key={storeId}
@@ -399,22 +399,22 @@ const StoreSelector = () => {
                   </div>
                   <button
                     onClick={() => {
-                      setStock(stock.filter((d) => d !== storeId));
+                      setStock(stock.filter((d) => d !== storeId))
                     }}
                     className={cm(
-                      "p-1.5 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50",
-                      "transition-all duration-200 opacity-70 group-hover:opacity-100",
+                      'p-1.5 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50',
+                      'transition-all duration-200 opacity-70 group-hover:opacity-100',
                     )}
-                    title={t("common.remove")}
+                    title={t('common.remove')}
                   >
                     <X className="size-4" />
                   </button>
                 </div>
-              );
+              )
             })}
           </div>
         </div>
       )}
     </div>
-  );
-};
+  )
+}

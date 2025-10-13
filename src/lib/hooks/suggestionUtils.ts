@@ -1,40 +1,40 @@
-import { byPriority, isDefined } from "../../utils";
+import { byPriority, isDefined } from '../../utils'
 import {
   KeyFacet,
   isKeyFacet,
   FacetListItem,
   PopularFacet,
   PopularQuery,
-} from "../types";
+} from '../types'
 
 export type SuggestField = {
-  name: string;
-  id: number;
+  name: string
+  id: number
   values: {
-    value: string;
-    popularity: number;
-  }[];
-  popularity: number;
-};
+    value: string
+    popularity: number
+  }[]
+  popularity: number
+}
 export type SuggestQuery = {
-  type: "query";
-  fields: SuggestField[];
-  popularity: number;
-  query: string;
-};
+  type: 'query'
+  fields: SuggestField[]
+  popularity: number
+  query: string
+}
 
-export type FlatFacetValue = Omit<KeyFacet, "result" | "selected"> & {
-  value: string;
-  hits: number;
-};
+export type FlatFacetValue = Omit<KeyFacet, 'result' | 'selected'> & {
+  value: string
+  hits: number
+}
 
 export type ConvertedFacet = Omit<
   KeyFacet,
-  "result" | "selected" | "valueType"
+  'result' | 'selected' | 'valueType'
 > & {
-  values: { value: string; hits: number }[];
-  valueType: string;
-};
+  values: { value: string; hits: number }[]
+  valueType: string
+}
 
 export const convertFacets = (facets: KeyFacet[]): ConvertedFacet[] => {
   return (
@@ -43,7 +43,7 @@ export const convertFacets = (facets: KeyFacet[]): ConvertedFacet[] => {
       .filter(
         (d) =>
           d.valueType != null ||
-          (d.categoryLevel != null && d.categoryLevel > 0)
+          (d.categoryLevel != null && d.categoryLevel > 0),
       )
       .sort(byPriority)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -54,26 +54,26 @@ export const convertFacets = (facets: KeyFacet[]): ConvertedFacet[] => {
           .slice(undefined, 10)
           .map(([value, hits]) => ({ value, hits })),
       })) ?? []
-  );
-};
+  )
+}
 
 const byPopularity = (a: { popularity: number }, b: { popularity: number }) =>
-  b.popularity - a.popularity;
+  b.popularity - a.popularity
 
 const convertKeyFacetEntry = (
   facet: FacetListItem | undefined,
-  { id, values, score }: PopularFacet
+  { id, values, score }: PopularFacet,
 ) => {
   if (facet == null) {
-    return null;
+    return null
   }
   return {
     name: facet.name,
     id,
     values: values.map(({ value, score }) => ({ value, popularity: score })),
     popularity: score,
-  };
-};
+  }
+}
 
 export const convertPopularQueries =
   (facetData: Record<string, FacetListItem>) =>
@@ -82,13 +82,13 @@ export const convertPopularQueries =
       const fields = facets
         .map((field) => convertKeyFacetEntry(facetData[field.id], field))
         .filter(isDefined)
-        .sort(byPopularity);
+        .sort(byPopularity)
 
       return {
         fields,
         popularity: score,
         query,
-        type: "query",
-      } satisfies SuggestQuery;
-    });
-  };
+        type: 'query',
+      } satisfies SuggestQuery
+    })
+  }

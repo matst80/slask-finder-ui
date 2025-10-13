@@ -40,11 +40,12 @@ export const makeImageUrl = (pathOrUrl: string, size = "640") => {
 export const useFetchMutation = <T, U>(
   key: string,
   fn: (payload: U) => Promise<T>,
-  config?: SWRMutationConfiguration<T, Error, string, U>
+  config?: SWRMutationConfiguration<T, Error, string, U>,
 ) => {
   return useSWRMutation(key, (_, { arg }) => fn(arg), {
-    ...config,
+    revalidate: false,
     populateCache: true,
+    ...config,
   });
 };
 
@@ -212,7 +213,7 @@ export const textSize = (level: number) => {
 
 export const useDebounce = <TArg extends unknown[], TRet>(
   fn: (...args: TArg) => TRet,
-  delay: number
+  delay: number,
 ) => {
   let timeout: NodeJS.Timeout;
   return (...args: TArg) => {

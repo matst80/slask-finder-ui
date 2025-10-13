@@ -1,15 +1,15 @@
-import useSWR from "swr";
-import { getFunnelData } from "../../lib/datalayer/api";
-import { FunnelChart } from "./funnel-chart";
-import { useTranslations } from "../../lib/hooks/useTranslations";
+import useSWR from 'swr'
+import { getFunnelData } from '../../lib/datalayer/api'
+import { FunnelChart } from './funnel-chart'
+import { useTranslations } from '../../lib/hooks/useTranslations'
 
 const byEvents = (a: { value: number }, b: { value: number }) => {
-  return (b.value ?? 0) - (a.value ?? 0);
-};
+  return (b.value ?? 0) - (a.value ?? 0)
+}
 
 const useFunnelData = () => {
   return useSWR(
-    "/tracking/funnels",
+    '/tracking/funnels',
     () =>
       getFunnelData().then((res) =>
         res.map(({ steps, ...item }) => ({
@@ -23,41 +23,41 @@ const useFunnelData = () => {
               events,
             }))
             .sort(byEvents),
-        }))
+        })),
       ),
-    { refreshInterval: 5000, revalidateOnFocus: true }
-  );
-};
+    { refreshInterval: 5000, revalidateOnFocus: true },
+  )
+}
 
 export const FunnelsView = () => {
-  const { data, isLoading } = useFunnelData();
-  const t = useTranslations();
+  const { data, isLoading } = useFunnelData()
+  const t = useTranslations()
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
       </div>
-    );
+    )
   }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <header className="mb-8 text-center">
         <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-linear-to-r from-indigo-600 to-purple-600">
-          {t("tracking.funnels.title")}
+          {t('tracking.funnels.title')}
         </h1>
         <p className="mt-2 text-lg text-gray-600">
-          {t("tracking.funnels.description")}
+          {t('tracking.funnels.description')}
         </p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {data?.map((funnel) => {
           // Calculate conversion rate
-          const firstStep = funnel.steps[0]?.value || 0;
-          const lastStep = funnel.steps[funnel.steps.length - 1]?.value || 0;
+          const firstStep = funnel.steps[0]?.value || 0
+          const lastStep = funnel.steps[funnel.steps.length - 1]?.value || 0
           const conversionRate =
-            firstStep > 0 ? (lastStep / firstStep) * 100 : 0;
+            firstStep > 0 ? (lastStep / firstStep) * 100 : 0
 
           return (
             <div
@@ -71,15 +71,15 @@ export const FunnelsView = () => {
                   </h2>
                   <div className="flex items-center bg-white px-3 py-1 rounded-full shadow-xs">
                     <span className="text-sm font-medium text-gray-500">
-                      {t("tracking.funnels.conversion")}
+                      {t('tracking.funnels.conversion')}
                     </span>
                     <span
                       className={`ml-2 font-bold ${
                         conversionRate >= 50
-                          ? "text-emerald-600"
+                          ? 'text-emerald-600'
                           : conversionRate >= 25
-                          ? "text-amber-600"
-                          : "text-rose-600"
+                            ? 'text-amber-600'
+                            : 'text-rose-600'
                       }`}
                     >
                       {conversionRate.toFixed(1)}%
@@ -99,12 +99,12 @@ export const FunnelsView = () => {
 
                 <div className="mt-6 bg-gray-50 rounded-lg p-4">
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
-                    {t("tracking.funnels.steps")}
+                    {t('tracking.funnels.steps')}
                   </h3>
                   <ul className="space-y-3">
                     {funnel.steps.map((step, index) => {
                       const stepPercentage =
-                        firstStep > 0 ? (step.value / firstStep) * 100 : 0;
+                        firstStep > 0 ? (step.value / firstStep) * 100 : 0
 
                       return (
                         <li key={step.id} className="relative">
@@ -128,23 +128,23 @@ export const FunnelsView = () => {
                             ></div>
                           </div>
                         </li>
-                      );
+                      )
                     })}
                   </ul>
                 </div>
               </div>
             </div>
-          );
+          )
         })}
       </div>
 
       {(!data || data.length === 0) && (
         <div className="text-center p-12 bg-white rounded-lg shadow-sm">
           <h3 className="text-lg font-medium text-gray-900">
-            {t("tracking.funnels.no_data")}
+            {t('tracking.funnels.no_data')}
           </h3>
         </div>
       )}
     </div>
-  );
-};
+  )
+}

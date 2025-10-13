@@ -1,58 +1,58 @@
-import { PropsWithChildren, ReactNode, useId, useRef, useEffect } from "react";
+import { PropsWithChildren, ReactNode, useId, useRef, useEffect } from 'react'
 
 export const Tooltip = ({
   popover,
   className,
   children,
 }: PropsWithChildren<{ popover: ReactNode; className?: string }>) => {
-  const id = useId();
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const anchorName = `--anchor-${id}`;
+  const id = useId()
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const anchorName = `--anchor-${id}`
   useEffect(() => {
     if (buttonRef.current) {
-      const button = buttonRef.current;
+      const button = buttonRef.current
 
-      const popover = document.getElementById(id);
+      const popover = document.getElementById(id)
       Object.assign(popover!.style, {
         opacity: 0,
-        transition: "opacity 0.3s ease-in-out",
+        transition: 'opacity 0.3s ease-in-out',
         positionAnchor: anchorName,
-        position: "fixed",
-        bottom: "anchor(top)",
-        justifySelf: "anchor-center",
-      });
+        position: 'fixed',
+        bottom: 'anchor(top)',
+        justifySelf: 'anchor-center',
+      })
 
       Object.assign(button.style, {
         anchorName: anchorName,
-        cursor: "pointer",
-      });
+        cursor: 'pointer',
+      })
 
       const onEnter = () => {
-        const pos = button.getBoundingClientRect();
+        const pos = button.getBoundingClientRect()
         if (popover == null) {
-          return;
+          return
         }
-        popover.showPopover();
+        popover.showPopover()
         Object.assign(popover!.style, {
           opacity: 1,
-          position: "absolute",
+          position: 'absolute',
           //display: "block",
           top: `${pos.bottom + window.scrollY}px`,
           left: `${pos.left + window.scrollX - popover!.offsetWidth / 2}px`,
-        });
-      };
+        })
+      }
       const onLeave = () => {
-        popover?.hidePopover();
-      };
+        popover?.hidePopover()
+      }
 
-      button.addEventListener("mouseenter", onEnter);
-      button.addEventListener("mouseleave", onLeave);
+      button.addEventListener('mouseenter', onEnter)
+      button.addEventListener('mouseleave', onLeave)
       return () => {
-        button.removeEventListener("mouseenter", onEnter);
-        button.removeEventListener("mouseleave", onLeave);
-      };
+        button.removeEventListener('mouseenter', onEnter)
+        button.removeEventListener('mouseleave', onLeave)
+      }
     }
-  }, [buttonRef]);
+  }, [buttonRef])
   return (
     <>
       <button
@@ -66,5 +66,5 @@ export const Tooltip = ({
         {popover}
       </div>
     </>
-  );
-};
+  )
+}

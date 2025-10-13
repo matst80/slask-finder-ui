@@ -1,10 +1,10 @@
-import { useContext } from "react";
-import { BuilderContext } from "./builder-context";
+import { useContext } from 'react'
+import { BuilderContext } from './builder-context'
 
 export const useBuilderContext = () => {
-  const context = useContext(BuilderContext);
+  const context = useContext(BuilderContext)
   if (context == null) {
-    throw new Error("useBuilderContext must be used within a BuilderContext");
+    throw new Error('useBuilderContext must be used within a BuilderContext')
   }
-  return context;
-};
+  return context
+}

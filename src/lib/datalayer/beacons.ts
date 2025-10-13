@@ -1,52 +1,48 @@
-import { BaseEcomEvent } from "../types";
+import { BaseEcomEvent } from '../types'
 
 const toTrackingEvent = ({ item_id, ...rest }: BaseEcomEvent) => ({
   ...rest,
   id: Number(item_id),
-});
+})
 
 export const trackClick = (data: BaseEcomEvent) =>
   globalThis.navigator.sendBeacon(
     `/track/click`,
-    JSON.stringify(toTrackingEvent(data))
-  );
+    JSON.stringify(toTrackingEvent(data)),
+  )
 
 export type DataSetEvent = {
-  query: string;
-  positive: string;
-  negative: string;
-};
+  query: string
+  positive: string
+  negative: string
+}
 
 export const trackDataSet = (data: DataSetEvent) =>
-  globalThis.navigator.sendBeacon(`/track/dataset`, JSON.stringify(data));
+  globalThis.navigator.sendBeacon(`/track/dataset`, JSON.stringify(data))
 
 export const trackImpression = (impressions: BaseEcomEvent[]) =>
   globalThis.navigator.sendBeacon(
     `/track/impressions`,
-    JSON.stringify(impressions.map(toTrackingEvent))
-  );
+    JSON.stringify(impressions.map(toTrackingEvent)),
+  )
 
 export const trackAction = (payload: {
-  item?: BaseEcomEvent;
-  action: string;
-  reason: string;
-}) => globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload));
+  item?: BaseEcomEvent
+  action: string
+  reason: string
+}) => globalThis.navigator.sendBeacon(`/track/action`, JSON.stringify(payload))
 
 export const trackSuggest = (payload: {
-  value: string;
-  results: number;
-  suggestions: number;
-}) =>
-  globalThis.navigator.sendBeacon(`/track/suggest`, JSON.stringify(payload));
+  value: string
+  results: number
+  suggestions: number
+}) => globalThis.navigator.sendBeacon(`/track/suggest`, JSON.stringify(payload))
 
 export const trackCart = (
   payload: BaseEcomEvent & {
-    type: "add" | "quantity" | "remove";
-  }
-) => globalThis.navigator.sendBeacon(`/track/cart`, JSON.stringify(payload));
+    type: 'add' | 'quantity' | 'remove'
+  },
+) => globalThis.navigator.sendBeacon(`/track/cart`, JSON.stringify(payload))
 
 export const trackEnterCheckout = (data: { items: BaseEcomEvent[] }) =>
-  globalThis.navigator.sendBeacon(
-    `/track/enter-checkout`,
-    JSON.stringify(data)
-  );
+  globalThis.navigator.sendBeacon(`/track/enter-checkout`, JSON.stringify(data))

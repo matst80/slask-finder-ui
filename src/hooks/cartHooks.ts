@@ -6,7 +6,7 @@ import {
   getCart,
   removeFromCart,
 } from "../lib/datalayer/cart-api";
-import { useFetchMutation } from "../utils";
+import { isDefined, useFetchMutation } from "../utils";
 import { trackCart } from "../lib/datalayer/beacons";
 import { BaseEcomEvent, Item } from "../lib/types";
 import { useNotifications } from "../components/ui-notifications/useNotifications";
@@ -18,7 +18,8 @@ const cartKey = "/cart";
 export const useCart = () => {
   return useSWR(cartKey, getCart, {
     keepPreviousData: true,
-    errorRetryInterval: 50000,
+    revalidateOnFocus: true,
+    errorRetryInterval: 5000,
   });
 };
 
@@ -30,9 +31,9 @@ export const useAddMultipleToCart = () => {
   const { showNotification } = useNotifications();
   return useFetchMutation(cartKey, (items: (Item & { quantity?: number })[]) =>
     Promise.all(
-      items.map((item, idx) => {
-        return addToCart({ sku: item.sku, quantity: item.quantity ?? 1 })
-          .then(() => {
+      items.map((item, idx) =>
+        addToCart({ sku: item.sku, quantity: item.quantity ?? 1 })
+          .then((cart) => {
             showNotification({
               title: "Added to cart",
               message: `${item.title} has been added to your cart.`,
@@ -43,6 +44,7 @@ export const useAddMultipleToCart = () => {
               quantity: item.quantity ?? 1,
               type: "add",
             });
+            return cart;
           })
           .catch(() => {
             showNotification({
@@ -50,10 +52,16 @@ export const useAddMultipleToCart = () => {
               message: `Failed to add ${item.title} to your cart.`,
               variant: "error",
             });
-          });
-      })
-    )
-  );
+            return null;
+          }),
+      ),
+    ).then((r) => {
+      const carts = r.filter(isDefined);
+      return carts[carts.length - 1];
+    }),
+  {
+    revalidate: true,
+  });
 };
 
 export const useAddToCart = () => {
@@ -63,8 +71,8 @@ export const useAddToCart = () => {
   return {
     ...rest,
     trigger: async (
-      item: { sku: string; quantity: number },
-      trackingItem: BaseEcomEvent
+      item: { sku: string; quantity: number; storeId?: string },
+      trackingItem: BaseEcomEvent,
     ) => {
       if (accepted === "none" || accepted === null) {
         showNotification({

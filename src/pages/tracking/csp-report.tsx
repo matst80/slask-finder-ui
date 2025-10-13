@@ -1,31 +1,31 @@
-import useSWR from "swr";
-import { toJson } from "../../lib/datalayer/api";
-import { CheckCircle2 } from "lucide-react";
+import useSWR from 'swr'
+import { toJson } from '../../lib/datalayer/api'
+import { CheckCircle2 } from 'lucide-react'
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
-} from "../../components/ui/card";
-import { TimeAgo } from "../../components/TimeAgo";
-import { useState } from "react";
-import { JsonView } from "./JsonView";
+} from '../../components/ui/card'
+import { TimeAgo } from '../../components/TimeAgo'
+import { useState } from 'react'
+import { JsonView } from './JsonView'
 
 type CspIssue = {
-  firstSeen: number;
-  lastSeen: number;
-  count: number;
-  firstBody: unknown;
-  [key: string]: unknown;
-};
+  firstSeen: number
+  lastSeen: number
+  count: number
+  firstBody: unknown
+  [key: string]: unknown
+}
 
 const splitType = (url: string) => {
-  const parts = url.split(";");
-  if (parts[0] === "inline" && parts[1] != null) {
-    return { type: "inline", url: parts[1] };
+  const parts = url.split(';')
+  if (parts[0] === 'inline' && parts[1] != null) {
+    return { type: 'inline', url: parts[1] }
   }
-  return { type: "url", url };
-};
+  return { type: 'url', url }
+}
 
 const CspIssueView = ({
   url: initialUrl,
@@ -34,8 +34,8 @@ const CspIssueView = ({
   firstSeen,
   firstBody,
 }: CspIssue & { url: string }) => {
-  const [open, setOpen] = useState(false);
-  const { type, url } = splitType(initialUrl);
+  const [open, setOpen] = useState(false)
+  const { type, url } = splitType(initialUrl)
   return (
     <li
       key={url}
@@ -69,19 +69,19 @@ const CspIssueView = ({
           )}
         </div>
       </div>
-      <div className={open ? "" : "hidden"}>
+      <div className={open ? '' : 'hidden'}>
         <JsonView data={firstBody} />
       </div>
     </li>
-  );
-};
+  )
+}
 
 export const CspReport = () => {
-  const { data } = useSWR("/tracking/csp-report", () =>
+  const { data } = useSWR('/tracking/csp-report', () =>
     fetch(
-      "https://reporting.tornberg.me/api/v1/stats/slask-finder.tornberg.me"
-    ).then((res) => toJson<Record<string, Record<string, CspIssue>>>(res))
-  );
+      'https://reporting.tornberg.me/api/v1/stats/slask-finder.tornberg.me',
+    ).then((res) => toJson<Record<string, Record<string, CspIssue>>>(res)),
+  )
   return (
     <div className="max-w-[1920px] mx-auto px-4">
       <div className="flex flex-col gap-4 my-10">
@@ -107,5 +107,5 @@ export const CspReport = () => {
       {/* <h2 className="text-xl font-bold">Full Report</h2>
       <JsonView data={data} /> */}
     </div>
-  );
-};
+  )
+}

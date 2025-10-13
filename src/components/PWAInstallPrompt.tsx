@@ -1,89 +1,97 @@
-import { useState, useEffect } from 'react';
-import { X, Download, Smartphone } from 'lucide-react';
+import { useState, useEffect } from 'react'
+import { X, Download, Smartphone } from 'lucide-react'
 
 interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[];
+  readonly platforms: string[]
   readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed';
-    platform: string;
-  }>;
-  prompt(): Promise<void>;
+    outcome: 'accepted' | 'dismissed'
+    platform: string
+  }>
+  prompt(): Promise<void>
 }
 
 export const PWAInstallPrompt = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null)
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false)
+  const [isInstalled, setIsInstalled] = useState(false)
 
   useEffect(() => {
     // Check if app is already installed
     const checkIfInstalled = () => {
-      if (window.matchMedia('(display-mode: standalone)').matches || 
-          (window.navigator as any).standalone) {
-        setIsInstalled(true);
+      if (
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone
+      ) {
+        setIsInstalled(true)
       }
-    };
+    }
 
     // Handle the beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      
+      e.preventDefault()
+      setDeferredPrompt(e as BeforeInstallPromptEvent)
+
       // Show install prompt after a short delay
       setTimeout(() => {
-        setShowInstallPrompt(true);
-      }, 3000);
-    };
+        setShowInstallPrompt(true)
+      }, 3000)
+    }
 
     // Handle app installed event
     const handleAppInstalled = () => {
-      setIsInstalled(true);
-      setShowInstallPrompt(false);
-      setDeferredPrompt(null);
-    };
+      setIsInstalled(true)
+      setShowInstallPrompt(false)
+      setDeferredPrompt(null)
+    }
 
-    checkIfInstalled();
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
+    checkIfInstalled()
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    window.addEventListener('appinstalled', handleAppInstalled)
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
-    };
-  }, []);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt,
+      )
+      window.removeEventListener('appinstalled', handleAppInstalled)
+    }
+  }, [])
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) return
 
     try {
-      await deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      
+      await deferredPrompt.prompt()
+      const { outcome } = await deferredPrompt.userChoice
+
       if (outcome === 'accepted') {
-        console.log('User accepted the install prompt');
+        console.log('User accepted the install prompt')
       } else {
-        console.log('User dismissed the install prompt');
+        console.log('User dismissed the install prompt')
       }
-      
-      setDeferredPrompt(null);
-      setShowInstallPrompt(false);
+
+      setDeferredPrompt(null)
+      setShowInstallPrompt(false)
     } catch (error) {
-      console.error('Error showing install prompt:', error);
+      console.error('Error showing install prompt:', error)
     }
-  };
+  }
 
   const handleDismiss = () => {
-    setShowInstallPrompt(false);
+    setShowInstallPrompt(false)
     // Don't show again for this session
-    sessionStorage.setItem('pwa-install-dismissed', 'true');
-  };
+    sessionStorage.setItem('pwa-install-dismissed', 'true')
+  }
 
   // Don't show if already installed or user dismissed
-  if (isInstalled || 
-      !showInstallPrompt || 
-      !deferredPrompt ||
-      sessionStorage.getItem('pwa-install-dismissed')) {
-    return null;
+  if (
+    isInstalled ||
+    !showInstallPrompt ||
+    !deferredPrompt ||
+    sessionStorage.getItem('pwa-install-dismissed')
+  ) {
+    return null
   }
 
   return (
@@ -110,7 +118,7 @@ export const PWAInstallPrompt = () => {
             <X className="w-4 h-4" />
           </button>
         </div>
-        
+
         <div className="mt-3 flex space-x-2">
           <button
             onClick={handleInstallClick}
@@ -128,7 +136,7 @@ export const PWAInstallPrompt = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PWAInstallPrompt;
+export default PWAInstallPrompt

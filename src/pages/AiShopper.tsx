@@ -5,91 +5,91 @@ import {
   useContext,
   useEffect,
   useState,
-} from "react";
-import { JsonView } from "./tracking/JsonView";
-import { tools, availableFunctions, Tool } from "./tools";
-import { toJson } from "../lib/datalayer/api";
-import { useFacetMap } from "../hooks/searchHooks";
-import { useAdmin } from "../hooks/appState";
-import { Loader } from "../components/Loader";
-import { Link } from "react-router-dom";
-import Markdown from "react-markdown";
+} from 'react'
+import { JsonView } from './tracking/JsonView'
+import { tools, availableFunctions, Tool } from './tools'
+import { toJson } from '../lib/datalayer/api'
+import { useFacetMap } from '../hooks/searchHooks'
+import { useAdmin } from '../hooks/appState'
+import { Loader } from '../components/Loader'
+import { Link } from 'react-router-dom'
+import Markdown from 'react-markdown'
 
 type Model =
-  | "llama3.2"
-  | "llama3.1"
-  | "qwen3"
-  | "qwen2.5"
-  | "qwen2.5:14b"
-  | "phi4-mini:3.8b-q8_0";
+  | 'llama3.2'
+  | 'llama3.1'
+  | 'qwen3'
+  | 'qwen2.5'
+  | 'qwen2.5:14b'
+  | 'phi4-mini:3.8b-q8_0'
 
 type ToolCall = {
   function: {
-    name: string;
-    arguments: Record<string, any>;
-  };
-};
+    name: string
+    arguments: Record<string, any>
+  }
+}
 
 type Message = {
-  role: "user" | "assistant" | "system" | "tool";
-  tool_calls?: ToolCall[];
-  content: string;
-};
+  role: 'user' | 'assistant' | 'system' | 'tool'
+  tool_calls?: ToolCall[]
+  content: string
+}
 
 const AiShopperContext = createContext<{
-  model: Model;
-  messages: Message[];
-  loading: boolean;
-  addMessage: (message: Message) => void;
-  restart?: () => void;
-} | null>(null);
+  model: Model
+  messages: Message[]
+  loading: boolean
+  addMessage: (message: Message) => void
+  restart?: () => void
+} | null>(null)
 
 const systemMessage: Message = {
-  role: "system",
+  role: 'system',
   content:
-    "You are a shopping assistant that make recommendations based on the data from tool calls. ask the user for product type, brand and other details. Use broad searches to start with and refine based on properties.",
-};
+    'You are a shopping assistant that make recommendations based on the data from tool calls. ask the user for product type, brand and other details. Use broad searches to start with and refine based on properties.',
+}
 
-const model: Model = "qwen2.5:14b";
+const model: Model = 'qwen2.5:14b'
 
 type OllamaResponse = {
-  model: string;
-  created_at: string;
-  message: Message;
-  done: boolean;
-};
+  model: string
+  created_at: string
+  message: Message
+  done: boolean
+}
 
 type CustomTool = Tool & {
-  tool: (args: unknown) => Promise<string>;
-};
+  tool: (args: unknown) => Promise<string>
+}
 
 export const AiShoppingProvider = ({
   children,
   customTools = [],
   messages: startMessages,
 }: PropsWithChildren<{ messages: Message[]; customTools?: CustomTool[] }>) => {
-  const { data: facets } = useFacetMap();
-  const [messageReference, setMessageReference] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(startMessages);
+  const { data: facets } = useFacetMap()
+  const [messageReference, setMessageReference] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [messages, setMessages] = useState<Message[]>(startMessages)
   const addMessage = useCallback((message: Message) => {
-    setMessages((prev) => [...prev, message]);
-    setMessageReference(message.content);
-  }, []);
+    setMessages((prev) => [...prev, message])
+    setMessageReference(message.content)
+  }, [])
   const restart = useCallback(() => {
-    setMessages([systemMessage]);
-    setMessageReference(null);
-  }, []);
+    setMessages([systemMessage])
+    setMessageReference(null)
+  }, [])
 
   useEffect(() => {
     if (messageReference) {
       if (loading) {
-        return;
+        return
       }
-      setLoading(true);
-      fetch("/api/chat", {
-        method: "POST",
-        headers: { accept: "application/json" },
+      setLoading(true)
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: { accept: 'application/json' },
         body: JSON.stringify({
           model,
           messages,
@@ -105,7 +105,7 @@ export const AiShoppingProvider = ({
         return toJson<OllamaResponse>(d)
           .then(async (data) => {
             if (data.message) {
-              setMessages((prev) => [...prev, data.message]);
+              setMessages((prev) => [...prev, data.message])
             }
             if (data.message.tool_calls != null) {
               for (const {
@@ -113,32 +113,32 @@ export const AiShoppingProvider = ({
               } of data.message.tool_calls) {
                 const toCall =
                   availableFunctions[name as keyof typeof availableFunctions] ??
-                  customTools.find((tool) => tool.function.name == name)?.tool;
+                  customTools.find((tool) => tool.function.name == name)?.tool
 
                 if (toCall) {
                   await toCall(args as any, facets).then((content) => {
                     const message: Message = {
-                      role: "tool",
+                      role: 'tool',
                       content,
-                    };
-                    console.log("tool call result:", content);
-                    setMessages((prev) => [...prev, message]);
-                  });
+                    }
+                    console.log('tool call result:', content)
+                    setMessages((prev) => [...prev, message])
+                  })
                 } else {
-                  console.error("Unknown function:", name, args);
+                  console.error('Unknown function:', name, args)
                 }
               }
-              setMessageReference(Date.now().toString());
+              setMessageReference(Date.now().toString())
             }
 
-            return data;
+            return data
           })
           .finally(() => {
-            setLoading(false);
-          });
-      });
+            setLoading(false)
+          })
+      })
     }
-  }, [messageReference]);
+  }, [messageReference])
 
   return (
     <AiShopperContext.Provider
@@ -146,21 +146,21 @@ export const AiShoppingProvider = ({
     >
       {children}
     </AiShopperContext.Provider>
-  );
-};
+  )
+}
 
 export const useAiContext = () => {
-  const context = useContext(AiShopperContext);
+  const context = useContext(AiShopperContext)
   if (!context) {
-    throw new Error("useAiContext must be used within an AiShoppingProvider");
+    throw new Error('useAiContext must be used within an AiShoppingProvider')
   }
-  return context;
-};
+  return context
+}
 
 const ChatResetButton = () => {
-  const { restart, messages } = useAiContext();
+  const { restart, messages } = useAiContext()
   if (messages.length <= 1) {
-    return null; // Hide button if there are no messages
+    return null // Hide button if there are no messages
   }
   return (
     <button
@@ -169,8 +169,8 @@ const ChatResetButton = () => {
     >
       <span>New conversation</span>
     </button>
-  );
-};
+  )
+}
 
 export const AiShopper = () => {
   return (
@@ -197,24 +197,24 @@ export const AiShopper = () => {
         </div>
       </div>
     </AiShoppingProvider>
-  );
-};
+  )
+}
 
 export const QueryInput = ({
-  placeholderText = "Ask me anything...",
+  placeholderText = 'Ask me anything...',
 }: {
-  placeholderText?: string;
+  placeholderText?: string
 }) => {
-  const { addMessage, loading } = useAiContext();
-  const [query, setQuery] = useState("");
+  const { addMessage, loading } = useAiContext()
+  const [query, setQuery] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (query.trim()) {
-      addMessage({ role: "user", content: query });
-      setQuery("");
+      addMessage({ role: 'user', content: query })
+      setQuery('')
     }
-  };
+  }
 
   return (
     <form
@@ -236,36 +236,36 @@ export const QueryInput = ({
         Send
       </button>
     </form>
-  );
-};
+  )
+}
 
 function splitTinking(content: string): { content: any; think: any } {
-  const startIndex = content.indexOf("<think>");
-  const endIndex = content.indexOf("</think>");
+  const startIndex = content.indexOf('<think>')
+  const endIndex = content.indexOf('</think>')
   if (startIndex !== -1 && endIndex !== -1) {
-    const think = content.substring(startIndex + 7, endIndex);
-    const contentWithoutThink = content.substring(endIndex + 8);
-    return { content: contentWithoutThink, think };
+    const think = content.substring(startIndex + 7, endIndex)
+    const contentWithoutThink = content.substring(endIndex + 8)
+    return { content: contentWithoutThink, think }
   }
-  return { content, think: null };
+  return { content, think: null }
 }
 
 export const MessageList = () => {
-  const { loading, messages } = useAiContext();
-  const [isAdmin] = useAdmin();
+  const { loading, messages } = useAiContext()
+  const [isAdmin] = useAdmin()
   useEffect(() => {
-    document.querySelector(".item-list > div:last-child")?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "nearest",
-    });
-  }, [messages]);
+    document.querySelector('.item-list > div:last-child')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+      inline: 'nearest',
+    })
+  }, [messages])
   return (
     <div className="flex flex-col gap-6 item-list">
       {messages.map((message, index) => {
-        if (message.role === "tool") {
+        if (message.role === 'tool') {
           try {
-            const parsed = JSON.parse(message.content);
+            const parsed = JSON.parse(message.content)
             if (parsed && Array.isArray(parsed)) {
               if (parsed?.[0].title != null) {
                 return (
@@ -283,7 +283,7 @@ export const MessageList = () => {
                           className="size-32 object-contain"
                         />
                         <ul>
-                          {d.bulletPoints.split("\n").map((value: string) => (
+                          {d.bulletPoints.split('\n').map((value: string) => (
                             <li key={value} className="text-sm text-gray-500">
                               {value}
                             </li>
@@ -292,7 +292,7 @@ export const MessageList = () => {
                       </Link>
                     ))}
                   </div>
-                );
+                )
               }
             }
           } catch (e) {
@@ -300,7 +300,7 @@ export const MessageList = () => {
           }
 
           if (!isAdmin) {
-            return null;
+            return null
           }
           return (
             <div
@@ -310,35 +310,35 @@ export const MessageList = () => {
               <div className="text-xs text-gray-500 mb-2">Tool Response:</div>
               <JsonView data={message.content} />
             </div>
-          );
+          )
         }
 
         if (
-          message.role === "system" ||
+          message.role === 'system' ||
           message.content == null ||
-          message.content === ""
+          message.content === ''
         ) {
-          return null; // Hide system messages
+          return null // Hide system messages
         }
-        const { content, think } = splitTinking(message.content);
+        const { content, think } = splitTinking(message.content)
         return (
           <div
             key={index}
             onClick={() => {
-              console.log("clicked message", message);
+              console.log('clicked message', message)
             }}
             className={`flex ${
-              message.role === "user" ? "justify-end" : "justify-start"
+              message.role === 'user' ? 'justify-end' : 'justify-start'
             }`}
           >
             <div
               className={`max-w-[85%] px-4 py-2 rounded-2xl shadow-sm ${
-                message.role === "user"
-                  ? "bg-blue-500 text-white rounded-br-none"
-                  : "bg-white border rounded-bl-none"
+                message.role === 'user'
+                  ? 'bg-blue-500 text-white rounded-br-none'
+                  : 'bg-white border rounded-bl-none'
               }`}
             >
-              {message.role === "assistant" && (
+              {message.role === 'assistant' && (
                 <div className="text-xs text-gray-500 mb-1">Assistant</div>
               )}
               {think && (
@@ -351,13 +351,13 @@ export const MessageList = () => {
               </div>
             </div>
           </div>
-        );
+        )
       })}
       {loading && (
         <div className="my-4">
-          <Loader size={"sm"} />
+          <Loader size={'sm'} />
         </div>
       )}
     </div>
-  );
-};
+  )
+}

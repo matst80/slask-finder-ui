@@ -1,14 +1,14 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react'
 import {
   useAdminFacets,
   useDeleteFacet,
   useFieldValues,
   useUpdateFacet,
-} from "../../adminHooks";
-import fuzzysort from "fuzzysort";
-import { byPriority } from "../../utils";
-import { Button, ButtonLink } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+} from '../../adminHooks'
+import fuzzysort from 'fuzzysort'
+import { byPriority } from '../../utils'
+import { Button, ButtonLink } from '../../components/ui/button'
+import { Input } from '../../components/ui/input'
 import {
   FilterIcon,
   SearchIcon,
@@ -16,65 +16,65 @@ import {
   ChevronUp,
   XIcon,
   EyeOffIcon,
-} from "lucide-react";
-import { FacetListItem } from "../../lib/types";
-import { getPossibleRelations } from "../../lib/datalayer/api";
-import { useNotifications } from "../../components/ui-notifications/useNotifications";
-import { useFacetGroups } from "../../hooks/searchHooks";
-import { Loader } from "../../components/Loader";
-import { queryToHash } from "../../lib/utils";
+} from 'lucide-react'
+import { FacetListItem } from '../../lib/types'
+import { getPossibleRelations } from '../../lib/datalayer/api'
+import { useNotifications } from '../../components/ui-notifications/useNotifications'
+import { useFacetGroups } from '../../hooks/searchHooks'
+import { Loader } from '../../components/Loader'
+import { queryToHash } from '../../lib/utils'
 
 type KeyValues =
   | [
       true,
       Fuzzysort.KeysResults<{
-        value: string;
-        count: number;
-      }>
+        value: string
+        count: number
+      }>,
     ]
-  | [false, { min: number; max: number }];
+  | [false, { min: number; max: number }]
 
 const isKeyValue = (
-  data: unknown
+  data: unknown,
 ): data is { value: string; count: number } => {
   return (
     data != null &&
-    typeof data === "object" &&
-    "value" in data &&
-    typeof (data as any).value === "string" &&
-    "count" in data &&
-    typeof (data as any).count === "number"
-  );
-};
+    typeof data === 'object' &&
+    'value' in data &&
+    typeof (data as any).value === 'string' &&
+    'count' in data &&
+    typeof (data as any).count === 'number'
+  )
+}
 
 const FacetValues = ({ id }: { id: number }) => {
-  const { data } = useFieldValues(id);
-  const [filter, setFilter] = useState<string>("");
+  const { data } = useFieldValues(id)
+  const [filter, setFilter] = useState<string>('')
 
-  const { showNotification } = useNotifications();
+  const { showNotification } = useNotifications()
 
   const [isKeyValues, values] = useMemo<KeyValues>(() => {
-    if (!data) return [false, { min: 0, max: 0 }];
-    const isKeys = isKeyValue(data[0]);
+    if (!data) return [false, { min: 0, max: 0 }]
+    const isKeys = isKeyValue(data[0])
     if (!isKeys) {
-      return [false, data[0] as { min: number; max: number }];
+      return [false, data[0] as { min: number; max: number }]
     }
-    const keyValues = data.filter(isKeyValue);
+    const keyValues = data.filter(isKeyValue)
     const filtered = fuzzysort.go(filter, keyValues, {
       limit: 50,
-      keys: ["value"],
+      keys: ['value'],
       threshold: 0.5,
       all: filter.length == 0,
-    });
-    return [true, filtered];
-  }, [data, filter]);
+    })
+    return [true, filtered]
+  }, [data, filter])
 
   if (!data) {
-    return <Loader size="lg" variant="overlay" />;
+    return <Loader size="lg" variant="overlay" />
   }
 
   if (!isKeyValues) {
-    const numericValues = values as { min: number; max: number };
+    const numericValues = values as { min: number; max: number }
     return (
       <div className="bg-slate-100 p-4 rounded-md">
         {values == null ? (
@@ -90,7 +90,7 @@ const FacetValues = ({ id }: { id: number }) => {
           </div>
         )}
       </div>
-    );
+    )
   }
 
   return (
@@ -122,10 +122,10 @@ const FacetValues = ({ id }: { id: number }) => {
                 onClick={() => {
                   getPossibleRelations({ id, value }).then((relations) => {
                     showNotification({
-                      title: "Possible relations",
+                      title: 'Possible relations',
                       message: JSON.stringify(relations, null, 2),
-                    });
-                  });
+                    })
+                  })
                 }}
               >
                 <FilterIcon className="size-4" />
@@ -150,35 +150,35 @@ const FacetValues = ({ id }: { id: number }) => {
         Showing {values.length} of {data.length} values
       </div>
     </div>
-  );
-};
+  )
+}
 
 type ConfirmButtonProps = {
-  onConfirm: () => void;
-  title?: string;
-};
+  onConfirm: () => void
+  title?: string
+}
 
 const ConfirmButton = ({ onConfirm, title }: ConfirmButtonProps) => {
-  const [confirm, setConfirm] = useState(false);
+  const [confirm, setConfirm] = useState(false)
 
   if (!confirm)
     return (
       <Button variant="outline" onClick={() => setConfirm(true)}>
         <XIcon className="size-5" />
       </Button>
-    );
+    )
   return (
     <Button title={title} variant="outline" onClick={onConfirm}>
       Confirm
     </Button>
-  );
-};
+  )
+}
 
 const FacetEditor = ({ data }: { data: FacetListItem }) => {
-  const [value, setValue] = useState<FacetListItem>(data);
-  const { data: groups } = useFacetGroups();
-  const saveFacet = useUpdateFacet();
-  const deleteFacet = useDeleteFacet();
+  const [value, setValue] = useState<FacetListItem>(data)
+  const { data: groups } = useFacetGroups()
+  const saveFacet = useUpdateFacet()
+  const deleteFacet = useDeleteFacet()
 
   return (
     <div className="p-4 rounded-md ">
@@ -188,7 +188,7 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
             Name
           </label>
           <Input
-            value={value.name ?? ""}
+            value={value.name ?? ''}
             onChange={(e) =>
               setValue((prev) => ({ ...prev, name: e.target.value }))
             }
@@ -201,7 +201,7 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
             Value type
           </label>
           <Input
-            value={value.valueType ?? ""}
+            value={value.valueType ?? ''}
             onChange={(e) =>
               setValue((prev) => ({ ...prev, valueType: e.target.value }))
             }
@@ -214,12 +214,12 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
             Linked to
           </label>
           <Input
-            value={value.linkedId ?? "0"}
+            value={value.linkedId ?? '0'}
             type="number"
             onChange={(e) => {
-              const nr = Number(e.target.value);
+              const nr = Number(e.target.value)
               if (!isNaN(nr)) {
-                setValue((prev) => ({ ...prev, linkedId: nr }));
+                setValue((prev) => ({ ...prev, linkedId: nr }))
               }
             }}
             placeholder="Linked ID"
@@ -231,12 +231,12 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
             Priority
           </label>
           <Input
-            value={value.prio ?? "0"}
+            value={value.prio ?? '0'}
             type="number"
             onChange={(e) => {
-              const nr = Number(e.target.value);
+              const nr = Number(e.target.value)
               if (!isNaN(nr)) {
-                setValue((prev) => ({ ...prev, prio: nr }));
+                setValue((prev) => ({ ...prev, prio: nr }))
               }
             }}
             placeholder="Priority"
@@ -248,12 +248,12 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
             Category level
           </label>
           <Input
-            value={value.categoryLevel ?? "0"}
+            value={value.categoryLevel ?? '0'}
             type="number"
             onChange={(e) => {
-              const nr = Number(e.target.value);
+              const nr = Number(e.target.value)
               if (!isNaN(nr)) {
-                setValue((prev) => ({ ...prev, categoryLevel: nr }));
+                setValue((prev) => ({ ...prev, categoryLevel: nr }))
               }
             }}
             placeholder="Category level"
@@ -265,12 +265,12 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
             Group id
           </label>
           <Input
-            value={value.groupId ?? "0"}
+            value={value.groupId ?? '0'}
             type="number"
             onChange={(e) => {
-              const nr = Number(e.target.value);
+              const nr = Number(e.target.value)
               if (!isNaN(nr)) {
-                setValue((prev) => ({ ...prev, groupId: nr }));
+                setValue((prev) => ({ ...prev, groupId: nr }))
               }
             }}
             placeholder="Category level"
@@ -279,9 +279,9 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
           <select
             value={value.groupId}
             onChange={(e) => {
-              const nr = Number(e.target.value);
+              const nr = Number(e.target.value)
               if (!isNaN(nr)) {
-                setValue((prev) => ({ ...prev, groupId: nr }));
+                setValue((prev) => ({ ...prev, groupId: nr }))
               }
             }}
           >
@@ -352,12 +352,12 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 const FacetItem = ({ data }: { data: FacetListItem }) => {
-  const { id, name, valueType, prio } = data;
-  const [open, setOpen] = useState(false);
+  const { id, name, valueType, prio } = data
+  const [open, setOpen] = useState(false)
 
   return (
     <div key={id} className="bg-white rounded-xs shadow-xs hover:bg-gray-50">
@@ -394,20 +394,20 @@ const FacetItem = ({ data }: { data: FacetListItem }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 export const AllFacets = () => {
-  const [filter, setFilter] = useState<string>("");
-  const { data } = useAdminFacets();
+  const [filter, setFilter] = useState<string>('')
+  const { data } = useAdminFacets()
 
   const filteredData = useMemo(() => {
     return fuzzysort.go(filter, data?.sort(byPriority) ?? [], {
-      keys: ["name", "valueType", "id"],
+      keys: ['name', 'valueType', 'id'],
       all: filter.length == 0,
       limit: 50,
-    });
-  }, [filter, data]);
+    })
+  }, [filter, data])
 
   return (
     <div className="flex flex-col gap-4">
@@ -435,5 +435,5 @@ export const AllFacets = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}

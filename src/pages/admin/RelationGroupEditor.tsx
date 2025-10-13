@@ -5,69 +5,69 @@ import {
   useMemo,
   useRef,
   useState,
-} from "react";
-import { useAdminRelationGroups, useFacetMap } from "../../hooks/searchHooks";
+} from 'react'
+import { useAdminRelationGroups, useFacetMap } from '../../hooks/searchHooks'
 import {
   FacetListItem,
   Relation,
   RelationGroup,
   RelationMatch,
-} from "../../lib/types";
-import { Button } from "../../components/ui/button";
-import { useFieldValues, useRelationGroupsMutation } from "../../adminHooks";
-import { PlusIcon, TrashIcon, ChevronUp } from "lucide-react";
-import fuzzysort from "fuzzysort";
-import { Input } from "../../components/ui/input";
-import { QueryPreview } from "../../components/QueryPreview";
-import { useDropdownFocus } from "../../components/useDropdownFocus";
-import { useArrowKeyNavigation } from "../../components/useArrowKeyNavigation";
-import { useGroupDesigner } from "../../lib/hooks/GroupDesignerProvider";
+} from '../../lib/types'
+import { Button } from '../../components/ui/button'
+import { useFieldValues, useRelationGroupsMutation } from '../../adminHooks'
+import { PlusIcon, TrashIcon, ChevronUp } from 'lucide-react'
+import fuzzysort from 'fuzzysort'
+import { Input } from '../../components/ui/input'
+import { QueryPreview } from '../../components/QueryPreview'
+import { useDropdownFocus } from '../../components/useDropdownFocus'
+import { useArrowKeyNavigation } from '../../components/useArrowKeyNavigation'
+import { useGroupDesigner } from '../../lib/hooks/GroupDesignerProvider'
 
 const FacetValueTagEditor = ({
   data,
   facetId,
   onChange,
 }: {
-  facetId: number;
-  data: string[];
-  onChange: (data: string[]) => void;
+  facetId: number
+  data: string[]
+  onChange: (data: string[]) => void
 }) => {
-  const id = useId();
-  const { data: facetValues } = useFieldValues(facetId);
+  const id = useId()
+  const { data: facetValues } = useFieldValues(facetId)
 
-  const [tags, setTags] = useState<string[]>(data);
-  const [value, setValue] = useState<string>("");
-  const { inputRef, close } = useDropdownFocus();
+  const [tags, setTags] = useState<string[]>(data)
+  const [value, setValue] = useState<string>('')
+  const { inputRef, close } = useDropdownFocus()
   const parentRef = useArrowKeyNavigation<HTMLDivElement>(`#${id} button`, {
     onEscape: close,
     onNotFound: () => {
-      inputRef.current?.focus();
+      inputRef.current?.focus()
     },
-  });
+  })
 
   const filteredData = useMemo(() => {
     const keyData =
       facetValues
         ?.filter(
           (d): d is { value: string; count: number } =>
-            "value" in d && typeof d.value === "string"
+            'value' in d && typeof d.value === 'string',
         )
-        .sort() ?? [];
+        .sort() ?? []
 
     const filtered = fuzzysort.go(value, keyData, {
       limit: 20,
-      keys: ["value"],
+      keys: ['value'],
       all: value.length < 1,
       threshold: 0.4,
-    });
-    return [...filtered.map((f) => f.obj)];
-  }, [facetValues, value]);
+    })
+    return [...filtered.map((f) => f.obj)]
+  }, [facetValues, value])
 
   useEffect(() => {
     if (tags !== data) {
-      onChange(tags);
+      onChange(tags)
     }
-  }, [tags]);
+  }, [tags])
 
   return (
     <div className="flex gap-2">
@@ -79,7 +79,7 @@ const FacetValueTagEditor = ({
           <span>{tag}</span>
           <button
             onClick={() => {
-              setTags((prev) => prev.filter((_, i) => i !== idx));
+              setTags((prev) => prev.filter((_, i) => i !== idx))
             }}
             className="text-red-500 hover:text-red-700"
           >
@@ -97,9 +97,9 @@ const FacetValueTagEditor = ({
           placeholder="Search for a value"
           className="border border-gray-300 rounded-md px-2 py-1 peer"
           onKeyDown={(e) => {
-            if (e.key === "Enter" && value.trim() !== "") {
-              setTags((prev) => [...prev, value]);
-              setValue("");
+            if (e.key === 'Enter' && value.trim() !== '') {
+              setTags((prev) => [...prev, value])
+              setValue('')
             }
           }}
         />
@@ -108,15 +108,15 @@ const FacetValueTagEditor = ({
           id={id}
           aria-hidden="true"
           className={
-            "absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex-col z-10 max-h-60 dropdown"
+            'absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex-col z-10 max-h-60 dropdown'
           }
         >
           {filteredData.map(({ value: text, count }) => (
             <button
               key={text}
               onClick={() => {
-                setTags((prev) => [...prev, text]);
-                setValue("");
+                setTags((prev) => [...prev, text])
+                setValue('')
               }}
               className="text-left px-3 py-2 border-b border-gray-100 last:border-0 dropdown-item"
             >
@@ -127,9 +127,9 @@ const FacetValueTagEditor = ({
       </div>
       <button
         onClick={() => {
-          if (value.trim() !== "") {
-            setTags((prev) => [...prev, value]);
-            setValue("");
+          if (value.trim() !== '') {
+            setTags((prev) => [...prev, value])
+            setValue('')
           }
         }}
         className="bg-blue-500 text-white px-2 py-1 rounded-md"
@@ -137,38 +137,38 @@ const FacetValueTagEditor = ({
         Add
       </button>
     </div>
-  );
-};
+  )
+}
 
 const FacetValueInput = ({
   value,
   facetId,
   onChange,
 }: {
-  value: string | number | string[] | undefined;
-  facetId: number;
-  onChange: (data: string | number | string[] | undefined) => void;
+  value: string | number | string[] | undefined
+  facetId: number
+  onChange: (data: string | number | string[] | undefined) => void
 }) => {
-  const { data: facetValues } = useFieldValues(facetId);
+  const { data: facetValues } = useFieldValues(facetId)
 
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState('')
 
   const filteredData = useMemo(() => {
     const keyData =
-      facetValues?.filter((d) => typeof d === "string").sort() ?? [];
+      facetValues?.filter((d) => typeof d === 'string').sort() ?? []
     const selected = keyData?.filter((v) =>
-      Array.isArray(value) ? value.includes(v) : value === v
-    );
-    if (filter === "" && selected?.length > 0) {
-      return selected;
+      Array.isArray(value) ? value.includes(v) : value === v,
+    )
+    if (filter === '' && selected?.length > 0) {
+      return selected
     }
     const filtered = fuzzysort.go(filter, keyData, {
       limit: 20,
       all: filter.length < 1,
       threshold: 0.4,
-    });
-    return [...selected, ...filtered.map((f) => f.target)];
-  }, [facetValues, filter, value]);
+    })
+    return [...selected, ...filtered.map((f) => f.target)]
+  }, [facetValues, filter, value])
 
   return (
     <div className="relative group">
@@ -183,9 +183,9 @@ const FacetValueInput = ({
         className="hidden group-hover:flex absolute w-full mt-1 bg-white border border-gray-200 rounded-xs shadow-lg overflow-auto flex-col z-10 max-h-60"
         onChange={(e) => {
           const selected = Array.from(e.target.selectedOptions).map(
-            (option) => option.value
-          );
-          onChange(selected);
+            (option) => option.value,
+          )
+          onChange(selected)
         }}
       >
         {filteredData.map((text) => (
@@ -202,37 +202,37 @@ const FacetValueInput = ({
         ))}
       </select>
     </div>
-  );
-};
+  )
+}
 
 const FacetInput = ({
   id: facetId,
   onChange,
   labelFormatter,
 }: {
-  id: number;
-  onChange: (id: number) => void;
-  labelFormatter?: (facet: FacetListItem | undefined) => string;
+  id: number
+  onChange: (id: number) => void
+  labelFormatter?: (facet: FacetListItem | undefined) => string
 }) => {
-  const id = useId();
-  const { inputRef, close } = useDropdownFocus();
+  const id = useId()
+  const { inputRef, close } = useDropdownFocus()
   const parentRef = useArrowKeyNavigation<HTMLDivElement>(`#${id} button`, {
     onEscape: close,
     onNotFound: () => inputRef.current?.focus(),
-  });
-  const { data } = useFacetMap();
-  const [filter, setFilter] = useState("");
+  })
+  const { data } = useFacetMap()
+  const [filter, setFilter] = useState('')
   const facet = useMemo(() => {
-    return data?.[facetId];
-  }, [data, facetId]);
+    return data?.[facetId]
+  }, [data, facetId])
   const filteredData = useMemo(() => {
     return fuzzysort.go(filter, Object.values(data ?? {}), {
-      key: "name",
+      key: 'name',
       limit: 20,
       threshold: 0.4,
       all: filter.length < 1,
-    });
-  }, [data, filter]);
+    })
+  }, [data, filter])
 
   return (
     <label className="flex flex-col gap-1">
@@ -266,14 +266,14 @@ const FacetInput = ({
         </div>
       </div>
     </label>
-  );
-};
+  )
+}
 
 const RelationMatchEditor = ({
   onChange,
   ...value
 }: RelationMatch & { onChange: (data: RelationMatch) => void }) => {
-  const { facetId, value: toMatch, exclude } = value;
+  const { facetId, value: toMatch, exclude } = value
 
   return (
     <div className="flex flex-col gap-4 p-4 bg-white rounded-xs border border-gray-200">
@@ -284,37 +284,37 @@ const RelationMatchEditor = ({
             onChange({
               ...value,
               facetId: id,
-            });
+            })
           }}
         />
 
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700">
-              Value{" "}
+              Value{' '}
               {toMatch != null
                 ? Array.isArray(toMatch)
-                  ? toMatch.join(", ")
+                  ? toMatch.join(', ')
                   : String(toMatch)
-                : ""}
+                : ''}
             </span>
             <label className="text-sm font-medium text-gray-700">
               <input
                 type="checkbox"
                 checked={exclude}
                 onChange={(e) => {
-                  console.log("exclude", e.target.checked);
+                  console.log('exclude', e.target.checked)
                   onChange({
                     ...value,
                     exclude: e.target.checked,
-                  });
+                  })
                 }}
               />
               <span className="ml-2">Exclude</span>
             </label>
           </div>
 
-          {Array.isArray(toMatch) || typeof toMatch === "string" ? (
+          {Array.isArray(toMatch) || typeof toMatch === 'string' ? (
             <FacetValueTagEditor
               data={Array.isArray(toMatch) ? toMatch : [toMatch]}
               facetId={facetId}
@@ -322,7 +322,7 @@ const RelationMatchEditor = ({
                 onChange({
                   ...value,
                   value: v,
-                });
+                })
               }}
             />
           ) : (
@@ -333,7 +333,7 @@ const RelationMatchEditor = ({
                 onChange({
                   ...value,
                   value: v,
-                });
+                })
               }}
             />
           )}
@@ -351,17 +351,17 @@ const RelationMatchEditor = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const RelationEditor = ({
   relation,
   onChange,
 }: {
-  relation: Relation;
-  onChange: (data: Relation) => void;
+  relation: Relation
+  onChange: (data: Relation) => void
 }) => {
-  const { fromId, toId } = relation;
+  const { fromId, toId } = relation
 
   return (
     <div className="flex flex-col gap-4 p-4 bg-white rounded-xs border border-gray-200">
@@ -372,7 +372,7 @@ const RelationEditor = ({
             onChange({
               ...relation,
               fromId: id,
-            });
+            })
           }}
           labelFormatter={(facet) => `From: ${facet?.name ?? fromId}`}
         />
@@ -382,7 +382,7 @@ const RelationEditor = ({
             onChange({
               ...relation,
               toId: id,
-            });
+            })
           }}
           labelFormatter={(facet) => `To: ${facet?.name ?? fromId}`}
         />
@@ -393,8 +393,8 @@ const RelationEditor = ({
             onChange={(e) => {
               onChange({
                 ...relation,
-                converter: e.target.value as Relation["converter"],
-              });
+                converter: e.target.value as Relation['converter'],
+              })
             }}
             className="w-full px-3 py-2 border border-gray-200 rounded-xs text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
           >
@@ -405,8 +405,8 @@ const RelationEditor = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const DeleteButton = ({ onClick }: { onClick: () => void }) => {
   return (
@@ -416,8 +416,8 @@ const DeleteButton = ({ onClick }: { onClick: () => void }) => {
     >
       <TrashIcon className="size-4 text-gray-500" />
     </button>
-  );
-};
+  )
+}
 
 const AddButton = ({ onClick }: { onClick: () => void }) => {
   return (
@@ -427,38 +427,38 @@ const AddButton = ({ onClick }: { onClick: () => void }) => {
     >
       <PlusIcon className="size-5 text-gray-500" />
     </button>
-  );
-};
+  )
+}
 
 const ArticleIdSelector = ({
   value = [],
   onChange,
 }: {
-  value: number[];
-  onChange: (data: number[]) => void;
+  value: number[]
+  onChange: (data: number[]) => void
 }) => {
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   useEffect(() => {
     if (inputRef.current != null) {
-      const ids = (value ?? []).join("\n");
-      inputRef.current.value = ids;
+      const ids = (value ?? []).join('\n')
+      inputRef.current.value = ids
     }
     const changeHandler = (e: Event) => {
-      console.log("changeHandler", e);
-      const text = (e.target as HTMLTextAreaElement).value;
+      console.log('changeHandler', e)
+      const text = (e.target as HTMLTextAreaElement).value
       const ids = text
-        .split("\n")
+        .split('\n')
         .map((d) => d.trim())
         .filter((d) => d.length > 0)
         .map((d) => parseInt(d, 10))
-        .filter((d) => !isNaN(d));
-      onChange(ids);
-    };
-    inputRef.current?.addEventListener("change", changeHandler);
+        .filter((d) => !isNaN(d))
+      onChange(ids)
+    }
+    inputRef.current?.addEventListener('change', changeHandler)
     return () => {
-      inputRef.current?.removeEventListener("change", changeHandler);
-    };
-  }, [value]);
+      inputRef.current?.removeEventListener('change', changeHandler)
+    }
+  }, [value])
 
   return (
     <div className="flex flex-col gap-4">
@@ -468,13 +468,13 @@ const ArticleIdSelector = ({
           ref={inputRef}
           className="w-full px-3 py-2 border border-gray-200 rounded-xs text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
           rows={6}
-          defaultValue={""}
+          defaultValue={''}
           placeholder="Article ids, one per line"
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 const GroupEditor = ({
   group: value,
@@ -482,36 +482,36 @@ const GroupEditor = ({
   onDelete,
   onChange,
 }: PropsWithChildren<{
-  group: RelationGroup;
-  onDelete: () => void;
-  onChange: (data: RelationGroup) => void;
+  group: RelationGroup
+  onDelete: () => void
+  onChange: (data: RelationGroup) => void
 }>) => {
-  const [open, setOpen] = useState(false);
-  const { group, setGroup } = useGroupDesigner();
+  const [open, setOpen] = useState(false)
+  const { group, setGroup } = useGroupDesigner()
 
   const onArrayChange =
     (
-      prop: "additionalQueries" | "requiredForItem" | "relations",
-      idx: number
+      prop: 'additionalQueries' | 'requiredForItem' | 'relations',
+      idx: number,
     ) =>
     (relation: RelationMatch | Relation) => {
       onChange({
         ...value,
         [prop]: value[prop]?.map((d, i) => {
           if (i === idx) {
-            return relation;
+            return relation
           }
-          return d;
+          return d
         }),
-      });
-    };
+      })
+    }
 
   const hasValues = useMemo(() => {
     return (
       (group.additionalQueries?.length ?? 0) > 0 ||
       (group.requiredForItem?.length ?? 0) > 0
-    );
-  }, [group]);
+    )
+  }, [group])
 
   return (
     <div className="border border-gray-200 rounded-xs bg-gray-50 relative">
@@ -560,8 +560,8 @@ const GroupEditor = ({
             size="sm"
             variant="outline"
             onClick={(e) => {
-              e.stopPropagation();
-              setOpen((p) => !p);
+              e.stopPropagation()
+              setOpen((p) => !p)
             }}
             className="flex items-center gap-2"
           >
@@ -589,7 +589,7 @@ const GroupEditor = ({
                   onChange({
                     ...value,
                     name: e.target.value,
-                  });
+                  })
                 }}
                 placeholder="Group name"
               />
@@ -628,16 +628,16 @@ const GroupEditor = ({
                   >
                     <RelationMatchEditor
                       {...relation}
-                      onChange={onArrayChange("requiredForItem", idx)}
+                      onChange={onArrayChange('requiredForItem', idx)}
                     />
                     <DeleteButton
                       onClick={() => {
                         onChange({
                           ...value,
                           requiredForItem: value.requiredForItem.filter(
-                            (d) => d.facetId != relation.facetId
+                            (d) => d.facetId != relation.facetId,
                           ),
-                        });
+                        })
                       }}
                     />
                   </div>
@@ -653,7 +653,7 @@ const GroupEditor = ({
                           value: [],
                         },
                       ],
-                    });
+                    })
                   }}
                 />
               </div>
@@ -674,7 +674,7 @@ const GroupEditor = ({
                   >
                     <RelationMatchEditor
                       {...relation}
-                      onChange={onArrayChange("additionalQueries", idx)}
+                      onChange={onArrayChange('additionalQueries', idx)}
                     />
                     <DeleteButton
                       onClick={() => {
@@ -682,9 +682,9 @@ const GroupEditor = ({
                           ...value,
                           additionalQueries:
                             value.additionalQueries?.filter(
-                              (d) => d.facetId !== relation.facetId
+                              (d) => d.facetId !== relation.facetId,
                             ) ?? [],
-                        });
+                        })
                       }}
                     />
                   </div>
@@ -701,7 +701,7 @@ const GroupEditor = ({
                           value: [],
                         },
                       ],
-                    });
+                    })
                   }}
                 />
               </div>
@@ -719,14 +719,14 @@ const GroupEditor = ({
                 >
                   <RelationEditor
                     relation={relation}
-                    onChange={onArrayChange("relations", idx)}
+                    onChange={onArrayChange('relations', idx)}
                   />
                   <DeleteButton
                     onClick={() => {
                       onChange({
                         ...value,
                         relations: value.relations.filter((_, i) => i !== idx),
-                      });
+                      })
                     }}
                   />
                 </div>
@@ -740,10 +740,10 @@ const GroupEditor = ({
                       {
                         fromId: 10,
                         toId: 20,
-                        converter: "none",
+                        converter: 'none',
                       },
                     ],
-                  });
+                  })
                 }}
               />
             </div>
@@ -751,30 +751,30 @@ const GroupEditor = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 export const RelationGroupEditor = () => {
-  const { group } = useGroupDesigner();
-  const { data: groups, mutate } = useAdminRelationGroups();
-  const updateRelationGroups = useRelationGroupsMutation();
-  const [dirty, setDirty] = useState(false);
+  const { group } = useGroupDesigner()
+  const { data: groups, mutate } = useAdminRelationGroups()
+  const updateRelationGroups = useRelationGroupsMutation()
+  const [dirty, setDirty] = useState(false)
 
   const onItemChange = (idx: number) => (group: RelationGroup) => {
-    const newGroups = [...(groups ?? [])];
-    newGroups[idx] = group;
-    setDirty(true);
-    mutate(newGroups, { revalidate: false });
-  };
+    const newGroups = [...(groups ?? [])]
+    newGroups[idx] = group
+    setDirty(true)
+    mutate(newGroups, { revalidate: false })
+  }
 
   const onDeleteItem = (idx: number) => () => {
-    if (groups == null) return;
+    if (groups == null) return
 
     mutate(
       groups.filter((_, i) => i !== idx),
-      { revalidate: false }
-    );
-  };
+      { revalidate: false },
+    )
+  }
 
   return (
     <div className="p-4 space-y-6">
@@ -797,22 +797,22 @@ export const RelationGroupEditor = () => {
           <Button
             disabled={!dirty}
             onClick={() => {
-              if (groups == null) return;
+              if (groups == null) return
               updateRelationGroups(groups).then(() => {
-                setDirty(false);
-              });
+                setDirty(false)
+              })
             }}
           >
             Save Changes
           </Button>
           <Button
             onClick={() => {
-              if (groups == null) return;
+              if (groups == null) return
               mutate(
                 [
                   ...groups,
                   {
-                    name: "New group",
+                    name: 'New group',
                     key: `new-${groups.length}`,
                     groupId: groups.length + 1,
                     include_ids: [],
@@ -822,8 +822,8 @@ export const RelationGroupEditor = () => {
                     requiredForItem: [],
                   },
                 ],
-                { revalidate: false }
-              );
+                { revalidate: false },
+              )
             }}
             variant="outline"
           >
@@ -834,8 +834,8 @@ export const RelationGroupEditor = () => {
               group.additionalQueries?.length) && (
               <Button
                 onClick={() => {
-                  if (groups == null) return;
-                  mutate([...groups, group], { revalidate: false });
+                  if (groups == null) return
+                  mutate([...groups, group], { revalidate: false })
                 }}
                 variant="outline"
               >
@@ -845,5 +845,5 @@ export const RelationGroupEditor = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

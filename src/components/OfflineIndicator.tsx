@@ -1,10 +1,10 @@
-import { WifiOff, Wifi } from 'lucide-react';
-import { usePWA } from '../hooks/usePWA';
+import { WifiOff, Wifi } from 'lucide-react'
+import { usePWA } from '../hooks/usePWA'
 
 export const OfflineIndicator = () => {
-  const { isOnline } = usePWA();
+  const { isOnline } = usePWA()
 
-  if (isOnline) return null;
+  if (isOnline) return null
 
   return (
     <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
@@ -13,11 +13,11 @@ export const OfflineIndicator = () => {
         <span>You're offline - some features may be limited</span>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const OnlineStatusIndicator = () => {
-  const { isOnline, isInstalled } = usePWA();
+  const { isOnline, isInstalled } = usePWA()
 
   return (
     <div className="flex items-center space-x-2">
@@ -31,10 +31,13 @@ export const OnlineStatusIndicator = () => {
         </span>
       )}
       {isInstalled && (
-        <div className="w-2 h-2 bg-blue-500 rounded-full" title="PWA Installed" />
+        <div
+          className="w-2 h-2 bg-blue-500 rounded-full"
+          title="PWA Installed"
+        />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default OfflineIndicator;
+export default OfflineIndicator

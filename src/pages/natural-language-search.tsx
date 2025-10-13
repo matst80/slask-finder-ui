@@ -1,49 +1,49 @@
-import { useState } from "react";
-import { Item } from "../lib/types";
-import { naturalSearch, submitDataSet } from "../lib/datalayer/api";
-import { Input } from "../components/ui/input";
-import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
-import { ResultItemInner } from "../components/ResultItem";
-import { Button } from "../components/ui/button";
-import { cm } from "../utils";
-import { Search } from "lucide-react";
-import { useNotifications } from "../components/ui-notifications/useNotifications";
+import { useState } from 'react'
+import { Item } from '../lib/types'
+import { naturalSearch, submitDataSet } from '../lib/datalayer/api'
+import { Input } from '../components/ui/input'
+import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
+import { ResultItemInner } from '../components/ResultItem'
+import { Button } from '../components/ui/button'
+import { cm } from '../utils'
+import { Search } from 'lucide-react'
+import { useNotifications } from '../components/ui-notifications/useNotifications'
 
 const isComplete = (dataset: {
-  positive?: string;
-  negative?: string;
+  positive?: string
+  negative?: string
 }): dataset is { positive: string; negative: string } => {
-  return dataset.positive !== undefined && dataset.negative !== undefined;
-};
+  return dataset.positive !== undefined && dataset.negative !== undefined
+}
 
 const getEmbeddingText = (item: Item) => {
-  return `${item.title} ${item.bp} `;
-};
+  return `${item.title} ${item.bp} `
+}
 
 export const NaturalLanguageSearch = () => {
-  const { showNotification } = useNotifications();
-  const [term, setTerm] = useState<string>("");
-  const [items, setItems] = useState<Item[]>([]);
+  const { showNotification } = useNotifications()
+  const [term, setTerm] = useState<string>('')
+  const [items, setItems] = useState<Item[]>([])
   const [dataset, setDataset] = useState<{
-    positive?: string;
-    negative?: string;
-  }>({ positive: undefined, negative: undefined });
+    positive?: string
+    negative?: string
+  }>({ positive: undefined, negative: undefined })
 
   const doSearch = async () => {
     naturalSearch(term)
       .then(setItems)
       .catch((error) => {
-        console.error("Search error:", error);
-      });
-  };
+        console.error('Search error:', error)
+      })
+  }
   return (
     <div className="flex flex-col container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Embeddings training</h1>
       <form
         onSubmit={(e) => {
-          e.preventDefault();
-          doSearch();
-          setDataset({ positive: undefined, negative: undefined });
+          e.preventDefault()
+          doSearch()
+          setDataset({ positive: undefined, negative: undefined })
         }}
         className="flex gap-2 sticky top-0 bg-white z-10 py-4 border-b border-gray-200"
       >
@@ -67,13 +67,13 @@ export const NaturalLanguageSearch = () => {
               }).then((r) => {
                 showNotification({
                   title: r.ok
-                    ? "Dataset submitted"
-                    : "Error submitting dataset",
+                    ? 'Dataset submitted'
+                    : 'Error submitting dataset',
                   message: `Positive: ${dataset.positive}, Negative: ${dataset.negative}`,
-                  variant: r.ok ? "success" : "error",
-                });
-              });
-              setDataset({ positive: undefined, negative: undefined });
+                  variant: r.ok ? 'success' : 'error',
+                })
+              })
+              setDataset({ positive: undefined, negative: undefined })
             }
           }}
         >
@@ -88,7 +88,7 @@ export const NaturalLanguageSearch = () => {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0 scroll-snap-y"
             >
               {items?.map((item) => {
-                const embeddingText = getEmbeddingText(item);
+                const embeddingText = getEmbeddingText(item)
                 return (
                   <span
                     key={item.id}
@@ -99,13 +99,13 @@ export const NaturalLanguageSearch = () => {
                         {Object.keys(dataset).map((key) => {
                           const isActive =
                             dataset[key as keyof typeof dataset] ===
-                            embeddingText;
+                            embeddingText
                           return (
                             <button
                               key={key}
                               className={cm(
-                                "text-lg font-bold",
-                                isActive && "active"
+                                'text-lg font-bold',
+                                isActive && 'active',
                               )}
                               onClick={() =>
                                 setDataset((prev) => ({
@@ -114,14 +114,14 @@ export const NaturalLanguageSearch = () => {
                                 }))
                               }
                             >
-                              {key === "positive" ? "+" : "-"}
+                              {key === 'positive' ? '+' : '-'}
                             </button>
-                          );
+                          )
                         })}
                       </div>
                     </ResultItemInner>
                   </span>
-                );
+                )
               })}
             </div>
             {/* {first && (
@@ -140,5 +140,5 @@ export const NaturalLanguageSearch = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}

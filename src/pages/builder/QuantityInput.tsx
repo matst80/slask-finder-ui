@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { Plus, Minus } from "lucide-react";
-import { Button } from "../../components/ui/button";
+import { useState, useEffect } from 'react'
+import { Plus, Minus } from 'lucide-react'
+import { Button } from '../../components/ui/button'
 
 interface QuantityInputProps {
-  value: number;
-  onChange: (value: number) => void;
-  maxQuantity: number;
-  minQuantity?: number;
-  className?: string;
+  value: number
+  onChange: (value: number) => void
+  maxQuantity: number
+  minQuantity?: number
+  className?: string
 }
 
 export const QuantityInput = ({
@@ -15,45 +15,45 @@ export const QuantityInput = ({
   onChange,
   maxQuantity,
   minQuantity = 0,
-  className = "",
+  className = '',
 }: QuantityInputProps) => {
-  const [quantity, setQuantity] = useState(value);
+  const [quantity, setQuantity] = useState(value)
 
   useEffect(() => {
-    setQuantity(value);
-  }, [value]);
+    setQuantity(value)
+  }, [value])
 
   const increment: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault()
+    e.stopPropagation()
     if (quantity < maxQuantity) {
-      const newValue = quantity + 1;
-      setQuantity(newValue);
-      onChange(newValue);
+      const newValue = quantity + 1
+      setQuantity(newValue)
+      onChange(newValue)
     }
-  };
+  }
 
   const decrement: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault()
+    e.stopPropagation()
     if (quantity > minQuantity) {
-      const newValue = quantity - 1;
-      setQuantity(newValue);
-      onChange(newValue);
+      const newValue = quantity - 1
+      setQuantity(newValue)
+      onChange(newValue)
     }
-  };
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(e.target.value, 10);
+    const newValue = parseInt(e.target.value, 10)
     if (!isNaN(newValue)) {
       const boundedValue = Math.min(
         Math.max(newValue, minQuantity),
-        maxQuantity
-      );
-      setQuantity(boundedValue);
-      onChange(boundedValue);
+        maxQuantity,
+      )
+      setQuantity(boundedValue)
+      onChange(boundedValue)
     }
-  };
+  }
 
   return (
     <div
@@ -93,5 +93,5 @@ export const QuantityInput = ({
         <Plus className="size-4" />
       </Button>
     </div>
-  );
-};
+  )
+}

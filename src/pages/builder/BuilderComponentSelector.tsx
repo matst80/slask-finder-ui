@@ -1,14 +1,14 @@
-import { useLoaderData, useNavigate } from "react-router-dom";
-import { Rule } from "./builder-types";
-import { useBuilderContext } from "./useBuilderContext";
-import { ComponentSelectorBox } from "./BuilderStartPage";
+import { useLoaderData, useNavigate } from 'react-router-dom'
+import { Rule } from './builder-types'
+import { useBuilderContext } from './useBuilderContext'
+import { ComponentSelectorBox } from './BuilderStartPage'
 
 export const BuilderComponentSelector = () => {
-  const component = useLoaderData() as Rule;
-  const push = useNavigate();
-  const { selectedItems } = useBuilderContext();
-  if (!component || component.type !== "selection") {
-    return <div>not correct!</div>;
+  const component = useLoaderData() as Rule
+  const push = useNavigate()
+  const { selectedItems } = useBuilderContext()
+  if (!component || component.type !== 'selection') {
+    return <div>not correct!</div>
   }
   return (
     <div className="animate-fadeIn space-y-10 mx-auto max-w-6xl p-8">
@@ -22,13 +22,11 @@ export const BuilderComponentSelector = () => {
               headerText="Choose"
               isRecommended={idx === 0}
               onClick={() => {
-                push(
-                  `/builder/component/${option.id}?parentId=${component.id}`
-                );
+                push(`/builder/component/${option.id}?parentId=${component.id}`)
               }}
             />
           ))}
       </div>
     </div>
-  );
-};
+  )
+}

@@ -1,33 +1,33 @@
-import { useMemo } from "react";
-import { X } from "lucide-react";
-import { FacetListItem, Field, isNumberValue } from "../lib/types";
-import { useFacetMap } from "../hooks/searchHooks";
-import { useQuery } from "../lib/hooks/useQuery";
-import { isDefined } from "../utils";
-import { useAdmin } from "../hooks/appState";
-import { useStores } from "../lib/datalayer/stores";
+import { useMemo } from 'react'
+import { X } from 'lucide-react'
+import { FacetListItem, Field, isNumberValue } from '../lib/types'
+import { useFacetMap } from '../hooks/searchHooks'
+import { useQuery } from '../lib/hooks/useQuery'
+import { isDefined } from '../utils'
+import { useAdmin } from '../hooks/appState'
+import { useStores } from '../lib/datalayer/stores'
 
 function toFilter(facets?: Record<number, FacetListItem>, hideHidden = true) {
   return (data: Field) => {
-    const field = facets?.[data?.id];
-    if (field == null || (hideHidden && field.hide)) return null;
+    const field = facets?.[data?.id]
+    if (field == null || (hideHidden && field.hide)) return null
 
     const value = isNumberValue(data)
-      ? field.valueType === "currency"
+      ? field.valueType === 'currency'
         ? `${data.min / 100}kr - ${data.max / 100} kr`
         : `${data.min} - ${data.max}`
       : Array.isArray(data.value)
-        ? data.value.join(", ")
-        : data.value;
+        ? data.value.join(', ')
+        : data.value
 
     return {
       ...field,
       value,
-    };
-  };
+    }
+  }
 }
 
-type FilterItemProps = { name?: string; value: string; onClick: () => void };
+type FilterItemProps = { name?: string; value: string; onClick: () => void }
 const FilterItem = ({ name, value, onClick }: FilterItemProps) => {
   return (
     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
@@ -39,29 +39,29 @@ const FilterItem = ({ name, value, onClick }: FilterItemProps) => {
         <X size={12} />
       </button>
     </span>
-  );
-};
+  )
+}
 
 export const CurrentFilters = () => {
-  const { data } = useFacetMap();
-  const { data: stores } = useStores();
-  const [isAdmin] = useAdmin();
+  const { data } = useFacetMap()
+  const { data: stores } = useStores()
+  const [isAdmin] = useAdmin()
   const {
     query: { stock },
     setStock,
-  } = useQuery();
-  const locationId = stock?.[0];
+  } = useQuery()
+  const locationId = stock?.[0]
   const {
     query: { string: keyFilters, range: numberFilters },
     removeFilter,
-  } = useQuery();
+  } = useQuery()
 
   const selectedFilters = useMemo(() => {
     return [
       ...(keyFilters?.map(toFilter(data, !isAdmin)) ?? []),
       ...(numberFilters?.map(toFilter(data, !isAdmin)) ?? []),
-    ].filter(isDefined);
-  }, [keyFilters, numberFilters, data, isAdmin]);
+    ].filter(isDefined)
+  }, [keyFilters, numberFilters, data, isAdmin])
   return (
     (selectedFilters.length > 0 || locationId != null) && (
       <div className="mb-6 hidden md:flex flex-col md:flex-row items-center gap-2">
@@ -72,7 +72,7 @@ export const CurrentFilters = () => {
               name="Butik"
               value={
                 stores?.find((d) => d.id === locationId)?.displayName ??
-                "Unknown store"
+                'Unknown store'
               }
               onClick={() => setStock([])}
             />
@@ -83,12 +83,12 @@ export const CurrentFilters = () => {
               name={filter.name}
               value={filter.value}
               onClick={() => {
-                removeFilter(filter.id);
+                removeFilter(filter.id)
               }}
             />
           ))}
         </div>
       </div>
     )
-  );
-};
+  )
+}

@@ -1,5 +1,5 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useQuery } from "../lib/hooks/useQuery";
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useQuery } from '../lib/hooks/useQuery'
 
 export const Paging = () => {
   const {
@@ -7,10 +7,10 @@ export const Paging = () => {
     isLoading,
     setPage: changePage,
     totalHits,
-  } = useQuery();
+  } = useQuery()
 
-  const totalPages = Math.ceil(totalHits / pageSize) - 1;
-  if (isNaN(totalHits) || totalPages <= 1 || isLoading) return null;
+  const totalPages = Math.ceil(totalHits / pageSize) - 1
+  if (isNaN(totalHits) || totalPages <= 1 || isLoading) return null
 
   return (
     <div className="mt-8 flex items-center justify-center">
@@ -24,7 +24,7 @@ export const Paging = () => {
       </button>
       <div className="mx-4 flex items-center">
         {[...Array(totalPages)].map((_, index) => {
-          const pageNumber = index;
+          const pageNumber = index
           if (
             pageNumber === 1 ||
             pageNumber === totalPages ||
@@ -36,13 +36,13 @@ export const Paging = () => {
                 onClick={() => changePage(pageNumber)}
                 className={`mx-1 px-3 py-1 rounded-md ${
                   currentPage === pageNumber
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
                 {pageNumber + 1}
               </button>
-            );
+            )
           } else if (
             pageNumber === currentPage - 2 ||
             pageNumber === currentPage + 2
@@ -51,9 +51,9 @@ export const Paging = () => {
               <span key={pageNumber} className="mx-1">
                 ...
               </span>
-            );
+            )
           }
-          return null;
+          return null
         })}
       </div>
       <button
@@ -65,5 +65,5 @@ export const Paging = () => {
         <ChevronRight size={20} />
       </button>
     </div>
-  );
-};
+  )
+}

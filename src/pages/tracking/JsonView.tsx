@@ -1,7 +1,7 @@
-import { useClipboard } from "../../lib/hooks/useClipboard";
+import { useClipboard } from '../../lib/hooks/useClipboard'
 
 export const JsonView = ({ data }: { data: unknown }) => {
-  const copy = useClipboard();
+  const copy = useClipboard()
   return (
     <pre
       className="bg-black text-white p-4 text-sm overflow-x-hidden rounded-md whitespace-pre-wrap"
@@ -9,5 +9,5 @@ export const JsonView = ({ data }: { data: unknown }) => {
     >
       <code>{JSON.stringify(data, null, 2)}</code>
     </pre>
-  );
-};
+  )
+}
