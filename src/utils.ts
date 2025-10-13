@@ -43,9 +43,9 @@ export const useFetchMutation = <T, U>(
   config?: SWRMutationConfiguration<T, Error, string, U>,
 ) => {
   return useSWRMutation(key, (_, { arg }) => fn(arg), {
-    ...config,
     revalidate: false,
     populateCache: true,
+    ...config,
   });
 };
 

@@ -59,7 +59,9 @@ export const useAddMultipleToCart = () => {
       const carts = r.filter(isDefined);
       return carts[carts.length - 1];
     }),
-  );
+  {
+    revalidate: true,
+  });
 };
 
 export const useAddToCart = () => {
