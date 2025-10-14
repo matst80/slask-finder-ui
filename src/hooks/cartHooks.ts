@@ -7,6 +7,7 @@ import {
   changeQuantity,
   getCart,
   removeFromCart,
+  removeVoucher,
 } from "../lib/datalayer/cart-api";
 import { useCartFetchMutation, useFetchMutation } from "../utils";
 import { trackCart } from "../lib/datalayer/beacons";
@@ -50,6 +51,10 @@ export const useAddVoucher = () => {
         return error;
       }),
   );
+};
+
+export const useRemoveVoucher = () => {
+  return useCartFetchMutation(cartKey, (id: number) => removeVoucher(id));
 };
 
 export const useAddMultipleToCart = () => {
