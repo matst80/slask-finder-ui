@@ -195,7 +195,47 @@ const useCartItemData = (item: CartItem) => {
   }, [item]);
 };
 
-const ownIds = ["001071", "498"];
+const ownIds = ["001071", "498", ""];
+
+const StockIndicator = ({
+  stock,
+  quantity,
+  storeId,
+}: {
+  stock: number;
+  quantity: number;
+  storeId?: string;
+}) => {
+  const stockAfterPurchase = stock - quantity;
+  const boxClasses = "text-xs rounded-lg px-[5px] py-[2px] inline-block";
+  if (storeId != null) {
+    if (stockAfterPurchase > 0) {
+      return (
+        <span className={cm("bg-green-200 text-green-800", boxClasses)}>
+          {stock} in store
+        </span>
+      );
+    } else {
+      return (
+        <span className={cm("bg-red-200 text-red-800", boxClasses)}>
+          {stock} in store
+        </span>
+      );
+    }
+  }
+  if (stockAfterPurchase > 0) {
+    return null;
+  } else {
+    if (stock > 0) {
+      return null;
+    }
+    return (
+      <span className={cm("bg-orange-200 text-orange-800", boxClasses)}>
+        Out of stock
+      </span>
+    );
+  }
+};
 
 const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   const { trigger: changeQuantity } = useChangeQuantity();
@@ -215,7 +255,12 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
         )}
         <div className="flex flex-col grow flex-1">
           <Link to={`/product/${item.itemId}`} className="text-sm font-medium">
-            {item.meta.name}
+            {item.meta.name}{" "}
+            <StockIndicator
+              stock={item.stock}
+              quantity={item.qty}
+              storeId={item.storeId}
+            />
           </Link>
           <span className="text-xs text-gray-500">
             {item.meta.brand} - {item.meta.category}
@@ -357,15 +402,15 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
           <div className="mt-4 justify-end grow-0">
             <div className="flex justify-between items-center">
               <span className="font-bold">{t("cart.totalTax")}:</span>
-              <ul className="flex flex-col justify-end">
+              <ul className="grid grid-cols-2 justify-end text-right gap-x-1">
                 {Object.entries(cart?.totalPrice.vat ?? {}).map(
                   ([key, value]) => (
-                    <li key={key} className="text-xs text-gray-500">
-                      {key}%{" "}
+                    <>
+                      <span>{key}%</span>
                       <b>
                         <PriceValue value={value} />
                       </b>
-                    </li>
+                    </>
                   ),
                 )}
               </ul>

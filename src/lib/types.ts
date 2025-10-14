@@ -296,7 +296,7 @@ export type CartPrice = {
   exVat: number;
   incVat: number;
   vat: Record<string, number>;
-}
+};
 
 export type CartDelivery = {
   id: string;
@@ -351,7 +351,7 @@ export type CartItemMeta = {
   category3?: string;
   category4?: string;
   category5?: string;
-}
+};
 
 export type CartItem = {
   id: number;
@@ -364,6 +364,7 @@ export type CartItem = {
   stock: number;
   tax: number;
   type: string;
+  storeId?: string;
 };
 
 export type ItemPrice =
