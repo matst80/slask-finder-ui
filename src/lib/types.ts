@@ -309,7 +309,11 @@ export type Mutation = Record<string, unknown>;
 
 export type ApplyResult = {
   type: string;
-  error?: unknown;
+  error?: {
+    message: string;
+    code: string;
+    statusCode: number;
+  };
   mutation: Mutation;
 };
 

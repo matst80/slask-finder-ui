@@ -1,5 +1,6 @@
 import useSWRMutation, { SWRMutationConfiguration } from "swr/mutation";
 import { ItemValues, ItemPrice, CartMutationResult } from "./lib/types";
+import { useNotifications } from "./components/ui-notifications/useNotifications";
 
 export function remove<T>(key: string | number) {
   return (prev: { [key: string]: T }) => {
@@ -54,9 +55,23 @@ export const useCartFetchMutation = <T, U>(
   fn: (payload: U) => Promise<CartMutationResult<T>>,
   config?: SWRMutationConfiguration<CartMutationResult<T>, Error, string, U>,
 ) => {
+  const { showNotification } = useNotifications();
   return useSWRMutation(key, (_, { arg }) => fn(arg), {
     revalidate: false,
-    populateCache: (data, current) => data.result ?? current,
+    populateCache: (data, current) => {
+      if (data.mutations && data.mutations.length > 0) {
+        data.mutations
+          .filter((d) => d.error != null)
+          .forEach((mut) => {
+            showNotification({
+              title: `Error applying ${mut.type} mutation`,
+              message: mut.error?.message ?? "Unknown error",
+              variant: "warning",
+            });
+          });
+      }
+      return data.result ?? current;
+    },
     ...config,
   });
 };

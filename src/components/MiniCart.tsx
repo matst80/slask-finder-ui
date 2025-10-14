@@ -318,13 +318,30 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   );
 };
 
+const VoucherItem = ({ id, code, discount }: Voucher) => {
+  const { trigger: removeVoucher, isMutating, error } = useRemoveVoucher();
+  return (
+    <div
+      className={cm("flex items-center gap-2", isMutating && "animate-pulse")}
+    >
+      <div className="bg-gray-200 rounded-full p-2">
+        <TicketIcon size={16} />
+      </div>
+      <div className="flex flex-col">
+        <p className="text-sm font-bold">{code}</p>
+        <p className="text-xs text-gray-500">{discount}</p>
+      </div>
+      <div>
+        <button onClick={() => removeVoucher(id)}>Remove</button>
+        {error && <p className="text-red-500">{error.message}</p>}
+      </div>
+    </div>
+  );
+};
+
 const Vouchers = ({ added }: { added: Voucher[] }) => {
   const t = useTranslations();
-  const {
-    trigger: removeVoucher,
-    isMutating: isRemovingVoucher,
-    error: removeError,
-  } = useRemoveVoucher();
+
   const { trigger: addVoucher, isMutating, error } = useAddVoucher();
   const [code, setCode] = useState("");
 
@@ -333,16 +350,7 @@ const Vouchers = ({ added }: { added: Voucher[] }) => {
       {added?.length > 0 ? (
         <div className="flex flex-col gap-2">
           {added.map((voucher) => (
-            <div key={voucher.code} className="flex items-center gap-2">
-              <div className="bg-gray-200 rounded-full p-2">
-                <TicketIcon size={16} />
-              </div>
-              <div className="flex flex-col">
-                <p className="text-sm font-bold">{voucher.code}</p>
-                <p className="text-xs text-gray-500">{voucher.discount}</p>
-              </div>
-              <button onClick={() => removeVoucher(voucher.id)}>Remove</button>
-            </div>
+            <VoucherItem key={voucher.id} {...voucher} />
           ))}
         </div>
       ) : (
