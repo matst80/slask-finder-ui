@@ -159,7 +159,7 @@ const CartCompatible = ({ id }: { id: number }) => {
 function getCartItemPrice(item: CartItem): ItemPrice {
   const price = item.price.incVat;
   const orgPrice = item.orgPrice;
-  const isDiscounted = orgPrice!=null && orgPrice.incVat > price;
+  const isDiscounted = orgPrice != null && orgPrice.incVat > price;
   if (isDiscounted) {
     return {
       current: price,
@@ -322,8 +322,7 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
   const [shippingOpen, setShippingOpen] = useState(false);
   const t = useTranslations();
 
-  const {items=[],totalPrice,totalDiscount} = cart??{}
-  
+  const { items = [], totalPrice, totalDiscount } = cart ?? {};
 
   return (
     <div
@@ -358,15 +357,20 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
           <div className="mt-4 justify-end grow-0">
             <div className="flex justify-between items-center">
               <span className="font-bold">{t("cart.totalTax")}:</span>
-              <ul>
-                {Object.entries(cart?.totalPrice.vat ?? {}).map(([key, value]) => (
-                  <li key={key} className="text-xs text-gray-500">
-                    {key}% <b><PriceValue value={value} /></b>
-                  </li>
-                ))}
+              <ul className="flex flex-col justify-end">
+                {Object.entries(cart?.totalPrice.vat ?? {}).map(
+                  ([key, value]) => (
+                    <li key={key} className="text-xs text-gray-500">
+                      {key}%{" "}
+                      <b>
+                        <PriceValue value={value} />
+                      </b>
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
-            {totalDiscount!=null &&totalDiscount.incVat > 0 && (
+            {totalDiscount != null && totalDiscount.incVat > 0 && (
               <div className="flex justify-between items-center">
                 <span className="font-bold">{t("cart.totalDiscount")}:</span>
                 <PriceValue value={totalDiscount.incVat} />
@@ -374,7 +378,10 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
             )}
             <div className="mt-2 pt-2 flex justify-between items-center border-t border-gray-200">
               <span className="text-lg font-bold">{t("cart.total")}:</span>
-              <PriceValue className="text-lg font-bold" value={totalPrice?.incVat} />
+              <PriceValue
+                className="text-lg font-bold"
+                value={totalPrice?.incVat}
+              />
             </div>
             <button
               className="underline text-blue-600 hover:text-blue-800 mt-2 text-sm"
