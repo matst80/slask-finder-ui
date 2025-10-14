@@ -7,6 +7,7 @@ import {
   useAddVoucher,
   useCart,
   useChangeQuantity,
+  useRemoveVoucher,
 } from "../hooks/cartHooks";
 import { ButtonAnchor } from "./ui/button";
 import { Link } from "react-router-dom";
@@ -319,6 +320,11 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
 
 const Vouchers = ({ added }: { added: Voucher[] }) => {
   const t = useTranslations();
+  const {
+    trigger: removeVoucher,
+    isMutating: isRemovingVoucher,
+    error: removeError,
+  } = useRemoveVoucher();
   const { trigger: addVoucher, isMutating, error } = useAddVoucher();
   const [code, setCode] = useState("");
 
@@ -335,6 +341,7 @@ const Vouchers = ({ added }: { added: Voucher[] }) => {
                 <p className="text-sm font-bold">{voucher.code}</p>
                 <p className="text-xs text-gray-500">{voucher.discount}</p>
               </div>
+              <button onClick={() => removeVoucher(voucher.id)}>Remove</button>
             </div>
           ))}
         </div>

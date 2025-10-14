@@ -332,8 +332,8 @@ export type Cart = {
 };
 
 export type Voucher = {
+  id: number;
   code: string;
-  type: string;
   discount: number;
 };
 

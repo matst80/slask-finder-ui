@@ -31,6 +31,14 @@ export const addVoucher = async (code: string) => {
   }).then((d) => toJson<CartMutationResult<Cart>>(d));
 };
 
+export const removeVoucher = async (id: number) => {
+  const country = getCountry();
+  return fetch(`${baseUrl}/cart/voucher/${id}`, {
+    method: "DELETE",
+    body: JSON.stringify({ country }),
+  }).then((d) => toJson<CartMutationResult<Cart>>(d));
+};
+
 export const addToCartMultiple = async (items: AddToCartArgs[]) => {
   const country = getCountry();
   return fetch(`${baseUrl}/cart/add`, {
