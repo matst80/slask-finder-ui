@@ -1,5 +1,5 @@
 import useSWRMutation, { SWRMutationConfiguration } from "swr/mutation";
-import { ItemValues, ItemPrice } from "./lib/types";
+import { ItemValues, ItemPrice, CartMutationResult } from "./lib/types";
 
 export function remove<T>(key: string | number) {
   return (prev: { [key: string]: T }) => {
@@ -45,6 +45,18 @@ export const useFetchMutation = <T, U>(
   return useSWRMutation(key, (_, { arg }) => fn(arg), {
     revalidate: false,
     populateCache: true,
+    ...config,
+  });
+};
+
+export const useCartFetchMutation = <T, U>(
+  key: string,
+  fn: (payload: U) => Promise<CartMutationResult<T>>,
+  config?: SWRMutationConfiguration<CartMutationResult<T>, Error, string, U>,
+) => {
+  return useSWRMutation(key, (_, { arg }) => fn(arg), {
+    revalidate: false,
+    populateCache: (data, current) => data.result ?? current,
     ...config,
   });
 };

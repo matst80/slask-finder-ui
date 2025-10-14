@@ -1,4 +1,4 @@
-import { Cart } from "../types";
+import { Cart, CartMutationResult } from "../types";
 import { baseUrl, toJson } from "./api";
 
 type AddToCartArgs = {
@@ -20,7 +20,15 @@ export const addToCart = async (payload: AddToCartArgs) => {
   return fetch(`${baseUrl}/cart/`, {
     method: "POST",
     body: JSON.stringify({ ...payload, country }),
-  }).then((d) => toJson<Cart>(d));
+  }).then((d) => toJson<CartMutationResult<Cart>>(d));
+};
+
+export const addVoucher = async (code: string) => {
+  const country = getCountry();
+  return fetch(`${baseUrl}/cart/voucher`, {
+    method: "PUT",
+    body: JSON.stringify({ code, country }),
+  }).then((d) => toJson<CartMutationResult<Cart>>(d));
 };
 
 export const addToCartMultiple = async (items: AddToCartArgs[]) => {
@@ -28,19 +36,19 @@ export const addToCartMultiple = async (items: AddToCartArgs[]) => {
   return fetch(`${baseUrl}/cart/add`, {
     method: "POST",
     body: JSON.stringify({ items, country }),
-  }).then((d) => toJson<Cart>(d));
+  }).then((d) => toJson<CartMutationResult<Cart>>(d));
 };
 
 export const changeQuantity = (payload: ChangeQuantityArgs) =>
   fetch(`${baseUrl}/cart/`, {
     method: "PUT",
     body: JSON.stringify(payload),
-  }).then((d) => toJson<Cart>(d));
+  }).then((d) => toJson<CartMutationResult<Cart>>(d));
 
 export const removeFromCart = ({ id }: { id: number }) =>
   fetch(`${baseUrl}/cart/${id}`, {
     method: "DELETE",
-  }).then((d) => toJson<Cart>(d));
+  }).then((d) => toJson<CartMutationResult<Cart>>(d));
 
 export const getCart = () =>
   fetch(`${baseUrl}/cart/`).then(async (d) => {

@@ -3,11 +3,12 @@ import { clearCart } from "../lib/datalayer/api";
 import {
   addToCart,
   addToCartMultiple,
+  addVoucher,
   changeQuantity,
   getCart,
   removeFromCart,
 } from "../lib/datalayer/cart-api";
-import { useFetchMutation } from "../utils";
+import { useCartFetchMutation, useFetchMutation } from "../utils";
 import { trackCart } from "../lib/datalayer/beacons";
 import { BaseEcomEvent, Item } from "../lib/types";
 import { useNotifications } from "../components/ui-notifications/useNotifications";
@@ -27,16 +28,14 @@ export const useResetCart = () => {
   return useFetchMutation(cartKey, () => clearCart().then(() => getCart()));
 };
 
-export const useAddMultipleToCart = () => {
+export const useAddVoucher = () => {
   const { showNotification } = useNotifications();
-  return useFetchMutation(cartKey, (items: (Item & { quantity?: number })[]) =>
-    addToCartMultiple(
-      items.map((d) => ({ sku: d.sku, quantity: d.quantity || 1 })),
-    )
+  return useCartFetchMutation(cartKey, (voucherCode: string) =>
+    addVoucher(voucherCode)
       .then((data) => {
         showNotification({
           title: "Success",
-          message: `Added ${items.length} items to cart.`,
+          message: `Added voucher ${voucherCode} to cart.`,
           variant: "success",
         });
         return data;
@@ -45,7 +44,7 @@ export const useAddMultipleToCart = () => {
         //console.warn(error);
         showNotification({
           title: "Error",
-          message: `Failed to add ${items.length} items to cart.`,
+          message: `Failed to add voucher ${voucherCode} to cart.`,
           variant: "error",
         });
         return error;
@@ -53,10 +52,38 @@ export const useAddMultipleToCart = () => {
   );
 };
 
+export const useAddMultipleToCart = () => {
+  const { showNotification } = useNotifications();
+  return useCartFetchMutation(
+    cartKey,
+    (items: (Item & { quantity?: number })[]) =>
+      addToCartMultiple(
+        items.map((d) => ({ sku: d.sku, quantity: d.quantity || 1 })),
+      )
+        .then((data) => {
+          showNotification({
+            title: "Success",
+            message: `Added ${items.length} items to cart.`,
+            variant: "success",
+          });
+          return data;
+        })
+        .catch((error) => {
+          //console.warn(error);
+          showNotification({
+            title: "Error",
+            message: `Failed to add ${items.length} items to cart.`,
+            variant: "error",
+          });
+          return error;
+        }),
+  );
+};
+
 export const useAddToCart = () => {
   const { accepted } = useCookieAcceptance();
   const { showNotification } = useNotifications();
-  const { trigger, ...rest } = useFetchMutation(cartKey, addToCart);
+  const { trigger, ...rest } = useCartFetchMutation(cartKey, addToCart);
   return {
     ...rest,
     trigger: async (
@@ -99,7 +126,7 @@ export const useAddToCart = () => {
 };
 
 export const useChangeQuantity = () => {
-  const { trigger, ...rest } = useFetchMutation(cartKey, changeQuantity);
+  const { trigger, ...rest } = useCartFetchMutation(cartKey, changeQuantity);
   return {
     ...rest,
     trigger: async (id: number, quantity: number, item: BaseEcomEvent) => {
@@ -113,7 +140,7 @@ export const useChangeQuantity = () => {
 };
 
 export const useRemoveFromCart = () => {
-  const { trigger, ...rest } = useFetchMutation(cartKey, removeFromCart);
+  const { trigger, ...rest } = useCartFetchMutation(cartKey, removeFromCart);
   return {
     ...rest,
     trigger: async (id: number, item: BaseEcomEvent) => {
