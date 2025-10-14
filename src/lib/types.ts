@@ -292,11 +292,17 @@ export type ResultTransformer<Input, Output> = (input: Input) => Output;
 
 export type FacetQuery = FilteringQuery;
 
+export type CartPrice = {
+  exVat: number;
+  incVat: number;
+  vat: Record<string, number>;
+}
+
 export type CartDelivery = {
   id: string;
   provider: string;
   items: number[];
-  price: number;
+  price: CartPrice;
 };
 
 export type Mutation = Record<string, unknown>;
@@ -320,9 +326,8 @@ export type Cart = {
   paymentInProgress: boolean;
   orderReference?: string;
   paymentStatus?: string;
-  totalPrice: number;
-  totalTax: number;
-  totalDiscount: number;
+  totalPrice: CartPrice;
+  totalDiscount: CartPrice;
   vouchers: Voucher[];
 };
 
@@ -334,9 +339,7 @@ export type Voucher = {
 
 export type HistoryQuery = ItemsQuery & { key: string };
 
-export type CartItem = {
-  id: number;
-  itemId: string; // maybe
+export type CartItemMeta = {
   image: string;
   name: string;
   outlet?: string;
@@ -348,8 +351,14 @@ export type CartItem = {
   category3?: string;
   category4?: string;
   category5?: string;
-  orgPrice: number;
-  price: number;
+}
+
+export type CartItem = {
+  id: number;
+  itemId: string; // maybe
+  meta: CartItemMeta;
+  orgPrice?: CartPrice;
+  price: CartPrice;
   qty: number;
   sku: string;
   stock: number;

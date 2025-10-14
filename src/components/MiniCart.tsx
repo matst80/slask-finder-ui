@@ -157,14 +157,14 @@ const CartCompatible = ({ id }: { id: number }) => {
 };
 
 function getCartItemPrice(item: CartItem): ItemPrice {
-  const price = item.price;
-  const orgPrice = item.orgPrice ?? 0;
-  const isDiscounted = orgPrice > price;
+  const price = item.price.incVat;
+  const orgPrice = item.orgPrice;
+  const isDiscounted = orgPrice!=null && orgPrice.incVat > price;
   if (isDiscounted) {
     return {
       current: price,
-      original: orgPrice,
-      discount: orgPrice - price,
+      original: orgPrice.incVat,
+      discount: orgPrice.incVat - price,
       isDiscounted: true,
     };
   }
@@ -181,15 +181,15 @@ const useCartItemData = (item: CartItem) => {
       trackingItem: (value?: number) => ({
         item_id: item.itemId,
         index: item.id,
-        item_name: item.name,
-        price: item.price,
+        item_name: item.meta.name,
+        price: item.price.incVat,
         quantity: value ?? item.qty,
-        item_brand: item.brand,
-        item_category: item.category,
-        item_category2: item.category2,
-        item_category3: item.category3,
-        item_category4: item.category4,
-        item_category5: item.category5,
+        item_brand: item.meta.brand,
+        item_category: item.meta.category,
+        item_category2: item.meta.category2,
+        item_category3: item.meta.category3,
+        item_category4: item.meta.category4,
+        item_category5: item.meta.category5,
       }),
     };
   }, [item]);
@@ -204,10 +204,10 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   return (
     <li key={item.id + item.sku} className="py-3 flex flex-col group relative">
       <div className="flex items-start gap-2">
-        {item.image ? (
+        {item.meta.image ? (
           <img
-            src={makeImageUrl(item.image)}
-            alt={item.name}
+            src={makeImageUrl(item.meta.image)}
+            alt={item.meta.name}
             className="size-16 rounded-sm object-contain aspect-square mr-4"
           />
         ) : (
@@ -215,21 +215,21 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
         )}
         <div className="flex flex-col grow flex-1">
           <Link to={`/product/${item.itemId}`} className="text-sm font-medium">
-            {item.name}
+            {item.meta.name}
           </Link>
           <span className="text-xs text-gray-500">
-            {item.brand} - {item.category}
+            {item.meta.brand} - {item.meta.category}
           </span>
-          {item.outlet != null && (
+          {item.meta.outlet != null && (
             <span className="text-xs px-1 py-0.5 bg-amber-100 text-amber-800 rounded">
-              {item.outlet}
+              {item.meta.outlet}
             </span>
           )}
-          {item.sellerId != null &&
-            item.sellerName != null &&
-            !ownIds.includes(item.sellerId) && (
+          {item.meta.sellerId != null &&
+            item.meta.sellerName != null &&
+            !ownIds.includes(item.meta.sellerId) && (
               <span className="text-xs self-end px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full inline-block">
-                {item.sellerName}
+                {item.meta.sellerName}
               </span>
             )}
         </div>
@@ -322,10 +322,8 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
   const [shippingOpen, setShippingOpen] = useState(false);
   const t = useTranslations();
 
-  const items = cart?.items ?? [];
-  const totalPrice = cart?.totalPrice ?? 0;
-  const totalTax = cart?.totalTax ?? 0;
-  const totalDiscount = cart?.totalDiscount ?? 0;
+  const {items=[],totalPrice,totalDiscount} = cart??{}
+  
 
   return (
     <div
@@ -360,17 +358,23 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
           <div className="mt-4 justify-end grow-0">
             <div className="flex justify-between items-center">
               <span className="font-bold">{t("cart.totalTax")}:</span>
-              <PriceValue value={totalTax} />
+              <ul>
+                {Object.entries(cart?.totalPrice.vat ?? {}).map(([key, value]) => (
+                  <li key={key} className="text-xs text-gray-500">
+                    {key}% <b><PriceValue value={value} /></b>
+                  </li>
+                ))}
+              </ul>
             </div>
-            {totalDiscount > 0 && (
+            {totalDiscount!=null &&totalDiscount.incVat > 0 && (
               <div className="flex justify-between items-center">
                 <span className="font-bold">{t("cart.totalDiscount")}:</span>
-                <PriceValue value={totalDiscount} />
+                <PriceValue value={totalDiscount.incVat} />
               </div>
             )}
             <div className="mt-2 pt-2 flex justify-between items-center border-t border-gray-200">
               <span className="text-lg font-bold">{t("cart.total")}:</span>
-              <PriceValue className="text-lg font-bold" value={totalPrice} />
+              <PriceValue className="text-lg font-bold" value={totalPrice?.incVat} />
             </div>
             <button
               className="underline text-blue-600 hover:text-blue-800 mt-2 text-sm"

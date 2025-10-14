@@ -11,19 +11,19 @@ export const Checkout = () => {
     trackEnterCheckout({
       items: cart.items.map((item, index) => ({
         item_id: Number(item.id),
-        item_name: item.name,
-        item_brand: item.brand,
-        item_category: item.category,
-        item_category2: item.category2,
-        item_category3: item.category3,
-        item_category4: item.category4,
-        item_category5: item.category5,
+        item_name: item.meta.name,
+        item_brand: item.meta.brand,
+        item_category: item.meta.category,
+        item_category2: item.meta.category2,
+        item_category3: item.meta.category3,
+        item_category4: item.meta.category4,
+        item_category5: item.meta.category5,
         index,
-        price: item.price,
+        price: item.price.incVat,
         quantity: item.qty,
         discount:
-          item.orgPrice && item.orgPrice > item.price
-            ? item.orgPrice - item.price
+          item.orgPrice && item.orgPrice.incVat > item.price.incVat
+            ? item.orgPrice.incVat - item.price.incVat
             : undefined,
       })),
     })
