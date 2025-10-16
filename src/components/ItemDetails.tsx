@@ -571,6 +571,7 @@ export const ItemDetails = (details: ItemDetail) => {
     values,
     disclaimer,
     lastUpdate,
+    created,
   } = details;
   const productData = useProductData(values);
   const { showNotification } = useNotifications();
@@ -757,8 +758,9 @@ export const ItemDetails = (details: ItemDetail) => {
         {/* Bottom Sections */}
         <div className="mt-6 space-y-6 md:mt-6 md:space-y-16">
           <BreadCrumbs values={values} />
-          {lastUpdate && (
-            <div>
+
+          <div className="flex gap-4">
+            {lastUpdate != null && (
               <span className="text-sm text-gray-800">
                 Last update:{" "}
                 {new Date(lastUpdate).toLocaleString("sv-SE", {
@@ -770,8 +772,22 @@ export const ItemDetails = (details: ItemDetail) => {
                   second: "2-digit",
                 })}
               </span>
-            </div>
-          )}
+            )}
+            {created != null && (
+              <span className="text-sm text-gray-800">
+                Created:{" "}
+                {new Date(created).toLocaleString("sv-SE", {
+                  month: "short",
+                  weekday: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })}
+              </span>
+            )}
+          </div>
+
           <RelationGroups values={values} id={id} />
 
           <GroupedProperties values={details.values} />

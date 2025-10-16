@@ -110,6 +110,7 @@ export type ItemProps = {
   sku: string;
   created?: number;
   lastUpdate?: number;
+
   advertisingText: string;
   buyable: boolean;
   disclaimer?: string;
