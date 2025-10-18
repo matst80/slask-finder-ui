@@ -1,7 +1,7 @@
 import { Filter } from 'lucide-react'
-import { cm } from '../utils'
-import { useQuery } from '../lib/hooks/useQuery'
 import { useDeferredValue, useEffect, useState } from 'react'
+import { useQuery } from '../lib/hooks/useQuery'
+import { cm } from '../utils'
 
 type Props = {
   show: boolean
