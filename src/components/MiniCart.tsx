@@ -318,20 +318,29 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   );
 };
 
-const VoucherItem = ({ id, code, discount }: Voucher) => {
+const VoucherItem = ({ id, code, value, description, applied }: Voucher) => {
   const { trigger: removeVoucher, isMutating, error } = useRemoveVoucher();
   return (
     <div
-      className={cm("flex items-center gap-2", isMutating && "animate-pulse")}
+      className={cm(
+        "flex items-center gap-2",
+        isMutating && "animate-pulse",
+        applied ? "" : "opacity-50",
+      )}
     >
       <div className="bg-gray-200 rounded-full p-2">
         <TicketIcon size={16} />
       </div>
       <div className="flex flex-col">
         <p className="text-sm font-bold">{code}</p>
-        <p className="text-xs text-gray-500">{discount}</p>
+        <p
+          className={cm("text-xs text-gray-500", applied ? "" : "line-through")}
+        >
+          <PriceValue value={value} />
+        </p>
       </div>
       <div>
+        <p>{description}</p>
         <button onClick={() => removeVoucher(id)}>Remove</button>
         {error && <p className="text-red-500">{error.message}</p>}
       </div>
@@ -494,7 +503,7 @@ export const MiniCart = () => {
 
   useEffect(() => {
     if (ref.current) {
-      if (shouldOpen) {
+      if (shouldOpen && totalItems != "~") {
         setIsCartOpen(true);
       }
       setShouldOpen(true);
@@ -508,7 +517,7 @@ export const MiniCart = () => {
         elm.classList.remove("animate-ping");
       };
     }
-  }, [totalItems, ref]);
+  }, [totalItems, shouldOpen]);
 
   if (cart?.items == null || cart.items.length === 0) {
     return null;

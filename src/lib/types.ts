@@ -339,7 +339,9 @@ export type Cart = {
 export type Voucher = {
   id: number;
   code: string;
-  discount: number;
+  value: number;
+  description: string;
+  applied: boolean;
 };
 
 export type HistoryQuery = ItemsQuery & { key: string };
