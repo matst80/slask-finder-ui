@@ -106,11 +106,20 @@ export type ItemDetail = ItemProps & {
 
 export type Stock = Record<string, string>
 
+export type AItem = {
+  sku: string
+  price: {
+    inc: number
+    exl: number
+  }
+  title: string
+}
+
 export type ItemProps = {
   sku: string
   created?: number
   lastUpdate?: number
-
+  aItem?: AItem
   advertisingText: string
   buyable: boolean
   disclaimer?: string

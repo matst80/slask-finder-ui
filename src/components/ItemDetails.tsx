@@ -419,7 +419,7 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, 'values'>) => {
       )
   }, [values])
   return (
-    <div className="inline-flex items-center overflow-x-auto max-w-full mb-4">
+    <div className="inline-flex items-center overflow-x-auto max-w-full">
       {parts.map(({ id, value }, idx) => (
         <Link
           to={`/#${queryToHash({
@@ -632,6 +632,12 @@ export const ItemDetails = (details: ItemDetail) => {
   if (!details) return null
   const pft = details.values[25]
 
+  const canAddToCart =
+    buyable &&
+    !isMutating &&
+    (values[1] !== 'ZHAB' ||
+      (productData.stockLevel != null && Number(productData.stockLevel) > 0))
+
   return (
     <>
       <div className="max-w-7xl mx-auto">
@@ -694,6 +700,24 @@ export const ItemDetails = (details: ItemDetail) => {
                     <div className="text-4xl font-bold text-gray-900">
                       <Price values={values} disclaimer={disclaimer} />
                     </div>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Button
+                      variant="default"
+                      disabled={!canAddToCart}
+                      onClick={() =>
+                        addToCart(
+                          { sku: details.sku, quantity: 1 },
+                          toEcomTrackingEvent(details, 0),
+                        )
+                      }
+                    >
+                      {isMutating ? (
+                        <Loader size="sm" />
+                      ) : (
+                        <span>{t('cart.add')}</span>
+                      )}
+                    </Button>
                     <button
                       onClick={watchPriceChanges}
                       disabled={isRegistering}
@@ -702,24 +726,22 @@ export const ItemDetails = (details: ItemDetail) => {
                       {isRegistering ? 'Registering...' : 'Watch'}
                     </button>
                   </div>
-
-                  <Button
-                    variant="default"
-                    onClick={() =>
-                      addToCart(
-                        { sku: details.sku, quantity: 1 },
-                        toEcomTrackingEvent(details, 0),
-                      )
-                    }
-                  >
-                    {isMutating ? (
-                      <Loader size="sm" />
-                    ) : (
-                      <span>{t('cart.add')}</span>
-                    )}
-                  </Button>
                 </div>
-
+                {values[1] === 'ZHAB' && values[20] != null && (
+                  <>
+                    <p className="text-sm text-gray-700">
+                      <span className="italic">{values[20]}</span>{' '}
+                      {details.aItem != null && (
+                        <Link
+                          to={`/product/${details.aItem.sku}`}
+                          className="underline"
+                        >
+                          Buy new
+                        </Link>
+                      )}
+                    </p>
+                  </>
+                )}
                 <div className="flex items-center gap-2 justify-end">
                   <CompareButton
                     item={details}
@@ -752,36 +774,39 @@ export const ItemDetails = (details: ItemDetail) => {
           </div>
         </Sidebar>
         {/* Bottom Sections */}
-        <div className="mt-6 space-y-6 md:mt-6 md:space-y-16">
-          <BreadCrumbs values={values} />
+        <div className="flex flex-col gap-6">
+          <div>
+            <BreadCrumbs values={values} />
 
-          <div className="flex gap-4">
-            {lastUpdate != null && (
-              <span className="text-sm text-gray-800">
-                Last update:{' '}
-                {new Date(lastUpdate).toLocaleString('sv-SE', {
-                  month: 'short',
-                  weekday: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                })}
-              </span>
-            )}
-            {created != null && (
-              <span className="text-sm text-gray-800">
-                Created:{' '}
-                {new Date(created).toLocaleString('sv-SE', {
-                  month: 'short',
-                  weekday: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                })}
-              </span>
-            )}
+            <div className="flex gap-4 items-center text-xs">
+              {lastUpdate != null && (
+                <span className="text-sm text-gray-800">
+                  Last update:{' '}
+                  {new Date(lastUpdate).toLocaleString('sv-SE', {
+                    month: 'short',
+                    weekday: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                  })}
+                </span>
+              )}
+
+              {created != null && (
+                <span className="text-sm text-gray-800">
+                  Created:{' '}
+                  {new Date(created).toLocaleString('sv-SE', {
+                    month: 'short',
+                    weekday: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                  })}
+                </span>
+              )}
+            </div>
           </div>
 
           <RelationGroups values={values} id={id} />

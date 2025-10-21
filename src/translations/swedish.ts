@@ -94,17 +94,17 @@ export const swedish = {
       cpu: {
         title: 'Processor',
         description:
-          'Välj en processor för din byggnad. Du kan alltid ändra den senare.',
+          'Välj en processor till ditt bygge. Du kan alltid ändra den senare.',
       },
       gpu: {
         title: 'Grafikkort',
         description:
-          'Välj ett grafikkort för din byggnad. Du kan alltid ändra den senare.',
+          'Välj ett grafikkort till ditt bygge. Du kan alltid ändra den senare.',
       },
       case: {
         title: 'Chassi',
         description:
-          'Välj ett chassi för din byggnad. Du kan alltid ändra den senare.',
+          'Välj ett chassi till ditt bygge. Du kan alltid ändra den senare.',
       },
     },
     kit: {
@@ -113,11 +113,11 @@ export const swedish = {
     selector: {
       air_cooler: {
         title: 'Luftkylnare',
-        description: 'Välj en luftkylnare för din byggnad',
+        description: 'Välj en luftkylnare till ditt bygge',
       },
       liquid_cooler: {
         title: 'Vattenkylning',
-        description: 'Välj vattenkylning för din byggnad',
+        description: 'Välj vattenkylning till ditt bygge',
       },
     },
     overview: 'Översikt',
