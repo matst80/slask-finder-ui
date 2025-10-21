@@ -17,9 +17,9 @@ export const InfiniteHitList = ({
 }: {
   as?: keyof HTMLElementTagNameMap
   loader?: ReactNode
-  children: (item: Item & { position: number }) => ReactNode
+  children: (data: { position: number; item: Item }) => ReactNode
 }) => {
-  const { hits, addPage, query } = useQuery()
+  const { hits, addPage } = useQuery()
   const loadingRef = useRef(false)
   const canLoadMoreRef = useRef(true)
   const endRef = useRef<HTMLElement>(null)
@@ -71,19 +71,17 @@ export const InfiniteHitList = ({
         observer.disconnect()
       }
     }, 350)
-  }, [endRef, loadingRef, trigger])
+  }, [trigger])
   useEffect(() => {
     // Reset the loading state when the query changes
 
     canLoadMoreRef.current = true
-  }, [query])
+  }, [])
 
   return (
     <>
       {hits?.map((item, idx) => (
-        <Fragment key={item.id}>
-          {children({ ...item, position: idx })}
-        </Fragment>
+        <Fragment key={item.id}>{children({ item, position: idx })}</Fragment>
       ))}
       {createElement(
         as,

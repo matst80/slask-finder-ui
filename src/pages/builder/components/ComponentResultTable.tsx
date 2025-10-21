@@ -209,7 +209,7 @@ export const ComponentResultTable = ({
                 </td>
               }
             >
-              {({ position, ...item }) => (
+              {({ position, item }) => (
                 <TableRowItem
                   key={item.id}
                   item={item}

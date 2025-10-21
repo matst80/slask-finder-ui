@@ -83,7 +83,7 @@ export const useTracking = () => {
   if (!context) {
     throw new Error('useTracking must be used within a TrackingProvider')
   }
-  const { handlers } = context
+
   const track = useCallback(
     (event: TrackingEvent) => {
       if (accepted !== 'all') {
@@ -94,7 +94,7 @@ export const useTracking = () => {
         handler.handle.apply(handler, [event, handler.context])
       })
     },
-    [handlers],
+    [accepted, context.handlers],
   )
   return {
     track,

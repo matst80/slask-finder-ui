@@ -34,10 +34,6 @@ export const FunnelChart = ({
     return sortedData.length > 0 ? sortedData[0].value : 0
   }, [sortedData])
 
-  const totalValue = useMemo(() => {
-    return sortedData.reduce((sum, item) => sum + item.value, 0)
-  }, [sortedData])
-
   // Enhanced color palette
   const defaultColors = [
     '#4338ca', // indigo-700
@@ -86,7 +82,7 @@ export const FunnelChart = ({
         gradientId: `gradient-${item.id}`,
       }
     })
-  }, [sortedData, width, height, maxValue, totalValue, defaultColors])
+  }, [sortedData, width, height, maxValue])
 
   if (data.length === 0) {
     return (

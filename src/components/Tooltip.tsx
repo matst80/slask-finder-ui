@@ -52,7 +52,7 @@ export const Tooltip = ({
         button.removeEventListener('mouseleave', onLeave)
       }
     }
-  }, [buttonRef])
+  }, [anchorName, id])
   return (
     <>
       <button

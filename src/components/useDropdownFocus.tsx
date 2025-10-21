@@ -18,7 +18,7 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
       onClose?.()
       setIsOpen(false)
     }
-  }, [inputRef, targetRef])
+  }, [onClose])
   const open = useCallback(() => {
     const elm = inputRef.current
     const targetElm = targetRef.current
@@ -28,7 +28,7 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
       onOpen?.()
       setIsOpen(true)
     }
-  }, [inputRef, targetRef])
+  }, [onOpen])
   useEffect(() => {
     const elm = inputRef.current
     if (elm != null) {
@@ -64,7 +64,7 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
         close()
       }
     }
-  }, [inputRef])
+  }, [close, open])
 
   return { inputRef, close, open, isOpen } as const
 }

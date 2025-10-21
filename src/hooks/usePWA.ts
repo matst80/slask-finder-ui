@@ -7,23 +7,33 @@ interface PWAStatus {
   needsUpdate: boolean
 }
 
-export const usePWA = (): PWAStatus => {
-  const [isInstallable, setIsInstallable] = useState(false)
+export const useIsInstalled = () => {
   const [isInstalled, setIsInstalled] = useState(false)
-  const [isOnline, setIsOnline] = useState(navigator.onLine)
-  const [needsUpdate, setNeedsUpdate] = useState(false)
 
   useEffect(() => {
-    // Check if app is installed
     const checkInstalled = () => {
       if (
         window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone === true
+        (window.navigator as Navigator & { standalone?: boolean })
+          .standalone === true
       ) {
         setIsInstalled(true)
       }
     }
 
+    checkInstalled()
+  }, [])
+
+  return [isInstalled, setIsInstalled] as const
+}
+
+export const usePWA = (): PWAStatus => {
+  const [isInstallable, setIsInstallable] = useState(false)
+  const [isInstalled, setIsInstalled] = useIsInstalled()
+  const [isOnline, setIsOnline] = useState(navigator.onLine)
+  const [needsUpdate, setNeedsUpdate] = useState(false)
+
+  useEffect(() => {
     // Handle install prompt availability
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
@@ -44,8 +54,6 @@ export const usePWA = (): PWAStatus => {
     const handleControllerChange = () => {
       setNeedsUpdate(true)
     }
-
-    checkInstalled()
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     window.addEventListener('appinstalled', handleAppInstalled)
@@ -75,7 +83,7 @@ export const usePWA = (): PWAStatus => {
         )
       }
     }
-  }, [])
+  }, [setIsInstalled])
 
   return {
     isInstallable,

@@ -18,20 +18,6 @@ export const NotificationsProvider = ({
 }) => {
   const [notifications, setNotifications] = useState<NotificationType[]>([])
 
-  const showNotification = useCallback(
-    (notification: Omit<NotificationType, 'id'>) => {
-      const id = Math.random().toString(36).substring(2, 9)
-      setNotifications((prev) => [...prev, { ...notification, id }])
-
-      if (notification.duration !== Number.POSITIVE_INFINITY) {
-        setTimeout(() => {
-          dismissNotification(id)
-        }, notification.duration || 5000)
-      }
-    },
-    [],
-  )
-
   const dismissNotification = useCallback((id: string) => {
     setNotifications((prev) =>
       prev.map((notification) =>
@@ -48,6 +34,20 @@ export const NotificationsProvider = ({
       )
     }, 500)
   }, [])
+
+  const showNotification = useCallback(
+    (notification: Omit<NotificationType, 'id'>) => {
+      const id = Math.random().toString(36).substring(2, 9)
+      setNotifications((prev) => [...prev, { ...notification, id }])
+
+      if (notification.duration !== Number.POSITIVE_INFINITY) {
+        setTimeout(() => {
+          dismissNotification(id)
+        }, notification.duration || 5000)
+      }
+    },
+    [dismissNotification],
+  )
 
   return (
     <NotificationContext.Provider

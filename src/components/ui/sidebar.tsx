@@ -42,7 +42,7 @@ export const Sidebar = ({
         c?.removeEventListener('cancel', handleClose)
       }
     }
-  }, [ref])
+  }, [setOpen])
   return (
     <dialog ref={ref} className={side}>
       {children}

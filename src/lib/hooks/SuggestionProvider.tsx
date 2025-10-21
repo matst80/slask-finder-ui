@@ -275,7 +275,7 @@ export const SuggestionProvider = ({
       setItems(result)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, config, facets, suggestions, popularQueries, contentResults])
+  }, [data, config, popularQueries, contentResults, value])
 
   return (
     <SuggestionContext.Provider

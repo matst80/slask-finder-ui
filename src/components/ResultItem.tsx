@@ -344,7 +344,7 @@ const DataProperty = ({ title, value }: { title: string; value: unknown }) => {
   )
 }
 
-export const DataView = ({ item }: { item: Item }) => {
+export const DataViewItem = ({ item }: { item: Item }) => {
   return <Value value={item} />
 }
 
@@ -361,8 +361,9 @@ export const PlaceholderItem = () => {
 
 export const ResultItem = ({
   position,
-  ...item
-}: Item & {
+  item,
+}: {
+  item: Item
   position: number
 }) => {
   const { watch } = useImpression()

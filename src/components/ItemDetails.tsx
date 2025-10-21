@@ -74,7 +74,7 @@ export const RelatedItems = ({ id }: Pick<ItemDetail, 'id'>) => {
       {isLoading && <Loader size="md" />}
       {data?.map((item, idx) => (
         <CarouselItem key={item.id}>
-          <ResultItem {...item} position={idx} />
+          <ResultItem item={item} position={idx} />
         </CarouselItem>
       ))}
     </ProductCarouselContainer>
@@ -89,7 +89,7 @@ export const CosineRelatedItems = ({ id }: Pick<ItemDetail, 'id'>) => {
       {isLoading && <Loader size="md" />}
       {data?.map((item, idx) => (
         <CarouselItem key={item.id}>
-          <ResultItem {...item} position={idx} />
+          <ResultItem item={item} position={idx} />
         </CarouselItem>
       ))}
     </ProductCarouselContainer>
@@ -107,7 +107,7 @@ export const ResultCarousel = (context: {
       {isLoading && <Loader size="md" />}
       {hits?.map((item, idx) => (
         <CarouselItem key={item.id}>
-          <ResultItem {...item} position={idx} />
+          <ResultItem item={item} position={idx} />
         </CarouselItem>
       ))}
     </ProductCarouselContainer>
@@ -149,7 +149,7 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, 'id'>) => {
         {isLoading && <Loader size="md" />}
         {data?.map((item, idx) => (
           <CarouselItem key={item.id}>
-            <ResultItem {...item} position={idx} />
+            <ResultItem item={item} position={idx} />
           </CarouselItem>
         ))}
       </ProductCarouselContainer>

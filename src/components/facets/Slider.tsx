@@ -49,14 +49,14 @@ export const Slider = ({
 
       onChange(newMin, newMax)
     }
-  }, [minRef, maxRef, onChange, absoluteMin, absoluteMax])
+  }, [onChange, absoluteMin, absoluteMax])
 
   useEffect(() => {
     if (minRef.current && maxRef.current) {
       minRef.current.value = min.toString()
       maxRef.current.value = max.toString()
     }
-  }, [min, max, minRef, maxRef])
+  }, [min, max])
 
   return (
     <>

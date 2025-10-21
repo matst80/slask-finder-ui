@@ -14,6 +14,6 @@ export const useSwitching = <T = string>(interval = 5000): Switching<T> => {
     return () => {
       clearInterval(to)
     }
-  }, [values])
+  }, [values, interval])
   return [value, setValues] as const
 }

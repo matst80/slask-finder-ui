@@ -1,5 +1,6 @@
 import { Download, Smartphone, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useIsInstalled } from '../hooks/usePWA'
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]
@@ -14,19 +15,9 @@ export const PWAInstallPrompt = () => {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null)
   const [showInstallPrompt, setShowInstallPrompt] = useState(false)
-  const [isInstalled, setIsInstalled] = useState(false)
+  const [isInstalled, setIsInstalled] = useIsInstalled()
 
   useEffect(() => {
-    // Check if app is already installed
-    const checkIfInstalled = () => {
-      if (
-        window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone
-      ) {
-        setIsInstalled(true)
-      }
-    }
-
     // Handle the beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
@@ -35,7 +26,7 @@ export const PWAInstallPrompt = () => {
       // Show install prompt after a short delay
       setTimeout(() => {
         setShowInstallPrompt(true)
-      }, 3000)
+      }, 30000)
     }
 
     // Handle app installed event
@@ -45,7 +36,6 @@ export const PWAInstallPrompt = () => {
       setDeferredPrompt(null)
     }
 
-    checkIfInstalled()
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     window.addEventListener('appinstalled', handleAppInstalled)
 
@@ -56,7 +46,7 @@ export const PWAInstallPrompt = () => {
       )
       window.removeEventListener('appinstalled', handleAppInstalled)
     }
-  }, [])
+  }, [setIsInstalled])
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return

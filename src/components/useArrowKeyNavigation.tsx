@@ -47,6 +47,6 @@ export const useArrowKeyNavigation = <T extends HTMLElement>(
         ref.removeEventListener('keydown', handleKeyDown)
       }
     }
-  }, [parentRef])
+  }, [onEscape, onNotFound, resultSelector])
   return parentRef
 }

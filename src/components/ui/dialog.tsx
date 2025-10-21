@@ -41,7 +41,7 @@ export const Dialog = ({
         c?.removeEventListener('cancel', handleClose)
       }
     }
-  }, [ref])
+  }, [setOpen])
   return (
     <dialog ref={ref} className={cm(attached)}>
       {children}

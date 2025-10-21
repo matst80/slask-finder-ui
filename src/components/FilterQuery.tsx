@@ -16,7 +16,7 @@ export const FilterQuery = ({ show }: Props) => {
   const toFind = useDeferredValue(value)
   useEffect(() => {
     setFilterTerm(toFind)
-  }, [toFind])
+  }, [toFind, setFilterTerm])
   const doShow = show || !!filter?.length
   return (
     <div

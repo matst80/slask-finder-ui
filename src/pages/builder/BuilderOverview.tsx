@@ -99,7 +99,7 @@ export const BuilderOverview = () => {
                 <SelectedComponentItem
                   key={i}
                   position={i}
-                  {...item}
+                  item={item}
                   maxQuantity={maxQuantity}
                 />
               )

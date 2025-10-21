@@ -27,10 +27,10 @@ export const TotalResultText = ({
 const AiChatForResults = () => {
   const { hits } = useQuery()
   const { data: facets } = useFacetMap()
-  const convertItem = useCallback(convertItemSimple(facets ?? {}), [facets])
+  const convertItem = useCallback(convertItemSimple(facets ?? {}), [])
   const contextItems = useMemo(() => {
     return hits.map(convertItem).slice(0, 10)
-  }, [hits, facets])
+  }, [hits, convertItem])
   if (contextItems.length === 0) {
     return null
   }

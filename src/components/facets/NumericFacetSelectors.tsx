@@ -228,7 +228,7 @@ export const NumberFacetSelector = ({
         ? { min: selected.min / max, max: selected.max / max }
         : undefined,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selected],
+    [selected, max, min],
   )
   const sliderChanged = useCallback(
     (min: number, max: number) => {

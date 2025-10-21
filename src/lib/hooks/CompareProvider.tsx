@@ -71,7 +71,7 @@ export const CompareProvider = ({
       matchingFacetIds,
       diffWarning,
     }),
-    [items, matchingFacetIds],
+    [items, matchingFacetIds, diffWarning],
   )
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export const CompareProvider = ({
     setDiffWarning(uniqueFacets.size < allFacets.size * 0.3)
 
     setMatchingFacetIds(compareAllFacets ? allFacets : uniqueFacets)
-  }, [items])
+  }, [items, compareAllFacets])
 
   return (
     <CompareContext.Provider value={value}>

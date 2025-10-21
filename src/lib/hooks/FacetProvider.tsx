@@ -53,7 +53,7 @@ export const FacetProvider = ({
         clearTimeout(to)
       }
     }
-  }, [query])
+  }, [query, delay, facetsKey])
   useEffect(() => {
     if (facetsKey == null) {
       return
@@ -87,7 +87,7 @@ export const FacetProvider = ({
       setIsLoadingFacets(false)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [facetsKey])
+  }, [facetsKey, ignoreFacets, query])
 
   return (
     <FacetContext.Provider

@@ -135,16 +135,13 @@ export const QueryProvider = ({
     [],
   )
 
-  const setFilterTerm = useCallback(
-    (filter: string) => {
-      setQuery((prev) => ({
-        ...prev,
-        page: 0,
-        filter,
-      }))
-    },
-    [setQuery],
-  )
+  const setFilterTerm = useCallback((filter: string) => {
+    setQuery((prev) => ({
+      ...prev,
+      page: 0,
+      filter,
+    }))
+  }, [])
 
   useEffect(() => {
     setQueryHistory((prev) => {
@@ -188,7 +185,7 @@ export const QueryProvider = ({
           totalPages: Math.ceil((data.totalHits ?? 0) / (data.pageSize ?? 20)),
         }
       })
-  }, [query, virtualPage])
+  }, [query])
   useEffect(() => {
     if (!attachToHash) {
       return
@@ -205,7 +202,7 @@ export const QueryProvider = ({
     return () => {
       removeEventListener('hashchange', hashListener, false)
     }
-  }, [attachToHash])
+  }, [attachToHash, initialQuery])
 
   useEffect(() => {
     if (itemsKey == null) {
@@ -227,7 +224,7 @@ export const QueryProvider = ({
 
     setIsLoading(true)
 
-    api.streamItems(toQuery(query)).then((data) => {
+    api.streamItems(itemsKey).then((data) => {
       itemsCache.set(itemsKey, data?.items)
       setHits(data?.items ?? [])
       setQuery((prev) => ({
@@ -238,8 +235,7 @@ export const QueryProvider = ({
       setTotalHits(data?.totalHits ?? 0)
       setIsLoading(false)
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemsKey])
+  }, [itemsKey, attachToHash])
 
   return (
     <QueryContext.Provider

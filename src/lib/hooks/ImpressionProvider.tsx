@@ -19,19 +19,16 @@ export const ImpressionProvider = ({ children }: PropsWithChildren) => {
         })
       }
     },
-    [observer],
+    [],
   )
-  const unwatch = useCallback(
-    (ref: HTMLElement) => {
-      if (ref != null && observer.current) {
-        requestAnimationFrame(() => {
-          observer.current?.unobserve(ref)
-          watched.current.delete(ref)
-        })
-      }
-    },
-    [observer],
-  )
+  const unwatch = useCallback((ref: HTMLElement) => {
+    if (ref != null && observer.current) {
+      requestAnimationFrame(() => {
+        observer.current?.unobserve(ref)
+        watched.current.delete(ref)
+      })
+    }
+  }, [])
   useEffect(() => {
     //const impressions = new Set<number>();
     let toPush: BaseEcomEvent[] = []

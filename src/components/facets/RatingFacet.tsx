@@ -41,7 +41,7 @@ export const StarRatingFacetSelector = ({
         max: max,
       })
     },
-    [updateValue, selectedRating, max],
+    [updateValue, selectedRating, max, id, removeFilter],
   )
 
   const invalid = useMemo(() => {

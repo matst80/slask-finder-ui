@@ -32,7 +32,7 @@ export const PopoverMenu = ({
         button.removeEventListener('mousemove', onEnter)
       }
     }
-  }, [buttonRef])
+  }, [id])
   return (
     <>
       <button ref={buttonRef} popoverTarget={id}>

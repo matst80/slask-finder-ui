@@ -29,7 +29,7 @@ export const useThrottle = <T>(value: T, ms: number = 200) => {
         timeout.current = undefined
       }
     }
-  }, [value])
+  }, [value, ms])
 
   return state
 }

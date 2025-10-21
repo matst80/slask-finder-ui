@@ -116,7 +116,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, 'values'>) => {
       })),
     }
     return query
-  }, [selected])
+  }, [selected, selectedRange])
   const fields = useMemo(() => {
     return Object.entries(values)
       .map(([id, value]) => {

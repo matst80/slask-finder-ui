@@ -12,12 +12,15 @@ import { QuantityInput } from './QuantityInput'
 import { useBuilderContext } from './useBuilderContext'
 
 export const SelectedComponentItem = ({
-  componentId,
   position,
-  quantity = 1,
   maxQuantity,
-  ...item
-}: ItemWithComponentId & { position: number; maxQuantity: number }) => {
+  item,
+}: {
+  position: number
+  maxQuantity: number
+  item: ItemWithComponentId
+}) => {
+  const { quantity = 1, componentId } = item
   const { setSelectedItems } = useBuilderContext()
   const { watch } = useImpression()
   const navigate = useNavigate()

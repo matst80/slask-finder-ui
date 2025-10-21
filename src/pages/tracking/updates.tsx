@@ -10,7 +10,7 @@ export const UpdatedItems = () => {
       <h1 className="font-bold text-xl">Updated Items</h1>
       <div className="grid grid-cols-5 gap-5">
         {data?.map((item, i) => {
-          return <ResultItem key={`update-${i}`} {...item} position={i} />
+          return <ResultItem key={`update-${i}`} item={item} position={i} />
         })}
       </div>
     </div>

@@ -67,5 +67,5 @@ export interface MerchantUrls {
 }
 
 export interface Options {
-  additional_checkbox: any
+  additional_checkbox: unknown
 }

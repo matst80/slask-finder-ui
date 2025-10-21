@@ -414,11 +414,15 @@ const getSearchArguments = (args: unknown): SearchArgs => {
     if ('properties' in args) {
       console.log('props', args.properties)
       const { q, maxResults } = args.properties as {
-        [key: string]: { value: any }
+        q: { value: string }
+        maxResults: {
+          value: number
+        }
+        [key: string]: { value: unknown }
       }
       return {
         q: q.value ?? '*',
-        maxResults: maxResults.value ?? 20,
+        maxResults: maxResults?.value ?? 20,
       }
     }
     const { q, maxResults, string, range } = args as SearchArgs

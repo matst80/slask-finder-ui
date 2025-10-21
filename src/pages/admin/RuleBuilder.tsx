@@ -57,8 +57,11 @@ const itemProperties = [
 
 const FieldSelector = ({
   onChange,
-  ...selection
-}: ValueMatch & { onChange: (data: ValueMatch) => void }) => {
+  value,
+}: {
+  onChange: (data: ValueMatch) => void
+  value: ValueMatch
+}) => {
   const { data } = useFacetList()
   const items = useMemo<DropdownItem<ValueMatch>[]>(() => {
     return [
@@ -80,11 +83,11 @@ const FieldSelector = ({
   const [selectedValue, setSelectedValue] = useState<string | undefined>()
 
   useEffect(() => {
-    const { source } = selection
+    const { source } = value
     setSelectedValue(
-      source == 'fieldId' ? String(selection.fieldId) : selection.property,
+      source == 'fieldId' ? String(value.fieldId) : value.property,
     )
-  }, [selection])
+  }, [value])
 
   const selectedItem = useMemo(
     () => items.find((item) => item.key === selectedValue),
@@ -190,7 +193,7 @@ const NumberLimitRuleEditor = ({
       </p>
 
       <FieldSelector
-        {...rule}
+        value={rule}
         onChange={(data) => onChange({ ...rule, ...data })}
       />
 
@@ -271,7 +274,7 @@ const PercentMultiplierRuleEditor = ({
       </p>
 
       <FieldSelector
-        {...rule}
+        value={rule}
         onChange={(data) => onChange({ ...rule, ...data })}
       />
 
@@ -315,7 +318,7 @@ const MatchRuleEditor = ({ onChange, ...rule }: EditorProps<MatchRule>) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FieldSelector
-          {...rule}
+          value={rule}
           onChange={(data) => onChange({ ...rule, ...data })}
         />
 

@@ -60,7 +60,7 @@ export const useGeoLocation = () => {
         console.log('unable to get a location')
       })
     }
-  }, [])
+  }, [getCoarseLocation, location])
 
   return { location, getBrowserLocation, getCoarseLocation }
 }

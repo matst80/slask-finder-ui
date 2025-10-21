@@ -5,13 +5,16 @@ import { useTranslations } from './useTranslations'
 export const useClipboard = () => {
   const t = useTranslations()
   const { showNotification } = useNotifications()
-  return useCallback((content: string) => {
-    navigator.clipboard.writeText(content).then(() => {
-      showNotification({
-        variant: 'success',
-        message: t('common.copied', { content }),
-        title: t('common.copied_title'),
+  return useCallback(
+    (content: string) => {
+      navigator.clipboard.writeText(content).then(() => {
+        showNotification({
+          variant: 'success',
+          message: t('common.copied', { content }),
+          title: t('common.copied_title'),
+        })
       })
-    })
-  }, [])
+    },
+    [showNotification, t],
+  )
 }

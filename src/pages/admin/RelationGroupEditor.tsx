@@ -67,7 +67,7 @@ const FacetValueTagEditor = ({
     if (tags !== data) {
       onChange(tags)
     }
-  }, [tags])
+  }, [tags, data, onChange])
 
   return (
     <div className="flex gap-2">
@@ -458,7 +458,7 @@ const ArticleIdSelector = ({
     return () => {
       inputRef.current?.removeEventListener('change', changeHandler)
     }
-  }, [value])
+  }, [value, onChange])
 
   return (
     <div className="flex flex-col gap-4">

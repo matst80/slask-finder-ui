@@ -46,7 +46,7 @@ export const ShippingProvider = ({
         )
       }
     }
-  }, [deliveries])
+  }, [deliveries, options])
   useEffect(() => {
     if (id && !options.length) {
       setLoadingOptions(true)
@@ -65,7 +65,7 @@ export const ShippingProvider = ({
           setLoadingOptions(false)
         })
     }
-  }, [id])
+  }, [id, deliveries, options.length])
   const checkOptions = useCallback(
     (zip: string) => {
       if (id && zip) {
@@ -84,7 +84,7 @@ export const ShippingProvider = ({
           })
       }
     },
-    [id],
+    [id, deliveries],
   )
   const setDeliveryOption = useCallback(
     (optionId: string) => {
@@ -96,7 +96,7 @@ export const ShippingProvider = ({
         })
       }
     },
-    [id],
+    [id, mutate],
   )
   const value = useMemo(
     () => ({

@@ -18,7 +18,7 @@ const NoResults = () => {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0 scroll-snap-y"
       >
         {data?.map((item, idx) => (
-          <ResultItem key={item.id} {...item} position={idx} />
+          <ResultItem key={item.id} item={item} position={idx} />
         ))}
       </div>
       {/* {first && (
@@ -73,7 +73,9 @@ export const SearchResultList = () => {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0 scroll-snap-y"
       >
         <InfiniteHitList>
-          {(item) => <ResultItem key={item.id} {...item} />}
+          {({ item, position }) => (
+            <ResultItem key={item.id} item={item} position={position} />
+          )}
         </InfiniteHitList>
       </div>
     </ImpressionProvider>

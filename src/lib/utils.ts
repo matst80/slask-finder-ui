@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/** biome-ignore-all lint/suspicious/noExplicitAny: value extraction */
 import { useMemo } from 'react'
 import { getPrice } from '../utils'
 import {
@@ -146,7 +146,7 @@ export const getNestedProperty = <T extends BaseTranslationType>(
 }
 
 export function extractFromObject(
-  object: BaseTranslationType,
+  object: Record<string, unknown>,
   path: Array<string>,
   index = 0,
 ): string | undefined {
@@ -166,7 +166,7 @@ export function extractFromObject(
 
 export const replaceMustacheKeys = (
   text: string,
-  object?: Record<string, any>,
+  object?: Record<string, unknown>,
 ) =>
   object
     ? text.replace(/{{\s*([^}]+)\s*}}/g, (_, key) => {

@@ -44,10 +44,10 @@ const FacetCells = ({
 
 const AiChatForCompare = ({ items }: { items: Item[] }) => {
   const { data: facets } = useFacetMap()
-  const convertItem = useCallback(convertItemSimple(facets ?? {}), [facets])
+  const convertItem = useCallback(convertItemSimple(facets ?? {}), [])
   const contextItems = useMemo(() => {
     return items.map(convertItem).slice(0, 10)
-  }, [items, facets])
+  }, [items, convertItem])
   if (contextItems.length === 0) {
     return null
   }

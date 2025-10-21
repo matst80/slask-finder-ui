@@ -23,15 +23,19 @@ import { NextComponentButton } from './NextComponentButton'
 import { useBuilderContext } from './useBuilderContext'
 import { useBuilderQuery } from './useBuilderQuery'
 
-const ComponentItem = (
-  item: Item & {
-    componentId: RuleId
-    position: number
-    issues: Issue[]
-    isSelected: boolean
-  },
-) => {
-  const { position, issues, componentId, isSelected } = item
+const ComponentItem = ({
+  item,
+  position,
+  issues,
+  isSelected,
+  componentId,
+}: {
+  item: Item
+  componentId: RuleId
+  position: number
+  issues: Issue[]
+  isSelected: boolean
+}) => {
   const { watch } = useImpression()
   const { track } = useTracking()
   const ecomItem = useMemo(
@@ -111,15 +115,15 @@ const ComponentResultList = ({
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0 scroll-snap-y"
       >
         <InfiniteHitList>
-          {(item) => {
+          {({ item, position }) => {
             const issues = validator?.(item.values) ?? []
             const isSelected = selectedId === item.id
             return (
               <ComponentItem
                 key={item.id}
-                {...item}
+                item={item}
                 componentId={componentId}
-                position={item.position}
+                position={position}
                 issues={issues}
                 isSelected={isSelected}
               />

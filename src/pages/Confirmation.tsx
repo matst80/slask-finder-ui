@@ -24,7 +24,7 @@ export const Confirmation = () => {
         parentNode?.appendChild(newScriptTag)
       }
     }
-  }, [data, ref])
+  }, [data])
   return (
     <div>
       <div ref={ref} className="my-6">

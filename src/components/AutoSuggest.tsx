@@ -16,7 +16,7 @@ import { MIN_FUZZY_SCORE } from '../lib/hooks/SuggestionProvider'
 import type {
   QueryRefinement,
   SuggestedContent,
-  SuggestedProduct,
+  SuggestedProduct as SuggestedProductType,
   SuggestResultItem,
 } from '../lib/hooks/suggestionContext'
 import { SuggestQuery } from '../lib/hooks/suggestionUtils'
@@ -98,7 +98,9 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
     onOpen: () => {
       updatePosition()
     },
-    onClose: () => {},
+    onClose: () => {
+      //console.log("closed");
+    },
   })
   const { onSearch, onClear } = useMemo(
     () => ({
@@ -111,7 +113,7 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
         close()
       },
     }),
-    [props],
+    [props, close],
   )
   const parentRef = useArrowKeyNavigation<HTMLFieldSetElement>(
     '.suggest-result button',
@@ -157,7 +159,7 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
       }
       updatePosition()
     },
-    [suggestions, setTerm, smartQuery],
+    [suggestions, setTerm, smartQuery, onSearch, open, updatePosition],
   )
 
   // useEffect(() => {
@@ -196,7 +198,7 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
     return () => {
       globalThis.window.removeEventListener('hashchange', close)
     }
-  }, [])
+  }, [inputRef.current, isOpen, setTerm])
 
   return (
     <form
@@ -337,7 +339,7 @@ const SuggestionResults = ({
   )
 }
 
-const SuggestedProduct = (item: SuggestedProduct & { index: number }) => {
+const SuggestedProduct = (item: SuggestedProductType & { index: number }) => {
   const { id, title, img, values, stock } = item
   const { stockLevel, soldBy, isOutlet, grade, isOwn } = useProductData(values)
   const { track } = useTracking()
