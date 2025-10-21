@@ -4,7 +4,7 @@ import {
 } from '../lib/hooks/TrackingContext'
 
 type WindowWithDataLayer = Window & {
-  gtag?: (event: 'event' | 'config', ...args: any[]) => void
+  gtag?: (event: 'event' | 'config', ...args: unknown[]) => void
   dataLayer?: unknown[]
 }
 

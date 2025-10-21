@@ -6,14 +6,14 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { JsonView } from './tracking/JsonView'
-import { tools, availableFunctions, Tool } from './tools'
-import { toJson } from '../lib/datalayer/api'
-import { useFacetMap } from '../hooks/searchHooks'
-import { useAdmin } from '../hooks/appState'
-import { Loader } from '../components/Loader'
-import { Link } from 'react-router-dom'
 import Markdown from 'react-markdown'
+import { Link } from 'react-router-dom'
+import { Loader } from '../components/Loader'
+import { useAdmin } from '../hooks/appState'
+import { useFacetMap } from '../hooks/searchHooks'
+import { toJson } from '../lib/datalayer/api'
+import { availableFunctions, Tool, tools } from './tools'
+import { JsonView } from './tracking/JsonView'
 
 type Model =
   | 'llama3.2'
@@ -26,7 +26,7 @@ type Model =
 type ToolCall = {
   function: {
     name: string
-    arguments: Record<string, any>
+    arguments: Record<string, unknown>
   }
 }
 
@@ -81,6 +81,7 @@ export const AiShoppingProvider = ({
     setMessageReference(null)
   }, [])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reasons
   useEffect(() => {
     if (messageReference) {
       if (loading) {
@@ -116,7 +117,7 @@ export const AiShoppingProvider = ({
                   customTools.find((tool) => tool.function.name == name)?.tool
 
                 if (toCall) {
-                  await toCall(args as any, facets).then((content) => {
+                  await toCall(args, facets).then((content) => {
                     const message: Message = {
                       role: 'tool',
                       content,
@@ -138,7 +139,7 @@ export const AiShoppingProvider = ({
           })
       })
     }
-  }, [messageReference])
+  }, [messageReference, customTools, facets])
 
   return (
     <AiShopperContext.Provider
@@ -239,7 +240,10 @@ export const QueryInput = ({
   )
 }
 
-function splitTinking(content: string): { content: any; think: any } {
+function splitTinking(content: string): {
+  content: string
+  think: string | null
+} {
   const startIndex = content.indexOf('<think>')
   const endIndex = content.indexOf('</think>')
   if (startIndex !== -1 && endIndex !== -1) {
@@ -254,6 +258,7 @@ export const MessageList = () => {
   const { loading, messages } = useAiContext()
   const [isAdmin] = useAdmin()
   useEffect(() => {
+    if (messages.length === 0) return
     document.querySelector('.item-list > div:last-child')?.scrollIntoView({
       behavior: 'smooth',
       block: 'end',
@@ -295,7 +300,7 @@ export const MessageList = () => {
                 )
               }
             }
-          } catch (e) {
+          } catch (_) {
             // Ignore parsing errors
           }
 
