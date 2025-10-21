@@ -84,7 +84,7 @@ export const swedish = {
     hide_shipping: 'Dölj frakt',
     show_shipping: 'Välj frakt',
     enter_voucher_code: 'Ange kampanjkod',
-    no_vouchers: 'Inga kampanjkoder tillgängliga',
+    no_vouchers: 'Lägg till kampanjkod',
     adding: 'Läggs till...',
   },
   builder: {

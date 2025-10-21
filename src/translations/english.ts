@@ -84,7 +84,7 @@ export const english = {
     hide_shipping: 'Hide shipping',
     show_shipping: 'Show shipping',
     enter_voucher_code: 'Enter voucher code',
-    no_vouchers: 'No vouchers available',
+    no_vouchers: 'No vouchers added',
     adding: 'Adding to cart...',
   },
   builder: {
