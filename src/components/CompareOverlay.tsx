@@ -1,14 +1,14 @@
 import { MessageSquareMore, X } from 'lucide-react'
-import { useCompareContext } from '../lib/hooks/CompareProvider'
-import { cm, isDefined, makeImageUrl } from '../utils'
 import { useCallback, useMemo, useState } from 'react'
 import { useFacetMap } from '../hooks/searchHooks'
+import { useCompareContext } from '../lib/hooks/CompareProvider'
 import { FacetListItem, Item } from '../lib/types'
+import { matchValue } from '../lib/utils'
+import { AiShoppingProvider, MessageList, QueryInput } from '../pages/AiShopper'
+import { convertItemSimple } from '../pages/tools'
+import { cm, isDefined, makeImageUrl } from '../utils'
 import { ResultItemInner } from './ResultItem'
 import { Dialog } from './ui/dialog'
-import { matchValue } from '../lib/utils'
-import { convertItemSimple } from '../pages/tools'
-import { AiShoppingProvider, MessageList, QueryInput } from '../pages/AiShopper'
 
 const FacetCells = ({
   facet,

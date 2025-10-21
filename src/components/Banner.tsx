@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
-import { useRef, useState, useEffect } from 'react'
-import { Item } from '../lib/types'
+import { useEffect, useRef, useState } from 'react'
 import { useAddToCart } from '../hooks/cartHooks'
-import { toEcomTrackingEvent } from './toImpression'
+import { Item } from '../lib/types'
 import { makeImageUrl } from '../utils'
+import { toEcomTrackingEvent } from './toImpression'
 
 export const Banner = ({ item: data }: { item: Item }) => {
   const svgRef = useRef<SVGSVGElement>(null)

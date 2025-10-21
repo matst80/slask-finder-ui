@@ -1,10 +1,10 @@
-import { Outlet } from 'react-router-dom'
-import { BuilderProvider } from './BuilderProvider'
-import { componentRules, defaultComponentOrder } from './rules'
-import { ItemWithComponentId, RuleId } from './builder-types'
-import { PageContainer } from '../../PageContainer'
-import { useBuilderContext } from './useBuilderContext'
 import { useEffect } from 'react'
+import { Outlet } from 'react-router-dom'
+import { PageContainer } from '../../PageContainer'
+import { BuilderProvider } from './BuilderProvider'
+import { ItemWithComponentId, RuleId } from './builder-types'
+import { componentRules, defaultComponentOrder } from './rules'
+import { useBuilderContext } from './useBuilderContext'
 
 type LocalStorageData = {
   items: ItemWithComponentId[]

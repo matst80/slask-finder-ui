@@ -1,11 +1,11 @@
-import { useMemo } from 'react'
-import { ButtonLink } from '../../components/ui/button'
-import { useBuilderContext } from './useBuilderContext'
-import { useBuilderStep } from './useBuilderStep'
-import { Link } from 'react-router-dom'
 import { StepForward } from 'lucide-react'
+import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
+import { ButtonLink } from '../../components/ui/button'
 import { useTranslations } from '../../lib/hooks/useTranslations'
 import { RuleId } from './builder-types'
+import { useBuilderContext } from './useBuilderContext'
+import { useBuilderStep } from './useBuilderStep'
 
 export const NextComponentButton = ({
   componentId,

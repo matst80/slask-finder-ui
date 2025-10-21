@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { getCheckout } from '../lib/datalayer/cart-api'
 import { useCart } from '../hooks/cartHooks'
 import { trackEnterCheckout } from '../lib/datalayer/beacons'
+import { getCheckout } from '../lib/datalayer/cart-api'
 
 export const Checkout = () => {
   const ref = useRef<HTMLDivElement>(null)

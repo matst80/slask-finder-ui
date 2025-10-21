@@ -1,8 +1,8 @@
-import { MouseEvent, useEffect, useState } from 'react'
-import { cookieObject, setCookie } from './utils'
-import { Dialog } from './components/ui/dialog'
 import { atom, useAtom } from 'jotai'
+import { MouseEvent, useEffect, useState } from 'react'
 import { Button } from './components/ui/button'
+import { Dialog } from './components/ui/dialog'
+import { cookieObject, setCookie } from './utils'
 
 type CookieAcceptanceLevel = 'none' | 'all' | 'essential'
 

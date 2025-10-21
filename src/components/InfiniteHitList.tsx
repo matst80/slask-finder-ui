@@ -1,10 +1,10 @@
 import {
-  ReactNode,
-  useRef,
-  useEffect,
-  Fragment,
   createElement,
+  Fragment,
+  ReactNode,
   useCallback,
+  useEffect,
+  useRef,
 } from 'react'
 import { useQuery } from '../lib/hooks/useQuery'
 import { Item } from '../lib/types'

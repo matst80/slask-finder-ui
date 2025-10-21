@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
+import { isDefined } from '../../utils'
 import { ComponentId, SelectedAdditionalFilter } from './builder-types'
 import { useBuilderFilters } from './useBuilderFilters'
-import { isDefined } from '../../utils'
 
 export const useComponentFilters = (
   componentId?: ComponentId,

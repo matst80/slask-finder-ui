@@ -1,3 +1,4 @@
+import { ChevronUp, Lightbulb, Search, SearchIcon } from 'lucide-react'
 import {
   createElement,
   HTMLAttributes,
@@ -8,28 +9,27 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { ChevronUp, Lightbulb, Search, SearchIcon } from 'lucide-react'
-import { cm, makeImageUrl } from '../utils'
 import { useNavigate } from 'react-router-dom'
-import { StockBalloon } from './ResultItem'
-import { useSuggestions } from '../lib/hooks/useSuggestions'
-import { CmsPicture, ItemsQuery } from '../lib/types'
+import { useKeyFacetValuePopularity } from '../hooks/popularityHooks'
+import { queryFromHash } from '../hooks/searchHooks'
 import { MIN_FUZZY_SCORE } from '../lib/hooks/SuggestionProvider'
-import { SuggestQuery } from '../lib/hooks/suggestionUtils'
-import { useCursorPosition } from './useCursorPosition'
 import type {
   QueryRefinement,
   SuggestedContent,
   SuggestedProduct,
   SuggestResultItem,
 } from '../lib/hooks/suggestionContext'
-import { useKeyFacetValuePopularity } from '../hooks/popularityHooks'
+import { SuggestQuery } from '../lib/hooks/suggestionUtils'
 import { useTracking } from '../lib/hooks/TrackingContext'
-import { toEcomTrackingEvent } from './toImpression'
-import { useDropdownFocus } from './useDropdownFocus'
-import { useArrowKeyNavigation } from './useArrowKeyNavigation'
+import { useSuggestions } from '../lib/hooks/useSuggestions'
+import { CmsPicture, ItemsQuery } from '../lib/types'
 import { useProductData } from '../lib/utils'
-import { queryFromHash } from '../hooks/searchHooks'
+import { cm, makeImageUrl } from '../utils'
+import { StockBalloon } from './ResultItem'
+import { toEcomTrackingEvent } from './toImpression'
+import { useArrowKeyNavigation } from './useArrowKeyNavigation'
+import { useCursorPosition } from './useCursorPosition'
+import { useDropdownFocus } from './useDropdownFocus'
 
 const TrieSuggestions = ({
   toShow,

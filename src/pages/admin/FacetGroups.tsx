@@ -1,37 +1,35 @@
 import fuzzysort from 'fuzzysort'
-import { useState, useMemo } from 'react'
-import { useTranslations } from '../../lib/hooks/useTranslations'
-import { useFacetGroups, useFacetList } from '../../hooks/searchHooks'
-import { updateFacetGroups } from '../../lib/datalayer/api'
-import { useNotifications } from '../../components/ui-notifications/useNotifications'
-
-// UI Components
-import { Input } from '../../components/ui/input'
+// Icons
+import {
+  AlertCircle,
+  CheckCircle2,
+  Filter,
+  Layers,
+  Loader2,
+  Plus,
+  Save,
+  Search,
+} from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Badge } from '../../components/ui/badge'
 import { Button } from '../../components/ui/button'
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '../../components/ui/card'
+import { Checkbox } from '../../components/ui/checkbox'
+// UI Components
+import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { RadioGroup, RadioGroupItem } from '../../components/ui/radio-group'
-import { Checkbox } from '../../components/ui/checkbox'
-import { Badge } from '../../components/ui/badge'
 import { Separator } from '../../components/ui/separator'
-
-// Icons
-import {
-  Search,
-  CheckCircle2,
-  Save,
-  Plus,
-  Layers,
-  Filter,
-  AlertCircle,
-  Loader2,
-} from 'lucide-react'
+import { useNotifications } from '../../components/ui-notifications/useNotifications'
+import { useFacetGroups, useFacetList } from '../../hooks/searchHooks'
+import { updateFacetGroups } from '../../lib/datalayer/api'
+import { useTranslations } from '../../lib/hooks/useTranslations'
 
 export const FacetGroups = () => {
   const t = useTranslations()

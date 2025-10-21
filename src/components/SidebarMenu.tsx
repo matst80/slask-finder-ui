@@ -1,31 +1,31 @@
 import {
-  Menu,
-  X,
-  Search,
-  LayoutDashboard,
+  BarChart2,
+  Bell,
+  BotMessageSquare,
   Box,
   Edit,
-  BarChart2,
-  ShoppingCart,
+  LayoutDashboard,
   LoaderCircle,
-  User,
-  BotMessageSquare,
-  Watch,
+  Menu,
+  Search,
+  ShoppingCart,
   Speaker,
-  Bell,
+  User,
+  Watch,
+  X,
 } from 'lucide-react'
-import { useState, useEffect, useMemo } from 'react'
-import { Sidebar } from './ui/sidebar'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { useUser } from '../adminHooks'
+import { useCookieAcceptance } from '../CookieConsent'
+import { useAdmin } from '../hooks/appState'
+import { useFirebaseMessaging } from '../hooks/useFirebaseMessaging'
 import { useTranslations } from '../lib/hooks/useTranslations'
 import { TranslationKey } from '../translations/translations'
-import { Link, useLocation } from 'react-router-dom'
-import { LanguageSelector } from './LanguageSelector'
-import { useUser } from '../adminHooks'
-import { useAdmin } from '../hooks/appState'
-import { Button } from './ui/button'
 import { cm } from '../utils'
-import { useCookieAcceptance } from '../CookieConsent'
-import { useFirebaseMessaging } from '../hooks/useFirebaseMessaging'
+import { LanguageSelector } from './LanguageSelector'
+import { Button } from './ui/button'
+import { Sidebar } from './ui/sidebar'
 
 type NavigationItemType = {
   translationKey: TranslationKey

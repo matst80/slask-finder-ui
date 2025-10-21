@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { getLocation } from '../lib/datalayer/api'
 import { cookieObject, setCookie } from '../utils'
 import { YourLocation } from './map-utils'
-import { getLocation } from '../lib/datalayer/api'
 
 const getStoredLocation = (): YourLocation | null => {
   const { location } = cookieObject()

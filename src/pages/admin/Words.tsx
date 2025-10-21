@@ -1,16 +1,16 @@
-import useSWR from 'swr'
-import { getWordConfig, WordConfig } from '../../lib/datalayer/api'
-import useSWRMutation from 'swr/mutation'
-import { useState } from 'react'
-import { Input } from '../../components/ui/input'
-import { Button } from '../../components/ui/button'
 import { X } from 'lucide-react'
+import { useState } from 'react'
+import useSWR from 'swr'
+import useSWRMutation from 'swr/mutation'
+import { Button } from '../../components/ui/button'
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from '../../components/ui/card'
+import { Input } from '../../components/ui/input'
+import { getWordConfig, WordConfig } from '../../lib/datalayer/api'
 
 const useWordConfig = () => {
   return useSWR('/admin/words', getWordConfig, {

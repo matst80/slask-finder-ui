@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { useBuilderContext } from './useBuilderContext'
 import { useTranslations } from '../../lib/hooks/useTranslations'
 import { TranslationKey } from '../../translations/translations'
+import { useBuilderContext } from './useBuilderContext'
 
 export const ComponentSelectorBox = ({
   headerText,

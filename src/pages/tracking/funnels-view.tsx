@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 import { getFunnelData } from '../../lib/datalayer/api'
-import { FunnelChart } from './funnel-chart'
 import { useTranslations } from '../../lib/hooks/useTranslations'
+import { FunnelChart } from './funnel-chart'
 
 const byEvents = (a: { value: number }, b: { value: number }) => {
   return (b.value ?? 0) - (a.value ?? 0)

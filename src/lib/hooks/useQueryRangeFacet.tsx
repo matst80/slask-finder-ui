@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useContext } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import { isNumberFacet, NumberField } from '../types'
 import { QueryContext } from './queryContext'
 import { useFacets } from './useFacets'

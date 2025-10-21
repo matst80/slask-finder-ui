@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { ItemsQuery, Item, NumberField, HistoryQuery } from '../types'
+import { HistoryQuery, Item, ItemsQuery, NumberField } from '../types'
 
 export type AddPageResult = {
   currentPage: number

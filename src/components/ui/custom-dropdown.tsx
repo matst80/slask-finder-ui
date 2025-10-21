@@ -1,5 +1,5 @@
 import fuzzysort from 'fuzzysort'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export type DropdownItem<T> = {
   key: string

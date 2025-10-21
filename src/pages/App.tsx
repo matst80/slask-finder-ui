@@ -1,11 +1,11 @@
-import { useFocusTracking } from '../hooks/appState'
 import { AutoSuggest } from '../components/AutoSuggest'
 import { CurrentFilters } from '../components/CurrentFilters'
+import { Facets } from '../components/Facets'
 import { ResultHeader } from '../components/ResultHeader'
 import { SearchResultList } from '../components/SearchResultList'
-import { Facets } from '../components/Facets'
-import { SuggestionProvider } from '../lib/hooks/SuggestionProvider'
+import { useFocusTracking } from '../hooks/appState'
 import { FacetProvider } from '../lib/hooks/FacetProvider'
+import { SuggestionProvider } from '../lib/hooks/SuggestionProvider'
 import { useQuery } from '../lib/hooks/useQuery'
 
 function App() {

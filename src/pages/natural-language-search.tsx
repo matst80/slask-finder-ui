@@ -1,13 +1,13 @@
+import { Search } from 'lucide-react'
 import { useState } from 'react'
-import { Item } from '../lib/types'
-import { naturalSearch, submitDataSet } from '../lib/datalayer/api'
-import { Input } from '../components/ui/input'
-import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
 import { ResultItemInner } from '../components/ResultItem'
 import { Button } from '../components/ui/button'
-import { cm } from '../utils'
-import { Search } from 'lucide-react'
+import { Input } from '../components/ui/input'
 import { useNotifications } from '../components/ui-notifications/useNotifications'
+import { naturalSearch, submitDataSet } from '../lib/datalayer/api'
+import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
+import { Item } from '../lib/types'
+import { cm } from '../utils'
 
 const isComplete = (dataset: {
   positive?: string

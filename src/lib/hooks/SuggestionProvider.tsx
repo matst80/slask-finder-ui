@@ -1,26 +1,26 @@
 import fuzzysort from 'fuzzysort'
-import { useState, useEffect, useMemo, PropsWithChildren } from 'react'
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import { useFacetMap } from '../../hooks/searchHooks'
 
 import {
-  getPopularQueries,
   autoSuggestResponse,
+  getContentResults,
+  getPopularQueries,
   handleSuggestResponse,
   SuggestionResponse,
-  getContentResults,
 } from '../datalayer/api'
 import { trackSuggest } from '../datalayer/beacons'
 import { ContentRecord, ItemsQuery } from '../types'
-import {
-  convertPopularQueries,
-  FlatFacetValue,
-  SuggestQuery,
-} from './suggestionUtils'
 import {
   SuggestionConfig,
   SuggestionContext,
   SuggestResultItem,
 } from './suggestionContext'
+import {
+  convertPopularQueries,
+  FlatFacetValue,
+  SuggestQuery,
+} from './suggestionUtils'
 import { useThrottle } from './useThrottle'
 
 export const MIN_FUZZY_SCORE = 0.85

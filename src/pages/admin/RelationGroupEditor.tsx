@@ -1,3 +1,5 @@
+import fuzzysort from 'fuzzysort'
+import { ChevronUp, PlusIcon, TrashIcon } from 'lucide-react'
 import {
   PropsWithChildren,
   useEffect,
@@ -6,22 +8,20 @@ import {
   useRef,
   useState,
 } from 'react'
+import { useFieldValues, useRelationGroupsMutation } from '../../adminHooks'
+import { QueryPreview } from '../../components/QueryPreview'
+import { Button } from '../../components/ui/button'
+import { Input } from '../../components/ui/input'
+import { useArrowKeyNavigation } from '../../components/useArrowKeyNavigation'
+import { useDropdownFocus } from '../../components/useDropdownFocus'
 import { useAdminRelationGroups, useFacetMap } from '../../hooks/searchHooks'
+import { useGroupDesigner } from '../../lib/hooks/GroupDesignerProvider'
 import {
   FacetListItem,
   Relation,
   RelationGroup,
   RelationMatch,
 } from '../../lib/types'
-import { Button } from '../../components/ui/button'
-import { useFieldValues, useRelationGroupsMutation } from '../../adminHooks'
-import { PlusIcon, TrashIcon, ChevronUp } from 'lucide-react'
-import fuzzysort from 'fuzzysort'
-import { Input } from '../../components/ui/input'
-import { QueryPreview } from '../../components/QueryPreview'
-import { useDropdownFocus } from '../../components/useDropdownFocus'
-import { useArrowKeyNavigation } from '../../components/useArrowKeyNavigation'
-import { useGroupDesigner } from '../../lib/hooks/GroupDesignerProvider'
 
 const FacetValueTagEditor = ({
   data,

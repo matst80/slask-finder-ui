@@ -1,4 +1,7 @@
+import { useState } from 'react'
 import useSWR from 'swr'
+import useSWRMutation from 'swr/mutation'
+import { useNotifications } from './components/ui-notifications/useNotifications'
 import {
   cleanFields,
   getFacets,
@@ -12,10 +15,7 @@ import {
   updatePopularity,
   updateRelations,
 } from './lib/datalayer/api'
-import { useState } from 'react'
-import useSWRMutation from 'swr/mutation'
 import { RelationGroup } from './lib/types'
-import { useNotifications } from './components/ui-notifications/useNotifications'
 
 export const useFieldValues = (id: string | number) =>
   useSWR(`field-values/${id}`, () => getKeyFieldsValues(id))

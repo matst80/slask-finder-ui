@@ -1,6 +1,6 @@
 import { createContext } from 'react'
 
-import { Suggestion, Item, ItemsQuery, ContentRecord } from '../types'
+import { ContentRecord, Item, ItemsQuery, Suggestion } from '../types'
 import { FlatFacetValue, SuggestQuery } from './suggestionUtils'
 
 type SuggestionProviderType = {

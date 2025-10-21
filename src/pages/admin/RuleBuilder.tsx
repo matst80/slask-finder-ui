@@ -1,26 +1,26 @@
 import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
-import { useFacetList } from '../../hooks/searchHooks'
-import { getPopularityRules, setPopularityRules } from '../../lib/datalayer/api'
 import useSWR from 'swr'
-import {
-  Rule,
-  MatchRule,
-  DiscountRule,
-  ruleTypes,
-  ValueMatch,
-  OutOfStockRule,
-  NumberLimitRule,
-  PercentMultiplierRule,
-  RatingRule,
-  Rules,
-  NumberComparitor,
-} from '../../lib/types'
 import useSWRMutation from 'swr/mutation'
 import {
   CustomDropdown,
   DropdownItem,
 } from '../../components/ui/custom-dropdown'
 import { Input } from '../../components/ui/input'
+import { useFacetList } from '../../hooks/searchHooks'
+import { getPopularityRules, setPopularityRules } from '../../lib/datalayer/api'
+import {
+  DiscountRule,
+  MatchRule,
+  NumberComparitor,
+  NumberLimitRule,
+  OutOfStockRule,
+  PercentMultiplierRule,
+  RatingRule,
+  Rule,
+  Rules,
+  ruleTypes,
+  ValueMatch,
+} from '../../lib/types'
 
 type EditorProps<T extends Rule> = T & {
   onChange: (data: T) => void

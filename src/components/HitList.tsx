@@ -1,6 +1,6 @@
-import { ReactNode, Fragment } from 'react'
-import { Item } from '../lib/types'
+import { Fragment, ReactNode } from 'react'
 import { useQuery } from '../lib/hooks/useQuery'
+import { Item } from '../lib/types'
 
 export const HitList = <T extends { item: Item }>({
   children,

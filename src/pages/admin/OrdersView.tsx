@@ -1,7 +1,7 @@
 import useSWR from 'swr'
+import { PriceValue } from '../../components/Price'
 import { toJson } from '../../lib/datalayer/api'
 import { Order } from './order-types'
-import { PriceValue } from '../../components/Price'
 
 const OrderItem = ({ order }: { order: Order }) => {
   const { order_id, order_amount, status, billing_address } = order

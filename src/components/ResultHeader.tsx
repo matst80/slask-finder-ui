@@ -1,14 +1,14 @@
-import { PropsWithChildren, useCallback, useMemo, useState } from 'react'
-import { Sorting } from './Sorting'
-import { useQuery } from '../lib/hooks/useQuery'
-import { FilterQuery } from './FilterQuery'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import { Button } from './ui/button'
 import { BotMessageSquare } from 'lucide-react'
-import { Sidebar } from './ui/sidebar'
+import { PropsWithChildren, useCallback, useMemo, useState } from 'react'
 import { useFacetMap } from '../hooks/searchHooks'
-import { convertItemSimple } from '../pages/tools'
+import { useQuery } from '../lib/hooks/useQuery'
+import { useTranslations } from '../lib/hooks/useTranslations'
 import { AiShoppingProvider, MessageList, QueryInput } from '../pages/AiShopper'
+import { convertItemSimple } from '../pages/tools'
+import { FilterQuery } from './FilterQuery'
+import { Sorting } from './Sorting'
+import { Button } from './ui/button'
+import { Sidebar } from './ui/sidebar'
 
 export const TotalResultText = ({
   className = 'md:text-2xl font-bold',

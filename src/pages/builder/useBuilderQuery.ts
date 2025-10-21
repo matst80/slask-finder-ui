@@ -1,9 +1,9 @@
 import { useContext, useMemo } from 'react'
-import { BuilderContext } from './builder-context'
-import { fixSingleArray, isRangeFilter, isStringFilter } from './builder-utils'
 import { FilteringQuery } from '../../lib/types'
-import { useComponentFilters } from './useComponentFilters'
+import { BuilderContext } from './builder-context'
 import { ComponentId } from './builder-types'
+import { fixSingleArray, isRangeFilter, isStringFilter } from './builder-utils'
+import { useComponentFilters } from './useComponentFilters'
 
 export const useBuilderQuery = (selectedComponentId?: ComponentId) => {
   const ctx = useContext(BuilderContext)

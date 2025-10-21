@@ -1,16 +1,16 @@
-import { Link, Edit, Trash } from 'lucide-react'
+import { Edit, Link, Trash } from 'lucide-react'
+import { Loader } from '../../components/Loader'
 import { Button } from '../../components/ui/button'
 import { Checkbox } from '../../components/ui/checkbox'
 import {
   Table,
-  TableHeader,
-  TableRow,
-  TableHead,
   TableBody,
   TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '../../components/ui/table'
 import { useQuery } from '../../lib/hooks/useQuery'
-import { Loader } from '../../components/Loader'
 import { ValueMap } from '../../lib/types'
 
 export const TableSearchResultList = () => {

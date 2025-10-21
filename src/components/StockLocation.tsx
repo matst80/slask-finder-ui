@@ -1,10 +1,10 @@
 import { Fragment, useState } from 'react'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import { StoreWithStock } from './ItemDetails'
-import { BaseEcomEvent, Store } from '../lib/types'
 import { useAddToCart } from '../hooks/cartHooks'
-import { Button } from './ui/button'
 import { useFavouriteStore } from '../hooks/useFavouriteStore'
+import { useTranslations } from '../lib/hooks/useTranslations'
+import { BaseEcomEvent, Store } from '../lib/types'
+import { StoreWithStock } from './ItemDetails'
+import { Button } from './ui/button'
 
 const weekdayDateMap = {
   Mon: new Date('2020-01-06T00:00:00.000Z'),

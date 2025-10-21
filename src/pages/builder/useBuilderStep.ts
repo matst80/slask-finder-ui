@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { useBuilderContext } from './useBuilderContext'
 import { isDefined } from '../../utils'
 import { Rule, RuleId } from './builder-types'
+import { useBuilderContext } from './useBuilderContext'
 
 export const useBuilderStep = (componentId?: RuleId) => {
   const { selectedItems, order, rules } = useBuilderContext()

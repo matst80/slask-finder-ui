@@ -1,3 +1,12 @@
+import fuzzysort from 'fuzzysort'
+import {
+  ChevronDown,
+  ChevronUp,
+  EyeOffIcon,
+  FilterIcon,
+  SearchIcon,
+  XIcon,
+} from 'lucide-react'
 import { useMemo, useState } from 'react'
 import {
   useAdminFacets,
@@ -5,24 +14,15 @@ import {
   useFieldValues,
   useUpdateFacet,
 } from '../../adminHooks'
-import fuzzysort from 'fuzzysort'
-import { byPriority } from '../../utils'
+import { Loader } from '../../components/Loader'
 import { Button, ButtonLink } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
-import {
-  FilterIcon,
-  SearchIcon,
-  ChevronDown,
-  ChevronUp,
-  XIcon,
-  EyeOffIcon,
-} from 'lucide-react'
-import { FacetListItem } from '../../lib/types'
-import { getPossibleRelations } from '../../lib/datalayer/api'
 import { useNotifications } from '../../components/ui-notifications/useNotifications'
 import { useFacetGroups } from '../../hooks/searchHooks'
-import { Loader } from '../../components/Loader'
+import { getPossibleRelations } from '../../lib/datalayer/api'
+import { FacetListItem } from '../../lib/types'
 import { queryToHash } from '../../lib/utils'
+import { byPriority } from '../../utils'
 
 type KeyValues =
   | [
@@ -41,9 +41,9 @@ const isKeyValue = (
     data != null &&
     typeof data === 'object' &&
     'value' in data &&
-    typeof (data as any).value === 'string' &&
+    typeof data.value === 'string' &&
     'count' in data &&
-    typeof (data as any).count === 'number'
+    typeof data.count === 'number'
   )
 }
 

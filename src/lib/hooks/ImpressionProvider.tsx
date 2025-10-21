@@ -1,7 +1,7 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from 'react'
+import { BaseEcomEvent } from '../types'
 import { ImpressionContext } from './ImpressionContext'
 import { useTracking } from './TrackingContext'
-import { BaseEcomEvent } from '../types'
 
 export const ImpressionProvider = ({ children }: PropsWithChildren) => {
   const { track } = useTracking()

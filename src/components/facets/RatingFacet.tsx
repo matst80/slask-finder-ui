@@ -1,8 +1,8 @@
 import { ChevronUp, Star } from 'lucide-react'
-import { useState, useMemo, useCallback } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useQueryRangeFacet } from '../../lib/hooks/useQueryRangeFacet'
 import { NumberFacet } from '../../lib/types'
 import { cm } from '../../utils'
-import { useQueryRangeFacet } from '../../lib/hooks/useQueryRangeFacet'
 
 export const StarRatingFacetSelector = ({
   id,

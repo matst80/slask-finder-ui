@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Plus, Minus } from 'lucide-react'
+import { Minus, Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Button } from '../../components/ui/button'
 
 interface QuantityInputProps {

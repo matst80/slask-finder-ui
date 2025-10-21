@@ -1,10 +1,10 @@
-import { ChevronUp, Star } from 'lucide-react'
-import { useState, useMemo } from 'react'
-import { KeyFacet } from '../../lib/types'
-import { useQueryKeyFacet } from '../../lib/hooks/useQueryKeyFacet'
-import { cm } from '../../utils'
-import { useKeyFacetValuePopularity } from '../../hooks/popularityHooks'
 import fuzzysort from 'fuzzysort'
+import { ChevronUp, Star } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { useKeyFacetValuePopularity } from '../../hooks/popularityHooks'
+import { useQueryKeyFacet } from '../../lib/hooks/useQueryKeyFacet'
+import { KeyFacet } from '../../lib/types'
+import { cm } from '../../utils'
 
 const toSorted = (values: Record<string, number>, selected: Set<string>) =>
   Object.entries(values)

@@ -7,11 +7,11 @@ import {
   useState,
 } from 'react'
 import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
 import { useCart } from '../hooks/cartHooks'
 import { toJson } from '../lib/datalayer/api'
-import { Label } from '../components/ui/label'
 import { isDefined } from '../utils'
-import { ShippingOption, CheckoutTexts, Day, TimeRange } from './shipping-types'
+import { CheckoutTexts, Day, ShippingOption, TimeRange } from './shipping-types'
 
 type ShippingContextProps = {
   options: ShippingOption[]

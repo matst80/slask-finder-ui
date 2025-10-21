@@ -1,6 +1,6 @@
 import { useQueryKeyFacet } from '../../lib/hooks/useQueryKeyFacet'
 import { KeyFacet } from '../../lib/types'
-import { colourNameToHex, cm } from '../../utils'
+import { cm, colourNameToHex } from '../../utils'
 
 export const ColorFacetSelector = ({ id, result: { values } }: KeyFacet) => {
   const { filter: keyFilters, addValue, removeValue } = useQueryKeyFacet(id)

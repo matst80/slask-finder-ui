@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { getPrometheusQueryUrl, getPrometheusData } from '../lib/datalayer/api'
+import { getPrometheusData, getPrometheusQueryUrl } from '../lib/datalayer/api'
 import type { MetricsData, MetricWithValues, Series } from '../lib/types'
 
 export const useMetricsQuery = (query: string, refresh = 5) => {

@@ -6,22 +6,22 @@ import {
   useRef,
   useState,
 } from 'react'
-import * as api from '../datalayer/api'
-import {
-  Item,
-  ItemsQuery,
-  isNumberValue,
-  NumberField,
-  HistoryQuery,
-} from '../types'
 import {
   facetQueryToHash,
   queryFromHash,
   queryToHash,
   toQuery,
 } from '../../hooks/searchHooks'
-import { mergeFilters } from './queryUtils'
+import * as api from '../datalayer/api'
+import {
+  HistoryQuery,
+  Item,
+  ItemsQuery,
+  isNumberValue,
+  NumberField,
+} from '../types'
 import { AddPageResult, QueryContext } from './queryContext'
+import { mergeFilters } from './queryUtils'
 
 const itemsCache = new Map<string, Item[]>()
 

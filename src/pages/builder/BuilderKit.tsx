@@ -1,13 +1,13 @@
 import { useEffect, useMemo } from 'react'
 import { getRawData } from '../../lib/datalayer/api'
-import { componentRules } from './rules'
-import { flattenComponents } from './builder-utils'
-import { Item } from '../../lib/types'
-import { Component, ItemWithComponentId } from './builder-types'
-import { useBuilderContext } from './useBuilderContext'
 import { ImpressionProvider } from '../../lib/hooks/ImpressionProvider'
-import { SelectedComponentItem } from './SelectedComponentItem'
+import { Item } from '../../lib/types'
 import { matchValue } from '../../lib/utils'
+import { Component, ItemWithComponentId } from './builder-types'
+import { flattenComponents } from './builder-utils'
+import { componentRules } from './rules'
+import { SelectedComponentItem } from './SelectedComponentItem'
+import { useBuilderContext } from './useBuilderContext'
 
 const itemIds = [841468, 883821, 861201, 842510, 842804, 854270, 519763, 855844]
 

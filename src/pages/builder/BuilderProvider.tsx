@@ -1,4 +1,4 @@
-import { PropsWithChildren, useState, useMemo } from 'react'
+import { PropsWithChildren, useMemo, useState } from 'react'
 import { BuilderContext } from './builder-context'
 import {
   Component,
@@ -7,8 +7,8 @@ import {
   Rule,
   RuleId,
 } from './builder-types'
-import { defaultComponentOrder } from './rules'
 import { flattenComponents } from './builder-utils'
+import { defaultComponentOrder } from './rules'
 
 type BuilderProps = {
   initialItems?: ItemWithComponentId[]

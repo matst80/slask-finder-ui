@@ -1,9 +1,9 @@
-import useSWR from 'swr'
-import { getTrackingPopularity } from '../../lib/datalayer/api'
-import { useItemData } from '../../hooks/trackingHooks'
-import { makeImageUrl } from '../../utils'
-import { useTranslations } from '../../lib/hooks/useTranslations'
 import { Link } from 'react-router-dom'
+import useSWR from 'swr'
+import { useItemData } from '../../hooks/trackingHooks'
+import { getTrackingPopularity } from '../../lib/datalayer/api'
+import { useTranslations } from '../../lib/hooks/useTranslations'
+import { makeImageUrl } from '../../utils'
 
 const PopularItem = ({ itemId, value }: { itemId: number; value: number }) => {
   const { data } = useItemData(itemId)

@@ -1,7 +1,18 @@
+import {
+  InfoIcon,
+  ListFilterPlus,
+  PlugZapIcon,
+  PlusIcon,
+  Search,
+} from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdmin } from '../hooks/appState'
 import { queryToHash, useFacetGroups, useFacetMap } from '../hooks/searchHooks'
+import { useGroupDesigner } from '../lib/hooks/GroupDesignerProvider'
+import { QueryProvider } from '../lib/hooks/QueryProvider'
+import { useClipboard } from '../lib/hooks/useClipboard'
+import { useTranslations } from '../lib/hooks/useTranslations'
 import {
   FacetGroup,
   FacetListItem,
@@ -10,21 +21,10 @@ import {
   RelationGroup,
   RelationMatch,
 } from '../lib/types'
-import { isDefined, byPriority, cm } from '../utils'
-import {
-  InfoIcon,
-  ListFilterPlus,
-  PlugZapIcon,
-  PlusIcon,
-  Search,
-} from 'lucide-react'
-import { QueryProvider } from '../lib/hooks/QueryProvider'
-import { TotalResultText } from './ResultHeader'
+import { byPriority, cm, isDefined } from '../utils'
 import { QueryUpdater } from './QueryMerger'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import { useClipboard } from '../lib/hooks/useClipboard'
+import { TotalResultText } from './ResultHeader'
 import { Tooltip } from './Tooltip'
-import { useGroupDesigner } from '../lib/hooks/GroupDesignerProvider'
 import { useNotifications } from './ui-notifications/useNotifications'
 
 const ignoreFaceIds = [

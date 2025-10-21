@@ -1,8 +1,8 @@
 import { useCallback, useContext } from 'react'
-import { translationContext } from './translationContext'
+import { Translations } from '../../translations/translations'
 import { PathInto } from '../types'
 import { extractFromObject, replaceMustacheKeys } from '../utils'
-import { Translations } from '../../translations/translations'
+import { translationContext } from './translationContext'
 
 export const useTranslations = () => {
   const translations = useContext(translationContext)

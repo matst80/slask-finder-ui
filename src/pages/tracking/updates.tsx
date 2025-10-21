@@ -1,6 +1,6 @@
 import useSWR from 'swr'
-import { getTrackingUpdates } from '../../lib/datalayer/api'
 import { ResultItem } from '../../components/ResultItem'
+import { getTrackingUpdates } from '../../lib/datalayer/api'
 
 export const UpdatedItems = () => {
   const { data } = useSWR('/api/updated-items', getTrackingUpdates)

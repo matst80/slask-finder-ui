@@ -1,14 +1,14 @@
-import useSWR from 'swr'
-import { toJson } from '../../lib/datalayer/api'
 import { CheckCircle2 } from 'lucide-react'
+import { useState } from 'react'
+import useSWR from 'swr'
+import { TimeAgo } from '../../components/TimeAgo'
 import {
   Card,
+  CardContent,
   CardHeader,
   CardTitle,
-  CardContent,
 } from '../../components/ui/card'
-import { TimeAgo } from '../../components/TimeAgo'
-import { useState } from 'react'
+import { toJson } from '../../lib/datalayer/api'
 import { JsonView } from './JsonView'
 
 type CspIssue = {

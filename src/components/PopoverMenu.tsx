@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode, useId, useRef, useEffect } from 'react'
+import { PropsWithChildren, ReactNode, useEffect, useId, useRef } from 'react'
 
 export const PopoverMenu = ({
   popover,

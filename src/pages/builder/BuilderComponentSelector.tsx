@@ -1,7 +1,7 @@
 import { useLoaderData, useNavigate } from 'react-router-dom'
+import { ComponentSelectorBox } from './BuilderStartPage'
 import { Rule } from './builder-types'
 import { useBuilderContext } from './useBuilderContext'
-import { ComponentSelectorBox } from './BuilderStartPage'
 
 export const BuilderComponentSelector = () => {
   const component = useLoaderData() as Rule

@@ -83,7 +83,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,txt}'],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/slask-finder\.tornberg\.me\/api\/.*/i,
+            urlPattern: /^http.*\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',

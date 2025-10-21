@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
 import { getMessaging, getToken, onMessage } from 'firebase/messaging'
-import firebaseApp from '../firebase'
+import { useEffect, useState } from 'react'
 import { useNotifications } from '../components/ui-notifications/useNotifications'
+import firebaseApp from '../firebase'
 
 // You need to generate VAPID keys in your Firebase project settings
 const VAPID_KEY =

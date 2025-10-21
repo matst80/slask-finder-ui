@@ -1,13 +1,13 @@
+import { MapPin } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { useStores } from '../lib/datalayer/stores'
+import { useTranslations } from '../lib/hooks/useTranslations'
 import { BaseEcomEvent, StockData } from '../lib/types'
 import { isDefined } from '../utils'
+import { StoreWithStock } from './ItemDetails'
+import { calculateDistance } from './map-utils'
 import { StockLocation } from './StockLocation'
 import { useGeoLocation } from './useGeoLocation'
-import { calculateDistance } from './map-utils'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import { useStores } from '../lib/datalayer/stores'
-import { StoreWithStock } from './ItemDetails'
-import { MapPin } from 'lucide-react'
 
 export const StockList = ({
   stock,

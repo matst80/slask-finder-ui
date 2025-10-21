@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { X, Download, Smartphone } from 'lucide-react'
+import { Download, Smartphone, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]

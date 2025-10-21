@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { SelectedAdditionalFilter } from './builder-types'
-import { GPU, CPU, PSU } from './rules'
+import { CPU, GPU, PSU } from './rules'
 import { useBuilderContext } from './useBuilderContext'
 import { useRecommendedWatt } from './useRecommendedWatt'
 

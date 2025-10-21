@@ -1,8 +1,8 @@
+import { useMemo } from 'react'
 import useSWR from 'swr'
+import { useFacetMap } from '../../hooks/searchHooks'
 import { getEmptyTrackingQueries } from '../../lib/datalayer/api'
 import { useTranslations } from '../../lib/hooks/useTranslations'
-import { useFacetMap } from '../../hooks/searchHooks'
-import { useMemo } from 'react'
 import { isDefined } from '../../utils'
 
 export const EmptyQueriesView = () => {

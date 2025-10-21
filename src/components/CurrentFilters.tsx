@@ -1,11 +1,11 @@
-import { useMemo } from 'react'
 import { X } from 'lucide-react'
-import { FacetListItem, Field, isNumberValue } from '../lib/types'
-import { useFacetMap } from '../hooks/searchHooks'
-import { useQuery } from '../lib/hooks/useQuery'
-import { isDefined } from '../utils'
+import { useMemo } from 'react'
 import { useAdmin } from '../hooks/appState'
+import { useFacetMap } from '../hooks/searchHooks'
 import { useStores } from '../lib/datalayer/stores'
+import { useQuery } from '../lib/hooks/useQuery'
+import { FacetListItem, Field, isNumberValue } from '../lib/types'
+import { isDefined } from '../utils'
 
 function toFilter(facets?: Record<number, FacetListItem>, hideHidden = true) {
   return (data: Field) => {

@@ -4,10 +4,10 @@ import {
   getRelated,
   getYourPopularItems,
 } from '../lib/datalayer/api'
-import { FacetListItem, Item } from '../lib/types'
-import { isDefined, makeImageUrl } from '../utils'
 import { addToCart, getCart, removeFromCart } from '../lib/datalayer/cart-api'
 import { addProductToCompare } from '../lib/hooks/CompareProvider'
+import { FacetListItem, Item } from '../lib/types'
+import { isDefined, makeImageUrl } from '../utils'
 
 type Parameter =
   | {

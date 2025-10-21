@@ -1,13 +1,13 @@
 import {
-  ArrowUp,
-  ArrowDown,
-  Search,
-  Layers,
   Activity,
-  MemoryStick,
+  ArrowDown,
+  ArrowUp,
   Cpu,
-  RefreshCw,
+  Layers,
   Lightbulb,
+  MemoryStick,
+  RefreshCw,
+  Search,
 } from 'lucide-react'
 import { useDefaultMetricsQuery } from '../hooks/metricsHooks'
 import { useTranslations } from '../lib/hooks/useTranslations'

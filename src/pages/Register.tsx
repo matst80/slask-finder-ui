@@ -1,22 +1,22 @@
-import { useState } from 'react'
-import { useWebAuthn } from '../components/useWebAuthn'
-import { useUser } from '../adminHooks'
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from '../components/ui/card'
-import { Button } from '../components/ui/button'
-import {
+  AlertCircle,
+  CheckCircle,
   KeyRound,
   Shield,
   UserCheck,
-  AlertCircle,
-  CheckCircle,
 } from 'lucide-react'
+import { useState } from 'react'
+import { useUser } from '../adminHooks'
+import { Button } from '../components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card'
+import { useWebAuthn } from '../components/useWebAuthn'
 
 export default function Register() {
   const { initiateRegistration, isSupported } = useWebAuthn()

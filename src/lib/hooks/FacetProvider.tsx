@@ -1,10 +1,10 @@
 import { PropsWithChildren, useEffect, useState } from 'react'
-import { useQuery } from './useQuery'
-import { Facet, KeyFacet, isKeyFacet } from '../types'
-import { filteringQueryToHash } from '../utils'
-import { FacetContext } from './facetContext'
 import { toQuery } from '../../hooks/searchHooks'
 import * as api from '../datalayer/api'
+import { Facet, isKeyFacet, KeyFacet } from '../types'
+import { filteringQueryToHash } from '../utils'
+import { FacetContext } from './facetContext'
+import { useQuery } from './useQuery'
 
 const facetCache = new Map<string, Facet[]>()
 

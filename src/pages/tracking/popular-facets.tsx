@@ -1,10 +1,10 @@
-import useSWR from 'swr'
-import { getTrackingFieldPopularity } from '../../lib/datalayer/api'
-import { useFacetMap } from '../../hooks/searchHooks'
 import { useMemo } from 'react'
-import { isDefined } from '../../utils'
+import useSWR from 'swr'
 import { FacetCard } from '../../components/FacetCard'
+import { useFacetMap } from '../../hooks/searchHooks'
+import { getTrackingFieldPopularity } from '../../lib/datalayer/api'
 import { useTranslations } from '../../lib/hooks/useTranslations'
+import { isDefined } from '../../utils'
 
 export const PopularFacetsView = () => {
   const { data } = useSWR('/api/facets', getTrackingFieldPopularity)

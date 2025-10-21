@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useContext } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import { QueryContext } from './queryContext'
 import { useFacets } from './useFacets'
 

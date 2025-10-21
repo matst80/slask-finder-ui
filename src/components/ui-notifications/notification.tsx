@@ -1,9 +1,9 @@
 'use client'
 
+import { AlertCircle, AlertTriangle, CheckCircle, Info, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react'
-import type { NotificationType } from './types'
 import { cm } from '../../utils'
+import type { NotificationType } from './types'
 
 interface NotificationProps {
   notification: NotificationType

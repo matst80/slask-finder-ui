@@ -1,9 +1,9 @@
 import { ChevronUp } from 'lucide-react'
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useQueryRangeFacet } from '../../lib/hooks/useQueryRangeFacet'
 import { NumberFacet } from '../../lib/types'
 import { cm, converters } from '../../utils'
 import { Slider } from './Slider'
-import { useQueryRangeFacet } from '../../lib/hooks/useQueryRangeFacet'
 
 type SelectedRange = {
   min: number

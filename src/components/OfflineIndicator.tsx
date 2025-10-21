@@ -1,4 +1,4 @@
-import { WifiOff, Wifi } from 'lucide-react'
+import { Wifi, WifiOff } from 'lucide-react'
 import { usePWA } from '../hooks/usePWA'
 
 export const OfflineIndicator = () => {

@@ -1,10 +1,10 @@
-import { Star, Save } from 'lucide-react'
-import { useState, useMemo, useCallback } from 'react'
+import { Save, Star } from 'lucide-react'
+import { useCallback, useMemo, useState } from 'react'
+import { useAdmin } from '../hooks/appState'
 import {
   useItemsPopularity,
   useUpdatePopularity,
 } from '../hooks/popularityHooks'
-import { useAdmin } from '../hooks/appState'
 
 const useItemPopularity = (id: string) => {
   const { data: popularity, mutate } = useItemsPopularity()

@@ -1,14 +1,14 @@
+import { Edit, Trash2, UserPlus } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
-import { useState, useEffect } from 'react'
-import { getUsers, updateUser, deleteUser } from '../../lib/datalayer/api'
-import { User, UserUpdateRequest } from '../../lib/types'
-import { Button } from '../../components/ui/button'
-import { Input } from '../../components/ui/input'
-import { Dialog } from '../../components/ui/dialog'
-import { Card, CardContent, CardHeader } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
-import { Trash2, Edit, UserPlus } from 'lucide-react'
+import { Button } from '../../components/ui/button'
+import { Card, CardContent, CardHeader } from '../../components/ui/card'
+import { Dialog } from '../../components/ui/dialog'
+import { Input } from '../../components/ui/input'
+import { deleteUser, getUsers, updateUser } from '../../lib/datalayer/api'
+import { User, UserUpdateRequest } from '../../lib/types'
 
 const useUsers = () => {
   return useSWR('/admin/users', getUsers, {

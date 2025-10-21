@@ -1,10 +1,10 @@
 'use client'
 
 import type React from 'react'
-import { useState, useCallback } from 'react'
+import { useCallback, useState } from 'react'
+import { NotificationContext } from './NotificationContext'
 import { NotificationsContainer } from './notifications-container'
 import type { NotificationType } from './types'
-import { NotificationContext } from './NotificationContext'
 
 export type NotificationContextType = {
   showNotification: (notification: Omit<NotificationType, 'id'>) => void

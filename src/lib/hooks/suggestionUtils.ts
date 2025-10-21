@@ -1,8 +1,8 @@
 import { byPriority, isDefined } from '../../utils'
 import {
-  KeyFacet,
-  isKeyFacet,
   FacetListItem,
+  isKeyFacet,
+  KeyFacet,
   PopularFacet,
   PopularQuery,
 } from '../types'

@@ -1,6 +1,6 @@
 import { useLoaderData } from 'react-router-dom'
-import { ItemDetails } from './ItemDetails'
 import { ItemDetail } from '../lib/types'
+import { ItemDetails } from './ItemDetails'
 import { Loader } from './Loader'
 
 // type Props = {

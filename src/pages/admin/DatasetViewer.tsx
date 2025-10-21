@@ -1,19 +1,19 @@
-import useSWR from 'swr'
-import { getCurrentDataSet } from '../../lib/datalayer/api'
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-  TableCaption,
-} from '../../components/ui/table'
-import { Button } from '../../components/ui/button'
-import { Input } from '../../components/ui/input'
-import { useState, useMemo } from 'react'
 import fuzzysort from 'fuzzysort'
 import { SearchIcon } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import useSWR from 'swr'
+import { Button } from '../../components/ui/button'
+import { Input } from '../../components/ui/input'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../../components/ui/table'
+import { getCurrentDataSet } from '../../lib/datalayer/api'
 
 const useDataset = () =>
   useSWR('/admin/dataset', getCurrentDataSet, {
