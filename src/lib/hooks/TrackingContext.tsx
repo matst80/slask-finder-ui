@@ -1,6 +1,12 @@
-import React, { createContext, PropsWithChildren, useCallback } from 'react'
-import { BaseEcomEvent } from '../types'
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useState,
+} from 'react'
 import { useCookieAcceptance } from '../../CookieConsent'
+import { BaseEcomEvent } from '../types'
 
 export type TrackingEvent = ImpressionEvent | ClickEvent
 
@@ -44,9 +50,9 @@ export const TrackingProvider = ({
   handlers: initialHandlers,
   children,
 }: PropsWithChildren<{ handlers: TrackingHandler[] }>) => {
-  const context = React.useContext(TrackingContext)
+  const context = useContext(TrackingContext)
 
-  const [handlers, setHandlers] = React.useState<TrackingHandler[]>([
+  const [handlers, setHandlers] = useState<TrackingHandler[]>([
     ...initialHandlers,
     ...(context?.handlers.filter(
       (d) => !initialHandlers.some((e) => e.type == d.type),
@@ -61,7 +67,7 @@ export const TrackingProvider = ({
 }
 
 export const useTrackingHandlers = () => {
-  const context = React.useContext(TrackingContext)
+  const context = useContext(TrackingContext)
   if (!context) {
     throw new Error(
       'useTrackingHandlers must be used within a TrackingProvider',
@@ -71,7 +77,7 @@ export const useTrackingHandlers = () => {
 }
 
 export const useTracking = () => {
-  const context = React.useContext(TrackingContext)
+  const context = useContext(TrackingContext)
   const { accepted } = useCookieAcceptance()
 
   if (!context) {

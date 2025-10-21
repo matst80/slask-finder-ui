@@ -1,52 +1,51 @@
-import { ShoppingCartIcon, TicketIcon, X } from "lucide-react";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-
-import { cm, isDefined, makeImageUrl } from "../utils";
+import { ShoppingCartIcon, TicketIcon, X } from 'lucide-react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   useAddToCart,
   useAddVoucher,
   useCart,
   useChangeQuantity,
   useRemoveVoucher,
-} from "../hooks/cartHooks";
-import { ButtonAnchor } from "./ui/button";
-import { Link } from "react-router-dom";
-import { QuantityInput } from "../pages/builder/QuantityInput";
-import { useTranslations } from "../lib/hooks/useTranslations";
-import { Sidebar } from "./ui/sidebar";
-import { Price, PriceElement, PriceValue } from "./Price";
-import { useCompatibleItems } from "../hooks/searchHooks";
-import { CartItem, ItemPrice, Voucher } from "../lib/types";
-import { toEcomTrackingEvent } from "./toImpression";
-import { ImpressionProvider } from "../lib/hooks/ImpressionProvider";
-import { useSwitching } from "../lib/hooks/useSwitching";
+} from '../hooks/cartHooks'
+import { useCompatibleItems } from '../hooks/searchHooks'
+import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
+import { useSwitching } from '../lib/hooks/useSwitching'
+import { useTranslations } from '../lib/hooks/useTranslations'
+import { CartItem, ItemPrice, Voucher } from '../lib/types'
+import { QuantityInput } from '../pages/builder/QuantityInput'
 import {
   ShippingInputs,
   ShippingOptionList,
   ShippingProvider,
-} from "../pages/Shipping";
+} from '../pages/Shipping'
+import { cm, isDefined, makeImageUrl } from '../utils'
+import { Price, PriceElement, PriceValue } from './Price'
+import { toEcomTrackingEvent } from './toImpression'
+import { ButtonAnchor } from './ui/button'
+import { Sidebar } from './ui/sidebar'
 
 type CartDialogProps = {
-  onClose: () => void;
-  open: boolean;
-};
+  onClose: () => void
+  open: boolean
+}
 
 const hasLength = (value?: string | null) => {
-  return value != null && value.length > 0;
-};
+  return value != null && value.length > 0
+}
 
 const CartCompatible = ({ id }: { id: number }) => {
-  const { data: cart } = useCart();
-  const { isMutating, trigger: addToCart } = useAddToCart();
-  const t = useTranslations();
-  const [open, setOpen] = useState(false);
-  const [showMore, setShowMore] = useState(false);
-  const [productType, setProductTypes] = useSwitching<string>(5000);
+  const { data: cart } = useCart()
+  const { isMutating, trigger: addToCart } = useAddToCart()
+  const t = useTranslations()
+  const [open, setOpen] = useState(false)
+  const [showMore, setShowMore] = useState(false)
+  const [productType, setProductTypes] = useSwitching<string>(5000)
 
   const { data, isLoading } = useCompatibleItems(
     id,
     cart?.items.map((c) => Number(c.itemId)).filter(isDefined) ?? [],
-  );
+  )
   useEffect(() => {
     setProductTypes(
       Array.from(
@@ -57,27 +56,27 @@ const CartCompatible = ({ id }: { id: number }) => {
             .map((d) => String(d)),
         ),
       ),
-    );
-  }, [data, setProductTypes]);
+    )
+  }, [data, setProductTypes])
 
   if (!isLoading && data?.length === 0) {
-    return null;
+    return null
   }
 
   return (
     <>
       <button
         className={cm(
-          "text-xs text-gray-600 line-clamp-1 -mb-2 mt-1 text-left animate-pop border-gray-200 pb-1",
-          open ? "" : "border-b",
+          'text-xs text-gray-600 line-clamp-1 -mb-2 mt-1 text-left animate-pop border-gray-200 pb-1',
+          open ? '' : 'border-b',
         )}
         onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          setOpen(!open);
+          e.stopPropagation()
+          e.preventDefault()
+          setOpen(!open)
         }}
       >
-        Glömde du{" "}
+        Glömde du{' '}
         <span
           key={productType}
           className="text-black animate-acc underline underline-indigo-500"
@@ -106,7 +105,7 @@ const CartCompatible = ({ id }: { id: number }) => {
                     </span>
                     <div className="flex flex-col">
                       {item.bp
-                        .split("\n")
+                        .split('\n')
                         .filter(hasLength)
                         .map((s) => (
                           <span
@@ -130,23 +129,23 @@ const CartCompatible = ({ id }: { id: number }) => {
                       }
                       className="underline text-xs text-gray-600 hover:text-gray-800"
                     >
-                      {t("cart.add")}
+                      {t('cart.add')}
                     </button>
                   </div>
                 </Fragment>
-              );
+              )
             })}
             {data != null && data?.length > 4 && (
               <div className="flex flex-col col-span-3">
                 <button
                   className="text-xs text-gray-600 hover:text-gray-800"
                   onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowMore(!showMore);
+                    e.stopPropagation()
+                    e.preventDefault()
+                    setShowMore(!showMore)
                   }}
                 >
-                  Show {showMore ? "less" : "more"}
+                  Show {showMore ? 'less' : 'more'}
                 </button>
               </div>
             )}
@@ -154,25 +153,25 @@ const CartCompatible = ({ id }: { id: number }) => {
         </ImpressionProvider>
       )}
     </>
-  );
-};
+  )
+}
 
 function getCartItemPrice(item: CartItem): ItemPrice {
-  const price = item.price.incVat;
-  const orgPrice = item.orgPrice;
-  const isDiscounted = orgPrice != null && orgPrice.incVat > price;
+  const price = item.price.incVat
+  const orgPrice = item.orgPrice
+  const isDiscounted = orgPrice != null && orgPrice.incVat > price
   if (isDiscounted) {
     return {
       current: price,
       original: orgPrice.incVat,
       discount: orgPrice.incVat - price,
       isDiscounted: true,
-    };
+    }
   }
   return {
     current: price,
     isDiscounted: false,
-  };
+  }
 }
 
 const useCartItemData = (item: CartItem) => {
@@ -192,55 +191,55 @@ const useCartItemData = (item: CartItem) => {
         item_category4: item.meta.category4,
         item_category5: item.meta.category5,
       }),
-    };
-  }, [item]);
-};
+    }
+  }, [item])
+}
 
-const ownIds = ["001071", "498", ""];
+const ownIds = ['001071', '498', '']
 
 const StockIndicator = ({
   stock,
   quantity,
   storeId,
 }: {
-  stock: number;
-  quantity: number;
-  storeId?: string;
+  stock: number
+  quantity: number
+  storeId?: string
 }) => {
-  const stockAfterPurchase = stock - quantity;
-  const boxClasses = "text-xs rounded-lg px-[5px] py-[2px] inline-block";
+  const stockAfterPurchase = stock - quantity
+  const boxClasses = 'text-xs rounded-lg px-[5px] py-[2px] inline-block'
   if (storeId != null) {
     if (stockAfterPurchase > 0) {
       return (
-        <span className={cm("bg-green-200 text-green-800", boxClasses)}>
+        <span className={cm('bg-green-200 text-green-800', boxClasses)}>
           {stock} in store
         </span>
-      );
+      )
     } else {
       return (
-        <span className={cm("bg-red-200 text-red-800", boxClasses)}>
+        <span className={cm('bg-red-200 text-red-800', boxClasses)}>
           {stock} in store
         </span>
-      );
+      )
     }
   }
   if (stockAfterPurchase > 0) {
-    return null;
+    return null
   } else {
     if (stock > 0) {
-      return null;
+      return null
     }
     return (
-      <span className={cm("bg-orange-200 text-orange-800", boxClasses)}>
+      <span className={cm('bg-orange-200 text-orange-800', boxClasses)}>
         Out of stock
       </span>
-    );
+    )
   }
-};
+}
 
 const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
-  const { trigger: changeQuantity } = useChangeQuantity();
-  const { price, trackingItem } = useCartItemData(item);
+  const { trigger: changeQuantity } = useChangeQuantity()
+  const { price, trackingItem } = useCartItemData(item)
 
   return (
     <li key={item.id + item.sku} className="py-3 flex flex-col group relative">
@@ -256,7 +255,7 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
         )}
         <div className="flex flex-col grow flex-1">
           <Link to={`/product/${item.itemId}`} className="text-sm font-medium">
-            {item.meta.name}{" "}
+            {item.meta.name}{' '}
             <StockIndicator
               stock={item.stock}
               quantity={item.qty}
@@ -304,10 +303,10 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
             <QuantityInput
               value={item.qty}
               onChange={(value) => {
-                changeQuantity(item.id, value, trackingItem(value));
+                changeQuantity(item.id, value, trackingItem(value))
               }}
               minQuantity={0}
-              maxQuantity={99}
+              maxQuantity={Math.min(99, item.stock)}
             />
           </div>
 
@@ -315,47 +314,47 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
         </>
       )}
     </li>
-  );
-};
+  )
+}
 
 const VoucherItem = ({ id, code, value, description, applied }: Voucher) => {
-  const { trigger: removeVoucher, isMutating, error } = useRemoveVoucher();
+  const { trigger: removeVoucher, isMutating, error } = useRemoveVoucher()
   return (
     <div
       className={cm(
-        "flex items-center gap-2",
-        isMutating && "animate-pulse",
-        applied ? "" : "opacity-50",
+        'flex items-center gap-2',
+        isMutating && 'animate-pulse',
+        applied ? '' : 'opacity-50',
       )}
     >
       <div className="bg-gray-200 rounded-full p-2">
         <TicketIcon size={16} />
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col flex-1">
         <p className="text-sm font-bold">{code}</p>
         <p
-          className={cm("text-xs text-gray-500", applied ? "" : "line-through")}
+          className={cm('text-xs text-gray-500', applied ? '' : 'line-through')}
         >
           <PriceValue value={value} />
         </p>
       </div>
-      <div>
-        <p>{description}</p>
+      <p className="flex-2">{description}</p>
+      <div className="self-end">
         <button onClick={() => removeVoucher(id)}>Remove</button>
         {error && <p className="text-red-500">{error.message}</p>}
       </div>
     </div>
-  );
-};
+  )
+}
 
 const Vouchers = ({ added }: { added: Voucher[] }) => {
-  const t = useTranslations();
-
-  const { trigger: addVoucher, isMutating, error } = useAddVoucher();
-  const [code, setCode] = useState("");
+  const t = useTranslations()
+  const [open, setOpen] = useState(false)
+  const { trigger: addVoucher, isMutating, error } = useAddVoucher()
+  const [code, setCode] = useState('')
 
   return (
-    <div>
+    <div className="mt-4 border-t border-gray-300 pt-4">
       {added?.length > 0 ? (
         <div className="flex flex-col gap-2">
           {added.map((voucher) => (
@@ -363,35 +362,47 @@ const Vouchers = ({ added }: { added: Voucher[] }) => {
           ))}
         </div>
       ) : (
-        <p className="text-gray-500">{t("cart.no_vouchers")}</p>
-      )}
-      {error && <p className="text-red-500">{error.message}</p>}
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder={t("cart.enter_voucher_code")}
-          className="border border-gray-300 rounded-md px-2 py-1 flex-1 grow"
-        />
-        <button
-          onClick={() => addVoucher(code)}
-          disabled={isMutating}
-          className="bg-blue-500 text-white rounded-md px-2 py-1"
-        >
-          {isMutating ? t("cart.adding") : t("cart.add")}
+        <button onClick={() => setOpen((p) => !p)} className="text-gray-500">
+          {t('cart.no_vouchers')}
         </button>
-      </div>
+      )}
+
+      {error && <p className="text-red-500">{error.message}</p>}
+      {open && (
+        <form
+          className="flex gap-2 pt-2"
+          onSubmit={(e) => {
+            e.stopPropagation()
+            e.preventDefault()
+            addVoucher(code)
+          }}
+        >
+          <input
+            type="text"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder={t('cart.enter_voucher_code')}
+            className="border border-gray-300 rounded-md px-2 py-1 flex-1 grow"
+          />
+          <button
+            type="submit"
+            disabled={isMutating}
+            className="bg-blue-500 text-white rounded-md px-2 py-1"
+          >
+            {isMutating ? t('cart.adding') : t('cart.add')}
+          </button>
+        </form>
+      )}
     </div>
-  );
-};
+  )
+}
 
 const CartDialog = ({ onClose, open }: CartDialogProps) => {
-  const { data: cart, isLoading } = useCart();
-  const [shippingOpen, setShippingOpen] = useState(false);
-  const t = useTranslations();
+  const { data: cart, isLoading } = useCart()
+  const [shippingOpen, setShippingOpen] = useState(false)
+  const t = useTranslations()
 
-  const { items = [], totalPrice, totalDiscount } = cart ?? {};
+  const { items = [], totalPrice, totalDiscount } = cart ?? {}
 
   return (
     <div
@@ -399,23 +410,23 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">{t("cart.title")}</h2>
+        <h2 className="text-xl font-bold">{t('cart.title')}</h2>
         <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
           <X size={24} />
         </button>
       </div>
 
       {items.length === 0 ? (
-        <p className="text-gray-500 text-center">{t("cart.empty")}</p>
+        <p className="text-gray-500 text-center">{t('cart.empty')}</p>
       ) : (
         <>
           {isLoading ? (
-            <div>{t("common.loading")}</div>
+            <div>{t('common.loading')}</div>
           ) : (
             <ul className="flex-1">
               {items.map((item) => (
                 <CartItemElement
-                  key={item.id + item.sku}
+                  key={`${item.id}-${item.sku}`}
                   item={item}
                   open={open}
                 />
@@ -425,28 +436,28 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
 
           <div className="mt-4 justify-end grow-0">
             <div className="flex justify-between items-center">
-              <span className="font-bold">{t("cart.totalTax")}:</span>
+              <span className="font-bold">{t('cart.totalTax')}:</span>
               <ul className="grid grid-cols-2 justify-end text-right gap-x-1">
                 {Object.entries(cart?.totalPrice.vat ?? {}).map(
                   ([key, value]) => (
-                    <>
+                    <Fragment key={key}>
                       <span>{key}%</span>
                       <b>
                         <PriceValue value={value} />
                       </b>
-                    </>
+                    </Fragment>
                   ),
                 )}
               </ul>
             </div>
             {totalDiscount != null && totalDiscount.incVat > 0 && (
               <div className="flex justify-between items-center">
-                <span className="font-bold">{t("cart.totalDiscount")}:</span>
+                <span className="font-bold">{t('cart.totalDiscount')}:</span>
                 <PriceValue value={totalDiscount.incVat} />
               </div>
             )}
             <div className="mt-2 pt-2 flex justify-between items-center border-t border-gray-200">
-              <span className="text-lg font-bold">{t("cart.total")}:</span>
+              <span className="text-lg font-bold">{t('cart.total')}:</span>
               <PriceValue
                 className="text-lg font-bold"
                 value={totalPrice?.incVat}
@@ -456,7 +467,7 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
               className="underline text-blue-600 hover:text-blue-800 mt-2 text-sm"
               onClick={() => setShippingOpen(!shippingOpen)}
             >
-              {shippingOpen ? t("cart.hide_shipping") : t("cart.show_shipping")}
+              {shippingOpen ? t('cart.hide_shipping') : t('cart.show_shipping')}
             </button>
             {cart != null && shippingOpen && (
               <ShippingProvider>
@@ -466,17 +477,17 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
             )}
             <Vouchers added={cart?.vouchers ?? []} />
             <div className="mt-6 w-full flex gap-2 items-center">
-              {cart?.paymentStatus === "checkout_completed" ? (
+              {cart?.paymentStatus === 'checkout_completed' ? (
                 <ButtonAnchor
                   onClick={onClose}
                   to={`/confirmation/${cart.orderReference}`}
                 >
-                  {t("cart.show_confirmation")}
+                  {t('cart.show_confirmation')}
                 </ButtonAnchor>
               ) : (
                 <>
-                  <ButtonAnchor onClick={onClose} to={"/checkout"}>
-                    {t("menu.checkout")}
+                  <ButtonAnchor onClick={onClose} to={'/checkout'}>
+                    {t('menu.checkout')}
                   </ButtonAnchor>
                 </>
               )}
@@ -485,42 +496,42 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
 export const MiniCart = () => {
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const { data: cart, isLoading } = useCart();
-  const ref = useRef<HTMLSpanElement>(null);
-  const [shouldOpen, setShouldOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const { data: cart, isLoading } = useCart()
+  const ref = useRef<HTMLSpanElement>(null)
+  const [shouldOpen, setShouldOpen] = useState(false)
   const totalItems = useMemo(
     () =>
       isLoading
-        ? "~"
+        ? '~'
         : (cart?.items?.reduce((acc, item) => acc + (item.qty ?? 1), 0) ?? 0),
     [cart, isLoading],
-  );
+  )
 
   useEffect(() => {
     if (ref.current) {
-      if (shouldOpen && totalItems != "~") {
-        setIsCartOpen(true);
+      if (shouldOpen && totalItems != '~') {
+        setIsCartOpen(true)
       }
-      setShouldOpen(true);
-      const elm = ref.current;
-      elm.classList.add("animate-ping");
+      setShouldOpen(true)
+      const elm = ref.current
+      elm.classList.add('animate-ping')
       const to = setTimeout(() => {
-        elm.classList.remove("animate-ping");
-      }, 300);
+        elm.classList.remove('animate-ping')
+      }, 300)
       return () => {
-        clearTimeout(to);
-        elm.classList.remove("animate-ping");
-      };
+        clearTimeout(to)
+        elm.classList.remove('animate-ping')
+      }
     }
-  }, [totalItems, shouldOpen]);
+  }, [totalItems, shouldOpen])
 
   if (cart?.items == null || cart.items.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -542,5 +553,5 @@ export const MiniCart = () => {
         <CartDialog onClose={() => setIsCartOpen(false)} open={isCartOpen} />
       </Sidebar>
     </>
-  );
-};
+  )
+}
