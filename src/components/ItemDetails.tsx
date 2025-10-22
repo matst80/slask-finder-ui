@@ -528,7 +528,9 @@ export const OtherVariants = ({ pft, id }: { pft: string[]; id: number }) => {
       {isLoading ? (
         <Loader size="md" />
       ) : showButton ? (
-        <Link to={`/configure/${id}`}>Configure</Link>
+        <Link to={`/config/${pft}`} className="underline">
+          Configure
+        </Link>
       ) : (
         <div>
           {data?.items.map((item) => (

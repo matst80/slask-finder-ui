@@ -209,6 +209,7 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
             id="autosuggest-input"
             autoComplete="off"
             defaultValue={''}
+            aria-expanded="false"
             aria-controls="suggestion-results"
             placeholder="Search..."
           />
@@ -266,6 +267,7 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
           id="suggestion-results"
           aria-labelledby="autosuggest-input"
           aria-label="Suggestion results"
+          aria-hidden="true"
           className="transition-opacity md:rounded-md md:border md:border-gray-300 bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
         >
           <SuggestionResults
