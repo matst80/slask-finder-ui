@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAdmin } from '../hooks/appState'
 import { useAddToCart } from '../hooks/cartHooks'
 import {
-  queryToHash,
+  toQuery,
   useCompatibleItems,
   useCosineRelatedItems,
   useFacetMap,
@@ -187,7 +187,7 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, 'values'>) => {
   if (stringFilters.length === 0) return null
   return (
     <ButtonLink
-      to={`/#${queryToHash({
+      to={`/#${toQuery({
         page: 0,
         string: stringFilters,
         range: [],
@@ -311,7 +311,7 @@ const RelationGroupCarousel = ({
           {group.name}
         </button>
         <Link
-          to={`/#${queryToHash(query)}`}
+          to={`/#${toQuery(query)}`}
           className={cm('text-sm hover:underline transition-all')}
         >
           Show all
@@ -422,8 +422,7 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, 'values'>) => {
     <div className="inline-flex items-center overflow-x-auto max-w-full">
       {parts.map(({ id, value }, idx) => (
         <Link
-          to={`/#${queryToHash({
-            page: 0,
+          to={`/#${toQuery({
             string: [
               {
                 id,

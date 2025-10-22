@@ -11,7 +11,7 @@ import {
 } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useKeyFacetValuePopularity } from '../hooks/popularityHooks'
-import { queryFromHash } from '../hooks/searchHooks'
+import { fromQueryString } from '../hooks/searchHooks'
 import { MIN_FUZZY_SCORE } from '../lib/hooks/SuggestionProvider'
 import type {
   QueryRefinement,
@@ -173,7 +173,7 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
 
   useEffect(() => {
     const updateFromHash = () => {
-      const { query } = queryFromHash(globalThis.location.hash.substring(1))
+      const { query } = fromQueryString(globalThis.location.hash.substring(1))
       if (query && inputRef.current != null) {
         inputRef.current.value = query
         setTerm(query)
@@ -198,7 +198,7 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
     return () => {
       globalThis.window.removeEventListener('hashchange', close)
     }
-  }, [inputRef.current, isOpen, setTerm])
+  }, [isOpen, setTerm])
 
   return (
     <form

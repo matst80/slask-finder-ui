@@ -6,12 +6,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {
-  facetQueryToHash,
-  queryFromHash,
-  queryToHash,
-  toQuery,
-} from '../../hooks/searchHooks'
+import { fromQueryString, toQuery } from '../../hooks/searchHooks'
 import * as api from '../datalayer/api'
 import {
   HistoryQuery,
@@ -43,7 +38,7 @@ const loadQueryFromHash = (): ItemsQuery => {
       stock: [],
     }
   }
-  return queryFromHash(hash)
+  return fromQueryString(hash)
 }
 
 export const QueryProvider = ({
@@ -144,47 +139,45 @@ export const QueryProvider = ({
   }, [])
 
   useEffect(() => {
+    virtualPage.current = query.page ?? 0
+
+    const key = toQuery(query)
     setQueryHistory((prev) => {
-      const currentKey = facetQueryToHash(query)
-      if (prev.some((d) => d.key === currentKey)) {
+      if (prev.some((d) => d.key === key)) {
         return prev
       }
       if (prev.length >= 10) {
         prev.shift()
       }
-      return [...prev, { ...query, key: currentKey }]
+      return [...prev, { ...query, key: key }]
     })
-    virtualPage.current = query.page ?? 0
-    //setVirtualPage(query.page ?? 0);
 
-    setItemsKey(queryToHash(query))
+    console.log('query key changed', key)
+    setItemsKey(key)
   }, [query])
 
   const addPage = useCallback(async () => {
     const virtualQuery = { ...query, page: virtualPage.current + 1 }
 
-    const virtualKey = queryToHash(virtualQuery)
-    return api
-      .streamItems(toQuery(virtualQuery))
-      .then((data): AddPageResult => {
-        if (data?.items == null) {
-          return {
-            currentPage: virtualPage.current,
-            hasMorePages: false,
-            totalPages: virtualPage.current,
-          }
-        }
-        itemsCache.set(virtualKey, data.items)
-
-        virtualPage.current = data.page
-        setHits((prev) => [...prev, ...data.items])
+    const virtualKey = toQuery(virtualQuery)
+    return api.streamItems(virtualKey).then((data): AddPageResult => {
+      if (data?.items == null) {
         return {
-          currentPage: data.page,
-          hasMorePages:
-            data.page < (data.totalHits ?? 0) / (data.pageSize ?? 20),
-          totalPages: Math.ceil((data.totalHits ?? 0) / (data.pageSize ?? 20)),
+          currentPage: virtualPage.current,
+          hasMorePages: false,
+          totalPages: virtualPage.current,
         }
-      })
+      }
+      itemsCache.set(virtualKey, data.items)
+
+      virtualPage.current = data.page
+      setHits((prev) => [...prev, ...data.items])
+      return {
+        currentPage: data.page,
+        hasMorePages: data.page < (data.totalHits ?? 0) / (data.pageSize ?? 20),
+        totalPages: Math.ceil((data.totalHits ?? 0) / (data.pageSize ?? 20)),
+      }
+    })
   }, [query])
   useEffect(() => {
     if (!attachToHash) {
@@ -193,7 +186,7 @@ export const QueryProvider = ({
     const hashListener = () => {
       const hash = window.location.hash.substring(1)
       if (hash) {
-        setQuery(queryFromHash(hash))
+        setQuery(fromQueryString(hash))
       } else {
         setQuery(initialQuery ?? {})
       }
@@ -223,7 +216,7 @@ export const QueryProvider = ({
     }
 
     setIsLoading(true)
-
+    console.log('streaming items', itemsKey)
     api.streamItems(itemsKey).then((data) => {
       itemsCache.set(itemsKey, data?.items)
       setHits(data?.items ?? [])

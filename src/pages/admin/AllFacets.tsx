@@ -18,10 +18,9 @@ import { Loader } from '../../components/Loader'
 import { Button, ButtonLink } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { useNotifications } from '../../components/ui-notifications/useNotifications'
-import { useFacetGroups } from '../../hooks/searchHooks'
+import { toQuery, useFacetGroups } from '../../hooks/searchHooks'
 import { getPossibleRelations } from '../../lib/datalayer/api'
 import { FacetListItem } from '../../lib/types'
-import { queryToHash } from '../../lib/utils'
 import { byPriority } from '../../utils'
 
 type KeyValues =
@@ -132,7 +131,7 @@ const FacetValues = ({ id }: { id: number }) => {
               </Button>
               <ButtonLink
                 variant="ghost"
-                to={`/#${queryToHash({
+                to={`/#${toQuery({
                   page: 0,
                   string: [{ id, value: [value] }],
                   range: [],

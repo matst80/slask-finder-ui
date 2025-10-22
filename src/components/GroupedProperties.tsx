@@ -8,7 +8,7 @@ import {
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdmin } from '../hooks/appState'
-import { queryToHash, useFacetGroups, useFacetMap } from '../hooks/searchHooks'
+import { toQuery, useFacetGroups, useFacetMap } from '../hooks/searchHooks'
 import { useGroupDesigner } from '../lib/hooks/GroupDesignerProvider'
 import { QueryProvider } from '../lib/hooks/QueryProvider'
 import { useClipboard } from '../lib/hooks/useClipboard'
@@ -179,7 +179,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, 'values'>) => {
           <div className="button-group">
             <Link
               aria-label={t('common.search')}
-              to={`/#${queryToHash(customQuery)}`}
+              to={`/#${toQuery(customQuery)}`}
             >
               <Search className="size-5" />
             </Link>
@@ -335,7 +335,7 @@ export const GroupedProperties = ({ values }: Pick<ItemDetail, 'values'>) => {
                           field.value != null && (
                             <Link
                               className="text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium inline-flex items-center gap-1"
-                              to={`/#${queryToHash({
+                              to={`/#${toQuery({
                                 page: 0,
                                 string: [
                                   {

@@ -11,163 +11,199 @@ import {
   getYourPopularItems,
   streamItems,
 } from '../lib/datalayer/api'
-import {
-  FacetQuery,
-  FilteringQuery,
-  ItemsQuery,
-  RelationGroup,
-} from '../lib/types'
+import { ItemsQuery, RelationGroup } from '../lib/types'
 import { isDefined } from '../utils'
 
-const FIELD_SEPARATOR = ':'
-const ID_VALUE_SEPARATOR = '='
+//import { isDefined } from '../utils'
 
-export const queryFromHash = (hash: string): ItemsQuery => {
-  const hashData = Object.fromEntries(new URLSearchParams(hash).entries())
-  const integer = (hashData.i as string | undefined)
-    ?.split(FIELD_SEPARATOR)
-    .map((i) => {
-      const [id, range] = i.split(ID_VALUE_SEPARATOR)
-      const [min, max] = range.split('-').map(Number)
-      return { id: Number(id), min, max }
-    })
-  const number = (hashData.n as string | undefined)
-    ?.split(FIELD_SEPARATOR)
-    .map((n) => {
-      const [id, range] = n.split(ID_VALUE_SEPARATOR)
-      const [min, max] = range.split('-').map(Number)
-      return { id: Number(id), min, max }
-    })
+// const FIELD_SEPARATOR = ':'
+// const ID_VALUE_SEPARATOR = '='
 
-  const range = [...(integer ?? []), ...(number ?? [])]
+// export const queryFromHash = (hash: string): ItemsQuery => {
+//   const hashData = Object.fromEntries(new URLSearchParams(hash).entries())
+//   const integer = (hashData.i as string | undefined)
+//     ?.split(FIELD_SEPARATOR)
+//     .map((i) => {
+//       const [id, range] = i.split(ID_VALUE_SEPARATOR)
+//       const [min, max] = range.split('-').map(Number)
+//       return { id: Number(id), min, max }
+//     })
+//   const number = (hashData.n as string | undefined)
+//     ?.split(FIELD_SEPARATOR)
+//     .map((n) => {
+//       const [id, range] = n.split(ID_VALUE_SEPARATOR)
+//       const [min, max] = range.split('-').map(Number)
+//       return { id: Number(id), min, max }
+//     })
 
-  const string = (hashData.s as string | undefined)
-    ?.split(FIELD_SEPARATOR)
-    .map((s) => {
-      const [id, value] = s.split(ID_VALUE_SEPARATOR)
-      const exclude = value[0] === '!'
-      const valueWithoutExclude = exclude ? value.substring(1) : value
-      return {
-        id: Number(id),
-        exclude,
-        value: valueWithoutExclude.includes('||')
-          ? valueWithoutExclude.split('||')
-          : [valueWithoutExclude],
-      }
-    })
-  const query = hashData.q
-  const stock = hashData.stock?.split(FIELD_SEPARATOR) ?? []
-  const sort = hashData.sort ?? 'popular'
-  let page = Number(hashData.page) ?? 0
-  let pageSize = Number(hashData.size) ?? 40
-  if (isNaN(pageSize)) {
-    pageSize = 40
-  }
-  if (isNaN(page)) {
-    page = 0
-  }
-  return { range, sort, page, pageSize, query, stock, string }
-}
+//   const range = [...(integer ?? []), ...(number ?? [])]
 
-export const queryToHash = ({
-  range,
-  sort,
-  page = 0,
-  pageSize,
-  query,
-  stock,
-  filter,
-  string,
-}: ItemsQuery): string => {
-  const filterObj = filteringQueryToHash({
-    range,
-    stock,
-    query,
-    string,
-  })
-  if (sort != null && sort !== 'popular') {
-    filterObj.sort = sort
-  }
-  if (page != null) {
-    filterObj.page = page.toString()
-  }
-  if (pageSize != null && pageSize !== 40) {
-    filterObj.size = pageSize.toString()
-  }
-  if (filter != null && filter.length > 0) {
-    filterObj.filter = filter
-  }
-  return new URLSearchParams(filterObj).toString()
-}
+//   const string = (hashData.s as string | undefined)
+//     ?.split(FIELD_SEPARATOR)
+//     .map((s) => {
+//       const [id, value] = s.split(ID_VALUE_SEPARATOR)
+//       const exclude = value[0] === '!'
+//       const valueWithoutExclude = exclude ? value.substring(1) : value
+//       return {
+//         id: Number(id),
+//         exclude,
+//         value: valueWithoutExclude.includes('||')
+//           ? valueWithoutExclude.split('||')
+//           : [valueWithoutExclude],
+//       }
+//     })
+//   const query = hashData.q
+//   const stock = hashData.stock?.split(FIELD_SEPARATOR) ?? []
+//   const sort = hashData.sort ?? 'popular'
+//   let page = Number(hashData.page) ?? 0
+//   let pageSize = Number(hashData.size) ?? 40
+//   if (isNaN(pageSize)) {
+//     pageSize = 40
+//   }
+//   if (isNaN(page)) {
+//     page = 0
+//   }
+//   return { range, sort, page, pageSize, query, stock, string }
+// }
 
-export const filteringQueryToHash = ({
-  range,
-  string,
-  query,
-  stock,
-}: FilteringQuery): Record<string, string> => {
-  const result: Record<string, string> = {}
-  if (stock != null && stock.length > 0) {
-    result.stock = stock.join(FIELD_SEPARATOR)
-  }
-  if (query != null && query.length > 0) {
-    result.q = query
-  }
-  const ints =
-    range?.map(({ id, min, max }) => {
-      return `${id}${ID_VALUE_SEPARATOR}${min}-${max}`
-    }) ?? []
-  if (ints.length > 0) {
-    result.i = ints.join(FIELD_SEPARATOR)
-  }
+// export const queryToHash = ({
+//   range,
+//   sort,
+//   page = 0,
+//   pageSize,
+//   query,
+//   stock,
+//   filter,
+//   string,
+// }: ItemsQuery): string => {
+//   const filterObj = filteringQueryToHash({
+//     range,
+//     stock,
+//     query,
+//     string,
+//   })
+//   if (sort != null && sort !== 'popular') {
+//     filterObj.sort = sort
+//   }
+//   if (page != null) {
+//     filterObj.page = page.toString()
+//   }
+//   if (pageSize != null && pageSize !== 40) {
+//     filterObj.size = pageSize.toString()
+//   }
+//   if (filter != null && filter.length > 0) {
+//     filterObj.filter = filter
+//   }
+//   return new URLSearchParams(filterObj).toString()
+// }
 
-  // const nums =
-  //   number?.map(({ id, min, max }) => {
-  //     return `${id}${ID_VALUE_SEPARATOR}${min}-${max}`;
-  //   }) ?? [];
-  // if (nums.length > 0) {
-  //   result.n = nums.join(FIELD_SEPARATOR);
-  // }
+// export const filteringQueryToHash = ({
+//   range,
+//   string,
+//   query,
+//   stock,
+// }: FilteringQuery): Record<string, string> => {
+//   const result: Record<string, string> = {}
+//   if (stock != null && stock.length > 0) {
+//     result.stock = stock.join(FIELD_SEPARATOR)
+//   }
+//   if (query != null && query.length > 0) {
+//     result.q = query
+//   }
+//   const ints =
+//     range?.map(({ id, min, max }) => {
+//       return `${id}${ID_VALUE_SEPARATOR}${min}-${max}`
+//     }) ?? []
+//   if (ints.length > 0) {
+//     result.i = ints.join(FIELD_SEPARATOR)
+//   }
 
-  const strs =
-    string?.map(({ id, exclude = false, value }) => {
-      if (Array.isArray(value) && value.length === 0) {
-        // console.log("Empty value for id:", id);
-        return undefined
-      }
-      return `${id}${ID_VALUE_SEPARATOR}${exclude ? '!' : ''}${
-        Array.isArray(value) ? value.join('||') : value
-      }`
-    }) ?? []
-  if (strs.length) {
-    result.s = strs.filter(isDefined).join(FIELD_SEPARATOR)
-  }
-  return result
-}
+//   // const nums =
+//   //   number?.map(({ id, min, max }) => {
+//   //     return `${id}${ID_VALUE_SEPARATOR}${min}-${max}`;
+//   //   }) ?? [];
+//   // if (nums.length > 0) {
+//   //   result.n = nums.join(FIELD_SEPARATOR);
+//   // }
 
-export const facetQueryToHash = ({
-  range,
-  query,
-  stock,
-  string,
-}: FacetQuery): string => {
-  const obj = filteringQueryToHash({ range, stock, string, query })
-  return new URLSearchParams(obj).toString()
-}
+//   const strs =
+//     string?.map(({ id, exclude = false, value }) => {
+//       if (Array.isArray(value) && value.length === 0) {
+//         // console.log("Empty value for id:", id);
+//         return undefined
+//       }
+//       return `${id}${ID_VALUE_SEPARATOR}${exclude ? '!' : ''}${
+//         Array.isArray(value) ? value.join('||') : value
+//       }`
+//     }) ?? []
+//   if (strs.length) {
+//     result.s = strs.filter(isDefined).join(FIELD_SEPARATOR)
+//   }
+//   return result
+// }
 
-const itemsKey = (data: ItemsQuery) => `items-` + queryToHash(data)
+// export const facetQueryToHash = ({
+//   range,
+//   query,
+//   stock,
+//   string,
+// }: FacetQuery): string => {
+//   const obj = filteringQueryToHash({ range, stock, string, query })
+//   return new URLSearchParams(obj).toString()
+// }
+
+const itemsKey = (data: ItemsQuery) => `items-` + toQuery(data)
 
 //const facetsKey = (data: FacetQuery) => "facets-" + facetQueryToHash(data);
+//
+export const fromQueryString = (input: string): ItemsQuery => {
+  const params = new URLSearchParams(input)
+  const range = Array.from(params.getAll('rng')).map((value) => {
+    const [id, range] = value.split(':')
+    const [min, max] = range.split('-')
+    return { id: Number(id), min: Number(min), max: Number(max) }
+  })
+  const sort = params.get('sort') || undefined
+  const page = Number(params.get('page'))
+  const pageSize = Number(params.get('size'))
+  const query = params.get('query') || undefined
+  const stock = Array.from(params.getAll('stock'))
+    .filter(isDefined)
+    .filter((d) => d !== '')
+  const string = Array.from(params.getAll('str')).map((data) => {
+    const [id, value] = data.split(':')
+    const exclude = value.startsWith('!')
+    return { id: Number(id), exclude, value: value.split('||') }
+  })
+  const filter = params.get('filter') || undefined
+  return {
+    range,
+    sort,
+    page: isNaN(page) ? undefined : page,
+    pageSize,
+    query,
+    stock,
+    string,
+    filter,
+  }
+}
 
 export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
-  const { range, sort, page = 0, pageSize, query, stock, string, filter } = data
+  const { range, sort, page, pageSize, query, stock, string, filter } = data
 
-  const result = new URLSearchParams({
-    page: page.toString(),
-    size: (pageSize ?? 40)?.toString(),
-    sort: sort ?? 'popular',
-    query: query ?? '',
-  })
+  const result = new URLSearchParams({})
+  if (sort) {
+    result.set('sort', sort)
+  }
+  if (page) {
+    result.set('page', page.toString())
+  }
+  if (pageSize) {
+    result.set('size', pageSize.toString())
+  }
+  if (query) {
+    result.set('query', query)
+  }
   range?.forEach(({ id, min, max }) => {
     result.append('rng', `${id}:${min}-${max}`)
   })

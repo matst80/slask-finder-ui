@@ -146,15 +146,16 @@ const BuilderQueryMerger = ({
   componentId: string | number | null
 }) => {
   const { setQuery } = useQuery()
-  const keyRef = useRef<string | number | null>(componentId)
+  const keyRef = useRef<string | number | null>(null)
   useEffect(() => {
     if (keyRef.current === componentId) {
       return
     }
 
     keyRef.current = componentId
+    console.log('componentId changed', componentId, query)
     setQuery(query)
-  }, [query, setQuery, componentId])
+  }, [setQuery, componentId])
   return null
 }
 
@@ -186,7 +187,7 @@ export const BuilderComponentFilter = () => {
     return <div>Loading</div>
   }
   return (
-    <QueryProvider initialQuery={requiredQuery} attachToHash={true}>
+    <QueryProvider attachToHash={false}>
       <BuilderQueryMerger query={requiredQuery} componentId={componentId} />
       <div className="mb-24 md:mt-10 max-w-[1920px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-[288px_auto]">

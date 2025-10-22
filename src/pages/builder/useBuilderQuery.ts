@@ -16,11 +16,7 @@ export const useBuilderQuery = (selectedComponentId?: ComponentId) => {
   return useMemo(() => {
     const selectedComponent =
       selectedComponentId != null ? components[selectedComponentId] : undefined
-    console.log('builder query', {
-      selectedComponentId,
-      components,
-      selectedComponent,
-    })
+
     return {
       selectionFilters,
       component: selectedComponent,

@@ -2,7 +2,6 @@ import { PropsWithChildren, useEffect, useState } from 'react'
 import { toQuery } from '../../hooks/searchHooks'
 import * as api from '../datalayer/api'
 import { Facet, isKeyFacet, KeyFacet } from '../types'
-import { filteringQueryToHash } from '../utils'
 import { FacetContext } from './facetContext'
 import { useQuery } from './useQuery'
 
@@ -43,17 +42,11 @@ export const FacetProvider = ({
   useEffect(() => {
     const { query: q, range, stock, string } = query
     const key = new URLSearchParams(
-      filteringQueryToHash({ query: q, range, stock, string }),
+      toQuery({ query: q, range, stock, string }, ignoreFacets),
     ).toString()
-    if (key !== facetsKey) {
-      const to = setTimeout(() => {
-        setFacetsKey(key)
-      }, delay)
-      return () => {
-        clearTimeout(to)
-      }
-    }
-  }, [query, delay, facetsKey])
+
+    setFacetsKey(key)
+  }, [query, delay])
   useEffect(() => {
     if (facetsKey == null) {
       return
@@ -67,27 +60,18 @@ export const FacetProvider = ({
     }
 
     setIsLoadingFacets(true)
-    api.facets(toQuery(query, ignoreFacets)).then((data) => {
-      facetCache.set(facetsKey, data)
-      const [cat, other] = data.reduce(
-        ([c, all], facet) => {
-          if (
-            facet.categoryLevel != null &&
-            facet.categoryLevel > 0 &&
-            isKeyFacet(facet)
-          ) {
-            return [[...c, facet], all]
-          }
-          return [c, [...all, facet]]
-        },
-        [[] as KeyFacet[], [] as Facet[]],
-      )
-      setFacets(other)
-      setCategoryFacets(cat)
-      setIsLoadingFacets(false)
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [facetsKey, ignoreFacets, query])
+    api
+      .facets(facetsKey)
+      .then((data) => {
+        facetCache.set(facetsKey, data)
+        const [cat, other] = splitCategoryFacets(data)
+        setFacets(other)
+        setCategoryFacets(cat)
+      })
+      .finally(() => {
+        setIsLoadingFacets(false)
+      })
+  }, [facetsKey, ignoreFacets])
 
   return (
     <FacetContext.Provider

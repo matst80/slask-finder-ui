@@ -21,7 +21,6 @@ import {
   FlatFacetValue,
   SuggestQuery,
 } from './suggestionUtils'
-import { useThrottle } from './useThrottle'
 
 export const MIN_FUZZY_SCORE = 0.85
 
@@ -38,8 +37,8 @@ export const SuggestionProvider = ({
   const [contentResults, setContentResults] = useState<
     ContentRecord[] | undefined
   >(undefined)
-  const [value, setValue] = useState<string | null>(null)
-  const searchValue = useThrottle(value, 70)
+  const [searchValue, setValue] = useState<string | null>(null)
+  //const searchValue = useThrottle(value, 70)
   const [popularQueries, setPopularQueries] = useState<SuggestQuery[]>([])
   const includeContent = useMemo(
     () => config.some((d) => d.type === 'content' && d.maxAmount > 0),
@@ -65,22 +64,22 @@ export const SuggestionProvider = ({
     if (facetData == null) {
       return
     }
-    getPopularQueries(value ?? '')
+    getPopularQueries(searchValue ?? '')
       .then(convertPopularQueries(facetData))
       .then(setPopularQueries)
-  }, [value, facetData])
+  }, [searchValue, facetData])
 
   const parts = useMemo(() => {
-    if (value == null) {
+    if (searchValue == null) {
       return new Set<string>()
     }
-    const words = value.toLocaleLowerCase().split(' ')
+    const words = searchValue.toLocaleLowerCase().split(' ')
     const lastWord = words.pop()
     if (lastWord == null) {
       return new Set<string>()
     }
     return new Set(words.concat(lastWord))
-  }, [value])
+  }, [searchValue])
 
   useEffect(() => {
     if (facets == null || facets.length === 0) {
@@ -228,7 +227,7 @@ export const SuggestionProvider = ({
                 maxHits: 2,
               }
               if (flat) {
-                const result = fuzzysort.go(value ?? '', item.values, {
+                const result = fuzzysort.go(searchValue ?? '', item.values, {
                   limit: maxHits,
                   keys: ['value'],
                   threshold: 0.6,
@@ -240,7 +239,7 @@ export const SuggestionProvider = ({
                     facetId: item.id,
                     facetName: item.name,
                     values,
-                    query: value ?? undefined,
+                    query: searchValue ?? undefined,
                     flat: true,
                     type: 'refinement',
                   } satisfies SuggestResultItem
@@ -248,7 +247,7 @@ export const SuggestionProvider = ({
                 return []
               }
               return {
-                query: value ?? undefined,
+                query: searchValue ?? undefined,
                 facetId: item.id,
                 facetName: item.name,
                 values: item.values,
@@ -275,7 +274,7 @@ export const SuggestionProvider = ({
       setItems(result)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, config, popularQueries, contentResults, value])
+  }, [data, config, popularQueries, contentResults, searchValue])
 
   return (
     <SuggestionContext.Provider
@@ -283,7 +282,7 @@ export const SuggestionProvider = ({
         suggestions,
         items,
         setValue,
-        value,
+        value: searchValue,
         possibleTriggers,
         smartQuery,
       }}
