@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-type FocusOptions = {
-  onOpen?: () => void
-  onClose?: () => void
-}
+// type FocusOptions = {
+//   onOpen?: () => void
+//   onClose?: () => void
+// }
 
-export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
+export const useDropdownFocus = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   const targetRef = useRef<HTMLElement>(null)
   const [isOpen, setIsOpen] = useState(false)
@@ -15,20 +15,20 @@ export const useDropdownFocus = ({ onOpen, onClose }: FocusOptions = {}) => {
     if (elm != null && targetElm != null) {
       targetElm.setAttribute('aria-hidden', 'true')
       elm.setAttribute('aria-expanded', 'false')
-      onClose?.()
+      //      onClose?.()
       setIsOpen(false)
     }
-  }, [onClose])
+  }, [])
   const open = useCallback(() => {
     const elm = inputRef.current
     const targetElm = targetRef.current
     if (elm != null && targetElm != null) {
       targetElm.setAttribute('aria-hidden', 'false')
       elm.setAttribute('aria-expanded', 'true')
-      onOpen?.()
+      //onOpen?.()
       setIsOpen(true)
     }
-  }, [onOpen])
+  }, [])
   useEffect(() => {
     const elm = inputRef.current
     if (elm != null) {

@@ -93,33 +93,15 @@ type AutoSuggestProps = {
   onClear: () => void
 }
 
-export const AutoSuggest = (props: AutoSuggestProps) => {
-  const { inputRef, close, open, isOpen } = useDropdownFocus({
-    onOpen: () => {
-      updatePosition()
-    },
-    onClose: () => {
-      //console.log("closed");
-    },
-  })
-  const { onSearch, onClear } = useMemo(
-    () => ({
-      onSearch: (query: ItemsQuery) => {
-        props.onSearch(query)
-        close()
-      },
-      onClear: () => {
-        props.onClear()
-        close()
-      },
-    }),
-    [props, close],
-  )
+export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
+  const { inputRef, close, open } = useDropdownFocus()
+
   const parentRef = useArrowKeyNavigation<HTMLFieldSetElement>(
     '.suggest-result button',
     {
       onEscape: () => {
         inputRef.current?.value === ''
+        close()
       },
       onNotFound: () => inputRef.current?.focus(),
     },
@@ -137,7 +119,6 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
 
   const onKeyUp = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
-      open()
       const input = e.currentTarget
       const isAtEnd = input.selectionEnd == input.value.length
       const bestSuggestion = suggestions[0]
@@ -146,6 +127,7 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
         e.stopPropagation()
         if (smartQuery != null) {
           onSearch(smartQuery)
+          close()
         }
       }
       if (isAtEnd && e.key === 'ArrowRight' && bestSuggestion != null) {
@@ -176,29 +158,16 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
       const { query } = fromQueryString(globalThis.location.hash.substring(1))
       if (query && inputRef.current != null) {
         inputRef.current.value = query
-        setTerm(query)
+        //setTerm(query);
       }
     }
-    const close = () => {
-      updateFromHash()
-      if (isOpen) {
-        requestAnimationFrame(() => {
-          const results = document.getElementById('results')
-          const firstChild = results?.children[0] as HTMLElement
 
-          if (firstChild) {
-            close()
-            firstChild.focus({ preventScroll: false })
-          }
-        })
-      }
-    }
-    globalThis.window.addEventListener('hashchange', close, false)
+    globalThis.window.addEventListener('hashchange', updateFromHash, false)
     updateFromHash()
     return () => {
-      globalThis.window.removeEventListener('hashchange', close)
+      globalThis.window.removeEventListener('hashchange', updateFromHash)
     }
-  }, [isOpen, setTerm])
+  }, [])
 
   return (
     <form
@@ -226,11 +195,10 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
             accessKey="f"
             className="w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden md:rounded-md suggest-input"
             type="search"
-            aria-expanded={false}
             onKeyUp={onKeyUp}
             onInput={(e) => {
               setTerm(e.currentTarget.value)
-
+              open()
               if (e.currentTarget.value.length === 0) {
                 // console.log("cleared");
                 onClear()
@@ -247,6 +215,7 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
           <button
             type="submit"
             aria-label="Search"
+            tabIndex={-1}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
           >
             <Search aria-hidden="true" size={20} />
@@ -293,11 +262,18 @@ export const AutoSuggest = (props: AutoSuggestProps) => {
             </button>
           )}
         </div>
-        <SuggestionResults
-          onClose={close}
-          onSearch={onSearch}
-          onClear={onClear}
-        />
+        <div
+          id="suggestion-results"
+          aria-labelledby="autosuggest-input"
+          aria-label="Suggestion results"
+          className="transition-opacity md:rounded-md md:border md:border-gray-300 bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
+        >
+          <SuggestionResults
+            onClose={close}
+            onSearch={onSearch}
+            onClear={onClear}
+          />
+        </div>
       </fieldset>
     </form>
   )
@@ -313,13 +289,7 @@ const SuggestionResults = ({
   const { items } = useSuggestions()
 
   return (
-    <div
-      id="suggestion-results"
-      aria-labelledby="autosuggest-input"
-      aria-label="Suggestion results"
-      aria-hidden="true"
-      className="transition-opacity md:rounded-md md:border md:border-gray-300 bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
-    >
+    <>
       {items.map((item, idx) => (
         <SuggestSelector
           {...item}
@@ -335,7 +305,7 @@ const SuggestionResults = ({
       >
         <ChevronUp className="size-6" />
       </button>
-    </div>
+    </>
   )
 }
 
