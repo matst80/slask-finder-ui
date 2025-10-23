@@ -119,10 +119,10 @@ export const useAddToCart = () => {
           }
           return data
         })
-        .catch(() => {
+        .catch((err) => {
           showNotification({
             title: 'Error',
-            message: `Failed to add item to your cart.`,
+            message: `Could not add item to your cart, ${err}`,
             variant: 'error',
           })
         })
