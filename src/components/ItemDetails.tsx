@@ -1,6 +1,6 @@
 import { BotMessageSquare, UserCog } from 'lucide-react'
 import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAdmin } from '../hooks/appState'
 import { useAddToCart } from '../hooks/cartHooks'
 import {
@@ -15,7 +15,6 @@ import {
 import { useFirebaseMessaging } from '../hooks/useFirebaseMessaging'
 import { getAdminItem, registerPriceWatch } from '../lib/datalayer/api'
 import { trackAction } from '../lib/datalayer/beacons'
-import { FacetProvider } from '../lib/hooks/FacetProvider'
 import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
 import { QueryProvider } from '../lib/hooks/QueryProvider'
 import { useQuery } from '../lib/hooks/useQuery'
@@ -34,7 +33,6 @@ import {
 } from '../lib/types'
 import { useProductData } from '../lib/utils'
 import { AiShoppingProvider, MessageList, QueryInput } from '../pages/AiShopper'
-import { FacetSelector } from '../pages/ProductConfigurator'
 import { convertDetails } from '../pages/tools'
 import { cm, isDefined, makeImageUrl, useFetchMutation } from '../utils'
 import { GroupedProperties } from './GroupedProperties'
@@ -441,59 +439,57 @@ const BreadCrumbs = ({ values }: Pick<ItemDetail, 'values'>) => {
   )
 }
 
-const configIgnoredFacets = [
-  2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559, 31158,
-]
+// const configIgnoredFacets = [
+//   2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559, 31158,
+// ]
 
-const ItemChangeHandler = () => {
-  const { hits } = useQuery()
-  const navigate = useNavigate()
-  useEffect(() => {
-    if (hits.length > 0) {
-      const item = hits[0]
-      //console.log(item);
-      navigate(`/product/${item.id}`, { replace: true })
-      // Handle item change
-    }
-  }, [hits, navigate])
-  return null
-}
+// const ItemChangeHandler = () => {
+//   const { hits } = useQuery()
+//   const navigate = useNavigate()
+//   useEffect(() => {
+//     if (hits.length > 0) {
+//       const item = hits[0]
+//       //console.log(item);
+//       navigate(`/product/${item.id}`, { replace: true })
+//       // Handle item change
+//     }
+//   }, [hits, navigate])
+//   return null
+// }
 
-const ConfiguratorSidebar = ({
-  open,
-  setOpen,
-  pft,
-}: {
-  pft: string[]
-  open: boolean
-  setOpen: (open: boolean) => void
-}) => {
-  return (
-    <Sidebar open={open} setOpen={setOpen} side="right">
-      <div className="bg-white p-6 w-sm max-w-full h-screen overflow-y-auto">
-        {open && (
-          <QueryProvider
-            initialQuery={{
-              string: [{ id: 25, value: pft }],
-            }}
-          >
-            <FacetProvider ignoreFacets={configIgnoredFacets}>
-              <FacetSelector />
-            </FacetProvider>
-            <ItemChangeHandler />
-          </QueryProvider>
-        )}
-      </div>
-    </Sidebar>
-  )
-}
+// const ConfiguratorSidebar = ({
+//   open,
+//   setOpen,
+//   pft,
+// }: {
+//   pft: string[]
+//   open: boolean
+//   setOpen: (open: boolean) => void
+// }) => {
+//   return (
+//     <Sidebar open={open} setOpen={setOpen} side="right">
+//       <div className="bg-white p-6 w-sm max-w-full h-screen overflow-y-auto">
+//         {open && (
+//           <QueryProvider
+//             initialQuery={{
+//               string: [{ id: 25, value: pft }],
+//             }}
+//           >
+//             <FacetProvider ignoreFacets={configIgnoredFacets}>
+//               <FacetSelector />
+//             </FacetProvider>
+//             <ItemChangeHandler />
+//           </QueryProvider>
+//         )}
+//       </div>
+//     </Sidebar>
+//   )
+// }
 
 export const OtherVariants = ({ pft, id }: { pft: string[]; id: number }) => {
   const { data, isLoading } = useItemsSearch({
     string: [{ id: 25, value: pft }],
   })
-
-  const [open, setOpen] = useState(false)
 
   const [facetValues, setFacetValues] = useState<Record<string, Set<string>>>(
     {},
@@ -532,10 +528,9 @@ export const OtherVariants = ({ pft, id }: { pft: string[]; id: number }) => {
       {isLoading ? (
         <Loader size="md" />
       ) : showButton ? (
-        <>
-          <Button onClick={() => setOpen(true)}>Configure</Button>
-          <ConfiguratorSidebar open={open} setOpen={setOpen} pft={pft} />
-        </>
+        <Link to={`/config/${pft}`} className="underline">
+          Configure
+        </Link>
       ) : (
         <div>
           {data?.items.map((item) => (

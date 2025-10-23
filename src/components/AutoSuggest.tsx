@@ -203,6 +203,7 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
             id="autosuggest-input"
             autoComplete="off"
             defaultValue={''}
+            aria-expanded="false"
             aria-controls="suggestion-results"
             placeholder="Search..."
           />
