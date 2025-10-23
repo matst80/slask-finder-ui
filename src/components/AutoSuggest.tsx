@@ -94,13 +94,19 @@ type AutoSuggestProps = {
 }
 
 export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
-  const { inputRef, close, open } = useDropdownFocus()
+  const { inputRef, close } = useDropdownFocus()
+  const doSearch = useCallback(
+    (query: ItemsQuery) => {
+      onSearch(query)
+      close()
+    },
+    [onSearch, close],
+  )
 
   const parentRef = useArrowKeyNavigation<HTMLFieldSetElement>(
     '.suggest-result button',
     {
       onEscape: () => {
-        inputRef.current?.value === ''
         close()
       },
       onNotFound: () => inputRef.current?.focus(),
@@ -126,8 +132,7 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
         e.preventDefault()
         e.stopPropagation()
         if (smartQuery != null) {
-          onSearch(smartQuery)
-          close()
+          doSearch(smartQuery)
         }
       }
       if (isAtEnd && e.key === 'ArrowRight' && bestSuggestion != null) {
@@ -141,17 +146,8 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
       }
       updatePosition()
     },
-    [suggestions, setTerm, smartQuery, onSearch, open, updatePosition],
+    [suggestions, setTerm, doSearch, smartQuery, updatePosition],
   )
-
-  // useEffect(() => {
-  //   if (globalQuery.query != null && inputRef.current != null) {
-  //     inputRef.current.value = globalQuery.query;
-  //   }
-  //   requestAnimationFrame(() => {
-  //     updatePosition();
-  //   });
-  // }, [globalQuery, inputRef]);
 
   useEffect(() => {
     const updateFromHash = () => {
@@ -167,7 +163,7 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
     return () => {
       globalThis.window.removeEventListener('hashchange', updateFromHash)
     }
-  }, [])
+  }, [inputRef])
 
   return (
     <form
@@ -179,7 +175,7 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
         e.preventDefault()
 
         if (query != null && typeof query === 'string' && query.length > 0) {
-          onSearch({
+          doSearch({
             string: [],
             range: [],
             page: 0,
@@ -198,11 +194,9 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
             onKeyUp={onKeyUp}
             onInput={(e) => {
               setTerm(e.currentTarget.value)
-              open()
               if (e.currentTarget.value.length === 0) {
-                // console.log("cleared");
+                close()
                 onClear()
-                //setQuery((prev) => ({ ...prev, query: "" }));
               }
             }}
             name="query"
@@ -236,7 +230,7 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
             <button
               onClick={(e) => {
                 e.preventDefault()
-                smartQuery != null && onSearch(smartQuery)
+                smartQuery != null && doSearch(smartQuery)
               }}
               className="attachment transition-opacity border-b border-yellow-200 py-2 fixed md:absolute bottom-3 md:bottom-auto left-3 right-3 md:right-auto md:-top-5 md:left-2 border overflow-x-auto bg-yellow-100 rounded-md flex gap-2 px-2 md:py-1 text-xs"
             >
@@ -266,26 +260,23 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
           id="suggestion-results"
           aria-labelledby="autosuggest-input"
           aria-label="Suggestion results"
+          aria-hidden="true"
           className="transition-opacity md:rounded-md md:border md:border-gray-300 bg-white overflow-y-auto suggest-result md:shadow-xl max-h-[70vh]"
         >
-          <SuggestionResults
-            onClose={close}
-            onSearch={onSearch}
-            onClear={onClear}
-          />
+          <SuggestionResults onSearch={doSearch} onClear={onClear} />
+          <button
+            onClick={close}
+            className="md:hidden absolute top-13 right-3 rounded-full bg-white p-1 z-20"
+          >
+            <ChevronUp className="size-6" />
+          </button>
         </div>
       </fieldset>
     </form>
   )
 }
 
-const SuggestionResults = ({
-  onClose,
-  onSearch,
-  onClear,
-}: AutoSuggestProps & {
-  onClose: () => void
-}) => {
+const SuggestionResults = ({ onSearch, onClear }: AutoSuggestProps) => {
   const { items } = useSuggestions()
 
   return (
@@ -299,12 +290,6 @@ const SuggestionResults = ({
           onClear={onClear}
         />
       ))}
-      <button
-        onClick={onClose}
-        className="md:hidden absolute top-13 right-3 rounded-full bg-white p-1 z-20"
-      >
-        <ChevronUp className="size-6" />
-      </button>
     </>
   )
 }

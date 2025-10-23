@@ -37,6 +37,7 @@ export const useDropdownFocus = () => {
         targetId != null ? document.getElementById(targetId) : undefined
 
       if (targetElm == null) {
+        console.log('target element not found: ', targetId)
         return
       }
       targetRef.current = targetElm
