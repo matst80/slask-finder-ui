@@ -17,7 +17,7 @@ const getCountry = () => {
 
 export const addToCart = async (payload: AddToCartArgs) => {
   const country = getCountry()
-  return fetch(`${baseUrl}/cart/`, {
+  return fetch(`${baseUrl}/cart`, {
     method: 'POST',
     body: JSON.stringify({ ...payload, country }),
   }).then((d) => toJson<CartMutationResult<Cart>>(d))
@@ -48,7 +48,7 @@ export const addToCartMultiple = async (items: AddToCartArgs[]) => {
 }
 
 export const changeQuantity = (payload: ChangeQuantityArgs) =>
-  fetch(`${baseUrl}/cart/`, {
+  fetch(`${baseUrl}/cart`, {
     method: 'PUT',
     body: JSON.stringify(payload),
   }).then((d) => toJson<CartMutationResult<Cart>>(d))
@@ -59,7 +59,7 @@ export const removeFromCart = ({ id }: { id: number }) =>
   }).then((d) => toJson<CartMutationResult<Cart>>(d))
 
 export const getCart = () =>
-  fetch(`${baseUrl}/cart/`).then(async (d) => {
+  fetch(`${baseUrl}/cart`).then(async (d) => {
     if (d.status === 404) {
       return null
     }
