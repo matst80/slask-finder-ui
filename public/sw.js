@@ -118,17 +118,17 @@ self.addEventListener("fetch", (event) => {
       .catch((err) => {
         // Return a fallback page for navigation requests
         return caches.match(request).then((cachedResponse) => {
+          if (dynamicUrlParts.some((d) => request.url.includes(d))) {
+            return err;
+          }
           if (cachedResponse) {
             return cachedResponse;
           }
-          if (
-            request.destination === "document" &&
-            !dynamicUrlParts.some((d) => request.url.includes(d))
-          ) {
+          if (request.destination === "document") {
             console.log("Returning fallback page, cause:", err);
             return caches.match("/index.html");
           }
-          return Promise.reject(err);
+          return err;
         });
       }),
   );
