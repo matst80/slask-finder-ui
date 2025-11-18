@@ -75,3 +75,21 @@ export const getConfirmation = (id: string) =>
 
 export const getCartById = (id: string | number) =>
   fetch(`${baseUrl}/cart/${id}`).then((d) => toJson<Cart>(d))
+
+export const upsertSubscriptionDetails = async <
+  T extends Record<string, unknown>,
+>(
+  payload: UpsertSubscriptionDetails<T>,
+) => {
+  return fetch(`${baseUrl}/cart/subscription-details`, {
+    method: 'PUT',
+    body: JSON.stringify({ ...payload }),
+  }).then((d) => toJson<CartMutationResult<Cart>>(d))
+}
+
+export type UpsertSubscriptionDetails<T extends Record<string, unknown>> = {
+  id?: string
+  offeringCode: string
+  signingType: string
+  data: T
+}

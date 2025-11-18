@@ -11,6 +11,8 @@ import {
   getCart,
   removeFromCart,
   removeVoucher,
+  UpsertSubscriptionDetails,
+  upsertSubscriptionDetails,
 } from '../lib/datalayer/cart-api'
 import { BaseEcomEvent, Item } from '../lib/types'
 import { useCartFetchMutation, useFetchMutation } from '../utils'
@@ -82,6 +84,14 @@ export const useAddMultipleToCart = () => {
           })
           return error
         }),
+  )
+}
+
+export const useUpsertSubscriptionDetails = () => {
+  return useCartFetchMutation(
+    cartKey,
+    (data: UpsertSubscriptionDetails<Record<string, unknown>>) =>
+      upsertSubscriptionDetails(data),
   )
 }
 

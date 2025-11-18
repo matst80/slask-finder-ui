@@ -7,6 +7,7 @@ import {
   useCart,
   useChangeQuantity,
   useRemoveVoucher,
+  useUpsertSubscriptionDetails,
 } from '../hooks/cartHooks'
 import { useCompatibleItems } from '../hooks/searchHooks'
 import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
@@ -22,7 +23,7 @@ import {
 import { cm, isDefined, makeImageUrl } from '../utils'
 import { Price, PriceElement, PriceValue } from './Price'
 import { toEcomTrackingEvent } from './toImpression'
-import { ButtonAnchor } from './ui/button'
+import { Button, ButtonAnchor } from './ui/button'
 import { Sidebar } from './ui/sidebar'
 
 type CartDialogProps = {
@@ -240,7 +241,8 @@ const StockIndicator = ({
 const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   const { trigger: changeQuantity } = useChangeQuantity()
   const { price, trackingItem } = useCartItemData(item)
-
+  const isMobile = item.meta.category2 === 'Mobiltelefon'
+  const { trigger, isMutating } = useUpsertSubscriptionDetails()
   return (
     <li key={item.id + item.sku} className="py-3 flex flex-col group relative">
       <div className="flex items-start gap-2">
@@ -268,6 +270,23 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
           {item.meta.outlet != null && (
             <span className="text-xs px-1 py-0.5 bg-amber-100 text-amber-800 rounded">
               {item.meta.outlet}
+            </span>
+          )}
+          {isMobile && (
+            <span className="text-xs py-0.5">
+              <Button
+                size="sm"
+                disabled={isMutating}
+                onClick={() => {
+                  trigger({
+                    offeringCode: 'test',
+                    signingType: 'new',
+                    data: { parentSku: item.sku, test: 'hej' },
+                  })
+                }}
+              >
+                Subscription test
+              </Button>
             </span>
           )}
           {item.meta.sellerId != null &&
