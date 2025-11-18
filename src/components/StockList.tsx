@@ -11,7 +11,6 @@ import { useGeoLocation } from './useGeoLocation'
 
 export const StockList = ({
   stock,
-  stockLevel,
   trackingItem,
   sku,
 }: StockData & { sku: string; trackingItem: BaseEcomEvent }) => {
@@ -49,6 +48,7 @@ export const StockList = ({
       })
     }
   }, [zip, getCoarseLocation])
+  const stockLevel = stock?.['se'] ?? stock?.['no']
   if (stock == null) return null
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden flex flex-col flex-1 thin-scrollbar">

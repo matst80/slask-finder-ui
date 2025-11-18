@@ -17,9 +17,9 @@ const hasStock = (value?: string | null) => {
   return value != null && value != '0'
 }
 
-export const StockBalloon = ({ stock, stockLevel }: StockData) => {
+export const StockBalloon = ({ stock }: StockData) => {
   const hasStoreStock = Object.entries(stock ?? {}).length > 0
-  const hasOnlineStock = hasStock(stockLevel)
+  const hasOnlineStock = hasStock(stock?.['se'] ?? stock?.['no'])
   return (
     <div
       className={`size-2 rounded-full aspect-square ${
@@ -31,11 +31,10 @@ export const StockBalloon = ({ stock, stockLevel }: StockData) => {
 
 export const StockIndicator = ({
   stock,
-  stockLevel,
   showOnlyInStock = false,
 }: StockData & { showOnlyInStock?: boolean }) => {
   const t = useTranslations()
-
+  const stockLevel = stock?.['se'] ?? stock?.['no']
   const locationId = (
     globalThis.window as Window & { selectedStoreId?: string }
   ).selectedStoreId
@@ -211,7 +210,7 @@ export const ResultItemInner = ({
     disclaimer,
     advertisingText,
   } = item
-  const { price, rating, grade, isOwn, isOutlet, soldBy, stockLevel } =
+  const { price, rating, grade, isOwn, isOutlet, soldBy } =
     useProductData(values)
 
   const isTransitioning = useViewTransitionState(
@@ -303,7 +302,7 @@ export const ResultItemInner = ({
       )}
 
       <div className="mb-0 mt-auto px-4 pb-3 flex gap-1 justify-between">
-        <StockIndicator stock={stock} stockLevel={stockLevel} showOnlyInStock />
+        <StockIndicator stock={stock} showOnlyInStock />
       </div>
     </>
   )

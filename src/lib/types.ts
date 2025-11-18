@@ -67,7 +67,7 @@ export type Item = ItemProps & {
 }
 
 export const ValueMap = {
-  StockLevel: 3,
+  //StockLevel: 3,
   Price: 4,
   OrgPrice: 5,
   Rating: 6,
@@ -773,7 +773,6 @@ export type PathInto<T extends BaseTranslationType> = keyof {
 }
 export type StockData = {
   stock?: Stock
-  stockLevel?: string
 }
 
 export type User = {

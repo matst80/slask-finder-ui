@@ -297,7 +297,7 @@ const SuggestionResults = ({ onSearch, onClear }: AutoSuggestProps) => {
 
 const SuggestedProduct = (item: SuggestedProductType & { index: number }) => {
   const { id, title, img, values, stock } = item
-  const { stockLevel, soldBy, isOutlet, grade, isOwn } = useProductData(values)
+  const { soldBy, isOutlet, grade, isOwn } = useProductData(values)
   const { track } = useTracking()
   const navigate = useNavigate()
   return (
@@ -314,7 +314,7 @@ const SuggestedProduct = (item: SuggestedProductType & { index: number }) => {
         className="w-10 h-10 object-contain aspect-square mix-blend-multiply"
       />
       <div className="absolute md:static right-2">
-        <StockBalloon stock={stock} stockLevel={stockLevel} />
+        <StockBalloon stock={stock} />
       </div>
       <div className="flex flex-col">
         <div className="flex items-center gap-2">

@@ -625,12 +625,11 @@ export const ItemDetails = (details: ItemDetail) => {
   }
   if (!details) return null
   const pft = details.values[25]
-
+  const stockLevel = stock?.['se'] ?? stock?.['no']
   const canAddToCart =
     buyable &&
     !isMutating &&
-    (values[1] !== 'ZHAB' ||
-      (productData.stockLevel != null && Number(productData.stockLevel) > 0))
+    (values[1] !== 'ZHAB' || (stockLevel != null && Number(stockLevel) > 0))
 
   return (
     <>
@@ -754,7 +753,6 @@ export const ItemDetails = (details: ItemDetail) => {
                 </div>
                 <StockList
                   stock={stock}
-                  stockLevel={productData?.stockLevel}
                   trackingItem={toEcomTrackingEvent(details, 0)}
                   sku={details.sku}
                 />

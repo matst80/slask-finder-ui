@@ -9,7 +9,6 @@ import { trackAction } from '../../lib/datalayer/beacons'
 import { useCompareContext } from '../../lib/hooks/CompareProvider'
 import { useTracking } from '../../lib/hooks/TrackingContext'
 import { useTranslations } from '../../lib/hooks/useTranslations'
-import { useProductData } from '../../lib/utils'
 import { makeImageUrl } from '../../utils'
 import { ItemWithComponentId, isParentId } from './builder-types'
 import { BuilderFooterBar } from './components/BuilderFooterBar'
@@ -41,7 +40,7 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
   const parentId = isParentId(queryParentId) ? queryParentId : itemParentId
   const isSelected = selectedItems.some((d) => d.id === id)
   const { track } = useTracking()
-  const productData = useProductData(values)
+
   if (!details) return null
 
   return (
@@ -153,7 +152,6 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
                 )}
                 <StockList
                   stock={stock}
-                  stockLevel={productData?.stockLevel}
                   sku={details.sku}
                   trackingItem={toEcomTrackingEvent(details, 0)}
                 />

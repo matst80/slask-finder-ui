@@ -218,7 +218,7 @@ export const useProductData = (values: Item['values']) => {
     const isOutlet = values?.[ValueMap.Category1] == 'Outlet'
     const grade = values[ValueMap.Grade]
     const price = getPrice(values)
-    const stockLevel = values[ValueMap.StockLevel]
+
     const isOwn = soldBy == null || soldBy == 'Elgiganten' || soldBy == 'Elkjøp'
 
     return {
@@ -228,7 +228,6 @@ export const useProductData = (values: Item['values']) => {
       isOutlet,
       grade,
       price,
-      stockLevel,
     }
   }, [values])
 }

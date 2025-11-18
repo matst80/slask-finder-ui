@@ -11,7 +11,6 @@ import {
   TableRow,
 } from '../../components/ui/table'
 import { useQuery } from '../../lib/hooks/useQuery'
-import { ValueMap } from '../../lib/types'
 
 export const TableSearchResultList = () => {
   const {
@@ -85,9 +84,7 @@ export const TableSearchResultList = () => {
                     </TableCell>
                   ))} */}
                   <TableCell>{product.values['4'].toFixed(2)}</TableCell>
-                  <TableCell>
-                    {product.values[ValueMap.StockLevel] ?? '0'}
-                  </TableCell>
+                  <TableCell>{product.stock?.['se'] ?? '0'}</TableCell>
                   <TableCell className="justify-end flex gap-2">
                     <Button variant="ghost" size="icon">
                       <Link to={`/edit/product/${product.id}`}>
