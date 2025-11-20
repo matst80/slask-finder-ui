@@ -1,4 +1,10 @@
-import { Cart, CartMutationResult } from '../types'
+import {
+  Cart,
+  CartMutationResult,
+  LineItemMarkingRequest,
+  PickupPoint,
+  SetDeliveryRequest,
+} from '../types'
 import { baseUrl, toJson } from './api'
 
 type AddToCartArgs = {
@@ -84,6 +90,60 @@ export const upsertSubscriptionDetails = async <
   return fetch(`${baseUrl}/cart/subscription-details`, {
     method: 'PUT',
     body: JSON.stringify({ ...payload }),
+  }).then((d) => toJson<CartMutationResult<Cart>>(d))
+}
+
+export const addToCartBySku = async (sku: string) => {
+  return fetch(`${baseUrl}/cart/add/${sku}`).then((d) =>
+    toJson<CartMutationResult<Cart>>(d),
+  )
+}
+
+export const setDelivery = async (payload: SetDeliveryRequest) => {
+  return fetch(`${baseUrl}/cart/delivery`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }).then((d) => toJson<CartMutationResult<Cart>>(d))
+}
+
+export const removeDelivery = async (deliveryId: number) => {
+  return fetch(`${baseUrl}/cart/delivery/${deliveryId}`, {
+    method: 'DELETE',
+  }).then((d) => toJson<CartMutationResult<Cart>>(d))
+}
+
+export const setPickupPoint = async (payload: {
+  deliveryId: number
+  pickupPoint: PickupPoint
+}) => {
+  const { deliveryId, pickupPoint } = payload
+  return fetch(`${baseUrl}/cart/delivery/${deliveryId}/pickupPoint`, {
+    method: 'PUT',
+    body: JSON.stringify(pickupPoint),
+  }).then((d) => toJson<CartMutationResult<Cart>>(d))
+}
+
+export const setUserId = async (userId: string) => {
+  return fetch(`${baseUrl}/cart/user`, {
+    method: 'PUT',
+    body: JSON.stringify({ userId }),
+  }).then((d) => toJson<CartMutationResult<Cart>>(d))
+}
+
+export const setItemMarking = async (payload: {
+  itemId: number
+  marking: LineItemMarkingRequest
+}) => {
+  const { itemId, marking } = payload
+  return fetch(`${baseUrl}/cart/item/${itemId}/marking`, {
+    method: 'PUT',
+    body: JSON.stringify(marking),
+  }).then((d) => toJson<CartMutationResult<Cart>>(d))
+}
+
+export const removeItemMarking = async (itemId: number) => {
+  return fetch(`${baseUrl}/cart/item/${itemId}/marking`, {
+    method: 'DELETE',
   }).then((d) => toJson<CartMutationResult<Cart>>(d))
 }
 

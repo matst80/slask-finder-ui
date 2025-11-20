@@ -308,10 +308,11 @@ export type CartPrice = {
 }
 
 export type CartDelivery = {
-  id: string
+  id: number
   provider: string
-  items: number[]
   price: CartPrice
+  items: number[]
+  pickupPoint?: PickupPoint
 }
 
 export type Mutation = Record<string, unknown>
@@ -334,14 +335,23 @@ export type CartMutationResult<T> = {
 export type Cart = {
   id: string
   items: CartItem[]
+  totalPrice: CartPrice
+  totalTax: number
+  totalDiscount: CartPrice
   deliveries: CartDelivery[]
   processing: boolean
   paymentInProgress: boolean
   orderReference?: string
   paymentStatus?: string
-  totalPrice: CartPrice
-  totalDiscount: CartPrice
   vouchers: Voucher[]
+  subscriptionDetails?: Record<string, SubscriptionDetails>
+  userId?: string
+  confirmationViewCount?: number
+  confirmationLastViewedAt?: string
+  checkoutOrderId?: string
+  checkoutStatus?: string
+  checkoutCountry?: string
+  paymentDeclinedNotices?: Notice[]
 }
 
 export type Voucher = {
@@ -350,36 +360,45 @@ export type Voucher = {
   value: number
   description: string
   applied: boolean
+  rules: string[]
 }
 
 export type HistoryQuery = ItemsQuery & { key: string }
 
 export type CartItemMeta = {
-  image: string
   name: string
-  outlet?: string
-  sellerId?: string
-  sellerName?: string
   brand?: string
   category?: string
   category2?: string
   category3?: string
   category4?: string
   category5?: string
+  sellerId?: string
+  sellerName?: string
+  image: string
+  outlet?: string
 }
 
 export type CartItem = {
   id: number
-  itemId: string // maybe
-  meta: CartItemMeta
-  orgPrice?: CartPrice
-  price: CartPrice
-  qty: number
+  itemId: number
+  parentId?: number
   sku: string
+  price: CartPrice
+  totalPrice?: CartPrice
+  orgPrice?: CartPrice
   stock: number
-  tax: number
+  qty: number
+  discount?: CartPrice
+  disclaimer?: string
   type: string
   storeId?: string
+  meta: CartItemMeta
+  saleStatus?: string
+  marking?: Marking
+  subscriptionDetailsId?: string
+  orderReference?: string
+  isSubscribed?: boolean
 }
 
 export type ItemPrice =
@@ -393,6 +412,18 @@ export type ItemPrice =
       original: number
       discount: number
     }
+
+export type SetDeliveryRequest = {
+  provider: string
+  items: number[]
+  pickupPoint?: PickupPoint
+}
+
+export type LineItemMarkingRequest = {
+  type: number
+  marking: string
+}
+
 export type FacetListItem = {
   id: number
   valueType?: string
@@ -861,4 +892,31 @@ export interface StoreAttribute {
 export interface OpenHours {
   days: Array<[TimeTuple, TimeTuple] | null>
   other: Other[]
+}
+
+export type PickupPoint = {
+  id: string
+  name?: string | null
+  address?: string | null
+  city?: string | null
+  zip?: string | null
+  country?: string | null
+}
+
+export type Marking = {
+  type: number
+  text: string
+}
+
+export type Notice = {
+  timestamp: string
+  message: string
+  code?: string | null
+}
+
+export type SubscriptionDetails = {
+  id: string
+  offeringCode: string
+  signingType: string
+  data: Record<string, unknown>
 }

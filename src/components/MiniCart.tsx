@@ -6,7 +6,9 @@ import {
   useAddVoucher,
   useCart,
   useChangeQuantity,
+  useRemoveItemMarking,
   useRemoveVoucher,
+  useSetItemMarking,
   useUpsertSubscriptionDetails,
 } from '../hooks/cartHooks'
 import { useCompatibleItems } from '../hooks/searchHooks'
@@ -243,6 +245,15 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   const { price, trackingItem } = useCartItemData(item)
   const isMobile = item.meta.category2 === 'Mobiltelefon'
   const { trigger, isMutating } = useUpsertSubscriptionDetails()
+  const { trigger: setMarking, isMutating: isSettingMarking } =
+    useSetItemMarking()
+  const { trigger: removeMarking, isMutating: isRemovingMarking } =
+    useRemoveItemMarking()
+  const [markingText, setMarkingText] = useState(item.marking?.text || '')
+
+  useEffect(() => {
+    setMarkingText(item.marking?.text || '')
+  }, [item.marking?.text])
   return (
     <li key={item.id + item.sku} className="py-3 flex flex-col group relative">
       <div className="flex items-start gap-2">
@@ -272,6 +283,11 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
               {item.meta.outlet}
             </span>
           )}
+          {item.marking && (
+            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-800 rounded">
+              Marking: {item.marking.text}
+            </span>
+          )}
           {isMobile && (
             <span className="text-xs py-0.5">
               <Button
@@ -279,6 +295,7 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
                 disabled={isMutating}
                 onClick={() => {
                   trigger({
+                    id: 'G40BqPcuiwi',
                     offeringCode: 'test',
                     signingType: 'new',
                     data: { parentSku: item.sku, test: 'hej' },
@@ -327,6 +344,41 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
               minQuantity={0}
               maxQuantity={Math.min(99, item.stock)}
             />
+          </div>
+
+          <div className="flex items-center gap-2 pt-2">
+            <input
+              type="text"
+              value={markingText}
+              onChange={(e) => setMarkingText(e.target.value)}
+              placeholder="Add marking"
+              className="border border-gray-300 rounded px-2 py-1 text-xs flex-1"
+            />
+            <Button
+              size="sm"
+              disabled={isSettingMarking || !markingText.trim()}
+              onClick={() => {
+                setMarking({
+                  itemId: item.id,
+                  marking: { type: 1, marking: markingText.trim() },
+                })
+              }}
+            >
+              Set
+            </Button>
+            {item.marking && (
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={isRemovingMarking}
+                onClick={() => {
+                  removeMarking(item.id)
+                  setMarkingText('')
+                }}
+              >
+                Remove
+              </Button>
+            )}
           </div>
 
           <CartCompatible id={Number(item.itemId)} />

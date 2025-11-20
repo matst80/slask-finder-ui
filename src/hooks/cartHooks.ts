@@ -5,16 +5,28 @@ import { clearCart } from '../lib/datalayer/api'
 import { trackCart } from '../lib/datalayer/beacons'
 import {
   addToCart,
+  addToCartBySku,
   addToCartMultiple,
   addVoucher,
   changeQuantity,
   getCart,
+  removeDelivery,
   removeFromCart,
+  removeItemMarking,
   removeVoucher,
+  setDelivery,
+  setItemMarking,
+  setPickupPoint,
+  setUserId,
   UpsertSubscriptionDetails,
   upsertSubscriptionDetails,
 } from '../lib/datalayer/cart-api'
-import { BaseEcomEvent, Item } from '../lib/types'
+import {
+  BaseEcomEvent,
+  Item,
+  LineItemMarkingRequest,
+  PickupPoint,
+} from '../lib/types'
 import { useCartFetchMutation, useFetchMutation } from '../utils'
 
 const cartKey = '/cart'
@@ -166,4 +178,50 @@ export const useRemoveFromCart = () => {
       return data
     },
   }
+}
+
+export const useAddToCartBySku = () => {
+  return useCartFetchMutation(cartKey, addToCartBySku)
+}
+
+export const useSetDelivery = () => {
+  return useCartFetchMutation(cartKey, setDelivery)
+}
+
+export const useRemoveDelivery = () => {
+  return useCartFetchMutation(cartKey, removeDelivery)
+}
+
+export const useSetPickupPoint = () => {
+  return useCartFetchMutation(
+    cartKey,
+    ({
+      deliveryId,
+      pickupPoint,
+    }: {
+      deliveryId: number
+      pickupPoint: PickupPoint
+    }) => setPickupPoint({ deliveryId, pickupPoint }),
+  )
+}
+
+export const useSetUserId = () => {
+  return useCartFetchMutation(cartKey, setUserId)
+}
+
+export const useSetItemMarking = () => {
+  return useCartFetchMutation(
+    cartKey,
+    ({
+      itemId,
+      marking,
+    }: {
+      itemId: number
+      marking: LineItemMarkingRequest
+    }) => setItemMarking({ itemId, marking }),
+  )
+}
+
+export const useRemoveItemMarking = () => {
+  return useCartFetchMutation(cartKey, removeItemMarking)
 }
