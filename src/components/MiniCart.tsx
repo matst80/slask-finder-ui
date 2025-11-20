@@ -1,4 +1,4 @@
-import { ShoppingCartIcon, TicketIcon, X } from 'lucide-react'
+import { Edit, ShoppingCartIcon, TicketIcon, X } from 'lucide-react'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -250,6 +250,7 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   const { trigger: removeMarking, isMutating: isRemovingMarking } =
     useRemoveItemMarking()
   const [markingText, setMarkingText] = useState(item.marking?.text || '')
+  const [showMarking, setShowMarking] = useState(false)
 
   useEffect(() => {
     setMarkingText(item.marking?.text || '')
@@ -344,42 +345,52 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
               minQuantity={0}
               maxQuantity={Math.min(99, item.stock)}
             />
-          </div>
-
-          <div className="flex items-center gap-2 pt-2">
-            <input
-              type="text"
-              value={markingText}
-              onChange={(e) => setMarkingText(e.target.value)}
-              placeholder="Add marking"
-              className="border border-gray-300 rounded px-2 py-1 text-xs flex-1"
-            />
             <Button
               size="sm"
-              disabled={isSettingMarking || !markingText.trim()}
-              onClick={() => {
-                setMarking({
-                  itemId: item.id,
-                  marking: { type: 1, marking: markingText.trim() },
-                })
-              }}
+              variant="ghost"
+              onClick={() => setShowMarking(!showMarking)}
+              className="p-1"
             >
-              Set
+              <Edit size={16} />
             </Button>
-            {item.marking && (
+          </div>
+
+          {showMarking && (
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="text"
+                value={markingText}
+                onChange={(e) => setMarkingText(e.target.value)}
+                placeholder="Add marking"
+                className="border border-gray-300 rounded px-2 py-1 text-xs flex-1"
+              />
               <Button
                 size="sm"
-                variant="outline"
-                disabled={isRemovingMarking}
+                disabled={isSettingMarking || !markingText.trim()}
                 onClick={() => {
-                  removeMarking(item.id)
-                  setMarkingText('')
+                  setMarking({
+                    itemId: item.id,
+                    marking: { type: 1, marking: markingText.trim() },
+                  })
                 }}
               >
-                Remove
+                Set
               </Button>
-            )}
-          </div>
+              {item.marking && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isRemovingMarking}
+                  onClick={() => {
+                    removeMarking(item.id)
+                    setMarkingText('')
+                  }}
+                >
+                  Remove
+                </Button>
+              )}
+            </div>
+          )}
 
           <CartCompatible id={Number(item.itemId)} />
         </>
