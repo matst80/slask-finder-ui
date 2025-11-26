@@ -4,6 +4,7 @@ import { useFavouriteStore } from '../hooks/useFavouriteStore'
 import { useTranslations } from '../lib/hooks/useTranslations'
 import { BaseEcomEvent, Store } from '../lib/types'
 import { StoreWithStock } from './ItemDetails'
+import { ReservationSummary } from './ReservationSummary'
 import { Button } from './ui/button'
 
 const weekdayDateMap = {
@@ -111,6 +112,7 @@ export const StockLocation = ({
   const t = useTranslations()
   const [favouriteStore, setFavouriteStore] = useFavouriteStore()
   const [open, setOpen] = useState(favouriteStore === store.id)
+
   return (
     <li
       key={store.id}
@@ -140,10 +142,18 @@ export const StockLocation = ({
       </div>
       {open && (
         <div className="px-3 py-2 text-sm text-gray-600">
+          <div className="font-bold">
+            <ReservationSummary
+              sku={sku}
+              locationId={store.id}
+              stock={Number(stock)}
+            />
+          </div>
           <div className="flex gap-1">
             <p className="flex-1">
               {store.address.street}, {store.address.zip} {store.address.city}
             </p>
+
             {(Number(stock) > 0 || store.shipToStore) && (
               <Button
                 size="sm"

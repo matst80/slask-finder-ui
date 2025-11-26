@@ -146,7 +146,7 @@ export const swedish = {
   stock: {
     level: 'Lagerstatus',
     in_stock: 'I lager',
-    in_stock_online: 'I lager online {{ stockLevel }} st',
+    in_stock_online: 'I lager online ',
     nr: '{{ stock }} st',
     distance: '{{ distance }} km',
     in_your_store: 'I din butik: {{ stock }}',

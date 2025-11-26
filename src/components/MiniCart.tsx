@@ -240,6 +240,27 @@ const StockIndicator = ({
   }
 }
 
+const ReservationTimer = ({ endTime }: { endTime: string }) => {
+  const [timeLeft, setTimeLeft] = useState<string>('')
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const end = new Date(endTime).getTime()
+      const now = new Date().getTime()
+      const diff = end - now
+      if (diff <= 0) {
+        setTimeLeft('Reservation expired')
+        clearInterval(interval)
+        return
+      }
+      const minutes = Math.floor((diff / 1000 / 60) % 60)
+      const seconds = Math.floor((diff / 1000) % 60)
+      setTimeLeft(`Reservation ends in ${minutes}m ${seconds}s`)
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [endTime])
+  return <span className="text-xs text-red-600">{timeLeft}</span>
+}
+
 const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   const { trigger: changeQuantity } = useChangeQuantity()
   const { price, trackingItem } = useCartItemData(item)
@@ -288,6 +309,9 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
             <span className="text-xs px-1 py-0.5 bg-green-100 text-green-800 rounded">
               Marking: {item.marking.text}
             </span>
+          )}
+          {item.reservationEndTime && (
+            <ReservationTimer endTime={item.reservationEndTime} />
           )}
           {isMobile && (
             <span className="text-xs py-0.5">
@@ -352,7 +376,9 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
                 changeQuantity(item.id, value, trackingItem(value))
               }}
               minQuantity={0}
-              maxQuantity={Math.min(99, item.stock)}
+              maxQuantity={
+                item.reservationEndTime != null ? 1 : Math.min(99, item.stock)
+              }
             />
             <Button
               size="sm"

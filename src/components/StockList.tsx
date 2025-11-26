@@ -6,6 +6,7 @@ import { BaseEcomEvent, StockData } from '../lib/types'
 import { isDefined } from '../utils'
 import { StoreWithStock } from './ItemDetails'
 import { calculateDistance } from './map-utils'
+import { ReservationSummary } from './ReservationSummary'
 import { StockLocation } from './StockLocation'
 import { useGeoLocation } from './useGeoLocation'
 
@@ -56,7 +57,8 @@ export const StockList = ({
         <h3 className="text-lg font-semibold">{t('stock.level')}</h3>
         {stockLevel != null && stockLevel !== '0' && (
           <p className="text-gray-600 mt-1">
-            {t('stock.in_stock_online', { stockLevel })}
+            {t('stock.in_stock_online', { stockLevel: '' })}
+            <ReservationSummary sku={sku} stock={Number(stockLevel)} />
           </p>
         )}
       </div>

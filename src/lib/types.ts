@@ -399,6 +399,7 @@ export type CartItem = {
   subscriptionDetailsId?: string
   orderReference?: string
   isSubscribed?: boolean
+  reservationEndTime?: string
 }
 
 export type ItemPrice =

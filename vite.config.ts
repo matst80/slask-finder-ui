@@ -5,7 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 //import { analyzer } from "vite-bundle-analyzer";
 const target = 'https://se.k6n.net'
 //const cartTarget = "https://slask-finder.knatofs.se/";
-const _localTarget = 'http://localhost:8080/'
+//const _localTarget = 'http://localhost:8080/'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,6 +20,14 @@ export default defineConfig({
       },
       '/location': {
         target, //: localTarget,
+        changeOrigin: true,
+      },
+      '/inventory': {
+        target,
+        changeOrigin: true,
+      },
+      '/reservations': {
+        target,
         changeOrigin: true,
       },
       '/cart': {

@@ -143,7 +143,7 @@ export const english = {
   stock: {
     level: 'Stock level',
     in_stock: 'In stock',
-    in_stock_online: 'In stock online {{ stockLevel }} pcs',
+    in_stock_online: 'In stock online ',
     nr: '{{ stock }} pcs',
     distance: '{{ distance }} km',
     in_your_store: 'In your store: {{ stock }}',

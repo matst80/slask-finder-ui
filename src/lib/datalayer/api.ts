@@ -588,3 +588,17 @@ export const registerPriceWatch = (id: number, token?: string | null) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token }),
   }).then((d) => d.ok)
+
+export const getReservationSummary = (payload: {
+  sku: string
+  locationId?: string
+}) =>
+  fetch(
+    `${baseUrl}/reservations/${payload.sku}/${payload.locationId ?? 'se'}`,
+  ).then((d) =>
+    toJson<{
+      remaining_items: number
+      earliest_release: string
+      reservation_count: number
+    }>(d),
+  )
