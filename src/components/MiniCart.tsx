@@ -1,4 +1,4 @@
-import { Edit, ShoppingCartIcon, TicketIcon, X } from 'lucide-react'
+import { Copy, Edit, ShoppingCartIcon, TicketIcon, X } from 'lucide-react'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -307,6 +307,15 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
               </Button>
             </span>
           )}
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(`curl -X PUT https://slask-cart.k6n.net/inventory/${item.storeId ?? 'se'}/${item.sku} \
+              -H "Content-Type: application/json" \
+              -d '{"quantity": 12}'`)
+            }}
+          >
+            <Copy className="size-4" />
+          </button>
           {item.meta.sellerId != null &&
             item.meta.sellerName != null &&
             !ownIds.includes(item.meta.sellerId) && (
