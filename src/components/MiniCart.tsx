@@ -1,4 +1,4 @@
-import { Copy, Edit, ShoppingCartIcon, TicketIcon, X } from 'lucide-react'
+import { Edit, ShoppingCartIcon, TicketIcon, X } from 'lucide-react'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -9,7 +9,7 @@ import {
   useRemoveItemMarking,
   useRemoveVoucher,
   useSetItemMarking,
-  useUpsertSubscriptionDetails,
+  //useUpsertSubscriptionDetails,
 } from '../hooks/cartHooks'
 import { useCompatibleItems } from '../hooks/searchHooks'
 import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
@@ -204,25 +204,33 @@ const StockIndicator = ({
   stock,
   quantity,
   storeId,
+  onClick,
 }: {
   stock: number
   quantity: number
   storeId?: string
+  onClick?: () => void
 }) => {
   const stockAfterPurchase = stock - quantity
   const boxClasses = 'text-xs rounded-lg px-[5px] py-[2px] inline-block'
   if (storeId != null) {
     if (stockAfterPurchase > 0) {
       return (
-        <span className={cm('bg-green-200 text-green-800', boxClasses)}>
+        <button
+          onClick={onClick}
+          className={cm('bg-green-200 text-green-800', boxClasses)}
+        >
           {stock} in store
-        </span>
+        </button>
       )
     } else {
       return (
-        <span className={cm('bg-red-200 text-red-800', boxClasses)}>
+        <button
+          onClick={onClick}
+          className={cm('bg-red-200 text-red-800', boxClasses)}
+        >
           {stock} in store
-        </span>
+        </button>
       )
     }
   }
@@ -233,15 +241,20 @@ const StockIndicator = ({
       return null
     }
     return (
-      <span className={cm('bg-orange-200 text-orange-800', boxClasses)}>
+      <button
+        onClick={onClick}
+        className={cm('bg-orange-200 text-orange-800', boxClasses)}
+      >
         Out of stock
-      </span>
+      </button>
     )
   }
 }
 
 const ReservationTimer = ({ endTime }: { endTime: string }) => {
-  const [timeLeft, setTimeLeft] = useState<string>('')
+  const [timeLeft, setTimeLeft] = useState<string>(
+    endTime != null ? 'Reserved...' : '',
+  )
   useEffect(() => {
     const interval = setInterval(() => {
       const end = new Date(endTime).getTime()
@@ -258,14 +271,14 @@ const ReservationTimer = ({ endTime }: { endTime: string }) => {
     }, 1000)
     return () => clearInterval(interval)
   }, [endTime])
-  return <span className="text-xs text-red-600">{timeLeft}</span>
+  return <span className="text-xs text-red-600 animate-pulse">{timeLeft}</span>
 }
 
 const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
   const { trigger: changeQuantity } = useChangeQuantity()
   const { price, trackingItem } = useCartItemData(item)
-  const isMobile = item.meta.category2 === 'Mobiltelefon'
-  const { trigger, isMutating } = useUpsertSubscriptionDetails()
+  //const isMobile = item.meta.category2 === "Mobiltelefon";
+  //const { trigger, isMutating } = useUpsertSubscriptionDetails();
   const { trigger: setMarking, isMutating: isSettingMarking } =
     useSetItemMarking()
   const { trigger: removeMarking, isMutating: isRemovingMarking } =
@@ -292,6 +305,11 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
           <Link to={`/product/${item.itemId}`} className="text-sm font-medium">
             {item.meta.name}{' '}
             <StockIndicator
+              onClick={() => {
+                navigator.clipboard.writeText(`curl -X PUT https://slask-cart.k6n.net/inventory/${item.storeId ?? 'se'}/${item.sku} \
+              -H "Content-Type: application/json" \
+              -d '{"quantity": 12}'`)
+              }}
               stock={item.stock}
               quantity={item.qty}
               storeId={item.storeId}
@@ -306,40 +324,32 @@ const CartItemElement = ({ item, open }: { item: CartItem; open: boolean }) => {
             </span>
           )}
           {item.marking && (
-            <span className="text-xs px-1 py-0.5 bg-green-100 text-green-800 rounded">
+            <span className="text-xs px-1 py-0.5 bg-blue-300 text-blue-800 rounded">
               Marking: {item.marking.text}
             </span>
           )}
           {item.reservationEndTime && (
             <ReservationTimer endTime={item.reservationEndTime} />
           )}
-          {isMobile && (
+          {/*{isMobile && (
             <span className="text-xs py-0.5">
               <Button
                 size="sm"
                 disabled={isMutating}
                 onClick={() => {
                   trigger({
-                    id: 'G40BqPcuiwi',
-                    offeringCode: 'test',
-                    signingType: 'new',
-                    data: { parentSku: item.sku, test: 'hej' },
-                  })
+                    id: "G40BqPcuiwi",
+                    offeringCode: "test",
+                    signingType: "new",
+                    data: { parentSku: item.sku, test: "hej" },
+                  });
                 }}
               >
                 Subscription test
               </Button>
             </span>
-          )}
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(`curl -X PUT https://slask-cart.k6n.net/inventory/${item.storeId ?? 'se'}/${item.sku} \
-              -H "Content-Type: application/json" \
-              -d '{"quantity": 12}'`)
-            }}
-          >
-            <Copy className="size-4" />
-          </button>
+          )}*/}
+
           {item.meta.sellerId != null &&
             item.meta.sellerName != null &&
             !ownIds.includes(item.meta.sellerId) && (
