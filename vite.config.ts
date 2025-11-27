@@ -8,7 +8,7 @@ const target = 'https://se.k6n.net'
 //const _localTarget = 'http://localhost:8080/'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
@@ -58,69 +58,74 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    VitePWA({
-      registerType: 'prompt',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
-      manifest: {
-        name: 'Slask Finder',
-        short_name: 'SlaskFinder',
-        description: 'Find and compare products easily with Slask Finder',
-        theme_color: '#000000',
-        background_color: '#ffffff',
-        display: 'standalone',
-        icons: [
-          {
-            src: '/icons/app-icon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any',
-          },
-          {
-            src: '/icons/icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: '/icons/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-        ],
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,txt}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^http.*\/api\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24, // 24 hours
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
+    ...(mode === 'production'
+      ? [
+          VitePWA({
+            registerType: 'prompt',
+            includeAssets: [
+              'favicon.ico',
+              'apple-touch-icon.png',
+              'masked-icon.svg',
+            ],
+            manifest: {
+              name: 'Slask Finder',
+              short_name: 'SlaskFinder',
+              description: 'Find and compare products easily with Slask Finder',
+              theme_color: '#000000',
+              background_color: '#ffffff',
+              display: 'standalone',
+              icons: [
+                {
+                  src: '/icons/app-icon.svg',
+                  sizes: 'any',
+                  type: 'image/svg+xml',
+                  purpose: 'any',
+                },
+                {
+                  src: '/icons/icon-192x192.png',
+                  sizes: '192x192',
+                  type: 'image/png',
+                },
+                {
+                  src: '/icons/icon-512x512.png',
+                  sizes: '512x512',
+                  type: 'image/png',
+                },
+              ],
             },
-          },
-          {
-            urlPattern: /\.(?:png|jpg|jpeg|svg)$/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'images',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-              },
+            workbox: {
+              globPatterns: ['**/*.{js,css,html,ico,png,svg,json,txt}'],
+              runtimeCaching: [
+                {
+                  urlPattern: /^http.*\/api\/.*/i,
+                  handler: 'NetworkFirst',
+                  options: {
+                    cacheName: 'api-cache',
+                    expiration: {
+                      maxEntries: 100,
+                      maxAgeSeconds: 60 * 60 * 24, // 24 hours
+                    },
+                    cacheableResponse: {
+                      statuses: [0, 200],
+                    },
+                  },
+                },
+                {
+                  urlPattern: /\.(?:png|jpg|jpeg|svg)$/,
+                  handler: 'CacheFirst',
+                  options: {
+                    cacheName: 'images',
+                    expiration: {
+                      maxEntries: 50,
+                      maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                    },
+                  },
+                },
+              ],
             },
-          },
-        ],
-      },
-      devOptions: {
-        enabled: true,
-      },
-    }),
+          }),
+        ]
+      : []),
   ], //, analyzer()
   build: {
     rollupOptions: {
@@ -136,4 +141,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))
