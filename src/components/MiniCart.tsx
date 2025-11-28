@@ -1,4 +1,7 @@
 import { Edit, ShoppingCartIcon, TicketIcon, X } from 'lucide-react'
+import '@adyen/adyen-web/styles/adyen.css'
+import { AdyenCheckout, Card, Dropin, Klarna, Swish } from '@adyen/adyen-web'
+
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -12,6 +15,8 @@ import {
   //useUpsertSubscriptionDetails,
 } from '../hooks/cartHooks'
 import { useCompatibleItems } from '../hooks/searchHooks'
+import { adyenConfig, paymentMethodsConfiguration } from '../lib/adyen-config'
+import { getAdyenCheckout } from '../lib/datalayer/api'
 import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
 import { useSwitching } from '../lib/hooks/useSwitching'
 import { useTranslations } from '../lib/hooks/useTranslations'
@@ -531,6 +536,36 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
 
   const { items = [], totalPrice, totalDiscount } = cart ?? {}
 
+  const adyenCheckout = () => {
+    getAdyenCheckout().then((session) => {
+      AdyenCheckout({
+        ...adyenConfig,
+        session,
+        onPaymentCompleted: (response: unknown, _component: unknown) => {
+          console.log(response)
+        },
+
+        onPaymentFailed: (result, component) => {
+          console.info('onPaymentFailed', result, component)
+        },
+        onError: (error: unknown, _component: unknown) => {
+          console.error(error)
+          //navigate(`/status/error?reason=${error.message}`, { replace: true });
+        },
+      }).then((checkout) => {
+        ;(
+          globalThis.document.getElementById(
+            'dropin-dialog',
+          ) as HTMLDialogElement
+        ).showModal()
+        new Dropin(checkout, {
+          paymentMethodsConfiguration: paymentMethodsConfiguration,
+          paymentMethodComponents: [Card, Klarna, Swish],
+        }).mount('#dropin-container')
+      })
+    })
+  }
+
   return (
     <div
       className="bg-white flex flex-col overflow-y-auto p-6 h-full w-full max-w-full md:max-w-md"
@@ -616,6 +651,7 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
                   <ButtonAnchor onClick={onClose} to={'/checkout'}>
                     {t('menu.checkout')}
                   </ButtonAnchor>
+                  <Button onClick={adyenCheckout}>Adyen</Button>
                 </>
               )}
             </div>

@@ -30,6 +30,7 @@ import { TrackingProvider } from './lib/hooks/TrackingContext.tsx'
 import { TranslationProvider } from './lib/hooks/TranslationProvider.tsx'
 import { PageContainer } from './PageContainer.tsx'
 import { Admin } from './pages/Admin.tsx'
+import { AdyenReturn } from './pages/AdyenReturn.tsx'
 import { AiShopper } from './pages/AiShopper.tsx'
 import { DatasetViewer } from './pages/admin/DatasetViewer.tsx'
 import { EditFacetsView } from './pages/admin/EditFacetsView.tsx'
@@ -152,6 +153,17 @@ const router = createBrowserRouter([
     element: (
       <PageContainer>
         <BannerLoader />
+      </PageContainer>
+    ),
+
+    errorElement: <BubbleError />,
+  },
+  {
+    path: 'adyen-return',
+
+    element: (
+      <PageContainer>
+        <AdyenReturn />
       </PageContainer>
     ),
 
