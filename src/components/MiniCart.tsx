@@ -545,7 +545,19 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
 
         onPaymentCompleted: (response, _component) => {
           console.log(response)
-          navigate('/result/' + response.resultCode)
+          switch (response.resultCode) {
+            case 'Authorised':
+              navigate('/result/success')
+              break
+            case 'Pending':
+            case 'Received':
+              navigate('/result/pending')
+              break
+            default:
+              navigate('/result/error')
+              break
+          }
+          //navigate("/result/" + response.resultCode);
           // response.getSessionData({ sessionId: session?.id, ...response });
         },
 
