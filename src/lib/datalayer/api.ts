@@ -46,6 +46,24 @@ export const getAdyenCheckout = async () => {
   )
 }
 
+type SessionRequest = {
+  sessionId?: string
+  sessionResult: string
+  sessionData?: string
+}
+
+type SessionResponse = {
+  id: string
+  status?: string
+}
+
+export const getSessionData = async (data: SessionRequest) => {
+  return fetch(`${baseUrl}/cart/adyen-session`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }).then((res) => toJson<SessionResponse>(res))
+}
+
 export const getPrometheusQueryUrl = (
   query: string,
   start: Date,

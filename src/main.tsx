@@ -159,7 +159,10 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
-    path: 'adyen-return',
+    path: 'result/:type',
+    loader: ({ params }) => {
+      return Promise.resolve(params.type)
+    },
 
     element: (
       <PageContainer>

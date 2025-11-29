@@ -3,7 +3,7 @@ import '@adyen/adyen-web/styles/adyen.css'
 import { AdyenCheckout, Card, Dropin, Klarna, Swish } from '@adyen/adyen-web'
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   useAddToCart,
   useAddVoucher,
@@ -533,6 +533,7 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
   const { data: cart, isLoading } = useCart()
   const [shippingOpen, setShippingOpen] = useState(false)
   const t = useTranslations()
+  const navigate = useNavigate()
 
   const { items = [], totalPrice, totalDiscount } = cart ?? {}
 
@@ -541,16 +542,19 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
       AdyenCheckout({
         ...adyenConfig,
         session,
-        onPaymentCompleted: (response: unknown, _component: unknown) => {
+
+        onPaymentCompleted: (response, _component) => {
           console.log(response)
+          navigate('/result/' + response.resultCode)
+          // response.getSessionData({ sessionId: session?.id, ...response });
         },
 
         onPaymentFailed: (result, component) => {
           console.info('onPaymentFailed', result, component)
         },
-        onError: (error: unknown, _component: unknown) => {
+        onError: (error, _component) => {
           console.error(error)
-          //navigate(`/status/error?reason=${error.message}`, { replace: true });
+          navigate(`/result/error?reason=${error.message}`, { replace: true })
         },
       }).then((checkout) => {
         ;(
