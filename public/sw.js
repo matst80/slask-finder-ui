@@ -54,6 +54,7 @@ const dynamicUrlParts = [
   "/api/",
   "/admin/",
   "/ai/",
+  "/adyen-return",
   "/checkout",
   "/cart",
   "/push/",
