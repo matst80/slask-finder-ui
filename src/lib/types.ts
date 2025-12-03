@@ -327,7 +327,7 @@ export type ApplyResult = {
   mutation: Mutation
 }
 
-export type CartMutationResult<T> = {
+export type MutationResult<T> = {
   result?: T
   mutations?: ApplyResult[]
 }
@@ -895,13 +895,14 @@ export interface OpenHours {
   other: Other[]
 }
 
-export type PickupPoint = {
+export interface PickupPoint {
+  deliveryId?: number
   id: string
-  name?: string | null
-  address?: string | null
-  city?: string | null
-  zip?: string | null
-  country?: string | null
+  name?: string
+  address?: string
+  city?: string
+  zip?: string
+  country?: string
 }
 
 export type Marking = {

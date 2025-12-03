@@ -1,6 +1,6 @@
 import useSWRMutation, { SWRMutationConfiguration } from 'swr/mutation'
 import { useNotifications } from './components/ui-notifications/useNotifications'
-import { CartMutationResult, ItemPrice, ItemValues } from './lib/types'
+import { ItemPrice, ItemValues, MutationResult } from './lib/types'
 
 export function remove<T>(key: string | number) {
   return (prev: { [key: string]: T }) => {
@@ -51,10 +51,10 @@ export const useFetchMutation = <T, U>(
   })
 }
 
-export const useCartFetchMutation = <T, U>(
+export const useStateFetchMutation = <T, U>(
   key: string,
-  fn: (payload: U) => Promise<CartMutationResult<T>>,
-  config?: SWRMutationConfiguration<CartMutationResult<T>, Error, string, U>,
+  fn: (payload: U) => Promise<MutationResult<T>>,
+  config?: SWRMutationConfiguration<MutationResult<T>, Error, string, U>,
 ) => {
   const { showNotification } = useNotifications()
   return useSWRMutation(key, (_, { arg }) => fn(arg), {

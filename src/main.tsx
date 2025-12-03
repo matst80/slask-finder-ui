@@ -30,6 +30,7 @@ import { TrackingProvider } from './lib/hooks/TrackingContext.tsx'
 import { TranslationProvider } from './lib/hooks/TranslationProvider.tsx'
 import { PageContainer } from './PageContainer.tsx'
 import { Admin } from './pages/Admin.tsx'
+import { AdyenReturn } from './pages/AdyenReturn.tsx'
 import { AiShopper } from './pages/AiShopper.tsx'
 import { DatasetViewer } from './pages/admin/DatasetViewer.tsx'
 import { EditFacetsView } from './pages/admin/EditFacetsView.tsx'
@@ -51,6 +52,7 @@ import { BuilderOverview } from './pages/builder/BuilderOverview.tsx'
 import { BuilderProductPage } from './pages/builder/BuilderProductPage.tsx'
 import { BuilderStartPage } from './pages/builder/BuilderStartPage.tsx'
 import { componentRules } from './pages/builder/rules.ts'
+import { Checkout } from './pages/Checkout.tsx'
 import { DashboardView } from './pages/Dashboard.tsx'
 import { GiftAssistant } from './pages/gifts.tsx'
 import { NaturalLanguageSearch } from './pages/natural-language-search.tsx'
@@ -158,6 +160,20 @@ const router = createBrowserRouter([
     errorElement: <BubbleError />,
   },
   {
+    path: 'result/:type',
+    loader: ({ params }) => {
+      return Promise.resolve(params.type)
+    },
+
+    element: (
+      <PageContainer>
+        <AdyenReturn />
+      </PageContainer>
+    ),
+
+    errorElement: <BubbleError />,
+  },
+  {
     path: 'ai',
     element: (
       <PageContainer>
@@ -166,7 +182,14 @@ const router = createBrowserRouter([
     ),
     errorElement: <BubbleError />,
   },
-  { path: 'checkout', element: <div>Checkout page placeholder</div> },
+  {
+    path: 'checkout',
+    element: (
+      <PageContainer>
+        <Checkout />
+      </PageContainer>
+    ),
+  },
   {
     path: 'config/:pft',
     loader: ({ params }) => {

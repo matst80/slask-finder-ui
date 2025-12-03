@@ -1,3 +1,4 @@
+import { CoreConfiguration } from '@adyen/adyen-web'
 import { ConvertedFacet, convertFacets } from '../hooks/suggestionUtils'
 import {
   ContentRecord,
@@ -37,6 +38,30 @@ export const getLocation = async (zip?: string) => {
   return fetch(`${baseUrl}/location${zip ? `?zip=${zip}` : ''}`).then((res) =>
     toJson<{ lat: number; lng: number }>(res),
   )
+}
+
+export const getAdyenCheckout = async () => {
+  return fetch(`${baseUrl}/cart/adyen-session`).then((res) =>
+    toJson<CoreConfiguration['session']>(res),
+  )
+}
+
+type SessionRequest = {
+  sessionId?: string
+  sessionResult: string
+  sessionData?: string
+}
+
+type SessionResponse = {
+  id: string
+  status?: string
+}
+
+export const getSessionData = async (data: SessionRequest) => {
+  return fetch(`${baseUrl}/cart/adyen-session`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }).then((res) => toJson<SessionResponse>(res))
 }
 
 export const getPrometheusQueryUrl = (

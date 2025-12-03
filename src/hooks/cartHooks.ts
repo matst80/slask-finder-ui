@@ -10,24 +10,15 @@ import {
   addVoucher,
   changeQuantity,
   getCart,
-  removeDelivery,
   removeFromCart,
   removeItemMarking,
   removeVoucher,
-  setDelivery,
   setItemMarking,
-  setPickupPoint,
-  setUserId,
   UpsertSubscriptionDetails,
   upsertSubscriptionDetails,
 } from '../lib/datalayer/cart-api'
-import {
-  BaseEcomEvent,
-  Item,
-  LineItemMarkingRequest,
-  PickupPoint,
-} from '../lib/types'
-import { useCartFetchMutation, useFetchMutation } from '../utils'
+import { BaseEcomEvent, Item, LineItemMarkingRequest } from '../lib/types'
+import { useFetchMutation, useStateFetchMutation } from '../utils'
 
 const cartKey = '/cart'
 
@@ -45,7 +36,7 @@ export const useResetCart = () => {
 
 export const useAddVoucher = () => {
   const { showNotification } = useNotifications()
-  return useCartFetchMutation(cartKey, (voucherCode: string) =>
+  return useStateFetchMutation(cartKey, (voucherCode: string) =>
     addVoucher(voucherCode)
       .then((data) => {
         showNotification({
@@ -68,12 +59,12 @@ export const useAddVoucher = () => {
 }
 
 export const useRemoveVoucher = () => {
-  return useCartFetchMutation(cartKey, (id: number) => removeVoucher(id))
+  return useStateFetchMutation(cartKey, (id: number) => removeVoucher(id))
 }
 
 export const useAddMultipleToCart = () => {
   const { showNotification } = useNotifications()
-  return useCartFetchMutation(
+  return useStateFetchMutation(
     cartKey,
     (items: (Item & { quantity?: number })[]) =>
       addToCartMultiple(
@@ -100,7 +91,7 @@ export const useAddMultipleToCart = () => {
 }
 
 export const useUpsertSubscriptionDetails = () => {
-  return useCartFetchMutation(
+  return useStateFetchMutation(
     cartKey,
     (data: UpsertSubscriptionDetails<Record<string, unknown>>) =>
       upsertSubscriptionDetails(data),
@@ -110,7 +101,7 @@ export const useUpsertSubscriptionDetails = () => {
 export const useAddToCart = () => {
   const { accepted } = useCookieAcceptance()
   const { showNotification } = useNotifications()
-  const { trigger, ...rest } = useCartFetchMutation(cartKey, addToCart)
+  const { trigger, ...rest } = useStateFetchMutation(cartKey, addToCart)
   return {
     ...rest,
     trigger: async (
@@ -153,7 +144,7 @@ export const useAddToCart = () => {
 }
 
 export const useChangeQuantity = () => {
-  const { trigger, ...rest } = useCartFetchMutation(cartKey, changeQuantity)
+  const { trigger, ...rest } = useStateFetchMutation(cartKey, changeQuantity)
   return {
     ...rest,
     trigger: async (id: number, quantity: number, item: BaseEcomEvent) => {
@@ -167,7 +158,7 @@ export const useChangeQuantity = () => {
 }
 
 export const useRemoveFromCart = () => {
-  const { trigger, ...rest } = useCartFetchMutation(cartKey, removeFromCart)
+  const { trigger, ...rest } = useStateFetchMutation(cartKey, removeFromCart)
   return {
     ...rest,
     trigger: async (id: number, item: BaseEcomEvent) => {
@@ -181,36 +172,11 @@ export const useRemoveFromCart = () => {
 }
 
 export const useAddToCartBySku = () => {
-  return useCartFetchMutation(cartKey, addToCartBySku)
-}
-
-export const useSetDelivery = () => {
-  return useCartFetchMutation(cartKey, setDelivery)
-}
-
-export const useRemoveDelivery = () => {
-  return useCartFetchMutation(cartKey, removeDelivery)
-}
-
-export const useSetPickupPoint = () => {
-  return useCartFetchMutation(
-    cartKey,
-    ({
-      deliveryId,
-      pickupPoint,
-    }: {
-      deliveryId: number
-      pickupPoint: PickupPoint
-    }) => setPickupPoint({ deliveryId, pickupPoint }),
-  )
-}
-
-export const useSetUserId = () => {
-  return useCartFetchMutation(cartKey, setUserId)
+  return useStateFetchMutation(cartKey, addToCartBySku)
 }
 
 export const useSetItemMarking = () => {
-  return useCartFetchMutation(
+  return useStateFetchMutation(
     cartKey,
     ({
       itemId,
@@ -223,5 +189,5 @@ export const useSetItemMarking = () => {
 }
 
 export const useRemoveItemMarking = () => {
-  return useCartFetchMutation(cartKey, removeItemMarking)
+  return useStateFetchMutation(cartKey, removeItemMarking)
 }
