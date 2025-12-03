@@ -81,8 +81,20 @@ export const AdyenPaymentUI = ({ payment }: PaymentProviderUIProps) => {
         const checkout = await AdyenModule.AdyenCheckout({
           ...adyenConfig,
           session: sessionData as CoreConfiguration['session'],
-          onPaymentCompleted: (result) => {
-            console.log('Payment completed:', result)
+          onPaymentCompleted: (response) => {
+            switch (response.resultCode) {
+              case 'Authorised':
+                // TODO: navigate to success route or emit event
+                console.log('Authorised')
+                break
+              case 'Pending':
+              case 'Received':
+                console.log('Pending/Received')
+                break
+              default:
+                console.log('Payment error', response)
+                break
+            }
           },
           onError: (error) => {
             console.error('Adyen error:', error)

@@ -1,9 +1,8 @@
 import { Edit, ShoppingCartIcon, TicketIcon, X } from 'lucide-react'
 import '@adyen/adyen-web/styles/adyen.css'
-import { AdyenCheckout, Card, Dropin, Klarna, Swish } from '@adyen/adyen-web'
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
   useAddToCart,
   useAddVoucher,
@@ -15,8 +14,7 @@ import {
   //useUpsertSubscriptionDetails,
 } from '../hooks/cartHooks'
 import { useCompatibleItems } from '../hooks/searchHooks'
-import { adyenConfig, paymentMethodsConfiguration } from '../lib/adyen-config'
-import { getAdyenCheckout } from '../lib/datalayer/api'
+// import { adyenConfig, paymentMethodsConfiguration } from '../lib/adyen-config'
 import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
 import { useSwitching } from '../lib/hooks/useSwitching'
 import { useTranslations } from '../lib/hooks/useTranslations'
@@ -533,54 +531,11 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
   const { data: cart, isLoading } = useCart()
   const [shippingOpen, setShippingOpen] = useState(false)
   const t = useTranslations()
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   const { items = [], totalPrice, totalDiscount } = cart ?? {}
 
-  const adyenCheckout = () => {
-    getAdyenCheckout().then((session) => {
-      AdyenCheckout({
-        ...adyenConfig,
-        session,
-
-        onPaymentCompleted: (response, _component) => {
-          console.log(response)
-          switch (response.resultCode) {
-            case 'Authorised':
-              navigate('/result/success')
-              break
-            case 'Pending':
-            case 'Received':
-              navigate('/result/pending')
-              break
-            default:
-              navigate('/result/error')
-              break
-          }
-          //navigate("/result/" + response.resultCode);
-          // response.getSessionData({ sessionId: session?.id, ...response });
-        },
-
-        onPaymentFailed: (result, component) => {
-          console.info('onPaymentFailed', result, component)
-        },
-        onError: (error, _component) => {
-          console.error(error)
-          navigate(`/result/error?reason=${error.message}`, { replace: true })
-        },
-      }).then((checkout) => {
-        ;(
-          globalThis.document.getElementById(
-            'dropin-dialog',
-          ) as HTMLDialogElement
-        ).showModal()
-        new Dropin(checkout, {
-          paymentMethodsConfiguration: paymentMethodsConfiguration,
-          paymentMethodComponents: [Card, Klarna, Swish],
-        }).mount('#dropin-container')
-      })
-    })
-  }
+  // Adyen payments are now handled in Checkout via provider-specific UI
 
   return (
     <div
@@ -667,7 +622,7 @@ const CartDialog = ({ onClose, open }: CartDialogProps) => {
                   <ButtonAnchor onClick={onClose} to={'/checkout'}>
                     {t('menu.checkout')}
                   </ButtonAnchor>
-                  <Button onClick={adyenCheckout}>Adyen</Button>
+                  {/** Adyen checkout moved to Checkout page **/}
                 </>
               )}
             </div>
