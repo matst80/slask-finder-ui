@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { usePaymentSessionData } from '../hooks/checkoutHooks'
 import { CheckoutPayment } from '../lib/datalayer/checkout-api'
 import '@adyen/adyen-web/styles/adyen.css'
-import { Core, CoreConfiguration } from '@adyen/adyen-web'
-import { adyenConfig } from '../lib/adyen-config'
+import { Card, Core, CoreConfiguration, Klarna, Swish } from '@adyen/adyen-web'
+import { adyenConfig, paymentMethodsConfiguration } from '../lib/adyen-config'
 
 type PaymentProviderUIProps = {
   payment: CheckoutPayment
@@ -103,9 +103,12 @@ export const AdyenPaymentUI = ({ payment }: PaymentProviderUIProps) => {
 
         setAdyenCheckout(checkout)
 
-        // Create Drop-in component and mount
+        // Create Drop-in component and mount with UI components as in MiniCart
         if (containerRef.current) {
-          new AdyenModule.Dropin(checkout).mount(containerRef.current)
+          new AdyenModule.Dropin(checkout, {
+            paymentMethodsConfiguration: paymentMethodsConfiguration,
+            paymentMethodComponents: [Card, Klarna, Swish],
+          }).mount(containerRef.current)
         }
       } catch (error) {
         console.error('Failed to initialize Adyen:', error)
