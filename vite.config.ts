@@ -22,6 +22,10 @@ export default defineConfig({
         target, //: localTarget,
         changeOrigin: true,
       },
+      '/payment': {
+        target, //: localTarget,
+        changeOrigin: true,
+      },
       '/inventory': {
         target,
         changeOrigin: true,
@@ -31,14 +35,6 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/cart': {
-        target,
-        changeOrigin: true,
-      },
-      '/checkout': {
-        target,
-        changeOrigin: true,
-      },
-      '/confirmation': {
         target,
         changeOrigin: true,
       },

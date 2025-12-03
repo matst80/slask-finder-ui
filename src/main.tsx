@@ -166,6 +166,7 @@ const router = createBrowserRouter([
     ),
     errorElement: <BubbleError />,
   },
+  { path: 'checkout', element: <div>Checkout page placeholder</div> },
   {
     path: 'config/:pft',
     loader: ({ params }) => {
