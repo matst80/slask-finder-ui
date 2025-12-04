@@ -1,10 +1,12 @@
 import useSWR from 'swr'
+import useSWRMutation from 'swr/mutation'
 import {
   getCheckout,
-  getPaymentSessionData,
   initiatePayment,
+  PaymentResult,
   removeDelivery,
   setDelivery,
+  setPaymentResult,
   setPickupPoint,
   startCheckout,
 } from '../lib/datalayer/checkout-api'
@@ -67,17 +69,29 @@ export const useInitiatePayment = () => {
   )
 }
 
-export const usePaymentSessionData = (paymentId: string) => {
-  return useSWR(
-    `/checkout/payment-session/${paymentId}`,
-    () => {
-      // Fetch payment session data based on paymentId
-      // This is a placeholder implementation; replace with actual API call
-      return getPaymentSessionData(paymentId)
-    },
+// export const usePaymentSessionData = (paymentId: string) => {
+//   return useSWR(
+//     `/checkout/payment-session/${paymentId}`,
+//     () => {
+//       // Fetch payment session data based on paymentId
+//       // This is a placeholder implementation; replace with actual API call
+//       return getPaymentSessionData(paymentId);
+//     },
+//     {
+//       revalidateOnFocus: false,
+//       revalidateIfStale: false,
+//       errorRetryInterval: 5000,
+//     },
+//   );
+// };
+
+export const useSetPaymentResult = (paymentId: string) => {
+  return useSWRMutation(
+    `/checkout/payment-result/${paymentId}`,
+    (_, { arg }: { arg: PaymentResult }) => setPaymentResult(paymentId, arg),
     {
-      revalidateOnFocus: false,
-      errorRetryInterval: 5000,
+      populateCache: false,
+      revalidate: false,
     },
   )
 }

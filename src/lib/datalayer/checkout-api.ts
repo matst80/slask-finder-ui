@@ -42,6 +42,7 @@ export interface CheckoutPayment {
   currency: string
   provider?: string
   method?: string
+  sessionData?: PaymentSessionData
   events?: CheckoutPaymentEvent[]
   processorReference?: string
   startedAt?: string // RFC3339 timestamp
@@ -109,8 +110,22 @@ export const initiatePayment = async (provider: 'klarna' | 'adyen') => {
   }).then((d) => toJson<MutationResult<Checkout>>(d))
 }
 
-export const getPaymentSessionData = async (paymentId: string) => {
-  return fetch(`${baseUrl}/payment/${paymentId}/session`).then((d) =>
-    toJson<unknown>(d),
-  )
+type PaymentSessionData = unknown
+
+export type PaymentResult = AdyenPaymentResult
+
+export type AdyenPaymentResult = {
+  sessionId?: string
+  sessionResult?: string
+  sessionData?: string
+}
+
+export const setPaymentResult = async (
+  paymentId: string,
+  result: PaymentResult,
+) => {
+  return fetch(`${baseUrl}/payment/${paymentId}/session`, {
+    method: 'POST',
+    body: JSON.stringify(result),
+  }).then((d) => toJson<PaymentSessionData>(d))
 }

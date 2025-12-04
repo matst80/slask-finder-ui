@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { usePaymentSessionData } from '../hooks/checkoutHooks'
+import { useSetPaymentResult } from '../hooks/checkoutHooks'
 import { CheckoutPayment } from '../lib/datalayer/checkout-api'
 import '@adyen/adyen-web/styles/adyen.css'
 import { Card, Core, CoreConfiguration, Klarna, Swish } from '@adyen/adyen-web'
@@ -11,9 +11,7 @@ type PaymentProviderUIProps = {
 
 export const KlarnaPaymentUI = ({ payment }: PaymentProviderUIProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const { data: sessionData, isLoading } = usePaymentSessionData(
-    payment.paymentId,
-  )
+  const { sessionData } = payment
 
   useEffect(() => {
     if (!containerRef.current || !sessionData) return
@@ -53,22 +51,16 @@ export const KlarnaPaymentUI = ({ payment }: PaymentProviderUIProps) => {
           {payment.status}
         </span>
       </div>
-      {isLoading ? (
-        <div className="text-center py-8 text-gray-500">
-          Loading Klarna payment form...
-        </div>
-      ) : (
-        <div ref={containerRef} id={`klarna-container-${payment.paymentId}`} />
-      )}
+
+      <div ref={containerRef} id={`klarna-container-${payment.paymentId}`} />
     </div>
   )
 }
 
 export const AdyenPaymentUI = ({ payment }: PaymentProviderUIProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const { data: sessionData, isLoading } = usePaymentSessionData(
-    payment.paymentId,
-  )
+  const { sessionData } = payment
+  const { trigger } = useSetPaymentResult(payment.paymentId)
   const [adyenCheckout, setAdyenCheckout] = useState<Core | null>(null)
 
   useEffect(() => {
@@ -82,6 +74,11 @@ export const AdyenPaymentUI = ({ payment }: PaymentProviderUIProps) => {
           ...adyenConfig,
           session: sessionData as CoreConfiguration['session'],
           onPaymentCompleted: (response) => {
+            if ('sessionResult' in response) {
+              trigger(response).then((data) => {
+                console.log(data)
+              })
+            }
             switch (response.resultCode) {
               case 'Authorised':
                 // TODO: navigate to success route or emit event
@@ -116,7 +113,7 @@ export const AdyenPaymentUI = ({ payment }: PaymentProviderUIProps) => {
     }
 
     initAdyen()
-  }, [sessionData, adyenCheckout])
+  }, [sessionData, adyenCheckout, trigger])
 
   return (
     <div className="border rounded-lg p-4 bg-white">
@@ -134,13 +131,8 @@ export const AdyenPaymentUI = ({ payment }: PaymentProviderUIProps) => {
           {payment.status}
         </span>
       </div>
-      {isLoading ? (
-        <div className="text-center py-8 text-gray-500">
-          Loading Adyen payment form...
-        </div>
-      ) : (
-        <div ref={containerRef} id={`adyen-container-${payment.paymentId}`} />
-      )}
+
+      <div ref={containerRef} id={`adyen-container-${payment.paymentId}`} />
     </div>
   )
 }
