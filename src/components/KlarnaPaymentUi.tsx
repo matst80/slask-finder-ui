@@ -15,7 +15,7 @@ export const KlarnaPaymentUI = ({ payment }: KlarnaPaymentProviderUIProps) => {
     if (!containerRef.current || !sessionData) return
 
     const klarnaSession = sessionData as { html_snippet?: string }
-
+    console.log('Klarna session data:', klarnaSession)
     if (klarnaSession?.html_snippet) {
       const container = containerRef.current
       container.innerHTML = klarnaSession.html_snippet

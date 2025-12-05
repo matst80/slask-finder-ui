@@ -9,6 +9,13 @@ import { baseUrl, toJson } from './api'
 
 type KlarnaCheckout = { html_snippet: string }
 
+export interface ContactDetails {
+  email?: string
+  phone?: string
+  name?: string
+  postalCode?: string
+}
+
 export interface Checkout {
   id: string // base62 string form of uint64
   version: number
@@ -24,6 +31,7 @@ export interface Checkout {
   amountRemaining: number // int64
   confirmationViewed?: CheckoutConfirmationStatus
   payments?: CheckoutPayment[]
+  contactDetails?: ContactDetails
 }
 
 export interface CheckoutDelivery {
@@ -130,4 +138,11 @@ export const setPaymentResult = async (
     method: 'POST',
     body: JSON.stringify(result),
   }).then((d) => toJson<PaymentSessionData>(d))
+}
+
+export const setContactDetails = async (payload: ContactDetails) => {
+  return fetch(`${baseUrl}/api/checkout/contact-details`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }).then((d) => toJson<MutationResult<Checkout>>(d))
 }

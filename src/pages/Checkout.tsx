@@ -1,6 +1,7 @@
 import { Edit } from 'lucide-react'
 import { Activity, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ContactDetailsEditor } from '../components/ContactDetailsEditor'
 import { DeliveryEditor } from '../components/DeliveryEditor'
 import { PaymentProviderUI } from '../components/PaymentProviderUI'
 import { PriceValue } from '../components/Price'
@@ -186,13 +187,7 @@ export const Checkout = () => {
   const { trigger: triggerStartPayment } = useInitiatePayment()
   const [showDebug, setShowDebug] = useState(false)
 
-  const totalAmount = checkout?.cartTotalPrice?.incVat ?? 0
-  const paidAmount =
-    checkout?.payments
-      ?.filter((p) => p.status === 'success')
-      .reduce((sum, p) => sum + p.amount, 0) ?? 0
-  const amountRemaining = totalAmount - paidAmount
-  const amountActive = checkout?.paymentInProgress ?? 0
+  const { amountActive, amountRemaining } = checkout ?? {}
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -252,6 +247,7 @@ export const Checkout = () => {
           )}
         </div>
       )}
+
       {checkout?.cartState && (
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-2">Cart Preview</h2>
@@ -281,6 +277,9 @@ export const Checkout = () => {
           </ul>
         </div>
       )}
+      <div className="mb-6">
+        <ContactDetailsEditor />
+      </div>
       {checkout?.cartState && !checkout?.payments?.length && (
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-3">Payment Method</h2>
@@ -315,15 +314,15 @@ export const Checkout = () => {
           ))}
         </div>
       )}
-      {checkout?.payments && checkout.payments.length > 0 && (
+      {amountRemaining != null && amountActive != null && (
         <div className="mb-6">
           <h3 className="text-lg font-semibold mb-2">Payment Summary</h3>
           <div className="p-4 border rounded-lg bg-gray-50">
-            <div className="flex justify-between mb-2">
+            <div className="flex gap-2 mb-2">
               <span>Amount Remaining:</span>
               <PriceValue value={amountRemaining} /> kr
             </div>
-            <div className="flex justify-between mb-2">
+            <div className="flex gap-2 mb-2">
               <span>Amount Active:</span>
               <PriceValue value={amountActive} /> kr
             </div>

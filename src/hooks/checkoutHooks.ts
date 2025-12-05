@@ -3,10 +3,12 @@ import useSWR, { useSWRConfig } from 'swr'
 import useSWRMutation from 'swr/mutation'
 import {
   Checkout,
+  ContactDetails,
   getCheckout,
   initiatePayment,
   PaymentResult,
   removeDelivery,
+  setContactDetails,
   setDelivery,
   setPaymentResult,
   setPickupPoint,
@@ -152,4 +154,10 @@ export const usePaymentStatusUpdater = (paymentId: string) => {
   }, [])
 
   return { wait, isWaiting, cancel }
+}
+
+export const useSetContactDetails = () => {
+  return useStateFetchMutation(checkoutKey, (payload: ContactDetails) =>
+    setContactDetails(payload),
+  )
 }
