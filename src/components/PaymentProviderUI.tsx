@@ -1,6 +1,8 @@
+import { Check } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useSetPaymentResult } from '../hooks/checkoutHooks'
 import { CheckoutPayment } from '../lib/datalayer/checkout-api'
+import { PriceValue } from './Price'
 import '@adyen/adyen-web/styles/adyen.css'
 import { Card, Core, CoreConfiguration, Klarna, Swish } from '@adyen/adyen-web'
 import { adyenConfig, paymentMethodsConfiguration } from '../lib/adyen-config'
@@ -34,6 +36,25 @@ export const KlarnaPaymentUI = ({ payment }: PaymentProviderUIProps) => {
       }
     }
   }, [sessionData])
+
+  if (payment.status === 'success' && payment.completedAt) {
+    return (
+      <div className="border rounded-lg p-4 bg-white">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold">Klarna Payment</h3>
+          <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">
+            {payment.status}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Check className="text-green-600" size={24} />
+          <span>
+            Paid <PriceValue value={payment.amount} /> {payment.currency}
+          </span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="border rounded-lg p-4 bg-white">
@@ -115,6 +136,25 @@ export const AdyenPaymentUI = ({ payment }: PaymentProviderUIProps) => {
     initAdyen()
   }, [sessionData, adyenCheckout, trigger])
 
+  if (payment.status === 'success' && payment.completedAt) {
+    return (
+      <div className="border rounded-lg p-4 bg-white">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold">Adyen Payment</h3>
+          <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">
+            {payment.status}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Check className="text-green-600" size={24} />
+          <span>
+            Paid <PriceValue value={payment.amount} /> {payment.currency}
+          </span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="border rounded-lg p-4 bg-white">
       <div className="flex items-center justify-between mb-3">
@@ -152,6 +192,24 @@ export const PaymentProviderUI = ({ payment }: PaymentProviderUIProps) => {
     case 'adyen':
       return <AdyenPaymentUI payment={payment} />
     default:
+      if (payment.status === 'success' && payment.completedAt) {
+        return (
+          <div className="border rounded-lg p-4 bg-gray-50">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold">{payment.provider} Payment</h3>
+              <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">
+                {payment.status}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="text-green-600" size={24} />
+              <span>
+                Paid <PriceValue value={payment.amount} /> {payment.currency}
+              </span>
+            </div>
+          </div>
+        )
+      }
       return (
         <div className="border rounded-lg p-4 bg-gray-50">
           <div className="flex items-center justify-between mb-2">

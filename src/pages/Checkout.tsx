@@ -186,6 +186,14 @@ export const Checkout = () => {
   const { trigger: triggerStartPayment } = useInitiatePayment()
   const [showDebug, setShowDebug] = useState(false)
 
+  const totalAmount = checkout?.cartTotalPrice?.incVat ?? 0
+  const paidAmount =
+    checkout?.payments
+      ?.filter((p) => p.status === 'success')
+      .reduce((sum, p) => sum + p.amount, 0) ?? 0
+  const amountRemaining = totalAmount - paidAmount
+  const amountActive = checkout?.paymentInProgress ?? 0
+
   return (
     <div className="max-w-4xl mx-auto p-4">
       {isLoading && <div>Loading checkout...</div>}
@@ -305,6 +313,26 @@ export const Checkout = () => {
           {checkout.payments.map((payment) => (
             <PaymentProviderUI key={payment.paymentId} payment={payment} />
           ))}
+        </div>
+      )}
+      {checkout?.payments && checkout.payments.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-2">Payment Summary</h3>
+          <div className="p-4 border rounded-lg bg-gray-50">
+            <div className="flex justify-between mb-2">
+              <span>Amount Remaining:</span>
+              <PriceValue value={amountRemaining} /> kr
+            </div>
+            <div className="flex justify-between mb-2">
+              <span>Amount Active:</span>
+              <PriceValue value={amountActive} /> kr
+            </div>
+            {amountRemaining < 49 && (
+              <button className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded font-semibold hover:bg-green-700">
+                Place Order
+              </button>
+            )}
+          </div>
         </div>
       )}
       {checkout?.deliveries && (
