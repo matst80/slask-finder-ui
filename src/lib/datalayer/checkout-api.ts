@@ -20,6 +20,8 @@ export interface Checkout {
   deliveries?: CheckoutDelivery[]
   paymentInProgress: number
   inventoryReserved: boolean
+  amountActive: number // int64
+  amountRemaining: number // int64
   confirmationViewed?: CheckoutConfirmationStatus
   payments?: CheckoutPayment[]
 }
