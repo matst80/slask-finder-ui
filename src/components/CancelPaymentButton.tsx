@@ -25,7 +25,7 @@ export const CancelPaymentButton = ({
         size="sm"
         onClick={handleCancelPayment}
         disabled={isCancelling}
-        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+        className="text-red-600 hover:text-red-700 hover:bg-red-50 flex items-center gap-1"
       >
         <X className="size-4 mr-1" />
         {isCancelling ? 'Cancelling...' : 'Cancel Payment'}
