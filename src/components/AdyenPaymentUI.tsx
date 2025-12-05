@@ -7,6 +7,7 @@ import {
 } from '../hooks/checkoutHooks'
 import { adyenConfig, paymentMethodsConfiguration } from '../lib/adyen-config'
 import { CheckoutPayment } from '../lib/datalayer/checkout-api'
+import { CancelPaymentButton } from './CancelPaymentButton'
 import { PriceValue } from './Price'
 import { Button } from './ui/button'
 
@@ -120,6 +121,10 @@ export const AdyenPaymentUI = ({ payment }: AdyenPaymentProviderUIProps) => {
       </div>
 
       <div ref={containerRef} id={`adyen-container-${payment.paymentId}`} />
+
+      {payment.status === 'pending' && (
+        <CancelPaymentButton paymentId={payment.paymentId} />
+      )}
     </div>
   )
 }

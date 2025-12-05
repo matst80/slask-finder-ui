@@ -1,6 +1,7 @@
 import { Check } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { CheckoutPayment } from '../lib/datalayer/checkout-api'
+import { CancelPaymentButton } from './CancelPaymentButton'
 import { PriceValue } from './Price'
 
 type KlarnaPaymentProviderUIProps = {
@@ -70,6 +71,10 @@ export const KlarnaPaymentUI = ({ payment }: KlarnaPaymentProviderUIProps) => {
       </div>
 
       <div ref={containerRef} id={`klarna-container-${payment.paymentId}`} />
+
+      {payment.status === 'pending' && (
+        <CancelPaymentButton paymentId={payment.paymentId} />
+      )}
     </div>
   )
 }

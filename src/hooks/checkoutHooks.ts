@@ -4,6 +4,7 @@ import useSWRMutation from 'swr/mutation'
 import {
   Checkout,
   ContactDetails,
+  cancelPayment,
   getCheckout,
   initiatePayment,
   PaymentResult,
@@ -159,5 +160,11 @@ export const usePaymentStatusUpdater = (paymentId: string) => {
 export const useSetContactDetails = () => {
   return useStateFetchMutation(checkoutKey, (payload: ContactDetails) =>
     setContactDetails(payload),
+  )
+}
+
+export const useCancelPayment = () => {
+  return useStateFetchMutation(checkoutKey, (paymentId: string) =>
+    cancelPayment(paymentId),
   )
 }

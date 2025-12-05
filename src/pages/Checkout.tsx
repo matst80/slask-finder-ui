@@ -256,9 +256,9 @@ export const Checkout = () => {
               <li key={item.id} className="py-3 flex items-center gap-3">
                 {item.meta?.image && (
                   <img
-                    src={item.meta.image}
+                    src={`https://www.elgiganten.se/${item.meta.image}`}
                     alt={item.meta.name}
-                    className="w-12 h-12 object-cover rounded"
+                    className="w-12 h-12 object-contain rounded"
                   />
                 )}
                 <div className="flex-1">
@@ -269,7 +269,7 @@ export const Checkout = () => {
                 </div>
                 <div className="text-right">
                   <div className="font-medium">
-                    {item.totalPrice?.incVat ?? item.price.incVat} kr
+                    <PriceValue value={item.price.incVat} /> kr
                   </div>
                 </div>
               </li>

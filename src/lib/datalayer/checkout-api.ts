@@ -146,3 +146,9 @@ export const setContactDetails = async (payload: ContactDetails) => {
     body: JSON.stringify(payload),
   }).then((d) => toJson<MutationResult<Checkout>>(d))
 }
+
+export const cancelPayment = async (paymentId: string) => {
+  return fetch(`${baseUrl}/payment/${paymentId}`, {
+    method: 'DELETE',
+  }).then((d) => toJson<MutationResult<Checkout>>(d))
+}

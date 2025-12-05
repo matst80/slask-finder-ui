@@ -204,7 +204,7 @@ export const ContactDetailsEditor = () => {
   )
 
   return (
-    <div className="border rounded-lg p-4 bg-white shadow-sm">
+    <div className="border rounded-lg p-4 bg-white">
       <button
         className="flex items-center justify-between w-full text-left"
         onClick={() => setIsExpanded((prev) => !prev)}
