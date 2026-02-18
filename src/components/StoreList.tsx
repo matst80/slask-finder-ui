@@ -8,7 +8,7 @@ export const StoreList = ({ stock }: { stock: Item['stock'] }) => {
       {Object.entries(stock ?? {})?.map(([id, level]) => {
         const storeName = stores?.find((d) => d.id === id)?.displayName ?? id
         return (
-          <div>
+          <div key={id}>
             {storeName}: {level}
           </div>
         )

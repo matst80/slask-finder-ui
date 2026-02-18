@@ -350,11 +350,13 @@ export const Banner = ({ item: data }: { item: Item }) => {
           width={640}
           height={640}
           className="object-contain banner-reflect transition-transform hover:scale-110 rotate-0 hover:-rotate-3 duration-500 max-h-[80%]"
+          alt={data.title}
         />
         {data.badgeUrl && (
           <img
             src={makeImageUrl(data.badgeUrl)}
             className="object-contain absolute top-[10%] right-0 transition-transform hover:scale-110 rotate-0 hover:-rotate-3 duration-500 max-h-[25%]"
+            alt=""
           />
         )}
       </motion.div>

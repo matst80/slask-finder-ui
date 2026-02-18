@@ -159,7 +159,7 @@ const FilteredFieldView = ({
                 return null
               }
               return (
-                <tr>
+                <tr key={id}>
                   <td>{field.id}</td>
                   <td>{field.name}</td>
                   <td>{field.type === 0 ? 'text' : 'float'}</td>

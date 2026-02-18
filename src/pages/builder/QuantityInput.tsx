@@ -1,5 +1,4 @@
 import { Minus, Plus } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { Button } from '../../components/ui/button'
 
 interface QuantityInputProps {
@@ -17,29 +16,19 @@ export const QuantityInput = ({
   minQuantity = 0,
   className = '',
 }: QuantityInputProps) => {
-  const [quantity, setQuantity] = useState(value)
-
-  useEffect(() => {
-    setQuantity(value)
-  }, [value])
-
   const increment: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    if (quantity < maxQuantity) {
-      const newValue = quantity + 1
-      setQuantity(newValue)
-      onChange(newValue)
+    if (value < maxQuantity) {
+      onChange(value + 1)
     }
   }
 
   const decrement: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    if (quantity > minQuantity) {
-      const newValue = quantity - 1
-      setQuantity(newValue)
-      onChange(newValue)
+    if (value > minQuantity) {
+      onChange(value - 1)
     }
   }
 
@@ -50,7 +39,6 @@ export const QuantityInput = ({
         Math.max(newValue, minQuantity),
         maxQuantity,
       )
-      setQuantity(boundedValue)
       onChange(boundedValue)
     }
   }
@@ -65,7 +53,7 @@ export const QuantityInput = ({
         size="small-icon"
         className="p-1 border-r aspect-square rounded-none hover:bg-gray-100 disabled:opacity-50 focus:bg-gray-100"
         onClick={decrement}
-        disabled={quantity <= minQuantity}
+        disabled={value <= minQuantity}
         aria-label="Decrease quantity"
       >
         <Minus className="size-4" />
@@ -73,7 +61,7 @@ export const QuantityInput = ({
 
       <input
         type="number"
-        value={quantity}
+        value={value}
         onChange={handleInputChange}
         className="w-6 text-center text-sm focus:outline-none py-0.5"
         min={minQuantity}
@@ -87,7 +75,7 @@ export const QuantityInput = ({
         size="small-icon"
         className="p-1 border-l aspect-square rounded-none hover:bg-gray-100 disabled:opacity-50 focus:bg-gray-100"
         onClick={increment}
-        disabled={quantity >= maxQuantity}
+        disabled={value >= maxQuantity}
         aria-label="Increase quantity"
       >
         <Plus className="size-4" />

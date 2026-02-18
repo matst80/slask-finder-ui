@@ -286,7 +286,9 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
           >
             <option value={0}>No group</option>
             {groups?.map(({ id, name }) => (
-              <option value={id}>{name}</option>
+              <option key={id} value={id}>
+                {name}
+              </option>
             ))}
           </select>
         </div>

@@ -237,6 +237,7 @@ export const ResultItemInner = ({
           <img
             className="size-16 object-contain absolute top-4 left-4 drop-shadow-lg"
             src="https://www.elgiganten.se/content/SE/outlet/outlet.svg"
+            alt="Outlet"
           />
         )}
       </div>

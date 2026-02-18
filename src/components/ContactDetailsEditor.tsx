@@ -68,140 +68,20 @@ export const ContactDetailsEditor = () => {
     setIsExpanded(false)
   }
 
+  const handleCancel = () => {
+    setFormData({
+      email: checkout?.contactDetails?.email ?? '',
+      phone: checkout?.contactDetails?.phone ?? '',
+      name: checkout?.contactDetails?.name ?? '',
+      postalCode: checkout?.contactDetails?.postalCode ?? '',
+    })
+    setIsDirty(false)
+    if (hasContactDetails) {
+      setIsExpanded(false)
+    }
+  }
+
   const contactDetails = checkout?.contactDetails
-
-  // Collapsed read-only view
-  const CollapsedView = () => (
-    <div className="flex items-center justify-between">
-      <div className="text-sm text-gray-600">
-        {contactDetails?.name && <span>{contactDetails.name}</span>}
-        {contactDetails?.email && (
-          <span className="ml-2">{contactDetails.email}</span>
-        )}
-        {contactDetails?.phone && (
-          <span className="ml-2">{contactDetails.phone}</span>
-        )}
-        {contactDetails?.postalCode && (
-          <span className="ml-2">{contactDetails.postalCode}</span>
-        )}
-        {!hasContactDetails && (
-          <span className="text-gray-400 italic">No contact details</span>
-        )}
-      </div>
-      {!isReadOnly && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsExpanded(true)}
-          className="ml-2"
-        >
-          <Pencil className="size-4" />
-        </Button>
-      )}
-    </div>
-  )
-
-  // Read-only expanded view (when payment in progress)
-  const ReadOnlyView = () => (
-    <div className="space-y-3 text-sm">
-      {contactDetails?.name && (
-        <div>
-          <span className="font-medium text-gray-500">Name:</span>{' '}
-          {contactDetails.name}
-        </div>
-      )}
-      {contactDetails?.email && (
-        <div>
-          <span className="font-medium text-gray-500">Email:</span>{' '}
-          {contactDetails.email}
-        </div>
-      )}
-      {contactDetails?.phone && (
-        <div>
-          <span className="font-medium text-gray-500">Phone:</span>{' '}
-          {contactDetails.phone}
-        </div>
-      )}
-      {contactDetails?.postalCode && (
-        <div>
-          <span className="font-medium text-gray-500">Postal Code:</span>{' '}
-          {contactDetails.postalCode}
-        </div>
-      )}
-    </div>
-  )
-
-  // Editable form view
-  const EditableForm = () => (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="contact-name">Name</Label>
-        <Input
-          id="contact-name"
-          type="text"
-          placeholder="Full name"
-          value={formData.name}
-          onChange={handleChange('name')}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="contact-email">Email</Label>
-        <Input
-          id="contact-email"
-          type="email"
-          placeholder="email@example.com"
-          value={formData.email}
-          onChange={handleChange('email')}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="contact-phone">Phone</Label>
-        <Input
-          id="contact-phone"
-          type="tel"
-          placeholder="+46 70 123 45 67"
-          value={formData.phone}
-          onChange={handleChange('phone')}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="contact-postalCode">Postal Code</Label>
-        <Input
-          id="contact-postalCode"
-          type="text"
-          placeholder="123 45"
-          value={formData.postalCode}
-          onChange={handleChange('postalCode')}
-        />
-      </div>
-
-      <div className="flex gap-2 pt-2">
-        <Button onClick={handleSave} disabled={isMutating || !isDirty}>
-          {isMutating ? 'Saving...' : 'Save'}
-        </Button>
-        <Button
-          variant="ghost"
-          onClick={() => {
-            setFormData({
-              email: checkout?.contactDetails?.email ?? '',
-              phone: checkout?.contactDetails?.phone ?? '',
-              name: checkout?.contactDetails?.name ?? '',
-              postalCode: checkout?.contactDetails?.postalCode ?? '',
-            })
-            setIsDirty(false)
-            if (hasContactDetails) {
-              setIsExpanded(false)
-            }
-          }}
-        >
-          Cancel
-        </Button>
-      </div>
-    </div>
-  )
 
   return (
     <div className="border rounded-lg p-4 bg-white">
@@ -219,11 +99,118 @@ export const ContactDetailsEditor = () => {
 
       <div className="mt-4">
         {!isExpanded ? (
-          <CollapsedView />
+          // Collapsed read-only view
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              {contactDetails?.name && <span>{contactDetails.name}</span>}
+              {contactDetails?.email && (
+                <span className="ml-2">{contactDetails.email}</span>
+              )}
+              {contactDetails?.phone && (
+                <span className="ml-2">{contactDetails.phone}</span>
+              )}
+              {contactDetails?.postalCode && (
+                <span className="ml-2">{contactDetails.postalCode}</span>
+              )}
+              {!hasContactDetails && (
+                <span className="text-gray-400 italic">No contact details</span>
+              )}
+            </div>
+            {!isReadOnly && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsExpanded(true)}
+                className="ml-2"
+              >
+                <Pencil className="size-4" />
+              </Button>
+            )}
+          </div>
         ) : isReadOnly ? (
-          <ReadOnlyView />
+          // Read-only expanded view (when payment in progress)
+          <div className="space-y-3 text-sm">
+            {contactDetails?.name && (
+              <div>
+                <span className="font-medium text-gray-500">Name:</span>{' '}
+                {contactDetails.name}
+              </div>
+            )}
+            {contactDetails?.email && (
+              <div>
+                <span className="font-medium text-gray-500">Email:</span>{' '}
+                {contactDetails.email}
+              </div>
+            )}
+            {contactDetails?.phone && (
+              <div>
+                <span className="font-medium text-gray-500">Phone:</span>{' '}
+                {contactDetails.phone}
+              </div>
+            )}
+            {contactDetails?.postalCode && (
+              <div>
+                <span className="font-medium text-gray-500">Postal Code:</span>{' '}
+                {contactDetails.postalCode}
+              </div>
+            )}
+          </div>
         ) : (
-          <EditableForm />
+          // Editable form view
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="contact-name">Name</Label>
+              <Input
+                id="contact-name"
+                type="text"
+                placeholder="Full name"
+                value={formData.name}
+                onChange={handleChange('name')}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="contact-email">Email</Label>
+              <Input
+                id="contact-email"
+                type="email"
+                placeholder="email@example.com"
+                value={formData.email}
+                onChange={handleChange('email')}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="contact-phone">Phone</Label>
+              <Input
+                id="contact-phone"
+                type="tel"
+                placeholder="+46 70 123 45 67"
+                value={formData.phone}
+                onChange={handleChange('phone')}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="contact-postalCode">Postal Code</Label>
+              <Input
+                id="contact-postalCode"
+                type="text"
+                placeholder="123 45"
+                value={formData.postalCode}
+                onChange={handleChange('postalCode')}
+              />
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <Button onClick={handleSave} disabled={isMutating || !isDirty}>
+                {isMutating ? 'Saving...' : 'Save'}
+              </Button>
+              <Button variant="ghost" onClick={handleCancel}>
+                Cancel
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     </div>

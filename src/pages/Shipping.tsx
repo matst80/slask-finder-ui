@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import useSWR from 'swr'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { useCart } from '../hooks/cartHooks'
@@ -22,6 +23,9 @@ type ShippingContextProps = {
 
 const ShippingContext = createContext<ShippingContextProps | null>(null)
 
+const fetchShippingOptions = (url: string) =>
+  fetch(url).then((response) => toJson<ShippingOption[]>(response))
+
 export const ShippingProvider = ({
   children,
 }: {
@@ -32,8 +36,13 @@ export const ShippingProvider = ({
   const [options, setOptions] = useState<
     (ShippingOption & { selected?: boolean })[]
   >([])
-  const [loadingOptions, setLoadingOptions] = useState<boolean>(false)
   const { id, deliveries } = data ?? {}
+
+  const { data: shippingOptions, isLoading: loadingOptions } = useSWR(
+    id && options.length === 0 ? `/api/shipping-options/${id}` : null,
+    fetchShippingOptions,
+  )
+
   useEffect(() => {
     if (deliveries) {
       const optionTypes = new Set(deliveries.map((d) => d.provider))
@@ -47,25 +56,19 @@ export const ShippingProvider = ({
       }
     }
   }, [deliveries, options])
+
   useEffect(() => {
-    if (id && !options.length) {
-      setLoadingOptions(true)
-      fetch(`/api/shipping-options/${id}`)
-        .then((response) => toJson<ShippingOption[]>(response))
-        .then((opts) => {
-          const optionTypes = new Set(deliveries?.map((d) => d.provider))
-          setOptions(
-            opts.map((d) => ({
-              ...d,
-              selected: optionTypes.has(d.type),
-            })) || [],
-          )
-        })
-        .finally(() => {
-          setLoadingOptions(false)
-        })
+    if (shippingOptions && id) {
+      const optionTypes = new Set(deliveries?.map((d) => d.provider))
+      setOptions(
+        shippingOptions.map((d) => ({
+          ...d,
+          selected: optionTypes.has(d.type),
+        })) || [],
+      )
     }
-  }, [id, deliveries, options.length])
+  }, [shippingOptions, id, deliveries])
+
   const checkOptions = useCallback(
     (zip: string) => {
       if (id && zip) {

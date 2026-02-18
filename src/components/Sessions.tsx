@@ -77,7 +77,7 @@ const ItemPreview = ({ id }: Partial<ItemEvent>) => {
     <div className="p-3 bg-white rounded-lg shadow-xs">
       <img
         src={makeImageUrl(data.img)}
-        title={data.title}
+        alt={data.title}
         className="object-contain size-28"
       />
     </div>
@@ -338,8 +338,10 @@ const trimLanguage = (language?: string) => {
   }
 }
 
-const getDeviceFromUserAgent = (user_agent?: string) => {
-  const t = useTranslations()
+const getDeviceFromUserAgent = (
+  user_agent: string | undefined,
+  t: ReturnType<typeof useTranslations>,
+) => {
   if (!user_agent) {
     return null
   }
@@ -368,8 +370,10 @@ const getDeviceFromUserAgent = (user_agent?: string) => {
   return user_agent.split(' ')[0]
 }
 
-const getBrowserFromUserAgent = (user_agent?: string) => {
-  const t = useTranslations()
+const getBrowserFromUserAgent = (
+  user_agent: string | undefined,
+  t: ReturnType<typeof useTranslations>,
+) => {
   if (!user_agent) {
     return null
   }
@@ -412,8 +416,8 @@ const Session = (props: SessionData) => {
       className="min-w-fit flex flex-col p-4 bg-white rounded-xs shadow-xs hover:shadow-md transition-shadow relative"
     >
       <div className="text-lg font-medium mb-2" title={user_agent}>
-        {trimLanguage(language)}, {getDeviceFromUserAgent(user_agent)}{' '}
-        {getBrowserFromUserAgent(user_agent)}
+        {trimLanguage(language)}, {getDeviceFromUserAgent(user_agent, t)}{' '}
+        {getBrowserFromUserAgent(user_agent, t)}
         {ip != null && ip.length ? ` (${ip.trim()})` : ''}
       </div>
       <div className="flex justify-between text-sm text-gray-600">

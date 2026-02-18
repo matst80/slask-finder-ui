@@ -8,6 +8,7 @@ import {
 } from 'react'
 import Markdown from 'react-markdown'
 import { Link } from 'react-router-dom'
+import useSWRMutation from 'swr/mutation'
 import { Loader } from '../components/Loader'
 import { useAdmin } from '../hooks/appState'
 import { useFacetMap } from '../hooks/searchHooks'
@@ -63,83 +64,100 @@ type CustomTool = Tool & {
   tool: (args: unknown) => Promise<string>
 }
 
+async function postChat(
+  url: string,
+  {
+    arg,
+  }: {
+    arg: {
+      model: Model
+      messages: Message[]
+      tools: Tool[]
+    }
+  },
+) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { accept: 'application/json' },
+    body: JSON.stringify({
+      ...arg,
+      options: {
+        num_ctx: 16384,
+        temperature: 0.3,
+        repeat_penalty: 1.2,
+      },
+      stream: false,
+    }),
+  })
+  return toJson<OllamaResponse>(response)
+}
+
 export const AiShoppingProvider = ({
   children,
   customTools = [],
   messages: startMessages,
 }: PropsWithChildren<{ messages: Message[]; customTools?: CustomTool[] }>) => {
   const { data: facets } = useFacetMap()
-  const [messageReference, setMessageReference] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
   const [messages, setMessages] = useState<Message[]>(startMessages)
-  const addMessage = useCallback((message: Message) => {
-    setMessages((prev) => [...prev, message])
-    setMessageReference(message.content)
-  }, [])
+
+  const { trigger, isMutating: loading } = useSWRMutation('/api/chat', postChat)
+
+  const addMessage = useCallback(
+    async (message: Message) => {
+      const newMessages = [...messages, message]
+      setMessages(newMessages)
+
+      // Call the chat API with the new messages
+      const data = await trigger({
+        model,
+        messages: newMessages,
+        tools: [...tools, ...customTools.map(({ tool, ...rest }) => rest)],
+      })
+
+      if (data?.message) {
+        const updatedMessages = [...newMessages, data.message]
+        setMessages(updatedMessages)
+
+        if (data.message.tool_calls != null) {
+          for (const {
+            function: { name, arguments: args },
+          } of data.message.tool_calls) {
+            const toCall =
+              availableFunctions[name as keyof typeof availableFunctions] ??
+              customTools.find((tool) => tool.function.name == name)?.tool
+
+            if (toCall) {
+              const content = await toCall(args, facets)
+              const toolMessage: Message = {
+                role: 'tool',
+                content,
+              }
+              console.log('tool call result:', content)
+              updatedMessages.push(toolMessage)
+              setMessages([...updatedMessages])
+            } else {
+              console.error('Unknown function:', name, args)
+            }
+          }
+          // Trigger another chat call after tool results
+          const followUpData = await trigger({
+            model,
+            messages: updatedMessages,
+            tools: [...tools, ...customTools.map(({ tool, ...rest }) => rest)],
+          })
+
+          if (followUpData?.message) {
+            setMessages((prev) => [...prev, followUpData.message])
+          }
+        }
+      }
+    },
+    [messages, customTools, facets, trigger],
+  )
+
   const restart = useCallback(() => {
     setMessages([systemMessage])
-    setMessageReference(null)
   }, [])
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: reasons
-  useEffect(() => {
-    if (messageReference) {
-      if (loading) {
-        return
-      }
-      setLoading(true)
-      fetch('/api/chat', {
-        method: 'POST',
-        headers: { accept: 'application/json' },
-        body: JSON.stringify({
-          model,
-          messages,
-          options: {
-            num_ctx: 16384,
-            temperature: 0.3,
-            repeat_penalty: 1.2,
-          },
-          stream: false,
-          tools: [...tools, ...customTools.map(({ tool, ...rest }) => rest)],
-        }),
-      }).then((d) => {
-        return toJson<OllamaResponse>(d)
-          .then(async (data) => {
-            if (data.message) {
-              setMessages((prev) => [...prev, data.message])
-            }
-            if (data.message.tool_calls != null) {
-              for (const {
-                function: { name, arguments: args },
-              } of data.message.tool_calls) {
-                const toCall =
-                  availableFunctions[name as keyof typeof availableFunctions] ??
-                  customTools.find((tool) => tool.function.name == name)?.tool
-
-                if (toCall) {
-                  await toCall(args, facets).then((content) => {
-                    const message: Message = {
-                      role: 'tool',
-                      content,
-                    }
-                    console.log('tool call result:', content)
-                    setMessages((prev) => [...prev, message])
-                  })
-                } else {
-                  console.error('Unknown function:', name, args)
-                }
-              }
-              setMessageReference(Date.now().toString())
-            }
-
-            return data
-          })
-          .finally(() => {
-            setLoading(false)
-          })
-      })
-    }
-  }, [messageReference, customTools, facets])
 
   return (
     <AiShopperContext.Provider
