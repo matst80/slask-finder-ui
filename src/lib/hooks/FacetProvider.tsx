@@ -31,7 +31,6 @@ type FacetProviderProps = {
 export const FacetProvider = ({
   ignoreFacets,
   children,
-  delay = 30,
 }: PropsWithChildren<FacetProviderProps>) => {
   const { query } = useQuery()
   const [isLoadingFacets, setIsLoadingFacets] = useState(false)
