@@ -165,7 +165,7 @@ export const fromQueryString = (input: string): ItemsQuery => {
   })
   const sort = params.get('sort') || undefined
   const page = Number(params.get('page'))
-  const pageSize = Number(params.get('size'))
+  const pageSize = Number(params.get('size')) || 20
   const query = params.get('query') || undefined
   const stock = Array.from(params.getAll('stock'))
     .filter(isDefined)
@@ -176,6 +176,7 @@ export const fromQueryString = (input: string): ItemsQuery => {
     return { id: Number(id), exclude, value: value.split('||') }
   })
   const filter = params.get('filter') || undefined
+  const mode = params.get('mode') || undefined
   return {
     range,
     sort,
@@ -185,11 +186,13 @@ export const fromQueryString = (input: string): ItemsQuery => {
     stock,
     string,
     filter,
+    mode,
   }
 }
 
 export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
-  const { range, sort, page, pageSize, query, stock, string, filter } = data
+  const { range, sort, page, pageSize, query, stock, string, filter, mode } =
+    data
 
   const result = new URLSearchParams({})
   if (sort) {
@@ -203,6 +206,9 @@ export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
   }
   if (query) {
     result.set('query', query)
+  }
+  if (mode) {
+    result.set('mode', mode)
   }
   range?.forEach(({ id, min, max }) => {
     result.append('rng', `${id}:${min}-${max}`)

@@ -155,7 +155,7 @@ const BuilderQueryMerger = ({
     keyRef.current = componentId
     console.log('componentId changed', componentId, query)
     setQuery(query)
-  }, [setQuery, componentId])
+  }, [setQuery, componentId, query])
   return null
 }
 

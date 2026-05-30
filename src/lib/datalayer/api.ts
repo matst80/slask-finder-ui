@@ -221,7 +221,7 @@ export const getRelated = (id: number) =>
   fetch(`${baseUrl}/api/related/${id}`).then((d) => readStreamed<Item>(d))
 
 export const getCosineRelated = (id: number) =>
-  fetch(`${baseUrl}/ai/cosine-similar/${id}`).then((d) => readStreamed<Item>(d))
+  fetch(`${baseUrl}/api/similar/${id}`).then((d) => readStreamed<Item>(d))
 
 export const getCurrentDataSet = () =>
   fetch(`${baseUrl}/tracking/dataset`).then((d) => toJson<DataSetEvent[]>(d))
@@ -359,11 +359,77 @@ const readStreamed = <T>(
   return pump()
 }
 
-export const streamItems = (
-  query: string,
-  //onResults: (data: ItemResult) => void,
-) =>
-  fetch(`${baseUrl}/api/stream?${query}`, {
+export interface QueryVectors {
+  num_tokens: number
+  dim: number
+  vectors: number[]
+}
+
+const parseQueryString = (input: string) => {
+  const params = new URLSearchParams(input)
+  const range = Array.from(params.getAll('rng')).map((value) => {
+    const [id, rangeVal] = value.split(':')
+    const [min, max] = rangeVal.split('-').map(Number)
+    return { id: Number(id), min, max }
+  })
+  const sort = params.get('sort') || undefined
+  const page = Number(params.get('page'))
+  const pageSize = Number(params.get('size')) || 20
+  const queryVal = params.get('query') || undefined
+  const stock = Array.from(params.getAll('stock')).filter(
+    (d) => d != null && d !== '',
+  )
+  const stringVal = Array.from(params.getAll('str')).map((data) => {
+    const [id, value] = data.split(':')
+    const exclude = value.startsWith('!')
+    const valueWithoutExclude = exclude ? value.substring(1) : value
+    return { id: Number(id), exclude, value: valueWithoutExclude.split('||') }
+  })
+  const filter = params.get('filter') || undefined
+  const mode = params.get('mode') || undefined
+  return {
+    range,
+    sort,
+    page: isNaN(page) ? undefined : page,
+    pageSize: isNaN(pageSize) ? undefined : pageSize,
+    query: queryVal,
+    stock,
+    string: stringVal,
+    filter,
+    mode,
+  }
+}
+
+export const streamItems = (query: string, queryVectors?: QueryVectors) => {
+  if (queryVectors) {
+    const params = parseQueryString(query)
+    const body = {
+      ...params,
+      query_vectors: queryVectors,
+    }
+    return fetch(`${baseUrl}/api/stream`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }).then((d) => {
+      let pageResult: PageResult = {
+        totalHits: 0,
+        page: 0,
+        start: 0,
+        pageSize: 0,
+        end: 0,
+      }
+      return readStreamed<Item>(d, (line) => {
+        pageResult = JSON.parse(line) as PageResult
+      }).then((items) => {
+        return { ...pageResult, items }
+      })
+    })
+  }
+
+  return fetch(`${baseUrl}/api/stream?${query}`, {
     //method: "GET",
     //body: JSON.stringify(query),
   }).then((d) => {
@@ -380,6 +446,7 @@ export const streamItems = (
       return { ...pageResult, items }
     })
   })
+}
 
 export async function toJson<T>(response: Response): Promise<T> {
   if (!response.ok) {

@@ -288,6 +288,7 @@ export type FilteringQuery = {
   stock?: string[]
   string?: KeyField[]
   range?: NumberField[]
+  mode?: string
 }
 
 export type ItemsQuery = FilteringQuery & {

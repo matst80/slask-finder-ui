@@ -46,7 +46,7 @@ export const FacetProvider = ({
     ).toString()
 
     setFacetsKey(key)
-  }, [query, delay])
+  }, [query, ignoreFacets])
   useEffect(() => {
     if (facetsKey == null) {
       return
@@ -71,7 +71,7 @@ export const FacetProvider = ({
       .finally(() => {
         setIsLoadingFacets(false)
       })
-  }, [facetsKey, ignoreFacets])
+  }, [facetsKey])
 
   return (
     <FacetContext.Provider

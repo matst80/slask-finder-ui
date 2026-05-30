@@ -1,4 +1,10 @@
-import { ChevronUp, Lightbulb, Search, SearchIcon } from 'lucide-react'
+import {
+  ChevronUp,
+  Lightbulb,
+  Search,
+  SearchIcon,
+  Sparkles,
+} from 'lucide-react'
 import {
   createElement,
   HTMLAttributes,
@@ -21,6 +27,7 @@ import type {
 } from '../lib/hooks/suggestionContext'
 import { SuggestQuery } from '../lib/hooks/suggestionUtils'
 import { useTracking } from '../lib/hooks/TrackingContext'
+import { useQuery } from '../lib/hooks/useQuery'
 import { useSuggestions } from '../lib/hooks/useSuggestions'
 import { CmsPicture, ItemsQuery } from '../lib/types'
 import { useProductData } from '../lib/utils'
@@ -95,12 +102,18 @@ type AutoSuggestProps = {
 
 export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
   const { inputRef, close } = useDropdownFocus()
+  const { query: currentQuery, setQuery } = useQuery()
+  const isSparklesOn = currentQuery.mode === 'embeddings'
+
   const doSearch = useCallback(
     (query: ItemsQuery) => {
-      onSearch(query)
+      onSearch({
+        ...query,
+        mode: currentQuery.mode || 'bm25',
+      })
       close()
     },
-    [onSearch, close],
+    [onSearch, close, currentQuery.mode],
   )
 
   const parentRef = useArrowKeyNavigation<HTMLFieldSetElement>(
@@ -189,7 +202,7 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
           <input
             ref={inputRef}
             accessKey="f"
-            className="w-full pr-10 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden md:rounded-md suggest-input"
+            className="w-full pr-16 pl-4 py-2 md:border border-gray-300 shrink-0 outline-hidden md:rounded-md suggest-input"
             type="search"
             onKeyUp={onKeyUp}
             onInput={(e) => {
@@ -208,13 +221,32 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
             placeholder="Search..."
           />
           <button
+            type="button"
+            onClick={() =>
+              setQuery((prev) => ({
+                ...prev,
+                mode: isSparklesOn ? 'bm25' : 'embeddings',
+              }))
+            }
+            aria-label="Toggle Jina Embeddings Search"
+            className={cm(
+              'absolute right-9 top-1/2 transform -translate-y-1/2 p-1 rounded-md transition-all cursor-pointer z-10',
+              isSparklesOn
+                ? 'text-indigo-600 bg-indigo-50'
+                : 'text-gray-400 hover:text-gray-600',
+            )}
+          >
+            <Sparkles size={16} />
+          </button>
+          <button
             type="submit"
             aria-label="Search"
             tabIndex={-1}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"
           >
             <Search aria-hidden="true" size={20} />
           </button>
+
           <TrieSuggestions
             onQueryChange={(v) => {
               if (inputRef.current != null) {
