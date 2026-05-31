@@ -1,9 +1,17 @@
 import { AutoTokenizer } from '@huggingface/transformers'
+import { atom, getDefaultStore } from 'jotai'
 import * as ort from 'onnxruntime-web'
 
 // Configure ONNX Runtime Web to load WASM assets from CDN to bypass Vite's dev-server static import constraints
 ort.env.wasm.wasmPaths =
   'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/'
+
+// Atoms for tracking model loading state
+export const modelLoadingProgressAtom = atom<number | null>(null)
+export const modelLoadingStatusAtom = atom<string>('')
+export const isModelLoadingAtom = atom<boolean>(false)
+
+const store = getDefaultStore()
 
 // biome-ignore lint/suspicious/noExplicitAny: tokenizer return type is complex
 let tokenizerInstance: any = null
@@ -27,7 +35,8 @@ async function fetchWithProgress(
   }
 
   const contentLength = response.headers.get('content-length')
-  const total = contentLength ? parseInt(contentLength, 10) : 0
+  // Fallback to 538.0 MB (564,161,696 bytes) if content-length is missing/unreported
+  const total = contentLength ? parseInt(contentLength, 10) : 564161696
 
   if (!response.body) {
     return response.arrayBuffer()
@@ -61,53 +70,72 @@ async function fetchWithProgress(
 
 let initializerPromise: Promise<void> | null = null
 
+export async function preloadModel() {
+  await initModel()
+}
+
 async function initModel(onProgress?: (status: string) => void) {
   if (initializerPromise) {
     return initializerPromise
   }
 
+  store.set(isModelLoadingAtom, true)
   initializerPromise = (async () => {
-    // Initialize Tokenizer
-    if (!tokenizerInstance) {
-      console.log('Jina Model: Loading tokenizer...')
-      onProgress?.('Loading tokenizer...')
-      tokenizerInstance = await AutoTokenizer.from_pretrained(
-        'jinaai/jina-colbert-v2',
-      )
-      console.log('Jina Model: Tokenizer loaded successfully.')
-    }
+    try {
+      // Initialize Tokenizer
+      if (!tokenizerInstance) {
+        console.log('Jina Model: Loading tokenizer...')
+        const status = 'Loading tokenizer...'
+        onProgress?.(status)
+        store.set(modelLoadingStatusAtom, status)
+        tokenizerInstance = await AutoTokenizer.from_pretrained(
+          'jinaai/jina-colbert-v2',
+        )
+        console.log('Jina Model: Tokenizer loaded successfully.')
+      }
 
-    // Initialize ONNX Session
-    if (!sessionInstance) {
-      const modelUrl = '/model_quantized.onnx'
+      // Initialize ONNX Session
+      if (!sessionInstance) {
+        const modelUrl = '/model_quantized.onnx'
 
-      console.log('Jina Model: Fetching quantized model from local server...')
-      onProgress?.('Downloading local quantized model...')
-      const modelBuffer = await fetchWithProgress(
-        modelUrl,
-        (pct, loaded, total) => {
-          const status = `Downloading local model: ${pct}% (${loaded}/${total} MB)`
-          onProgress?.(status)
-          if (pct % 10 === 0) {
-            console.log(`Jina Model: ${status}`)
-          }
-        },
-      )
-      console.log(
-        'Jina Model: Model download complete. File size:',
-        (modelBuffer.byteLength / (1024 * 1024)).toFixed(1),
-        'MB',
-      )
+        console.log('Jina Model: Fetching quantized model from local server...')
+        const status = 'Downloading local quantized model...'
+        onProgress?.(status)
+        store.set(modelLoadingStatusAtom, status)
+        const modelBuffer = await fetchWithProgress(
+          modelUrl,
+          (pct, loaded, total) => {
+            const status = `Downloading local model: ${pct}% (${loaded}/${total} MB)`
+            onProgress?.(status)
+            store.set(modelLoadingStatusAtom, status)
+            store.set(modelLoadingProgressAtom, pct)
+            if (pct % 10 === 0) {
+              console.log(`Jina Model: ${status}`)
+            }
+          },
+        )
+        console.log(
+          'Jina Model: Model download complete. File size:',
+          (modelBuffer.byteLength / (1024 * 1024)).toFixed(1),
+          'MB',
+        )
 
-      console.log('Jina Model: Initializing ONNX Runtime Web session...')
-      onProgress?.('Initializing ONNX Runtime session...')
-      sessionInstance = await ort.InferenceSession.create(
-        new Uint8Array(modelBuffer),
-        {
-          executionProviders: ['wasm'],
-        },
-      )
-      console.log('Jina Model: ONNX session initialized successfully.')
+        console.log('Jina Model: Initializing ONNX Runtime Web session...')
+        const initStatus = 'Initializing ONNX Runtime session...'
+        onProgress?.(initStatus)
+        store.set(modelLoadingStatusAtom, initStatus)
+        sessionInstance = await ort.InferenceSession.create(
+          new Uint8Array(modelBuffer),
+          {
+            executionProviders: ['wasm'],
+          },
+        )
+        console.log('Jina Model: ONNX session initialized successfully.')
+      }
+    } finally {
+      store.set(isModelLoadingAtom, false)
+      store.set(modelLoadingProgressAtom, null)
+      store.set(modelLoadingStatusAtom, '')
     }
   })()
 

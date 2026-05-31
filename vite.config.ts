@@ -94,7 +94,7 @@ export default defineConfig(({ mode }) => ({
               globPatterns: ['**/*.{js,css,html,ico,png,svg,json,txt}'],
               runtimeCaching: [
                 {
-                  urlPattern: /^http.*\/api\/.*/i,
+                  urlPattern: /^http.*\/api\/(?!stream|stream-items).*/i,
                   handler: 'NetworkFirst',
                   options: {
                     cacheName: 'api-cache',

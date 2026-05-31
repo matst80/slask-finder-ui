@@ -1,3 +1,4 @@
+import { useAtomValue } from 'jotai'
 import {
   ChevronUp,
   Lightbulb,
@@ -32,6 +33,11 @@ import { useSuggestions } from '../lib/hooks/useSuggestions'
 import { CmsPicture, ItemsQuery } from '../lib/types'
 import { useProductData } from '../lib/utils'
 import { cm, makeImageUrl } from '../utils'
+import {
+  isModelLoadingAtom,
+  modelLoadingProgressAtom,
+  modelLoadingStatusAtom,
+} from '../utils/jina'
 import { StockBalloon } from './ResultItem'
 import { toEcomTrackingEvent } from './toImpression'
 import { useArrowKeyNavigation } from './useArrowKeyNavigation'
@@ -104,6 +110,8 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
   const { inputRef, close } = useDropdownFocus()
   const { query: currentQuery, setQuery } = useQuery()
   const isSparklesOn = currentQuery.mode === 'embeddings'
+  const isModelLoading = useAtomValue(isModelLoadingAtom)
+  const modelLoadingProgress = useAtomValue(modelLoadingProgressAtom)
 
   const doSearch = useCallback(
     (query: ItemsQuery) => {
@@ -220,6 +228,14 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
             aria-controls="suggestion-results"
             placeholder="Search..."
           />
+          {isModelLoading && (
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-100 overflow-hidden md:rounded-b-md z-20">
+              <div
+                className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-300 ease-out"
+                style={{ width: `${modelLoadingProgress ?? 0}%` }}
+              />
+            </div>
+          )}
           <button
             type="button"
             onClick={() =>
@@ -311,9 +327,31 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
 
 const SuggestionResults = ({ onSearch, onClear }: AutoSuggestProps) => {
   const { items } = useSuggestions()
+  const isModelLoading = useAtomValue(isModelLoadingAtom)
+  const modelLoadingProgress = useAtomValue(modelLoadingProgressAtom)
+  const modelLoadingStatus = useAtomValue(modelLoadingStatusAtom)
 
   return (
     <>
+      {isModelLoading && (
+        <div className="p-3 bg-indigo-50/50 border-b border-indigo-100 flex flex-col gap-2">
+          <div className="flex justify-between items-center text-xs font-semibold text-indigo-600 animate-pulse">
+            <span className="flex items-center gap-1.5">
+              <Sparkles className="size-3.5 animate-spin text-indigo-500" />
+              {modelLoadingStatus}
+            </span>
+            {modelLoadingProgress !== null && (
+              <span>{modelLoadingProgress}%</span>
+            )}
+          </div>
+          <div className="w-full h-1.5 bg-indigo-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-indigo-600 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${modelLoadingProgress ?? 0}%` }}
+            />
+          </div>
+        </div>
+      )}
       {items.map((item, idx) => (
         <SuggestSelector
           {...item}

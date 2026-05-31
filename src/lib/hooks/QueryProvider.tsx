@@ -34,7 +34,12 @@ const getQueryVectors = async (
 
   try {
     console.log('Computing local query embedding for:', trimmed)
+    const startTime = performance.now()
     const res = await getJinaColbertEmbeddingLocal(trimmed)
+    const duration = performance.now() - startTime
+    console.log(
+      `Local query embedding computed in ${duration.toFixed(2)}ms for: "${trimmed}"`,
+    )
     const shape = res.shape
     const num_tokens = shape.length === 3 ? shape[1] : shape[0]
     const dim = shape.length === 3 ? shape[2] : shape[1]
@@ -238,6 +243,12 @@ export const QueryProvider = ({
   }, [attachToHash, initialQuery])
 
   useEffect(() => {
+    if (query.mode === 'embeddings') {
+      import('../../utils/jina').then(({ preloadModel }) => preloadModel())
+    }
+  }, [query.mode])
+
+  useEffect(() => {
     const cleanKey = itemsKey.replace(/&?mode=(embeddings|bm25)/, '')
     if (cleanKey === 'page=0&size=20') {
       return
@@ -261,7 +272,12 @@ export const QueryProvider = ({
         : Promise.resolve(undefined)
 
     vectorPromise.then((vectors) => {
+      const apiStart = performance.now()
       api.streamItems(itemsKey, vectors).then((data) => {
+        const duration = performance.now() - apiStart
+        console.log(
+          `Search items streamed in ${duration.toFixed(2)}ms for key: "${itemsKey}"`,
+        )
         itemsCache.set(itemsKey, data?.items)
         setHits(data?.items ?? [])
         setTotalHits(data?.totalHits ?? 0)

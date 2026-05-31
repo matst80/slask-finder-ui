@@ -64,6 +64,16 @@ const dynamicUrlParts = [
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
+  // Do not intercept or cache very large files or streaming responses
+  if (
+    request.url.endsWith(".onnx") ||
+    request.url.endsWith(".wasm") ||
+    request.url.includes("/api/stream") ||
+    request.url.includes("/api/stream-items")
+  ) {
+    return;
+  }
+
   // Skip non-GET requests
   if (request.method !== "GET") {
     return;
