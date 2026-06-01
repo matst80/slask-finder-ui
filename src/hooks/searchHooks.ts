@@ -177,6 +177,11 @@ export const fromQueryString = (input: string): ItemsQuery => {
   })
   const filter = params.get('filter') || undefined
   const mode = params.get('mode') || undefined
+  const embeddingSourceRaw = params.get('embeddingSource')
+  const embeddingSource: 'local' | 'server' | undefined =
+    embeddingSourceRaw === 'local' || embeddingSourceRaw === 'server'
+      ? embeddingSourceRaw
+      : undefined
   return {
     range,
     sort,
@@ -187,12 +192,23 @@ export const fromQueryString = (input: string): ItemsQuery => {
     string,
     filter,
     mode,
+    embeddingSource,
   }
 }
 
 export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
-  const { range, sort, page, pageSize, query, stock, string, filter, mode } =
-    data
+  const {
+    range,
+    sort,
+    page,
+    pageSize,
+    query,
+    stock,
+    string,
+    filter,
+    mode,
+    embeddingSource,
+  } = data
 
   const result = new URLSearchParams({})
   if (sort) {
@@ -209,6 +225,9 @@ export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
   }
   if (mode) {
     result.set('mode', mode)
+  }
+  if (embeddingSource) {
+    result.set('embeddingSource', embeddingSource)
   }
   range?.forEach(({ id, min, max }) => {
     result.append('rng', `${id}:${min}-${max}`)

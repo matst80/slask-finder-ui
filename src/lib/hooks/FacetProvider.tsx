@@ -32,7 +32,7 @@ export const FacetProvider = ({
   ignoreFacets,
   children,
 }: PropsWithChildren<FacetProviderProps>) => {
-  const { query } = useQuery()
+  const { query, isLoading } = useQuery()
   const [isLoadingFacets, setIsLoadingFacets] = useState(false)
   const [facetsKey, setFacetsKey] = useState<string | null>(null)
   const [facets, setFacets] = useState<Facet[]>([])
@@ -47,7 +47,7 @@ export const FacetProvider = ({
     setFacetsKey(key)
   }, [query, ignoreFacets])
   useEffect(() => {
-    if (facetsKey == null) {
+    if (facetsKey == null || isLoading) {
       return
     }
     if (facetCache.has(facetsKey)) {
@@ -70,7 +70,7 @@ export const FacetProvider = ({
       .finally(() => {
         setIsLoadingFacets(false)
       })
-  }, [facetsKey])
+  }, [facetsKey, isLoading])
 
   return (
     <FacetContext.Provider

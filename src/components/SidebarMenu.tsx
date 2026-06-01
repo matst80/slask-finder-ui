@@ -9,7 +9,6 @@ import {
   Menu,
   Search,
   ShoppingCart,
-  Speaker,
   User,
   Watch,
   X,
@@ -350,12 +349,6 @@ const menu: NavigationItemType[] = [
     icon: <ShoppingCart size={20} />,
     fullNavigation: true,
     color: menuColors.checkout,
-  },
-  {
-    translationKey: 'menu.natural',
-    url: '/natural',
-    icon: <Speaker size={20} />,
-    color: menuColors.updated,
   },
 ]
 

@@ -289,6 +289,7 @@ export type FilteringQuery = {
   string?: KeyField[]
   range?: NumberField[]
   mode?: string
+  embeddingSource?: 'local' | 'server'
 }
 
 export type ItemsQuery = FilteringQuery & {

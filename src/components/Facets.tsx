@@ -12,6 +12,7 @@ import { KeyFacetSelector } from './facets/KeyFacetSelector'
 import { NumberFacetSelector } from './facets/NumericFacetSelectors'
 import { StarRatingFacetSelector } from './facets/RatingFacet'
 import { calculateDistance } from './map-utils'
+import { useDelayedLoading } from './SearchResultList'
 
 const CategoryLevel = ({
   id,
@@ -166,8 +167,9 @@ export const Facets = ({
   const [open, setOpen] = useState(false)
 
   const isDesktop = useScreenWidth(768)
+  const delayedLoading = useDelayedLoading(isLoading, 150)
 
-  if (isLoading && facets.length === 0) {
+  if (delayedLoading && facets.length === 0) {
     return (
       <aside className="animate-pulse">
         <h2 className="text-lg font-semibold my-4">{t('facets.title')}</h2>

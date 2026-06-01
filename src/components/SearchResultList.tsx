@@ -1,9 +1,23 @@
+import { useEffect, useState } from 'react'
 import { useYourPopularItems } from '../hooks/searchHooks'
 import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
 import { useQuery } from '../lib/hooks/useQuery'
 import { ItemsQuery } from '../lib/types'
 import { InfiniteHitList } from './InfiniteHitList'
 import { PlaceholderItem, ResultItem } from './ResultItem'
+
+export const useDelayedLoading = (isLoading: boolean, delay = 150) => {
+  const [delayed, setDelayed] = useState(false)
+  useEffect(() => {
+    if (!isLoading) {
+      setDelayed(false)
+      return
+    }
+    const timer = setTimeout(() => setDelayed(true), delay)
+    return () => clearTimeout(timer)
+  }, [isLoading, delay])
+  return delayed
+}
 
 const NoResults = () => {
   const { data } = useYourPopularItems()
@@ -49,13 +63,14 @@ const useIsEmptyQuery = (query: ItemsQuery) => {
 export const SearchResultList = () => {
   const { isLoading, hits, query } = useQuery()
   const isEmpty = useIsEmptyQuery(query)
-  if (isLoading && !isEmpty) {
+  const delayedLoading = useDelayedLoading(isLoading, 150)
+  if (delayedLoading && !isEmpty) {
     return (
       <div
         id="results"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 md:gap-2 -mx-4 md:-mx-0"
       >
-        {new Array(query.pageSize)?.map((_, idx) => (
+        {Array.from({ length: query.pageSize ?? 20 }).map((_, idx) => (
           <PlaceholderItem key={`p-${idx}`} />
         ))}
       </div>

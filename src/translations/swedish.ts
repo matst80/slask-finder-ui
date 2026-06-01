@@ -15,7 +15,6 @@ export const swedish = {
     ai: 'AI Shopper',
     gifts: 'Presentassistent',
     cookies: 'Hantera cookie consent',
-    natural: 'Naturlig språk sökning',
   },
   admin_menu: {
     edit: 'Redigera',

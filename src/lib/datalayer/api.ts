@@ -106,12 +106,31 @@ export const setPopularityRules = (data: Rules) =>
 
 export const autoSuggestResponse = (
   term: string,
+  vectors?: QueryVectors,
 ): { promise: Promise<Response>; cancel: () => void } => {
   const cancellationToken = new AbortController()
 
   const doCancel = () => {
     cancellationToken.abort('cancel')
   }
+
+  if (vectors) {
+    return {
+      promise: fetch(`${baseUrl}/api/suggest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ q: term, vectors }),
+        signal: cancellationToken.signal,
+      }).catch((e) => {
+        if (e.name === 'cancel') {
+          return new Response(null, { status: 499 })
+        }
+        throw e
+      }),
+      cancel: doCancel,
+    }
+  }
+
   return {
     promise: fetch(`${baseUrl}/api/suggest?q=${term}`, {
       signal: cancellationToken.signal,
@@ -363,6 +382,34 @@ export interface QueryVectors {
   num_tokens: number
   dim: number
   vectors: number[]
+}
+
+const queryVectorsCache = new Map<string, QueryVectors>()
+
+export const getServerEmbeddings = async (
+  term: string,
+): Promise<QueryVectors | undefined> => {
+  if (!term || term.trim() === '' || term.trim() === '*') return undefined
+  const trimmed = term.trim()
+  if (queryVectorsCache.has(trimmed)) {
+    return queryVectorsCache.get(trimmed)
+  }
+  try {
+    console.log('Fetching server embedding for:', trimmed)
+    const res = await fetch(`${baseUrl}/api/embed`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: trimmed }),
+    })
+    if (!res.ok) throw new Error(`Server embed failed: ${res.status}`)
+    const data = await res.json()
+    console.log('Server embedding fetched successfully for:', trimmed)
+    queryVectorsCache.set(trimmed, data)
+    return data
+  } catch (err) {
+    console.warn('Failed to fetch server query embedding:', err)
+    return undefined
+  }
 }
 
 const parseQueryString = (input: string) => {

@@ -15,7 +15,6 @@ export const english = {
     ai: 'AI Shopper',
     gifts: 'Gift Assistant',
     cookies: 'Manage cookie consent',
-    natural: 'Natural Language Search',
   },
   admin_menu: {
     edit: 'Edit',

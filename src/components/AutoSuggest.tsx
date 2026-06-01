@@ -1,6 +1,7 @@
 import { useAtomValue } from 'jotai'
 import {
   ChevronUp,
+  Cloud,
   Lightbulb,
   Search,
   SearchIcon,
@@ -109,19 +110,20 @@ type AutoSuggestProps = {
 export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
   const { inputRef, close } = useDropdownFocus()
   const { query: currentQuery, setQuery } = useQuery()
-  const isSparklesOn = currentQuery.mode === 'embeddings'
   const isModelLoading = useAtomValue(isModelLoadingAtom)
   const modelLoadingProgress = useAtomValue(modelLoadingProgressAtom)
+  const embeddingSource = currentQuery.embeddingSource ?? 'server'
 
   const doSearch = useCallback(
     (query: ItemsQuery) => {
       onSearch({
         ...query,
-        mode: currentQuery.mode || 'bm25',
+        mode: currentQuery.mode,
+        embeddingSource,
       })
       close()
     },
-    [onSearch, close, currentQuery.mode],
+    [onSearch, close, currentQuery.mode, embeddingSource],
   )
 
   const parentRef = useArrowKeyNavigation<HTMLFieldSetElement>(
@@ -241,18 +243,39 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
             onClick={() =>
               setQuery((prev) => ({
                 ...prev,
-                mode: isSparklesOn ? 'bm25' : 'embeddings',
+                mode: prev.mode === 'embeddings' ? 'bm25' : 'embeddings',
               }))
             }
-            aria-label="Toggle Jina Embeddings Search"
+            aria-label="Toggle Embeddings Search"
             className={cm(
-              'absolute right-9 top-1/2 transform -translate-y-1/2 p-1 rounded-md transition-all cursor-pointer z-10',
-              isSparklesOn
+              'absolute right-16 top-1/2 transform -translate-y-1/2 p-1 rounded-md transition-all cursor-pointer z-10',
+              currentQuery.mode === 'embeddings'
                 ? 'text-indigo-600 bg-indigo-50'
                 : 'text-gray-400 hover:text-gray-600',
             )}
           >
             <Sparkles size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setQuery((prev) => {
+                const current = prev.embeddingSource ?? 'server'
+                return {
+                  ...prev,
+                  embeddingSource: current === 'local' ? 'server' : 'local',
+                }
+              })
+            }
+            aria-label="Toggle Embedding Source"
+            className={cm(
+              'absolute right-9 top-1/2 transform -translate-y-1/2 p-1 rounded-md transition-all cursor-pointer z-10',
+              embeddingSource === 'server'
+                ? 'text-indigo-600 bg-indigo-50'
+                : 'text-gray-400 hover:text-gray-600',
+            )}
+          >
+            <Cloud size={16} />
           </button>
           <button
             type="submit"

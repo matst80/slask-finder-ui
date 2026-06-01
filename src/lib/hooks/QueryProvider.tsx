@@ -19,19 +19,39 @@ import {
 import { AddPageResult, QueryContext } from './queryContext'
 import { mergeFilters } from './queryUtils'
 
+const itemsCache = new Map<string, Item[]>()
+
 const embeddingCache = new Map<string, api.QueryVectors>()
 
 const getQueryVectors = async (
   term: string | undefined,
+  embeddingSource?: 'local' | 'server',
 ): Promise<api.QueryVectors | undefined> => {
   if (!term) return undefined
   const trimmed = term.trim()
   if (!trimmed || trimmed === '*') return undefined
 
+  // Check cache first (shared between local and server)
   if (embeddingCache.has(trimmed)) {
     return embeddingCache.get(trimmed)
   }
 
+  // Server embeddings - fetch from API
+  if (embeddingSource === 'server') {
+    try {
+      console.log('Fetching server query embedding for:', trimmed)
+      const res = await api.getServerEmbeddings(trimmed)
+      if (res) {
+        embeddingCache.set(trimmed, res)
+        return res
+      }
+    } catch (err) {
+      console.warn('Failed to fetch server embedding:', err)
+    }
+    return undefined
+  }
+
+  // Default: local browser embeddings
   try {
     console.log('Computing local query embedding for:', trimmed)
     const startTime = performance.now()
@@ -55,8 +75,6 @@ const getQueryVectors = async (
     return undefined
   }
 }
-
-const itemsCache = new Map<string, Item[]>()
 
 export type QueryProviderRef = {
   mergeQuery: (query: ItemsQuery) => void
@@ -98,11 +116,20 @@ export const QueryProvider = ({
   const [query, setQuery] = useState<ItemsQuery>(() => {
     const q = initialQuery ?? (attachToHash ? loadQueryFromHash() : {})
     if (!q.mode) {
-      q.mode = 'bm25'
+      q.mode = 'embeddings'
+    }
+    if (!q.embeddingSource) {
+      q.embeddingSource = 'server'
     }
     return q
   })
   const itemsKey = toQuery(query)
+  const [prevItemsKey, setPrevItemsKey] = useState(itemsKey)
+  if (itemsKey !== prevItemsKey) {
+    setPrevItemsKey(itemsKey)
+    setIsLoading(true)
+  }
+
   const setPage = useCallback((page: number) => {
     setQuery((prev) => ({ ...prev, page }))
   }, [])
@@ -200,8 +227,8 @@ export const QueryProvider = ({
 
     const virtualKey = toQuery(virtualQuery)
     const vectors =
-      query.mode === 'embeddings'
-        ? await getQueryVectors(query.query)
+      query.mode === 'embeddings' && query.embeddingSource === 'local'
+        ? await getQueryVectors(query.query, 'local')
         : undefined
     return api.streamItems(virtualKey, vectors).then((data): AddPageResult => {
       if (data?.items == null) {
@@ -231,9 +258,18 @@ export const QueryProvider = ({
     const hashListener = () => {
       const hash = window.location.hash.substring(1)
       if (hash) {
-        setQuery(fromQueryString(hash))
+        const loaded = fromQueryString(hash)
+        if (!loaded.mode) {
+          loaded.mode = 'embeddings'
+        }
+        if (!loaded.embeddingSource) {
+          loaded.embeddingSource = 'server'
+        }
+        setQuery(loaded)
       } else {
-        setQuery(initialQuery ?? {})
+        setQuery(
+          initialQuery ?? { mode: 'embeddings', embeddingSource: 'server' },
+        )
       }
     }
     addEventListener('hashchange', hashListener, false)
@@ -243,10 +279,11 @@ export const QueryProvider = ({
   }, [attachToHash, initialQuery])
 
   useEffect(() => {
-    if (query.mode === 'embeddings') {
+    if (query.embeddingSource === 'local') {
+      // Only preload when explicitly switching to local embeddings
       import('../../utils/jina').then(({ preloadModel }) => preloadModel())
     }
-  }, [query.mode])
+  }, [query.embeddingSource])
 
   useEffect(() => {
     const cleanKey = itemsKey.replace(/&?mode=(embeddings|bm25)/, '')
@@ -267,8 +304,8 @@ export const QueryProvider = ({
     setIsLoading(true)
     console.log('streaming items', itemsKey)
     const vectorPromise =
-      query.mode === 'embeddings'
-        ? getQueryVectors(query.query)
+      query.mode === 'embeddings' && query.embeddingSource === 'local'
+        ? getQueryVectors(query.query, 'local')
         : Promise.resolve(undefined)
 
     vectorPromise.then((vectors) => {
@@ -284,7 +321,7 @@ export const QueryProvider = ({
         setIsLoading(false)
       })
     })
-  }, [itemsKey, attachToHash, query.query, query.mode])
+  }, [itemsKey, attachToHash, query.query, query.mode, query.embeddingSource])
 
   return (
     <QueryContext.Provider

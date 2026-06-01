@@ -1,5 +1,5 @@
 import { GitCompareArrows, X } from 'lucide-react'
-import { PropsWithChildren, useMemo, useState } from 'react'
+import { memo, PropsWithChildren, useMemo, useState } from 'react'
 import { Link, useViewTransitionState } from 'react-router-dom'
 import { useCompareContext } from '../lib/hooks/CompareProvider'
 import { useTracking } from '../lib/hooks/TrackingContext'
@@ -350,40 +350,47 @@ export const DataViewItem = ({ item }: { item: Item }) => {
 
 export const PlaceholderItem = () => {
   return (
-    <Link
-      to={`#`}
-      className="group bg-white md:shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
-    >
-      <div className="min-h-[465px]"></div>
-    </Link>
+    <div className="bg-white md:shadow-xs border-b border-gray-200 md:border-b-0 p-4 space-y-4 animate-pulse flex flex-col min-w-64 min-h-[465px]">
+      {/* Image skeleton */}
+      <div className="w-full h-48 bg-gray-100 rounded-md" />
+      {/* Title skeleton */}
+      <div className="h-6 bg-gray-100 rounded-md w-3/4" />
+      {/* Rating skeleton */}
+      <div className="h-4 bg-gray-100 rounded-md w-1/3" />
+      {/* Bullet points skeleton */}
+      <div className="space-y-2 py-2">
+        <div className="h-3 bg-gray-100 rounded-md w-5/6" />
+        <div className="h-3 bg-gray-100 rounded-md w-2/3" />
+      </div>
+      {/* Price skeleton */}
+      <div className="h-8 bg-gray-100 rounded-md w-1/2 mt-auto" />
+      {/* Stock indicator skeleton */}
+      <div className="h-4 bg-gray-100 rounded-md w-2/3 mt-2" />
+    </div>
   )
 }
 
-export const ResultItem = ({
-  position,
-  item,
-}: {
-  item: Item
-  position: number
-}) => {
-  const { watch } = useImpression()
-  const { track } = useTracking()
-  const ecomItem = useMemo(
-    () => toEcomTrackingEvent(item, position),
-    [item, position],
-  )
+export const ResultItem = memo(
+  ({ position, item }: { item: Item; position: number }) => {
+    const { watch } = useImpression()
+    const { track } = useTracking()
+    const ecomItem = useMemo(
+      () => toEcomTrackingEvent(item, position),
+      [item, position],
+    )
 
-  return (
-    <Link
-      ref={watch(ecomItem)}
-      to={`/product/${item.id}`}
-      key={`item-${item.id}`}
-      //viewTransition={true}
-      className="group bg-white md:shadow-xs hover:shadow-md transition-all hover:z-10 duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
-      onClick={() => track({ type: 'click', item: ecomItem })}
-    >
-      <ResultItemInner {...item} />
-      {/* <DataView item={item} /> */}
-    </Link>
-  )
-}
+    return (
+      <Link
+        ref={watch(ecomItem)}
+        to={`/product/${item.id}`}
+        key={`item-${item.id}`}
+        //viewTransition={true}
+        className="group bg-white md:shadow-xs hover:shadow-md transition-all hover:z-10 duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
+        onClick={() => track({ type: 'click', item: ecomItem })}
+      >
+        <ResultItemInner {...item} />
+        {/* <DataView item={item} /> */}
+      </Link>
+    )
+  },
+)

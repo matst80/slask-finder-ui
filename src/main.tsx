@@ -55,7 +55,6 @@ import { componentRules } from './pages/builder/rules.ts'
 import { Checkout } from './pages/Checkout.tsx'
 import { DashboardView } from './pages/Dashboard.tsx'
 import { GiftAssistant } from './pages/gifts.tsx'
-import { NaturalLanguageSearch } from './pages/natural-language-search.tsx'
 import { ProductConfigurator } from './pages/ProductConfigurator.tsx'
 import Register from './pages/Register.tsx'
 import { Shipping } from './pages/Shipping.tsx'
@@ -114,15 +113,6 @@ const router = createBrowserRouter([
     element: (
       <PageContainer>
         <Register />
-      </PageContainer>
-    ),
-    errorElement: <BubbleError />,
-  },
-  {
-    path: '/natural',
-    element: (
-      <PageContainer>
-        <NaturalLanguageSearch />
       </PageContainer>
     ),
     errorElement: <BubbleError />,
