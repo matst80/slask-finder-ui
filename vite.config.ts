@@ -1,9 +1,8 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
-import { VitePWA } from 'vite-plugin-pwa'
 
 //import { analyzer } from "vite-bundle-analyzer";
-//const target = 'https://se.k6n.net'
+const hosted_target = 'https://se.k6n.net'
 //const cartTarget = "https://slask-finder.knatofs.se/";
 const target = 'http://localhost:8080/'
 
@@ -19,31 +18,31 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
       },
       '/location': {
-        target, //: localTarget,
+        target: hosted_target,
         changeOrigin: true,
       },
       '/payment': {
-        target, //: localTarget,
+        target: hosted_target,
         changeOrigin: true,
       },
       '/inventory': {
-        target,
+        target: hosted_target,
         changeOrigin: true,
       },
       '/reservations': {
-        target,
+        target: hosted_target,
         changeOrigin: true,
       },
       '/cart': {
-        target,
+        target: hosted_target,
         changeOrigin: true,
       },
       '/tracking': {
-        target,
+        target: hosted_target,
         changeOrigin: true,
       },
       '/track': {
-        target,
+        target: hosted_target,
         changeOrigin: true,
       },
       '/admin': {
@@ -52,78 +51,7 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
-  plugins: [
-    react(),
-    ...(mode === 'production'
-      ? [
-          VitePWA({
-            registerType: 'prompt',
-            includeAssets: [
-              'favicon.ico',
-              'apple-touch-icon.png',
-              'masked-icon.svg',
-            ],
-            manifest: {
-              name: 'Slask Finder',
-              short_name: 'SlaskFinder',
-              description: 'Find and compare products easily with Slask Finder',
-              theme_color: '#000000',
-              background_color: '#ffffff',
-              display: 'standalone',
-              icons: [
-                {
-                  src: '/icons/app-icon.svg',
-                  sizes: 'any',
-                  type: 'image/svg+xml',
-                  purpose: 'any',
-                },
-                {
-                  src: '/icons/icon-192x192.png',
-                  sizes: '192x192',
-                  type: 'image/png',
-                },
-                {
-                  src: '/icons/icon-512x512.png',
-                  sizes: '512x512',
-                  type: 'image/png',
-                },
-              ],
-            },
-            workbox: {
-              maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
-              globPatterns: ['**/*.{js,css,html,ico,png,svg,json,txt}'],
-              runtimeCaching: [
-                {
-                  urlPattern: /^http.*\/api\/(?!stream|stream-items).*/i,
-                  handler: 'NetworkFirst',
-                  options: {
-                    cacheName: 'api-cache',
-                    expiration: {
-                      maxEntries: 100,
-                      maxAgeSeconds: 60 * 60 * 24, // 24 hours
-                    },
-                    cacheableResponse: {
-                      statuses: [0, 200],
-                    },
-                  },
-                },
-                {
-                  urlPattern: /\.(?:png|jpg|jpeg|svg)$/,
-                  handler: 'CacheFirst',
-                  options: {
-                    cacheName: 'images',
-                    expiration: {
-                      maxEntries: 50,
-                      maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-                    },
-                  },
-                },
-              ],
-            },
-          }),
-        ]
-      : []),
-  ], //, analyzer()
+  plugins: [react()], //, analyzer()
   build: {
     rollupOptions: {
       output: {

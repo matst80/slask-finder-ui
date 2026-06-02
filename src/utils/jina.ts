@@ -3,8 +3,9 @@ import { atom, getDefaultStore } from 'jotai'
 import * as ort from 'onnxruntime-web'
 
 // Configure ONNX Runtime Web to load WASM assets from CDN to bypass Vite's dev-server static import constraints
-ort.env.wasm.wasmPaths =
-  'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/'
+ort.env.wasm.wasmPaths = import.meta.env.DEV
+  ? 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/'
+  : '/'
 
 // Atoms for tracking model loading state
 export const modelLoadingProgressAtom = atom<number | null>(null)

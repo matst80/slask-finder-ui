@@ -35,7 +35,10 @@ const CategoryLevel = ({
         return (
           <li key={idx}>
             <button
-              className={cm('text-left', selected ? 'font-bold' : undefined)}
+              className={cm(
+                'text-left inline-flex items-center gap-1 hover:text-blue-600',
+                selected ? 'font-bold' : undefined,
+              )}
               onClick={() => {
                 setQuery((prev) => ({
                   ...prev,
@@ -50,7 +53,10 @@ const CategoryLevel = ({
                 //updateValue(selected ? [] : [value]);
               }}
             >
-              {value} ({results})
+              {selected && <X className="size-3 text-red-500" />}
+              <span>
+                {value} ({results})
+              </span>
             </button>
             {facets[index + 1]?.id != null &&
               (selected || all.length === 1) && (

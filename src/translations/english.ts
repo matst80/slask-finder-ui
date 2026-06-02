@@ -28,6 +28,7 @@ export const english = {
     dataset: 'Dataset',
     csp: 'CSP Report',
     users: 'Users',
+    products: 'Products',
   },
   common: {
     view: {

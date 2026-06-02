@@ -28,6 +28,7 @@ export const swedish = {
     dataset: 'Dataset',
     csp: 'CSP Rapport',
     users: 'Användare',
+    products: 'Produkter',
   },
   common: {
     view: {

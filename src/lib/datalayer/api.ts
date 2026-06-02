@@ -558,6 +558,22 @@ export const getItemIds = (query: ItemsQuery) =>
 export const getAdminItem = (id: number | string) =>
   fetch(`${baseUrl}/admin/item/${id}`).then((d) => toJson<ItemDetail>(d))
 
+export type BatchUpdateResponse = {
+  status: string
+  inserts: number
+  changes: number
+  deletes: number
+}
+
+export const submitBatchUpdates = (updates: Partial<Item>[]) =>
+  fetch(`${baseUrl}/admin/items/batch`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updates),
+  }).then((d) => toJson<BatchUpdateResponse>(d))
+
 export type ItemPopularity = {
   popularity: number
   matches: { rule: Rule; score: number }[]

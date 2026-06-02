@@ -64,12 +64,20 @@ const dynamicUrlParts = [
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
+  const url = new URL(request.url);
+  const pathname = url.pathname.toLowerCase();
+
+  // Only handle http/https requests
+  if (!request.url.startsWith("http")) {
+    return;
+  }
+
   // Do not intercept or cache very large files or streaming responses
   if (
-    request.url.endsWith(".onnx") ||
-    request.url.endsWith(".wasm") ||
-    request.url.includes("/api/stream") ||
-    request.url.includes("/api/stream-items")
+    pathname.endsWith(".onnx") ||
+    pathname.endsWith(".wasm") ||
+    pathname.includes("/api/stream") ||
+    pathname.includes("/api/stream-items")
   ) {
     return;
   }

@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "postbuild": "cp node_modules/onnxruntime-web/dist/*.wasm dist/",
     "deploy": "scp -r dist/* dev:/srv/shared/slask-finder-web",
+    "deploy-homepi": "rsync -avzOc --no-perms --no-owner --no-group --delete --exclude='*.onnx' --exclude='*.wasm' dist/ homepi:/srv/shared/slask-finder-web/ && rsync -avzOc --no-perms --no-owner --no-group --ignore-existing dist/*.onnx dist/*.wasm homepi:/srv/shared/slask-finder-web/",
     "deploy-all": "npm run build && npm run deploy",
     "deploy-pwa": "npm run build && ./deploy-local.sh",
     "lint": "biome check",

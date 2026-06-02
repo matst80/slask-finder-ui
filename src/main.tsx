@@ -40,6 +40,7 @@ import {
 } from './pages/admin/EditFieldsView.tsx'
 import { FacetGroups } from './pages/admin/FacetGroups.tsx'
 import { OrdersView } from './pages/admin/OrdersView.tsx'
+import { ProductEditor } from './pages/admin/ProductEditor.tsx'
 import { RelationGroupEditor } from './pages/admin/RelationGroupEditor.tsx'
 import { RuleBuilder } from './pages/admin/RuleBuilder.tsx'
 import { UsersView } from './pages/admin/UsersView.tsx'
@@ -301,6 +302,10 @@ const router = createBrowserRouter([
       {
         path: 'users',
         element: <UsersView />,
+      },
+      {
+        path: 'products',
+        element: <ProductEditor />,
       },
     ],
   },
