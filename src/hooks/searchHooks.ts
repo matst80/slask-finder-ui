@@ -196,7 +196,7 @@ export const fromQueryString = (input: string): ItemsQuery => {
   }
 }
 
-export const toQuery = (data: ItemsQuery, ignoredFacets?: number[]): string => {
+export const toQuery = (data: ItemsQuery, ignoredFacets?: string[]): string => {
   const {
     range,
     sort,

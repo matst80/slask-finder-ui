@@ -24,7 +24,7 @@ const splitCategoryFacets = (facets: Facet[]): [KeyFacet[], Facet[]] => {
 }
 
 type FacetProviderProps = {
-  ignoreFacets?: number[]
+  ignoreFacets?: string[]
   delay?: number
 }
 

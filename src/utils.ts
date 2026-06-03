@@ -18,7 +18,7 @@ export const makeImageUrl = (pathOrUrl: string, size = '640') => {
 
   const [, section] = parts
   if (section == 'content') {
-    return 'https://elgiganten.se' + pathOrUrl
+    return 'https://www.bygglagret.se' + pathOrUrl
   }
 
   const params = new URLSearchParams({
@@ -27,7 +27,7 @@ export const makeImageUrl = (pathOrUrl: string, size = '640') => {
   })
   // https://next-media.elkjop.com/image/dv_web_D1800010021776624/727299/samsung-galaxy-s24-5g-smartphone-8128gb-onyx-black.jpg?w=640&q=75
   // https://next-media.elkjop.com/image/dv_web_D1800010021776624/727299/samsung-galaxy-s24-5g-smartphone-8128gb-onyx-black.jpg?w=640&q=70
-  return `https://next-media.elkjop.com${pathOrUrl}?${params.toString()}`
+  return `https://www.bygglagret.se${pathOrUrl}?${params.toString()}`
 
   // const url = `https://media.elkjop.com/assets/${section}/${blobId}`;
   // const params = new URLSearchParams({

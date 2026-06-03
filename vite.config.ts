@@ -5,6 +5,7 @@ import { defineConfig } from 'vite'
 const hosted_target = 'https://se.k6n.net'
 //const cartTarget = "https://slask-finder.knatofs.se/";
 const target = 'http://localhost:8080/'
+const writer_target = 'http://localhost:8082/'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -46,7 +47,7 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
       },
       '/admin': {
-        target,
+        target: writer_target,
         changeOrigin: true,
       },
     },

@@ -527,9 +527,7 @@ export const ProductEditor = () => {
                       >
                         <option value="">-- Select Facet field --</option>
                         {allFacets
-                          .filter(
-                            (f) => !Object.hasOwn(facetValues, String(f.id)),
-                          )
+                          .filter((f) => !(String(f.id) in facetValues))
                           .map((f) => (
                             <option key={f.id} value={f.id}>
                               {f.name} ({f.id}) - {f.valueType || 'string'}

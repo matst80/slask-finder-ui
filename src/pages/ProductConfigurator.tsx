@@ -10,10 +10,7 @@ import { useQueryKeyFacet } from '../lib/hooks/useQueryKeyFacet'
 import { Facet, isKeyFacet, KeyFacet } from '../lib/types'
 import { makeImageUrl } from '../utils'
 
-const ignoredFacets = [
-  2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559, 31158, 31693,
-  34137, 30648, 30382, 31684, 30657,
-]
+const ignoredFacets: string[] = []
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
@@ -97,12 +94,12 @@ const ResultItem = () => {
 }
 
 export const ProductConfigurator = () => {
-  const pft = useLoaderData()
+  const _pft = useLoaderData()
   return (
     <div className="grid grid-cols-1 md:grid-cols-[300px_auto] gap-2 h-screen">
       <QueryProvider
         initialQuery={{
-          string: [{ id: 25, value: [pft] }],
+          string: [{ id: 'group', value: ['139'] }],
         }}
       >
         <div className="mb-6 p-6 md:mb-0 bg-gray-100 border-b md:border-b-0 md:border-r md:border-gray-300">

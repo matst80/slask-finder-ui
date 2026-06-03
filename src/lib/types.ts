@@ -59,12 +59,10 @@ export type Sort =
   | typeof Sort.UPDATED_DESC_SORT
   | typeof Sort.CREATED_DESC_SORT
 
-export type Item = ItemProps & {
+export type Item = {
   id: number
-  title: string
-  values: ItemValues
-  stock?: Stock
-}
+  // biome-ignore lint/suspicious/noExplicitAny: dynamic backoffice props
+} & Record<string, any>
 
 export const ValueMap = {
   //StockLevel: 3,
@@ -139,7 +137,7 @@ export type ItemProps = {
 }
 
 export type BaseFacet = {
-  id: number
+  id: string
   valueType: string
   name: string
   prio?: number
@@ -198,6 +196,8 @@ export type PageResult = {
   sort?: string
 }
 
+export type FacetId = string
+
 export type ItemResult = Item[]
 
 export const isNumberValue = (value: unknown): value is NumberValue => {
@@ -210,12 +210,12 @@ export type KeyValue = string | string[]
 
 export type NumberValue = { min: number; max: number }
 
-export type NumberField = { id: number } & NumberValue
+export type NumberField = { id: FacetId } & NumberValue
 
-export type KeyField = { id: number; exclude?: boolean; value: string[] }
+export type KeyField = { id: FacetId; exclude?: boolean; value: string[] }
 
 export type RelationMatch = {
-  facetId: number
+  facetId: FacetId
   exclude?: boolean
   value?: number | string | string[]
 }

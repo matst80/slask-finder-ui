@@ -2,8 +2,6 @@ import { GitCompareArrows, X } from 'lucide-react'
 import { memo, PropsWithChildren, useMemo, useState } from 'react'
 import { Link, useViewTransitionState } from 'react-router-dom'
 import { useCompareContext } from '../lib/hooks/CompareProvider'
-import { useTracking } from '../lib/hooks/TrackingContext'
-import { useImpression } from '../lib/hooks/useImpression'
 import { useTranslations } from '../lib/hooks/useTranslations'
 import { Item, StockData } from '../lib/types'
 import { useProductData } from '../lib/utils'
@@ -11,7 +9,6 @@ import { makeImageUrl } from '../utils'
 import { PriceElement } from './Price'
 import { Stars } from './Stars'
 import { TimeAgo } from './TimeAgo'
-import { toEcomTrackingEvent } from './toImpression'
 
 const hasStock = (value?: string | null) => {
   return value != null && value != '0'
@@ -264,8 +261,8 @@ export const ResultItemInner = ({
           <ul className="text-sm text-gray-600 space-y-1">
             {bp
               .split('\n')
-              .filter((d) => d?.length)
-              .map((bp, idx) => (
+              .filter((d: string) => d?.length)
+              .map((bp: string, idx: number) => (
                 <li key={`${bp}-${idx}`} className="line-clamp-1 text-ellipsis">
                   {bp}
                 </li>
@@ -310,36 +307,65 @@ export const ResultItemInner = ({
 }
 
 const Value = ({ value }: { value: unknown }) => {
+  if (value === null) return <span className="text-gray-400 italic">null</span>
+  if (value === undefined)
+    return <span className="text-gray-400 italic">undefined</span>
   if (Array.isArray(value)) {
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1 pl-2 border-l border-gray-100">
         {value.map((v, i) => (
-          <Value key={i} value={v} />
+          <div key={i} className="border-b border-gray-50 last:border-0 pb-1">
+            <span className="text-gray-400 mr-1">[{i}]:</span>
+            <Value value={v} />
+          </div>
         ))}
       </div>
     )
   }
   if (typeof value === 'object') {
     return (
-      <div className="flex flex-col gap-2 pl-2">
+      <div className="flex flex-col gap-1">
         {Object.entries(value ?? {}).map(([key, val]) => (
           <DataProperty key={key} title={key} value={val} />
         ))}
       </div>
     )
   }
-  return <>{String(value)}</>
+  if (typeof value === 'boolean') {
+    return (
+      <span
+        className={
+          value ? 'text-green-600 font-bold' : 'text-red-600 font-bold'
+        }
+      >
+        {String(value)}
+      </span>
+    )
+  }
+  if (typeof value === 'number') {
+    return <span className="text-blue-600 font-medium">{value}</span>
+  }
+  return <span className="text-gray-900 break-all">{String(value)}</span>
 }
 
 const DataProperty = ({ title, value }: { title: string; value: unknown }) => {
-  if (value == null) {
+  if (value === undefined) {
     return null
   }
 
+  const isObj = typeof value === 'object' && value !== null
   return (
-    <details className="text-sm font-semibold" open={typeof value !== 'object'}>
-      <summary>{title}</summary>
-      <Value value={value} />
+    <details
+      className="text-xs font-mono border-l border-gray-100 pl-2 my-0.5"
+      open={!isObj}
+    >
+      <summary className="cursor-pointer hover:text-indigo-600 font-bold select-none py-0.5 text-gray-700 list-none flex items-center gap-1">
+        <span className="text-gray-400 text-[10px]">{isObj ? '▶' : '•'}</span>
+        <span>{title}</span>
+      </summary>
+      <div className="pl-3 py-0.5 text-gray-600">
+        <Value value={value} />
+      </div>
     </details>
   )
 }
@@ -350,47 +376,61 @@ export const DataViewItem = ({ item }: { item: Item }) => {
 
 export const PlaceholderItem = () => {
   return (
-    <div className="bg-white md:shadow-xs border-b border-gray-200 md:border-b-0 p-4 space-y-4 animate-pulse flex flex-col min-w-64 min-h-[465px]">
-      {/* Image skeleton */}
-      <div className="w-full h-48 bg-gray-100 rounded-md" />
-      {/* Title skeleton */}
+    <div className="bg-white md:shadow-xs border-b border-gray-200 md:border-b-0 p-4 space-y-4 animate-pulse flex flex-col min-w-64 min-h-[250px]">
       <div className="h-6 bg-gray-100 rounded-md w-3/4" />
-      {/* Rating skeleton */}
-      <div className="h-4 bg-gray-100 rounded-md w-1/3" />
-      {/* Bullet points skeleton */}
+      <div className="h-4 bg-gray-100 rounded-md w-1/2" />
       <div className="space-y-2 py-2">
         <div className="h-3 bg-gray-100 rounded-md w-5/6" />
         <div className="h-3 bg-gray-100 rounded-md w-2/3" />
       </div>
-      {/* Price skeleton */}
-      <div className="h-8 bg-gray-100 rounded-md w-1/2 mt-auto" />
-      {/* Stock indicator skeleton */}
-      <div className="h-4 bg-gray-100 rounded-md w-2/3 mt-2" />
     </div>
   )
 }
 
 export const ResultItem = memo(
-  ({ position, item }: { item: Item; position: number }) => {
-    const { watch } = useImpression()
-    const { track } = useTracking()
-    const ecomItem = useMemo(
-      () => toEcomTrackingEvent(item, position),
-      [item, position],
-    )
+  ({ item }: { item: Item; position?: number }) => {
+    const imageUrl = item.img || item.image
+    const itemTitle = item.title || item.name
 
     return (
-      <Link
-        ref={watch(ecomItem)}
-        to={`/product/${item.id}`}
-        key={`item-${item.id}`}
-        //viewTransition={true}
-        className="group bg-white md:shadow-xs hover:shadow-md transition-all hover:z-10 duration-300 animating-element relative snap-start flex-1 min-w-64 flex flex-col result-item hover:bg-linear-to-br hover:from-white hover:to-gray-50 border-b border-gray-200 md:border-b-0"
-        onClick={() => track({ type: 'click', item: ecomItem })}
-      >
-        <ResultItemInner {...item} />
-        {/* <DataView item={item} /> */}
-      </Link>
+      <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-xs hover:shadow-md transition-all font-mono text-xs overflow-auto max-h-96 flex flex-col justify-between h-full">
+        <div>
+          <div className="flex justify-between items-start gap-2 mb-2 pb-2 border-b border-gray-100">
+            <div className="flex flex-col min-w-0">
+              <span className="font-bold text-indigo-600">ID: {item.id}</span>
+              {itemTitle && (
+                <span
+                  className="font-semibold text-gray-800 text-sm truncate max-w-[180px]"
+                  title={String(itemTitle)}
+                >
+                  {String(itemTitle)}
+                </span>
+              )}
+            </div>
+            <Link
+              to={`/edit/products`}
+              onClick={() => {
+                sessionStorage.setItem('admin_search_id', String(item.id))
+              }}
+              className="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2 py-1 rounded transition-colors shrink-0"
+            >
+              Edit
+            </Link>
+          </div>
+          {imageUrl && (
+            <div className="w-full h-32 flex items-center justify-center bg-gray-50 rounded mb-3 overflow-hidden border border-gray-100 shrink-0">
+              <img
+                src={makeImageUrl(imageUrl)}
+                alt={String(itemTitle || 'Product preview')}
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+          )}
+          <div className="space-y-2">
+            <DataViewItem item={item} />
+          </div>
+        </div>
+      </div>
     )
   },
 )

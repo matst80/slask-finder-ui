@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import useSWR from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 import useSWRMutation from 'swr/mutation'
 import { useNotifications } from './components/ui-notifications/useNotifications'
 import {
@@ -80,6 +80,7 @@ export const useAdminFacets = () => {
 }
 
 export const useUpdateFacet = () => {
+  const { mutate } = useSWRConfig()
   const { showNotification } = useNotifications()
   const { trigger } = useSWRMutation(
     '/admin/facets',
@@ -90,6 +91,7 @@ export const useUpdateFacet = () => {
       })
         .then((res) => {
           if (res.ok) {
+            mutate('admin-facet-list')
             showNotification({
               title: 'Updated',
               message: 'Facet updated successfully',
@@ -115,11 +117,17 @@ export const useUpdateFacet = () => {
 }
 
 export const useDeleteFacet = () => {
+  const { mutate } = useSWRConfig()
   const { trigger } = useSWRMutation(
     '/admin/facets',
     (_: string, { arg }: { arg: { id: number } }) =>
       fetch(`/admin/facets/${arg.id}`, {
         method: 'DELETE',
+      }).then((res) => {
+        if (res.ok) {
+          mutate('admin-facet-list')
+        }
+        return res
       }),
   )
   return trigger
