@@ -11,7 +11,7 @@ import {
   getYourPopularItems,
   streamItems,
 } from '../lib/datalayer/api'
-import { ItemsQuery, RelationGroup } from '../lib/types'
+import { FacetId, ItemsQuery, RelationGroup } from '../lib/types'
 import { isDefined } from '../utils'
 
 //import { isDefined } from '../utils'
@@ -161,7 +161,7 @@ export const fromQueryString = (input: string): ItemsQuery => {
   const range = Array.from(params.getAll('rng')).map((value) => {
     const [id, range] = value.split(':')
     const [min, max] = range.split('-')
-    return { id: Number(id), min: Number(min), max: Number(max) }
+    return { id: String(id), min: Number(min), max: Number(max) }
   })
   const sort = params.get('sort') || undefined
   const page = Number(params.get('page'))
@@ -173,7 +173,7 @@ export const fromQueryString = (input: string): ItemsQuery => {
   const string = Array.from(params.getAll('str')).map((data) => {
     const [id, value] = data.split(':')
     const exclude = value.startsWith('!')
-    return { id: Number(id), exclude, value: value.split('||') }
+    return { id: String(id), exclude, value: value.split('||') }
   })
   const filter = params.get('filter') || undefined
   const mode = params.get('mode') || undefined
@@ -196,7 +196,10 @@ export const fromQueryString = (input: string): ItemsQuery => {
   }
 }
 
-export const toQuery = (data: ItemsQuery, ignoredFacets?: string[]): string => {
+export const toQuery = (
+  data: ItemsQuery,
+  ignoredFacets?: FacetId[],
+): string => {
   const {
     range,
     sort,

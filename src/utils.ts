@@ -11,7 +11,9 @@ export function remove<T>(key: string | number) {
 }
 
 export const makeImageUrl = (pathOrUrl: string, size = '640') => {
-  if (pathOrUrl.startsWith('http')) {
+  if (!pathOrUrl) return ''
+
+  if (pathOrUrl?.startsWith('http')) {
     return pathOrUrl
   }
   const parts = pathOrUrl.split('/')

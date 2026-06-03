@@ -30,6 +30,7 @@ import { useNotifications } from '../../components/ui-notifications/useNotificat
 import { useFacetGroups, useFacetList } from '../../hooks/searchHooks'
 import { updateFacetGroups } from '../../lib/datalayer/api'
 import { useTranslations } from '../../lib/hooks/useTranslations'
+import { FacetId } from '../../lib/types'
 
 export const FacetGroups = () => {
   const t = useTranslations()
@@ -39,7 +40,7 @@ export const FacetGroups = () => {
   }>({ group_id: 0, group_name: '' })
   const { showNotification } = useNotifications()
   const [filter, setFilter] = useState<string>('')
-  const [ids, setIds] = useState<number[]>([])
+  const [ids, setIds] = useState<FacetId[]>([])
   const [saving, setSaving] = useState(false)
   const { data: facets, isLoading: loadingFacets } = useFacetList()
   const { data: groups, isLoading: loadingGroups } = useFacetGroups()

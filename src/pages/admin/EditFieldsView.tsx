@@ -10,7 +10,7 @@ import { Loader } from '../../components/Loader'
 import { TimeAgo } from '../../components/TimeAgo'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
-import { createFacetFromField, deleteFacet } from '../../lib/datalayer/api'
+import { deleteFacet } from '../../lib/datalayer/api'
 import { FieldListItem } from '../../lib/types'
 import { cm } from '../../utils'
 
@@ -85,7 +85,7 @@ const FilteredFieldView = ({
         return field.name.toLowerCase()?.includes(filter.toLowerCase())
       })
       .map((field) => {
-        const isFacet = facets.some((f) => f.id == field.id)
+        const isFacet = facets.some((f) => String(f.id) === String(field.id))
         return {
           ...field,
           isFacet,
@@ -94,8 +94,8 @@ const FilteredFieldView = ({
       .sort(byCount)
   }, [filter, data, selectedPurpose, facets])
   // console.log("filteredData", filteredData.map(d=>d.id));
-  const addField = (fieldKey: string) => {
-    createFacetFromField(fieldKey)
+  const addField = (_fieldKey: string) => {
+    //createFacet(fieldKey)
   }
   const removeFacet = (facetId: number) => {
     if (confirm('Are you sure you want to remove this facet?')) {

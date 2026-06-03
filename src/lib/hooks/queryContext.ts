@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { HistoryQuery, Item, ItemsQuery, NumberField } from '../types'
+import { FacetId, HistoryQuery, Item, ItemsQuery, NumberField } from '../types'
 
 export type AddPageResult = {
   currentPage: number
@@ -21,8 +21,8 @@ type QueryContextType = {
   setStock: (stock: string[]) => void
   setTerm: (term: string) => void
   setFilterTerm: (filter: string) => void
-  removeFilter: (id: number) => void
-  setFilter: (id: number, value: string[] | Omit<NumberField, 'id'>) => void
+  removeFilter: (id: FacetId) => void
+  setFilter: (id: FacetId, value: string[] | Omit<NumberField, 'id'>) => void
 }
 
 export const QueryContext = createContext<QueryContextType | null>(null)

@@ -12,7 +12,7 @@ type CompareContextType = {
   items: Item[]
   setItems: React.Dispatch<React.SetStateAction<Item[]>>
   diffWarning?: boolean
-  matchingFacetIds: Set<number>
+  matchingFacetIds: Set<string>
 }
 
 const LoadCompareState = (): Item[] => {
@@ -60,7 +60,7 @@ export const CompareProvider = ({
 }: PropsWithChildren<{ compareAllFacets?: boolean }>) => {
   const [items, setItems] = useState<Item[]>(LoadCompareState())
   const [diffWarning, setDiffWarning] = useState(false)
-  const [matchingFacetIds, setMatchingFacetIds] = useState<Set<number>>(
+  const [matchingFacetIds, setMatchingFacetIds] = useState<Set<string>>(
     new Set(),
   )
 
@@ -77,20 +77,20 @@ export const CompareProvider = ({
   useEffect(() => {
     const itemFacets = items.map((item) => new Set(Object.keys(item.values)))
 
-    const uniqueFacets = new Set<number>()
-    const allFacets = new Set<number>()
+    const uniqueFacets = new Set<string>()
+    const allFacets = new Set<string>()
     const first = itemFacets.pop()
     if (first) {
       first.forEach((id) => {
         if (itemFacets.every((s) => s.has(id))) {
-          uniqueFacets.add(Number(id))
+          uniqueFacets.add(String(id))
         }
       })
     }
 
     items.forEach((item) => {
       Object.keys(item.values).forEach((id) => {
-        allFacets.add(Number(id))
+        allFacets.add(String(id))
       })
     })
     setDiffWarning(uniqueFacets.size < allFacets.size * 0.3)

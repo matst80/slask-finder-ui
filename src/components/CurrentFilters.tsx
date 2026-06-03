@@ -7,7 +7,10 @@ import { useQuery } from '../lib/hooks/useQuery'
 import { FacetListItem, Field, isNumberValue } from '../lib/types'
 import { isDefined } from '../utils'
 
-function toFilter(facets?: Record<number, FacetListItem>, hideHidden = true) {
+function toFilter(
+  facets?: Record<string | number, FacetListItem>,
+  hideHidden = true,
+) {
   return (data: Field) => {
     const field = facets?.[data?.id]
     if (field == null || (hideHidden && field.hide)) return null

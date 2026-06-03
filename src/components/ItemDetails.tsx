@@ -1,6 +1,7 @@
 import { BotMessageSquare, UserCog } from 'lucide-react'
 import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 import { useAdmin } from '../hooks/appState'
 import { useAddToCart } from '../hooks/cartHooks'
 import {
@@ -13,7 +14,11 @@ import {
   useRelationGroups,
 } from '../hooks/searchHooks'
 import { useFirebaseMessaging } from '../hooks/useFirebaseMessaging'
-import { getAdminItem, registerPriceWatch } from '../lib/datalayer/api'
+import {
+  createFacetFromField,
+  getAdminItem,
+  registerPriceWatch,
+} from '../lib/datalayer/api'
 import { trackAction } from '../lib/datalayer/beacons'
 import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
 import { QueryProvider } from '../lib/hooks/QueryProvider'
@@ -39,7 +44,7 @@ import { GroupedProperties } from './GroupedProperties'
 import { Loader } from './Loader'
 import { Price, PriceValue } from './Price'
 import { QueryUpdater } from './QueryMerger'
-import { CompareButton, ResultItem } from './ResultItem'
+import { CompareButton, DataViewItem, ResultItem } from './ResultItem'
 import { Stars } from './Stars'
 import { StockList } from './StockList'
 import { toEcomTrackingEvent } from './toImpression'
@@ -548,6 +553,8 @@ export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart, isMutating } = useAddToCart()
   const [open, setOpen] = useState(false)
   const t = useTranslations()
+  const [isAdmin] = useAdmin()
+  const { mutate } = useSWRConfig()
 
   const {
     title,
@@ -565,6 +572,33 @@ export const ItemDetails = (details: ItemDetail) => {
   } = details
   const productData = useProductData(values)
   const { showNotification } = useNotifications()
+
+  const handleCreateFacet = async (fieldKey: string) => {
+    try {
+      const res = await createFacetFromField(fieldKey)
+      if (res.ok) {
+        mutate('admin-facet-list')
+        showNotification({
+          title: 'Facet Created',
+          message: `Successfully created facet for property "${fieldKey}"`,
+          variant: 'success',
+        })
+      } else {
+        showNotification({
+          title: 'Error',
+          message: `Failed to create facet: ${res.statusText || res.status}`,
+          variant: 'error',
+        })
+      }
+    } catch (err) {
+      showNotification({
+        title: 'Error',
+        // biome-ignore lint/suspicious/noExplicitAny: error message is dynamic
+        message: `Failed to create facet: ${(err as any).message}`,
+        variant: 'error',
+      })
+    }
+  }
   const { token, subscribe } = useFirebaseMessaging()
   const { trigger: registerWatch, isMutating: isRegistering } =
     useFetchMutation(`/price-watch/${id}`, async () => {
@@ -804,6 +838,28 @@ export const ItemDetails = (details: ItemDetail) => {
           <RelationGroups values={values} id={id} />
 
           <GroupedProperties values={details.values} />
+
+          {isAdmin && (
+            <div className="mt-6 md:bg-white md:rounded-lg md:shadow-xs md:border border-gray-100 md:p-4">
+              <details className="group">
+                <summary className="text-xl font-bold text-gray-900 cursor-pointer list-none flex justify-between items-center select-none">
+                  <span>Raw Properties & Facet Connections (Admin)</span>
+                  <span className="text-sm font-normal text-indigo-600 group-open:hidden">
+                    Show
+                  </span>
+                  <span className="text-sm font-normal text-indigo-600 hidden group-open:inline">
+                    Hide
+                  </span>
+                </summary>
+                <div className="mt-4 p-4 bg-gray-50 rounded-lg font-mono text-xs overflow-auto max-h-96 border border-gray-100">
+                  <DataViewItem
+                    item={details}
+                    onCreateFacet={handleCreateFacet}
+                  />
+                </div>
+              </details>
+            </div>
+          )}
 
           <div className="animating-element">
             <h3 className="text-2xl font-bold text-gray-900 pb-6 mb-8">

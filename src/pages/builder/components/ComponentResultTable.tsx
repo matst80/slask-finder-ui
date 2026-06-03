@@ -74,9 +74,12 @@ const TableRowItem = ({
         <td className="px-6 py-4 whitespace-nowrap">
           <div className="text-sm font-medium text-gray-900">{item.title}</div>
           <div className="text-sm text-gray-500 flex flex-col">
-            {item.bp.split('\n').map((txt, idx) => (
-              <span key={idx}>{txt}</span>
-            ))}
+            {typeof item.bp === 'string' &&
+              item.bp
+                .split('\n')
+                .map((txt: string, idx: number) => (
+                  <span key={idx}>{txt}</span>
+                ))}
           </div>
         </td>
 

@@ -4,6 +4,7 @@ import {
   ContentRecord,
   Facet,
   FacetGroup,
+  FacetId,
   FacetListItem,
   FieldListItem,
   Funnel,
@@ -296,7 +297,7 @@ export const getFunnelData = () =>
   fetch(`${baseUrl}/tracking/funnels`).then((d) => toJson<Funnel[]>(d))
 
 type FindRelated = {
-  id: number
+  id: FacetId
   value: string
 }
 
@@ -417,7 +418,7 @@ const parseQueryString = (input: string) => {
   const range = Array.from(params.getAll('rng')).map((value) => {
     const [id, rangeVal] = value.split(':')
     const [min, max] = rangeVal.split('-').map(Number)
-    return { id: Number(id), min, max }
+    return { id: String(id), min, max }
   })
   const sort = params.get('sort') || undefined
   const page = Number(params.get('page'))
@@ -430,7 +431,7 @@ const parseQueryString = (input: string) => {
     const [id, value] = data.split(':')
     const exclude = value.startsWith('!')
     const valueWithoutExclude = exclude ? value.substring(1) : value
-    return { id: Number(id), exclude, value: valueWithoutExclude.split('||') }
+    return { id: String(id), exclude, value: valueWithoutExclude.split('||') }
   })
   const filter = params.get('filter') || undefined
   const mode = params.get('mode') || undefined
@@ -513,7 +514,7 @@ export const getFacetList = () =>
 type FactGroupUpdate = {
   group_id: number
   group_name: string
-  facet_ids: number[]
+  facet_ids: FacetId[]
 }
 
 export const updateFacetGroups = (data: FactGroupUpdate) =>
@@ -605,8 +606,18 @@ export const updateCategories = (
     return d.ok
   })
 
+export const createFacet = (
+  fieldKey: string,
+  facet: Partial<FacetListItem>,
+  type: 1 | 2 | 3,
+) =>
+  fetch(`${baseUrl}/admin/facets`, {
+    method: 'POST',
+    body: JSON.stringify({ ...facet, id: fieldKey, type }),
+  })
+
 export const createFacetFromField = (fieldKey: string) =>
-  fetch(`${baseUrl}/admin/fields/${fieldKey}/add`)
+  fetch(`${baseUrl}/admin/facets/${fieldKey}`, { method: 'POST' })
 
 export const deleteFacet = (fieldId: number | string) =>
   fetch(`${baseUrl}/admin/facets/${fieldId}`, { method: 'DELETE' })

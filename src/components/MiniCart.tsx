@@ -110,17 +110,18 @@ const CartCompatible = ({ id }: { id: number }) => {
                       {item.title}
                     </span>
                     <div className="flex flex-col">
-                      {item.bp
-                        .split('\n')
-                        .filter(hasLength)
-                        .map((s) => (
-                          <span
-                            key={s}
-                            className="text-gray-600 text-2xs line-clamp-1 overflow-ellipsis"
-                          >
-                            {s}
-                          </span>
-                        ))}
+                      {typeof item.bp === 'string' &&
+                        item.bp
+                          .split('\n')
+                          .filter(hasLength)
+                          .map((s) => (
+                            <span
+                              key={s}
+                              className="text-gray-600 text-2xs line-clamp-1 overflow-ellipsis"
+                            >
+                              {s}
+                            </span>
+                          ))}
                     </div>
                   </Link>
                   <div className="flex flex-col items-end">
@@ -129,7 +130,7 @@ const CartCompatible = ({ id }: { id: number }) => {
                       disabled={isMutating}
                       onClick={() =>
                         addToCart(
-                          { ...item, quantity: 1 },
+                          { sku: item.sku, quantity: 1 },
                           toEcomTrackingEvent(item, a),
                         )
                       }

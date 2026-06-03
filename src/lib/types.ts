@@ -137,7 +137,7 @@ export type ItemProps = {
 }
 
 export type BaseFacet = {
-  id: string
+  id: FacetId
   valueType: string
   name: string
   prio?: number
@@ -196,7 +196,7 @@ export type PageResult = {
   sort?: string
 }
 
-export type FacetId = string
+export type FacetId = string | number
 
 export type ItemResult = Item[]
 
@@ -276,8 +276,8 @@ export const relationValueConverters: Record<
 export type RelationConverter = 'none' | 'valueToMin' | 'valueToMax'
 
 export type Relation = {
-  fromId: number
-  toId: number
+  fromId: FacetId
+  toId: FacetId
   converter: RelationConverter
 }
 
@@ -428,7 +428,7 @@ export type LineItemMarkingRequest = {
 }
 
 export type FacetListItem = {
-  id: number
+  id: string
   valueType?: string
   fieldType?: string
   name: string
@@ -598,7 +598,7 @@ export type ValueMatch = FieldMatch | PropertyMatch
 
 export type FieldMatch = {
   source: 'fieldId'
-  fieldId: number
+  fieldId: FacetId
 }
 
 export type PropertyMatch = {

@@ -10,6 +10,7 @@ import { fromQueryString, toQuery } from '../../hooks/searchHooks'
 import { getJinaColbertEmbeddingLocal } from '../../utils/jina'
 import * as api from '../datalayer/api'
 import {
+  FacetId,
   HistoryQuery,
   Item,
   ItemsQuery,
@@ -148,7 +149,7 @@ export const QueryProvider = ({
   const setTerm = useCallback((term: string) => {
     setQuery(({ filter, ...prev }) => ({ ...prev, query: term, page: 0 }))
   }, [])
-  const removeFilter = useCallback((id: number) => {
+  const removeFilter = useCallback((id: FacetId) => {
     setQuery(({ filter, ...prev }) => ({
       ...prev,
       string: prev.string?.filter((f) => f.id !== id),
@@ -173,7 +174,7 @@ export const QueryProvider = ({
   )
 
   const setFilter = useCallback(
-    (id: number, value: string[] | Omit<NumberField, 'id'>) => {
+    (id: FacetId, value: string[] | Omit<NumberField, 'id'>) => {
       if (isNumberValue(value)) {
         setQuery((prev) => ({
           ...prev,

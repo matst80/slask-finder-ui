@@ -15,7 +15,7 @@ import {
   updatePopularity,
   updateRelations,
 } from './lib/datalayer/api'
-import { RelationGroup } from './lib/types'
+import { FacetId, RelationGroup } from './lib/types'
 
 export const useFieldValues = (id: string | number) =>
   useSWR(`field-values/${id}`, () => getKeyFieldsValues(id))
@@ -84,7 +84,7 @@ export const useUpdateFacet = () => {
   const { showNotification } = useNotifications()
   const { trigger } = useSWRMutation(
     '/admin/facets',
-    (_: string, { arg }: { arg: { id: number; [key: string]: unknown } }) =>
+    (_: string, { arg }: { arg: { id: FacetId; [key: string]: unknown } }) =>
       fetch(`/admin/facets/${arg.id}`, {
         method: 'PUT',
         body: JSON.stringify(arg),
@@ -120,7 +120,7 @@ export const useDeleteFacet = () => {
   const { mutate } = useSWRConfig()
   const { trigger } = useSWRMutation(
     '/admin/facets',
-    (_: string, { arg }: { arg: { id: number } }) =>
+    (_: string, { arg }: { arg: { id: FacetId } }) =>
       fetch(`/admin/facets/${arg.id}`, {
         method: 'DELETE',
       }).then((res) => {

@@ -1,9 +1,9 @@
 import { useCallback, useContext, useMemo } from 'react'
-import { isNumberFacet, NumberField } from '../types'
+import { FacetId, isNumberFacet, NumberField } from '../types'
 import { QueryContext } from './queryContext'
 import { useFacets } from './useFacets'
 
-export const useQueryRangeFacet = (id: number) => {
+export const useQueryRangeFacet = (id: FacetId) => {
   const context = useContext(QueryContext)
   if (context == null) {
     throw new Error('useQuery must be used within a QueryProvider')

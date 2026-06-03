@@ -74,7 +74,19 @@ const AiChatForCompare = ({ items }: { items: Item[] }) => {
   )
 }
 
-const ignoredFacets = new Set([1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14])
+const ignoredFacets = new Set([
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+])
 
 export const CompareOverlay = () => {
   const { data } = useFacetMap()
@@ -84,7 +96,7 @@ export const CompareOverlay = () => {
 
   const facets = useMemo(() => {
     return Array.from(matchingFacetIds)
-      .filter((id) => !ignoredFacets.has(id))
+      .filter((id) => !ignoredFacets.has(String(id)))
       .map((id) => data?.[id])
       .filter(isDefined)
       .filter((d) => !d.hide && !d.internal)

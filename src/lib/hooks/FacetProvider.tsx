@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useState } from 'react'
 import { toQuery } from '../../hooks/searchHooks'
 import * as api from '../datalayer/api'
-import { Facet, isKeyFacet, KeyFacet } from '../types'
+import { Facet, FacetId, isKeyFacet, KeyFacet } from '../types'
 import { FacetContext } from './facetContext'
 import { useQuery } from './useQuery'
 
@@ -24,7 +24,7 @@ const splitCategoryFacets = (facets: Facet[]): [KeyFacet[], Facet[]] => {
 }
 
 type FacetProviderProps = {
-  ignoreFacets?: string[]
+  ignoreFacets?: FacetId[]
   delay?: number
 }
 

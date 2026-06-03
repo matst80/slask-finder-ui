@@ -7,16 +7,16 @@ import { QueryProvider } from '../lib/hooks/QueryProvider'
 import { useClipboard } from '../lib/hooks/useClipboard'
 import { useQuery } from '../lib/hooks/useQuery'
 import { useTranslations } from '../lib/hooks/useTranslations'
-import { ItemDetail, ItemsQuery } from '../lib/types'
+import { FacetId, ItemDetail, ItemsQuery } from '../lib/types'
 import { byPriority, cm, isDefined } from '../utils'
 import { QueryUpdater } from './QueryMerger'
 import { TotalResultText } from './ResultHeader'
 import { ButtonLink } from './ui/button'
 
-const ignoreFaceIds = [3, 4, 5, 10, 11, 12, 13]
+const ignoreFaceIds: FacetId[] = [3, 4, 5, 10, 11, 12, 13]
 
 type SelectedFacet = {
-  id: number
+  id: FacetId
   value: string[]
 }
 

@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { useLoaderData } from 'react-router-dom'
 import { NumberFacetSelector } from '../components/facets/NumericFacetSelectors'
 import { Button } from '../components/ui/button'
 import { FacetProvider } from '../lib/hooks/FacetProvider'
@@ -7,10 +6,10 @@ import { QueryProvider } from '../lib/hooks/QueryProvider'
 import { useFacets } from '../lib/hooks/useFacets'
 import { useQuery } from '../lib/hooks/useQuery'
 import { useQueryKeyFacet } from '../lib/hooks/useQueryKeyFacet'
-import { Facet, isKeyFacet, KeyFacet } from '../lib/types'
+import { Facet, FacetId, isKeyFacet, KeyFacet } from '../lib/types'
 import { makeImageUrl } from '../utils'
 
-const ignoredFacets: string[] = []
+const ignoredFacets: FacetId[] = []
 
 const toSorted = (values: Record<string, number>) =>
   Object.entries(values)
@@ -94,7 +93,6 @@ const ResultItem = () => {
 }
 
 export const ProductConfigurator = () => {
-  const _pft = useLoaderData()
   return (
     <div className="grid grid-cols-1 md:grid-cols-[300px_auto] gap-2 h-screen">
       <QueryProvider

@@ -4,7 +4,7 @@ import { useFacets } from '../lib/hooks/useFacets'
 import { useQuery } from '../lib/hooks/useQuery'
 import { useScreenWidth } from '../lib/hooks/useScreenWidth'
 import { useTranslations } from '../lib/hooks/useTranslations'
-import { isNumberFacet, KeyFacet } from '../lib/types'
+import { FacetId, isNumberFacet, KeyFacet } from '../lib/types'
 import { cm } from '../utils'
 import { ColorFacetSelector } from './facets/ColorFacet'
 import { KeyFacetSelector } from './facets/KeyFacetSelector'
@@ -17,7 +17,7 @@ const CategoryLevel = ({
   facets,
   index,
 }: {
-  id: number
+  id: FacetId
   facets: KeyFacet[]
   index: number
 }) => {
@@ -94,8 +94,8 @@ const CategoryResult = ({ categories }: { categories: KeyFacet[] }) => {
 }
 
 type FacetListProps = {
-  facetsToHide?: number[]
-  facetsToDisable?: number[]
+  facetsToHide?: FacetId[]
+  facetsToDisable?: FacetId[]
   hideFacetsWithSingleValue?: boolean
 }
 export const FacetList = ({

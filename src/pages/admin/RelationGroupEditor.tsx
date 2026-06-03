@@ -17,6 +17,7 @@ import { useDropdownFocus } from '../../components/useDropdownFocus'
 import { useAdminRelationGroups, useFacetMap } from '../../hooks/searchHooks'
 import { useGroupDesigner } from '../../lib/hooks/GroupDesignerProvider'
 import {
+  FacetId,
   FacetListItem,
   Relation,
   RelationGroup,
@@ -28,7 +29,7 @@ const FacetValueTagEditor = ({
   facetId,
   onChange,
 }: {
-  facetId: number
+  facetId: FacetId
   data: string[]
   onChange: (data: string[]) => void
 }) => {
@@ -146,7 +147,7 @@ const FacetValueInput = ({
   onChange,
 }: {
   value: string | number | string[] | undefined
-  facetId: number
+  facetId: FacetId
   onChange: (data: string | number | string[] | undefined) => void
 }) => {
   const { data: facetValues } = useFieldValues(facetId)
@@ -210,8 +211,8 @@ const FacetInput = ({
   onChange,
   labelFormatter,
 }: {
-  id: number
-  onChange: (id: number) => void
+  id: FacetId
+  onChange: (id: FacetId) => void
   labelFormatter?: (facet: FacetListItem | undefined) => string
 }) => {
   const id = useId()

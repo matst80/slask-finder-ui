@@ -67,7 +67,8 @@ export const Banner = ({ item: data }: { item: Item }) => {
   }, [])
 
   // Parse bullet points
-  const bulletPoints = data?.bp ? data.bp.split('\n') : []
+  const bulletPoints: string[] =
+    typeof data?.bp === 'string' ? data.bp.split('\n') : []
 
   // Calculate vertical spacing for centered bullet points
   const topMargin = 400 // Space for title

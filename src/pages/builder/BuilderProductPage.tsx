@@ -63,9 +63,9 @@ export const ComponentDetails = (details: ItemWithComponentId) => {
               <h2 className="text-3xl font-bold text-gray-900 mb-6 product-name">
                 {title}
               </h2>
-              {bp && (
+              {typeof bp === 'string' && (
                 <ul className="space-y-3 text-gray-600">
-                  {bp.split('\n').map((txt) => (
+                  {bp.split('\n').map((txt: string) => (
                     <li key={txt} className="flex items-start">
                       <span className="text-blue-500 mr-2">•</span>
                       {txt}

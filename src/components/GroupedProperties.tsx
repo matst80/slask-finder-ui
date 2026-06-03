@@ -15,6 +15,7 @@ import { useClipboard } from '../lib/hooks/useClipboard'
 import { useTranslations } from '../lib/hooks/useTranslations'
 import {
   FacetGroup,
+  FacetId,
   FacetListItem,
   ItemDetail,
   ItemsQuery,
@@ -27,17 +28,17 @@ import { TotalResultText } from './ResultHeader'
 import { Tooltip } from './Tooltip'
 import { useNotifications } from './ui-notifications/useNotifications'
 
-const ignoreFaceIds = [
+const ignoreFaceIds: FacetId[] = [
   3, 4, 5, 6, 10, 11, 12, 13, 20, 1, 30, 31, 32, 33, 35, 36, 23, 9, 24,
 ]
 
 type SelectedFacet = {
-  id: number
+  id: FacetId
   value: string[]
 }
 
 type SelectedNumberFacet = {
-  id: number
+  id: FacetId
   min: number
   max: number
 }

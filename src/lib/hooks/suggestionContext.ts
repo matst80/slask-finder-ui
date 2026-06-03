@@ -1,6 +1,6 @@
 import { createContext } from 'react'
 
-import { ContentRecord, Item, ItemsQuery, Suggestion } from '../types'
+import { ContentRecord, FacetId, Item, ItemsQuery, Suggestion } from '../types'
 import { FlatFacetValue, SuggestQuery } from './suggestionUtils'
 
 type SuggestionProviderType = {
@@ -31,7 +31,7 @@ export type ResultItemType = SuggestResultItem['type']
 
 export type QueryRefinement = {
   type: 'refinement'
-  facetId: number
+  facetId: FacetId
   facetName: string
   values: {
     value: string
@@ -46,7 +46,7 @@ type BaseConfig = { type: 'product' | 'query' | 'content'; maxAmount: number }
 type RefinementConfig = {
   type: 'refinement'
   maxAmount: number
-  facetConfig: Record<number, { flat: boolean; maxHits: number }>
+  facetConfig: Record<FacetId, { flat: boolean; maxHits: number }>
 }
 
 export type SuggestionConfig = (BaseConfig | RefinementConfig)[]

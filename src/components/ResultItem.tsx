@@ -1,6 +1,9 @@
-import { GitCompareArrows, X } from 'lucide-react'
+import { GitCompareArrows, Plus, X } from 'lucide-react'
 import { memo, PropsWithChildren, useMemo, useState } from 'react'
 import { Link, useViewTransitionState } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
+import { useAdminFacets } from '../adminHooks'
+import { createFacet } from '../lib/datalayer/api'
 import { useCompareContext } from '../lib/hooks/CompareProvider'
 import { useTranslations } from '../lib/hooks/useTranslations'
 import { Item, StockData } from '../lib/types'
@@ -9,6 +12,7 @@ import { makeImageUrl } from '../utils'
 import { PriceElement } from './Price'
 import { Stars } from './Stars'
 import { TimeAgo } from './TimeAgo'
+import { useNotifications } from './ui-notifications/useNotifications'
 
 const hasStock = (value?: string | null) => {
   return value != null && value != '0'
@@ -305,8 +309,16 @@ export const ResultItemInner = ({
     </>
   )
 }
-
-const Value = ({ value }: { value: unknown }) => {
+const Value = ({
+  value,
+  facets = [],
+  onCreateFacet,
+}: {
+  value: unknown
+  // biome-ignore lint/suspicious/noExplicitAny: facets list is dynamic
+  facets?: any[]
+  onCreateFacet?: (key: string) => void
+}) => {
   if (value === null) return <span className="text-gray-400 italic">null</span>
   if (value === undefined)
     return <span className="text-gray-400 italic">undefined</span>
@@ -316,7 +328,7 @@ const Value = ({ value }: { value: unknown }) => {
         {value.map((v, i) => (
           <div key={i} className="border-b border-gray-50 last:border-0 pb-1">
             <span className="text-gray-400 mr-1">[{i}]:</span>
-            <Value value={v} />
+            <Value value={v} facets={facets} onCreateFacet={onCreateFacet} />
           </div>
         ))}
       </div>
@@ -326,7 +338,13 @@ const Value = ({ value }: { value: unknown }) => {
     return (
       <div className="flex flex-col gap-1">
         {Object.entries(value ?? {}).map(([key, val]) => (
-          <DataProperty key={key} title={key} value={val} />
+          <DataProperty
+            key={key}
+            title={key}
+            value={val}
+            facets={facets}
+            onCreateFacet={onCreateFacet}
+          />
         ))}
       </div>
     )
@@ -348,30 +366,77 @@ const Value = ({ value }: { value: unknown }) => {
   return <span className="text-gray-900 break-all">{String(value)}</span>
 }
 
-const DataProperty = ({ title, value }: { title: string; value: unknown }) => {
+const DataProperty = ({
+  title,
+  value,
+  facets = [],
+  onCreateFacet,
+}: {
+  title: string
+  value: unknown
+  // biome-ignore lint/suspicious/noExplicitAny: facets list is dynamic
+  facets?: any[]
+  onCreateFacet?: (key: string) => void
+}) => {
   if (value === undefined) {
     return null
   }
 
   const isObj = typeof value === 'object' && value !== null
+  const isFacet = facets.some(
+    (f) =>
+      String(f.id) === title ||
+      String(f.name) === title ||
+      String(f.linkedId) === title,
+  )
+
   return (
     <details
       className="text-xs font-mono border-l border-gray-100 pl-2 my-0.5"
       open={!isObj}
     >
-      <summary className="cursor-pointer hover:text-indigo-600 font-bold select-none py-0.5 text-gray-700 list-none flex items-center gap-1">
-        <span className="text-gray-400 text-[10px]">{isObj ? '▶' : '•'}</span>
-        <span>{title}</span>
+      <summary className="cursor-pointer hover:text-indigo-600 font-bold select-none py-0.5 text-gray-700 list-none flex items-center justify-between group/prop">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-gray-400 text-[10px] shrink-0">
+            {isObj ? '▶' : '•'}
+          </span>
+          <span className="truncate">{title}</span>
+          {isFacet && (
+            <span className="text-[9px] font-sans font-medium text-green-600 bg-green-50 px-1 rounded border border-green-200 shrink-0">
+              facet
+            </span>
+          )}
+        </div>
+        {!isFacet && onCreateFacet && (
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onCreateFacet(title)
+            }}
+            className="opacity-0 group-hover/prop:opacity-100 p-0.5 rounded bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-all flex items-center justify-center size-4 shrink-0 cursor-pointer"
+            title="Create facet from this property"
+          >
+            <Plus className="size-3" />
+          </button>
+        )}
       </summary>
       <div className="pl-3 py-0.5 text-gray-600">
-        <Value value={value} />
+        <Value value={value} facets={facets} onCreateFacet={onCreateFacet} />
       </div>
     </details>
   )
 }
 
-export const DataViewItem = ({ item }: { item: Item }) => {
-  return <Value value={item} />
+export const DataViewItem = ({
+  item,
+  onCreateFacet,
+}: {
+  item: Item
+  onCreateFacet?: (key: string) => void
+}) => {
+  const { data: facets = [] } = useAdminFacets()
+  return <Value value={item} facets={facets} onCreateFacet={onCreateFacet} />
 }
 
 export const PlaceholderItem = () => {
@@ -391,6 +456,40 @@ export const ResultItem = memo(
   ({ item }: { item: Item; position?: number }) => {
     const imageUrl = item.img || item.image
     const itemTitle = item.title || item.name
+    const { mutate } = useSWRConfig()
+    const { showNotification } = useNotifications()
+    const [showProperties, setShowProperties] = useState(false)
+
+    const handleCreateFacet = async (fieldKey: string) => {
+      try {
+        const res = await createFacet(
+          fieldKey,
+          { name: fieldKey, searchable: true },
+          1,
+        )
+        if (res.ok) {
+          mutate('admin-facet-list')
+          showNotification({
+            title: 'Facet Created',
+            message: `Successfully created facet for property "${fieldKey}"`,
+            variant: 'success',
+          })
+        } else {
+          showNotification({
+            title: 'Error',
+            message: `Failed to create facet: ${res.statusText || res.status}`,
+            variant: 'error',
+          })
+        }
+      } catch (err) {
+        showNotification({
+          title: 'Error',
+          // biome-ignore lint/suspicious/noExplicitAny: error message is dynamic
+          message: `Failed to create facet: ${(err as any).message}`,
+          variant: 'error',
+        })
+      }
+    }
 
     return (
       <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-xs hover:shadow-md transition-all font-mono text-xs overflow-auto max-h-96 flex flex-col justify-between h-full">
@@ -427,7 +526,22 @@ export const ResultItem = memo(
             </div>
           )}
           <div className="space-y-2">
-            <DataViewItem item={item} />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setShowProperties((prev) => !prev)
+              }}
+              className="w-full text-center py-1.5 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 font-semibold rounded text-xs transition-colors cursor-pointer"
+            >
+              {showProperties ? 'Hide Properties' : 'Show Properties'}
+            </button>
+            {showProperties && (
+              <div className="mt-2 pt-2 border-t border-gray-100">
+                <DataViewItem item={item} onCreateFacet={handleCreateFacet} />
+              </div>
+            )}
           </div>
         </div>
       </div>
