@@ -1,4 +1,3 @@
-import { BotMessageSquare, UserCog } from 'lucide-react'
 import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
@@ -11,45 +10,22 @@ import {
   useFacetMap,
   useItemsSearch,
   useRelatedItems,
-  useRelationGroups,
 } from '../hooks/searchHooks'
 import { useFirebaseMessaging } from '../hooks/useFirebaseMessaging'
-import {
-  createFacetFromField,
-  getAdminItem,
-  registerPriceWatch,
-} from '../lib/datalayer/api'
-import { trackAction } from '../lib/datalayer/beacons'
+import { createFacetFromField, registerPriceWatch } from '../lib/datalayer/api'
 import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
-import { QueryProvider } from '../lib/hooks/QueryProvider'
 import { useQuery } from '../lib/hooks/useQuery'
 import { useSwitching } from '../lib/hooks/useSwitching'
 import { useTranslations } from '../lib/hooks/useTranslations'
-import {
-  ItemDetail,
-  ItemsQuery,
-  ItemValues,
-  KeyField,
-  NumberField,
-  RelationGroup,
-  RelationMatch,
-  relationValueConverters,
-  Store,
-} from '../lib/types'
+import { facetValues, ItemDetail, Store } from '../lib/types'
 import { useProductData } from '../lib/utils'
-import { AiShoppingProvider, MessageList, QueryInput } from '../pages/AiShopper'
-import { convertDetails } from '../pages/tools'
-import { cm, isDefined, makeImageUrl, useFetchMutation } from '../utils'
+import { isDefined, makeImageUrl, useFetchMutation } from '../utils'
 import { GroupedProperties } from './GroupedProperties'
 import { Loader } from './Loader'
-import { Price, PriceValue } from './Price'
-import { QueryUpdater } from './QueryMerger'
 import { CompareButton, DataViewItem, ResultItem } from './ResultItem'
 import { Stars } from './Stars'
-import { StockList } from './StockList'
 import { toEcomTrackingEvent } from './toImpression'
 import { Button, ButtonLink } from './ui/button'
-import { Sidebar } from './ui/sidebar'
 import { useNotifications } from './ui-notifications/useNotifications'
 
 export type StoreWithStock = Store & {
@@ -160,7 +136,7 @@ export const CompatibleItems = ({ id }: Pick<ItemDetail, 'id'>) => {
   )
 }
 
-export const CompatibleButton = ({ values }: Pick<ItemDetail, 'values'>) => {
+export const CompatibleButton = (values: ItemDetail) => {
   const { data } = useFacetMap()
   const t = useTranslations()
   const stringFilters = useMemo(() => {
@@ -204,245 +180,242 @@ export const CompatibleButton = ({ values }: Pick<ItemDetail, 'values'>) => {
   )
 }
 
-type PossibleValue = string | string[] | number | undefined
+// type PossibleValue = string | string[] | number | undefined;
 
-const getMatch = (
-  requiredValue: string | number | string[],
-  value: string | number | string[],
-) => {
-  if (Array.isArray(requiredValue)) {
-    return requiredValue.some((part) =>
-      Array.isArray(value)
-        ? value.includes(part)
-        : String(part) === String(value),
-    )
-  }
-  return String(requiredValue) === String(value)
-}
+// const getMatch = (
+//   requiredValue: string | number | string[],
+//   value: string | number | string[],
+// ) => {
+//   if (Array.isArray(requiredValue)) {
+//     return requiredValue.some((part) =>
+//       Array.isArray(value)
+//         ? value.includes(part)
+//         : String(part) === String(value),
+//     );
+//   }
+//   return String(requiredValue) === String(value);
+// };
 
-const hasRequiredValue = (
-  { value: requiredValue, exclude = false }: RelationMatch,
-  value: PossibleValue,
-) => {
-  if (value == null) return false
-  if (requiredValue == null) return value != null
+// const hasRequiredValue = (
+//   { value: requiredValue, exclude = false }: RelationMatch,
+//   value: PossibleValue,
+// ) => {
+//   if (value == null) return false;
+//   if (requiredValue == null) return value != null;
 
-  const match = getMatch(requiredValue, value)
-  // console.log({ match, requiredValue, value, exclude });
-  if (exclude) {
-    return !match
-  }
-  return match
-}
+//   const match = getMatch(requiredValue, value);
+//   // console.log({ match, requiredValue, value, exclude });
+//   if (exclude) {
+//     return !match;
+//   }
+//   return match;
+// };
 
-const isRangeFilter = (d: NumberField | KeyField): d is NumberField => {
-  if ('value' in d) {
-    return false
-  }
-  if ('min' in d) {
-    return true
-  }
-  return true
-}
+// const isRangeFilter = (d: NumberField | KeyField): d is NumberField => {
+//   if ("value" in d) {
+//     return false;
+//   }
+//   if ("min" in d) {
+//     return true;
+//   }
+//   return true;
+// };
 
-const makeQuery = (
-  group: RelationGroup,
-  values: ItemDetail['values'],
-): ItemsQuery => {
-  const globalFilters =
-    group.additionalQueries?.map((query) => {
-      return {
-        id: query.facetId,
-        exclude: query.exclude,
-        value: Array.isArray(query.value)
-          ? (query.value as string[])
-          : [String(query.value)],
-      }
-    }) ?? []
-  const filters = group.relations.map((relation) => {
-    const fromValue = values[relation.fromId]
-    const converter =
-      relationValueConverters[relation.converter] ??
-      relationValueConverters.none
-    if (fromValue == null) return null
-    const filterValue = converter(fromValue)
-    if (filterValue == null) return null
+// const makeQuery = (group: RelationGroup, item: ItemDetail): ItemsQuery => {
+//   const globalFilters =
+//     group.additionalQueries?.map((query) => {
+//       return {
+//         id: query.facetId,
+//         exclude: query.exclude,
+//         value: Array.isArray(query.value)
+//           ? (query.value as string[])
+//           : [String(query.value)],
+//       };
+//     }) ?? [];
+//   const filters = group.relations.map((relation) => {
+//     const fromValue = item[relation.fromId];
+//     const converter =
+//       relationValueConverters[relation.converter] ??
+//       relationValueConverters.none;
+//     if (fromValue == null) return null;
+//     const filterValue = converter(fromValue as FacetValue);
+//     if (filterValue == null) return null;
 
-    return {
-      id: relation.toId,
-      ...filterValue,
-    }
-  })
-  const allFilters = [...globalFilters, ...filters.filter(isDefined)]
-  const [string, range] = allFilters.reduce(
-    (acc, filter) => {
-      if (isRangeFilter(filter)) {
-        acc[1]!.push(filter)
-      } else {
-        acc[0]!.push(filter)
-      }
-      return acc
-    },
-    [[], []] as [ItemsQuery['string'], ItemsQuery['range']],
-  )
+//     return {
+//       id: relation.toId,
+//       ...filterValue,
+//     };
+//   });
+//   const allFilters = [...globalFilters, ...filters.filter(isDefined)];
+//   const [string, range] = allFilters.reduce(
+//     (acc, filter) => {
+//       if (isRangeFilter(filter)) {
+//         acc[1]!.push(filter);
+//       } else {
+//         acc[0]!.push(filter);
+//       }
+//       return acc;
+//     },
+//     [[], []] as [ItemsQuery["string"], ItemsQuery["range"]],
+//   );
 
-  return {
-    page: 0,
-    string,
-    range,
-  }
-}
+//   return {
+//     page: 0,
+//     string,
+//     range,
+//   };
+// };
 
-const RelationGroupCarousel = ({
-  group,
-  values,
-  defaultOpen = false,
-}: {
-  group: RelationGroup
-  values: ItemValues
-  defaultOpen?: boolean
-}) => {
-  const query = useMemo(() => makeQuery(group, values), [group, values])
-  const [open, setOpen] = useState(defaultOpen)
-  return (
-    <div key={group.groupId} className="mb-2 pb-2 animating-element">
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen((p) => !p)}
-          className={cm('text-xl font-bold transition-all', open ? '' : '')}
-        >
-          {group.name}
-        </button>
-        <Link
-          to={`/#${toQuery(query)}`}
-          className={cm('text-sm hover:underline transition-all')}
-        >
-          Show all
-        </Link>
-      </div>
-      {open && (
-        <QueryProvider initialQuery={query}>
-          <QueryUpdater query={query} />
-          <ResultCarousel
-            list_id={String(group.groupId)}
-            list_name={group.name}
-          />
-        </QueryProvider>
-      )}
-    </div>
-  )
-}
+// const RelationGroupCarousel = ({
+//   group,
+//   values,
+//   defaultOpen = false,
+// }: {
+//   group: RelationGroup;
+//   values: ItemValues;
+//   defaultOpen?: boolean;
+// }) => {
+//   const query = useMemo(() => makeQuery(group, values), [group, values]);
+//   const [open, setOpen] = useState(defaultOpen);
+//   return (
+//     <div key={group.groupId} className="mb-2 pb-2 animating-element">
+//       <div className="flex items-center gap-2">
+//         <button
+//           onClick={() => setOpen((p) => !p)}
+//           className={cm("text-xl font-bold transition-all", open ? "" : "")}
+//         >
+//           {group.name}
+//         </button>
+//         <Link
+//           to={`/#${toQuery(query)}`}
+//           className={cm("text-sm hover:underline transition-all")}
+//         >
+//           Show all
+//         </Link>
+//       </div>
+//       {open && (
+//         <QueryProvider initialQuery={query}>
+//           <QueryUpdater query={query} />
+//           <ResultCarousel
+//             list_id={String(group.groupId)}
+//             list_name={group.name}
+//           />
+//         </QueryProvider>
+//       )}
+//     </div>
+//   );
+// };
 
-const RelationGroups = ({ values, id }: Pick<ItemDetail, 'values' | 'id'>) => {
-  const [isAdmin] = useAdmin()
-  const [open, setOpen] = useState(false)
-  const { data } = useRelationGroups()
-  const validGroups = useMemo(
-    () =>
-      data?.filter((group) =>
-        group.requiredForItem.every((requirement) =>
-          hasRequiredValue(requirement, values[requirement.facetId]),
-        ),
-      ) ?? [],
-    [values, data],
-  )
+// const RelationGroups = ({ values, id }: Pick<ItemDetail, "values" | "id">) => {
+//   const [isAdmin] = useAdmin();
+//   const [open, setOpen] = useState(false);
+//   const { data } = useRelationGroups();
+//   const validGroups = useMemo(
+//     () =>
+//       data?.filter((group) =>
+//         group.requiredForItem.every((requirement) =>
+//           hasRequiredValue(requirement, values[requirement.facetId]),
+//         ),
+//       ) ?? [],
+//     [values, data],
+//   );
 
-  return (
-    <div>
-      <CompatibleItems id={id} />
-      {validGroups.length > 0 && isAdmin && (
-        <button
-          className="underline hover:no-underline"
-          onClick={() => setOpen((p) => !p)}
-        >
-          Show group relations
-        </button>
-      )}
-      {open && (
-        <>
-          {validGroups.map((group, idx) => {
-            return (
-              <RelationGroupCarousel
-                key={group.key}
-                group={group}
-                values={values}
-                defaultOpen={idx === 0}
-              />
-            )
-          })}
-        </>
-      )}
-    </div>
-  )
-}
+//   return (
+//     <div>
+//       <CompatibleItems id={id} />
+//       {validGroups.length > 0 && isAdmin && (
+//         <button
+//           className="underline hover:no-underline"
+//           onClick={() => setOpen((p) => !p)}
+//         >
+//           Show group relations
+//         </button>
+//       )}
+//       {open && (
+//         <>
+//           {validGroups.map((group, idx) => {
+//             return (
+//               <RelationGroupCarousel
+//                 key={group.key}
+//                 group={group}
+//                 values={values}
+//                 defaultOpen={idx === 0}
+//               />
+//             );
+//           })}
+//         </>
+//       )}
+//     </div>
+//   );
+// };
 
-const PopulateAdminDetails = ({ id }: { id: number }) => {
-  const [isAdmin] = useAdmin()
-  const [item, setItem] = useState<ItemDetail | null>(null)
+// const PopulateAdminDetails = ({ id }: { id: number }) => {
+//   const [isAdmin] = useAdmin();
+//   const [item, setItem] = useState<ItemDetail | null>(null);
 
-  if (!isAdmin) return null
-  if (item != null) {
-    const mp = Math.max(item.mp ?? 0, 0)
-    const possibleDiscount = item.values[4] * (mp / 100)
+//   if (!isAdmin) return null;
+//   if (item != null) {
+//     const mp = Math.max(item.mp ?? 0, 0);
+//     const possibleDiscount = item.values[4] * (mp / 100);
 
-    return (
-      <>
-        <div className="p-4 my-2 flex gap-2 items-center justify-between bg-amber-100 text-amber-800 rounded-lg">
-          <PriceValue
-            value={item.values[4] - possibleDiscount}
-            className="font-bold"
-          />
-          {mp > 0 && <span>{mp}%</span>}
-        </div>
-      </>
-    )
-  }
-  return (
-    <Button
-      size="sm"
-      variant="outline"
-      className="my-2"
-      onClick={() => {
-        trackAction({ action: 'fetch_admin_details', reason: 'admin_button' })
-        getAdminItem(id).then(setItem)
-      }}
-    >
-      <UserCog className="size-5" />
-    </Button>
-  )
-}
+//     return (
+//       <>
+//         <div className="p-4 my-2 flex gap-2 items-center justify-between bg-amber-100 text-amber-800 rounded-lg">
+//           <PriceValue
+//             value={item.values[4] - possibleDiscount}
+//             className="font-bold"
+//           />
+//           {mp > 0 && <span>{mp}%</span>}
+//         </div>
+//       </>
+//     );
+//   }
+//   return (
+//     <Button
+//       size="sm"
+//       variant="outline"
+//       className="my-2"
+//       onClick={() => {
+//         trackAction({ action: "fetch_admin_details", reason: "admin_button" });
+//         getAdminItem(id).then(setItem);
+//       }}
+//     >
+//       <UserCog className="size-5" />
+//     </Button>
+//   );
+// };
 
-const BreadCrumbs = ({ values }: Pick<ItemDetail, 'values'>) => {
-  const parts = useMemo(() => {
-    return [10, 11, 12, 13]
-      .map((id) => ({ id, value: values[id] }))
-      .filter(
-        (d) =>
-          d.value != null && typeof d.value === 'string' && d.value.length > 0,
-      )
-  }, [values])
-  return (
-    <div className="inline-flex items-center overflow-x-auto max-w-full">
-      {parts.map(({ id, value }, idx) => (
-        <Link
-          to={`/#${toQuery({
-            string: [
-              {
-                id,
-                value: [String(value)],
-              },
-            ],
-          })}`}
-          key={idx}
-          className="text-sm grow-0 shrink-0 text-gray-500 hover:text-blue-600 cursor-pointer"
-        >
-          {value}
-          {idx < parts.length - 1 && <span className="mx-2">/</span>}
-        </Link>
-      ))}
-    </div>
-  )
-}
+// const BreadCrumbs = ({ values }: Pick<ItemDetail, "values">) => {
+//   const parts = useMemo(() => {
+//     return [10, 11, 12, 13]
+//       .map((id) => ({ id, value: values[id] }))
+//       .filter(
+//         (d) =>
+//           d.value != null && typeof d.value === "string" && d.value.length > 0,
+//       );
+//   }, [values]);
+//   return (
+//     <div className="inline-flex items-center overflow-x-auto max-w-full">
+//       {parts.map(({ id, value }, idx) => (
+//         <Link
+//           to={`/#${toQuery({
+//             string: [
+//               {
+//                 id,
+//                 value: [String(value)],
+//               },
+//             ],
+//           })}`}
+//           key={idx}
+//           className="text-sm grow-0 shrink-0 text-gray-500 hover:text-blue-600 cursor-pointer"
+//         >
+//           {value}
+//           {idx < parts.length - 1 && <span className="mx-2">/</span>}
+//         </Link>
+//       ))}
+//     </div>
+//   );
+// };
 
 // const configIgnoredFacets = [
 //   2, 6, 10, 11, 12, 13, 3, 4, 31157, 33245, 31321, 36186, 31559, 31158,
@@ -551,7 +524,7 @@ export const OtherVariants = ({ pft, id }: { pft: string[]; id: number }) => {
 
 export const ItemDetails = (details: ItemDetail) => {
   const { trigger: addToCart, isMutating } = useAddToCart()
-  const [open, setOpen] = useState(false)
+  // const [open, setOpen] = useState(false);
   const t = useTranslations()
   const [isAdmin] = useAdmin()
   const { mutate } = useSWRConfig()
@@ -560,13 +533,13 @@ export const ItemDetails = (details: ItemDetail) => {
     title,
     img,
     bp,
-    stock,
-    buyable,
+    //stock,
+    buyable = true,
     description,
     buyableInStore,
     id,
     values,
-    disclaimer,
+    //disclaimer,
     lastUpdate,
     created,
   } = details
@@ -658,12 +631,9 @@ export const ItemDetails = (details: ItemDetail) => {
     }
   }
   if (!details) return null
-  const pft = details.values[25]
-  const stockLevel = stock?.['se'] ?? stock?.['no']
-  const canAddToCart =
-    buyable &&
-    !isMutating &&
-    (values[1] !== 'ZHAB' || (stockLevel != null && Number(stockLevel) > 0))
+  const pft = details['modelId']
+
+  const canAddToCart = buyable && !isMutating
 
   return (
     <>
@@ -720,14 +690,14 @@ export const ItemDetails = (details: ItemDetail) => {
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-4 items-end">
-                  <div>
+                  {/*<div>
                     <span className="text-gray-500 text-sm">
-                      {t('common.price')}
+                      {t("common.price")}
                     </span>
                     <div className="text-4xl font-bold text-gray-900">
                       <Price values={values} disclaimer={disclaimer} />
                     </div>
-                  </div>
+                  </div>*/}
                   <div className="flex flex-col gap-1">
                     <Button
                       variant="default"
@@ -754,28 +724,14 @@ export const ItemDetails = (details: ItemDetail) => {
                     </button>
                   </div>
                 </div>
-                {values[1] === 'ZHAB' && values[20] != null && (
-                  <>
-                    <p className="text-sm text-gray-700">
-                      <span className="italic">{values[20]}</span>{' '}
-                      {details.aItem != null && (
-                        <Link
-                          to={`/product/${details.aItem.sku}`}
-                          className="underline"
-                        >
-                          Buy new
-                        </Link>
-                      )}
-                    </p>
-                  </>
-                )}
+
                 <div className="flex items-center gap-2 justify-end">
                   <CompareButton
                     item={details}
                     className="font-medium rounded-sm focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:cursor-not-allowed border border-gray-300 text-gray-700 hover:bg-gray-50 bg-white/20 px-3 py-1 text-sm my-2"
                   />
-                  <PopulateAdminDetails id={id} />
-                  <Button
+                  {/*<PopulateAdminDetails id={id} />*/}
+                  {/*<Button
                     variant="outline"
                     size="sm"
                     className="shrink-1"
@@ -783,26 +739,26 @@ export const ItemDetails = (details: ItemDetail) => {
                     onClick={() => setOpen((p) => !p)}
                   >
                     <BotMessageSquare className="size-5" />
-                  </Button>
+                  </Button>*/}
                 </div>
-                <StockList
+                {/*<StockList
                   stock={stock}
                   trackingItem={toEcomTrackingEvent(details, 0)}
                   sku={details.sku}
-                />
+                />*/}
               </div>
             )}
           </div>
         </div>
-        <Sidebar side="right" open={open} setOpen={setOpen}>
+        {/*<Sidebar side="right" open={open} setOpen={setOpen}>
           <div className="bg-white flex flex-col overflow-y-auto py-6 px-4 h-full w-full max-w-full md:max-w-lg">
             {open && <AiChatForCurrentProduct {...details} />}
           </div>
-        </Sidebar>
+        </Sidebar>*/}
         {/* Bottom Sections */}
         <div className="flex flex-col gap-6">
           <div>
-            <BreadCrumbs values={values} />
+            {/*<BreadCrumbs values={values} />*/}
 
             <div className="flex gap-4 items-center text-xs">
               {lastUpdate != null && (
@@ -835,9 +791,9 @@ export const ItemDetails = (details: ItemDetail) => {
             </div>
           </div>
 
-          <RelationGroups values={values} id={id} />
+          {/*<RelationGroups values={values} id={id} />*/}
 
-          <GroupedProperties values={details.values} />
+          <GroupedProperties values={facetValues(details)} />
 
           {isAdmin && (
             <div className="mt-6 md:bg-white md:rounded-lg md:shadow-xs md:border border-gray-100 md:p-4">
@@ -879,29 +835,29 @@ export const ItemDetails = (details: ItemDetail) => {
   )
 }
 
-const AiChatForCurrentProduct = (item: ItemDetail) => {
-  const { data: facets } = useFacetMap()
-  const convertItem = useMemo(() => convertDetails(facets ?? {}), [facets])
-  if (!item || !facets) return null
-  return (
-    <AiShoppingProvider
-      messages={[
-        {
-          role: 'system',
-          content:
-            'The user needs some help, details for the product: \n```json\n' +
-            JSON.stringify(convertItem(item)) +
-            '\n```',
-        },
-      ]}
-    >
-      <div className="flex flex-col gap-6 flex-1">
-        <div className="flex-1 overflow-auto">
-          <MessageList />
-        </div>
+// const AiChatForCurrentProduct = (item: ItemDetail) => {
+//   const { data: facets } = useFacetMap()
+//   const convertItem = useMemo(() => convertDetails(facets ?? {}), [facets])
+//   if (!item || !facets) return null
+//   return (
+//     <AiShoppingProvider
+//       messages={[
+//         {
+//           role: 'system',
+//           content:
+//             'The user needs some help, details for the product: \n```json\n' +
+//             JSON.stringify(convertItem(item)) +
+//             '\n```',
+//         },
+//       ]}
+//     >
+//       <div className="flex flex-col gap-6 flex-1">
+//         <div className="flex-1 overflow-auto">
+//           <MessageList />
+//         </div>
 
-        <QueryInput />
-      </div>
-    </AiShoppingProvider>
-  )
-}
+//         <QueryInput />
+//       </div>
+//     </AiShoppingProvider>
+//   )
+// }

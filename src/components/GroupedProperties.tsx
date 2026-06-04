@@ -17,7 +17,7 @@ import {
   FacetGroup,
   FacetId,
   FacetListItem,
-  ItemDetail,
+  FacetValue,
   ItemsQuery,
   RelationGroup,
   RelationMatch,
@@ -90,7 +90,11 @@ const byGroup =
     }
   }
 
-export const GroupedProperties = ({ values }: Pick<ItemDetail, 'values'>) => {
+export const GroupedProperties = ({
+  values,
+}: {
+  values: Record<string, FacetValue>
+}) => {
   const [selected, setSelected] = useState<SelectedFacet[]>([])
   const [selectedRange, setSelectedRange] = useState<SelectedNumberFacet[]>([])
   const { showNotification } = useNotifications()

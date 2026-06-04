@@ -98,8 +98,7 @@ export type ItemDetail = ItemProps & {
   id: number
   sku: string
   title: string
-  values: ItemProperties
-  stock?: Stock
+  [key: string]: FacetValue
 }
 
 export type Stock = Record<string, string>
@@ -117,21 +116,20 @@ export type ItemProps = {
   sku: string
   created?: number
   lastUpdate?: number
-  aItem?: AItem
-  advertisingText: string
-  buyable: boolean
+  advertisingText?: string
+  buyable?: boolean
   disclaimer?: string
-  buyableInStore: boolean
+  buyableInStore?: boolean
   description?: string
   //stockLevel?: string;
   badgeUrl: string
   bp: string
   mp?: number
   img: string
-  presaleDate: string
-  releaseDate: string
-  restock: string
-  saleStatus: string
+  presaleDate?: string
+  releaseDate?: string
+  restock?: string
+  saleStatus?: string
   //tree: string[];
   url: string
 }
@@ -187,6 +185,17 @@ export const isKeyFacet = (facet: Facet): facet is KeyFacet => {
 
 export type Facets = Facet[]
 
+export const facetValues = (item: ItemDetail): Record<string, FacetValue> => {
+  const result: Record<string, FacetValue> = {}
+  for (const key in item) {
+    const v = item[key]
+    if (isNumberValue(v) || v instanceof String) {
+      result[key] = v
+    }
+  }
+  return result
+}
+
 export type PageResult = {
   totalHits: number
   page: number
@@ -231,7 +240,7 @@ export type RelationGroup = {
   relations: Relation[]
 }
 
-type FacetValue = string | string[] | number
+export type FacetValue = string | string[] | number
 
 const toNumber = (input: string | number): number | null => {
   if (typeof input === 'number') {
