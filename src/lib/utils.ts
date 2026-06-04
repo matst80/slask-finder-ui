@@ -198,9 +198,9 @@ export const matchValue = (
   }
   return false
 }
-export const getRating = (values: ItemDetail['values']) => {
-  const rating = values[6]
-  const numberOfRatings = values[7]
+export const getRating = (values: ItemDetail) => {
+  const rating = values['rating']
+  const numberOfRatings = values['numberOfRatings']
   if (rating == null || numberOfRatings == null) {
     return null
   }

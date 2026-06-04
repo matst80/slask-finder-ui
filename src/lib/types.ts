@@ -98,7 +98,7 @@ export type ItemDetail = ItemProps & {
   id: number
   sku: string
   title: string
-  [key: string]: FacetValue
+  [key: string]: FacetValue | unknown
 }
 
 export type Stock = Record<string, string>
@@ -189,7 +189,9 @@ export const facetValues = (item: ItemDetail): Record<string, FacetValue> => {
   const result: Record<string, FacetValue> = {}
   for (const key in item) {
     const v = item[key]
-    if (isNumberValue(v) || v instanceof String) {
+    if (v instanceof Number) {
+      result[key] = v.valueOf()
+    } else if (typeof v === 'string') {
       result[key] = v
     }
   }
@@ -240,7 +242,7 @@ export type RelationGroup = {
   relations: Relation[]
 }
 
-export type FacetValue = string | string[] | number
+export type FacetValue = number | string
 
 const toNumber = (input: string | number): number | null => {
   if (typeof input === 'number') {

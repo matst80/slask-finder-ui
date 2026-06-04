@@ -7,7 +7,7 @@ import { QueryProvider } from '../lib/hooks/QueryProvider'
 import { useClipboard } from '../lib/hooks/useClipboard'
 import { useQuery } from '../lib/hooks/useQuery'
 import { useTranslations } from '../lib/hooks/useTranslations'
-import { FacetId, ItemDetail, ItemsQuery } from '../lib/types'
+import { FacetId, FacetValue, ItemsQuery } from '../lib/types'
 import { byPriority, cm, isDefined } from '../utils'
 import { QueryUpdater } from './QueryMerger'
 import { TotalResultText } from './ResultHeader'
@@ -20,9 +20,7 @@ type SelectedFacet = {
   value: string[]
 }
 
-const isValidKeyFilter = (
-  value: string[] | string | number | null | undefined,
-) => {
+const isValidKeyFilter = (value: unknown) => {
   if (value == null) {
     return false
   }
@@ -36,7 +34,7 @@ const isValidKeyFilter = (
   return false
 }
 
-export const Properties = ({ values }: Pick<ItemDetail, 'values'>) => {
+export const Properties = ({ values }: Record<string, FacetValue>) => {
   const { setQuery } = useQuery()
   const toClipboard = useClipboard()
   const [selected, setSelected] = useState<SelectedFacet[]>([])
