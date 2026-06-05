@@ -116,6 +116,46 @@ export const useUpdateFacet = () => {
   return trigger
 }
 
+export const useUpdateFacetType = () => {
+  const { mutate } = useSWRConfig()
+  const { showNotification } = useNotifications()
+  const { trigger } = useSWRMutation(
+    '/admin/facets/type',
+    (_: string, { arg }: { arg: { id: FacetId; type: number } }) =>
+      fetch(`/admin/facets/${arg.id}/type`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ type: arg.type }),
+      })
+        .then((res) => {
+          if (res.ok) {
+            mutate('admin-facet-list')
+            showNotification({
+              title: 'Updated',
+              message: 'Facet type updated successfully',
+              variant: 'success',
+            })
+          } else {
+            showNotification({
+              title: 'Error',
+              message: 'Failed to update facet type',
+              variant: 'error',
+            })
+          }
+        })
+        .catch((e) => {
+          showNotification({
+            title: 'Error',
+            message: `Failed to update facet type: ${e.message}`,
+            variant: 'error',
+          })
+        }),
+  )
+  return trigger
+}
+
 export const useDeleteFacet = () => {
   const { mutate } = useSWRConfig()
   const { trigger } = useSWRMutation(

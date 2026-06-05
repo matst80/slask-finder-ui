@@ -454,6 +454,7 @@ export type FacetListItem = {
   isKey?: boolean
   internal?: boolean
   groupId?: number
+  type?: number
 }
 
 export type Funnel = {

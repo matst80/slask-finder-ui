@@ -4,7 +4,6 @@ const DYNAMIC_CACHE = "slask-finder-dynamic-v1";
 
 // Files to cache for offline use
 const STATIC_FILES = [
-  "/",
   "/index.html",
   "/manifest.json",
   "/icons/app-icon.svg",
@@ -31,23 +30,23 @@ self.addEventListener("install", (event) => {
 // Activate event - clean up old caches
 self.addEventListener("activate", (event) => {
   console.log("Service Worker activating...");
-  event.waitUntil(
-    caches
-      .keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
-              console.log("Deleting old cache:", cacheName);
-              return caches.delete(cacheName);
-            }
-          }),
-        );
-      })
-      .then(() => {
-        self.clients.claim();
-      }),
-  );
+  // event.waitUntil(
+  //   caches
+  //     .keys()
+  //     .then((cacheNames) => {
+  //       return Promise.all(
+  //         cacheNames.map((cacheName) => {
+  //           if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
+  //             console.log("Deleting old cache:", cacheName);
+  //             return caches.delete(cacheName);
+  //           }
+  //         }),
+  //       );
+  //     })
+  //     .then(() => {
+  //       self.clients.claim();
+  //     }),
+  // );
 });
 
 const dynamicUrlParts = [
@@ -73,12 +72,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Do not intercept or cache very large files or streaming responses
-  if (
-    pathname.endsWith(".onnx") ||
-    pathname.endsWith(".wasm") ||
-    pathname.includes("/api/stream") ||
-    pathname.includes("/api/stream-items")
-  ) {
+  if (pathname.includes("/api")) {
     return;
   }
 

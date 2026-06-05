@@ -13,6 +13,7 @@ import {
   useDeleteFacet,
   useFieldValues,
   useUpdateFacet,
+  useUpdateFacetType,
 } from '../../adminHooks'
 import { Loader } from '../../components/Loader'
 import { Button, ButtonLink } from '../../components/ui/button'
@@ -178,6 +179,7 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
   const { data: groups } = useFacetGroups()
   const saveFacet = useUpdateFacet()
   const deleteFacet = useDeleteFacet()
+  const updateFacetType = useUpdateFacetType()
 
   return (
     <div className="p-4 rounded-md ">
@@ -261,6 +263,27 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
+            Storage Type (Facet Type)
+          </label>
+          <select
+            value={value.type ?? 1}
+            onChange={(e) => {
+              const nr = Number(e.target.value)
+              if (!isNaN(nr)) {
+                setValue((prev) => ({ ...prev, type: nr }))
+                updateFacetType({ id: value.id, type: nr })
+              }
+            }}
+            className="w-full rounded-md border border-gray-300 bg-white py-2.5 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
+          >
+            <option value={1}>Key (categorical)</option>
+            <option value={2}>Number (float)</option>
+            <option value={3}>Integer</option>
+            <option value={4}>Tree (hierarchical)</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Group id
           </label>
           <Input
@@ -273,7 +296,7 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
               }
             }}
             placeholder="Category level"
-            className="w-full"
+            className="w-full mb-1"
           />
           <select
             value={value.groupId}
@@ -283,6 +306,7 @@ const FacetEditor = ({ data }: { data: FacetListItem }) => {
                 setValue((prev) => ({ ...prev, groupId: nr }))
               }
             }}
+            className="w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
           >
             <option value={0}>No group</option>
             {groups?.map(({ id, name }) => (
@@ -373,6 +397,20 @@ const FacetItem = ({ data }: { data: FacetListItem }) => {
             {valueType != null && (
               <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-sm">
                 {valueType}
+              </span>
+            )}
+            {data.type != null && (
+              <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-sm">
+                Storage:{' '}
+                {data.type === 1
+                  ? 'key'
+                  : data.type === 2
+                    ? 'number'
+                    : data.type === 3
+                      ? 'integer'
+                      : data.type === 4
+                        ? 'tree'
+                        : 'unknown'}
               </span>
             )}
           </div>
