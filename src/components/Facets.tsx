@@ -1,10 +1,14 @@
+import {
+  FacetId,
+  isNumberFacet,
+  KeyFacet,
+  useFacets,
+  useQuery,
+  useScreenWidth,
+} from '@matst80/slask-finder-sdk'
 import { ChevronUp, LoaderCircle, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { useFacets } from '../lib/hooks/useFacets'
-import { useQuery } from '../lib/hooks/useQuery'
-import { useScreenWidth } from '../lib/hooks/useScreenWidth'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import { FacetId, isNumberFacet, KeyFacet } from '../lib/types'
+import { useTranslations } from '../translations/useTranslations'
 import { cm } from '../utils'
 import { ColorFacetSelector } from './facets/ColorFacet'
 import { KeyFacetSelector } from './facets/KeyFacetSelector'

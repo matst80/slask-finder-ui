@@ -4,7 +4,7 @@ import {
   getPopularity,
   updatePopularity,
 } from '../lib/datalayer/api'
-import { useFetchMutation } from '../utils'
+import { useFetchMutation } from '../lib/utils'
 
 const popularityKey = '/popular-items'
 

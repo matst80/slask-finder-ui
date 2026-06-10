@@ -1,11 +1,11 @@
 import { PropsWithChildren } from 'react'
-import { Translations } from '../../translations/translations'
 import { translationContext } from './translationContext'
+import { BaseTranslationType } from './translations'
 
-export const TranslationProvider = ({
+export const TranslationProvider = <T extends BaseTranslationType>({
   language,
   children,
-}: PropsWithChildren<{ language: Translations }>) => {
+}: PropsWithChildren<{ language: T }>) => {
   return (
     <translationContext.Provider value={language}>
       {children}

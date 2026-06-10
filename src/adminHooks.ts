@@ -1,21 +1,22 @@
-import { useState } from 'react'
-import useSWR, { useSWRConfig } from 'swr'
-import useSWRMutation from 'swr/mutation'
-import { useNotifications } from './components/ui-notifications/useNotifications'
 import {
   cleanFields,
+  FacetId,
   getFacets,
   getFieldList,
   getKeyFieldsValues,
   getMissingFieldList,
   getPopularity,
   getStaticPositions,
+  RelationGroup,
   reloadSettings,
   setStaticPositions,
   updatePopularity,
   updateRelations,
-} from './lib/datalayer/api'
-import { FacetId, RelationGroup } from './lib/types'
+} from '@matst80/slask-finder-sdk'
+import { useState } from 'react'
+import useSWR, { useSWRConfig } from 'swr'
+import useSWRMutation from 'swr/mutation'
+import { useNotifications } from './components/ui-notifications/useNotifications'
 
 export const useFieldValues = (id: string | number) =>
   useSWR(`field-values/${id}`, () => getKeyFieldsValues(id))

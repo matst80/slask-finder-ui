@@ -5,7 +5,6 @@ import {
   useContext,
   useState,
 } from 'react'
-import { useCookieAcceptance } from '../../CookieConsent'
 import { BaseEcomEvent } from '../types'
 
 export type TrackingEvent = ImpressionEvent | ClickEvent
@@ -42,14 +41,19 @@ export type BuilderTracker = BaseTrackingHandler<'builder'>
 type TrackingContextProps = {
   handlers: TrackingHandler[]
   setHandlers: React.Dispatch<React.SetStateAction<TrackingHandler[]>>
+  accepted: string | null
 }
 
 const TrackingContext = createContext<TrackingContextProps | null>(null)
 
 export const TrackingProvider = ({
   handlers: initialHandlers,
+  accepted,
   children,
-}: PropsWithChildren<{ handlers: TrackingHandler[] }>) => {
+}: PropsWithChildren<{
+  handlers: TrackingHandler[]
+  accepted: string | null
+}>) => {
   const context = useContext(TrackingContext)
 
   const [handlers, setHandlers] = useState<TrackingHandler[]>([
@@ -60,7 +64,7 @@ export const TrackingProvider = ({
   ])
 
   return (
-    <TrackingContext.Provider value={{ handlers, setHandlers }}>
+    <TrackingContext.Provider value={{ handlers, setHandlers, accepted }}>
       {children}
     </TrackingContext.Provider>
   )
@@ -78,11 +82,12 @@ export const useTrackingHandlers = () => {
 
 export const useTracking = () => {
   const context = useContext(TrackingContext)
-  const { accepted } = useCookieAcceptance()
 
   if (!context) {
     throw new Error('useTracking must be used within a TrackingProvider')
   }
+
+  const { accepted, handlers } = context
 
   const track = useCallback(
     (event: TrackingEvent) => {
@@ -90,11 +95,11 @@ export const useTracking = () => {
         console.warn('Tracking not allowed')
         return
       }
-      context.handlers.forEach((handler) => {
+      handlers.forEach((handler) => {
         handler.handle.apply(handler, [event, handler.context])
       })
     },
-    [accepted, context.handlers],
+    [accepted, handlers],
   )
   return {
     track,

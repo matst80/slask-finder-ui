@@ -1,30 +1,29 @@
-import { Edit, ShoppingCartIcon, TicketIcon, X } from 'lucide-react'
-import '@adyen/adyen-web/styles/adyen.css'
-
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+// import { adyenConfig, paymentMethodsConfiguration } from '@matst80/slask-finder-sdk'
 import {
+  CartItem,
+  ImpressionProvider,
+  ItemPrice,
   useAddToCart,
   useAddVoucher,
   useCart,
   useChangeQuantity,
+  useCompatibleItems,
   useRemoveItemMarking,
   useRemoveVoucher,
   useSetItemMarking,
-  //useUpsertSubscriptionDetails,
-} from '../hooks/cartHooks'
-import { useCompatibleItems } from '../hooks/searchHooks'
-// import { adyenConfig, paymentMethodsConfiguration } from '../lib/adyen-config'
-import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
-import { useSwitching } from '../lib/hooks/useSwitching'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import { CartItem, ItemPrice, Voucher } from '../lib/types'
+  useSwitching,
+  Voucher,
+} from '@matst80/slask-finder-sdk'
+import { Edit, ShoppingCartIcon, TicketIcon, X } from 'lucide-react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { QuantityInput } from '../pages/builder/QuantityInput'
 import {
   ShippingInputs,
   ShippingOptionList,
   ShippingProvider,
 } from '../pages/Shipping'
+import { useTranslations } from '../translations/useTranslations'
 import { cm, isDefined, makeImageUrl } from '../utils'
 import { Price, PriceElement, PriceValue } from './Price'
 import { toEcomTrackingEvent } from './toImpression'

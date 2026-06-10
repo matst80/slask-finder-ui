@@ -1,10 +1,14 @@
+import {
+  FacetListItem,
+  Field,
+  isNumberValue,
+  useAdmin,
+  useFacetMap,
+  useQuery,
+  useStores,
+} from '@matst80/slask-finder-sdk'
 import { X } from 'lucide-react'
 import { useMemo } from 'react'
-import { useAdmin } from '../hooks/appState'
-import { useFacetMap } from '../hooks/searchHooks'
-import { useStores } from '../lib/datalayer/stores'
-import { useQuery } from '../lib/hooks/useQuery'
-import { FacetListItem, Field, isNumberValue } from '../lib/types'
 import { isDefined } from '../utils'
 
 function toFilter(

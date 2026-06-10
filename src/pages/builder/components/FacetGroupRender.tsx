@@ -1,8 +1,7 @@
+import { ItemValues, useFacetMap } from '@matst80/slask-finder-sdk'
 import { useMemo } from 'react'
-import { useFacetMap } from '../../../hooks/searchHooks'
-import { ItemValues } from '../../../lib/types'
 
-//import { updateFacetGroups } from "../../../lib/datalayer/api";
+//import { updateFacetGroups } from '@matst80/slask-finder-sdk';
 
 const groups = {
   Vattenkylning: [

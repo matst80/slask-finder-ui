@@ -1,3 +1,10 @@
+import {
+  deleteUser,
+  getUsers,
+  User,
+  UserUpdateRequest,
+  updateUser,
+} from '@matst80/slask-finder-sdk'
 import { Edit, Trash2, UserPlus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
@@ -7,8 +14,6 @@ import { Button } from '../../components/ui/button'
 import { Card, CardContent, CardHeader } from '../../components/ui/card'
 import { Dialog } from '../../components/ui/dialog'
 import { Input } from '../../components/ui/input'
-import { deleteUser, getUsers, updateUser } from '../../lib/datalayer/api'
-import { User, UserUpdateRequest } from '../../lib/types'
 
 const useUsers = () => {
   return useSWR('/admin/users', getUsers, {

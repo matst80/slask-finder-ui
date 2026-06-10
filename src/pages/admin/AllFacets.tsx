@@ -1,3 +1,10 @@
+import {
+  FacetId,
+  FacetListItem,
+  getPossibleRelations,
+  toQuery,
+  useFacetGroups,
+} from '@matst80/slask-finder-sdk'
 import fuzzysort from 'fuzzysort'
 import {
   ChevronDown,
@@ -19,9 +26,6 @@ import { Loader } from '../../components/Loader'
 import { Button, ButtonLink } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { useNotifications } from '../../components/ui-notifications/useNotifications'
-import { toQuery, useFacetGroups } from '../../hooks/searchHooks'
-import { getPossibleRelations } from '../../lib/datalayer/api'
-import { FacetId, FacetListItem } from '../../lib/types'
 import { byPriority } from '../../utils'
 
 type KeyValues =

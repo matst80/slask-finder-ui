@@ -1,5 +1,4 @@
-import { useQueryKeyFacet } from '../../lib/hooks/useQueryKeyFacet'
-import { KeyFacet } from '../../lib/types'
+import { KeyFacet, useQueryKeyFacet } from '@matst80/slask-finder-sdk'
 import { cm, colourNameToHex } from '../../utils'
 
 export const ColorFacetSelector = ({ id, result: { values } }: KeyFacet) => {

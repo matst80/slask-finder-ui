@@ -1,5 +1,5 @@
+import { useCancelPayment } from '@matst80/slask-finder-sdk'
 import { X } from 'lucide-react'
-import { useCancelPayment } from '../hooks/checkoutHooks'
 import { Button } from './ui/button'
 
 type CancelPaymentButtonProps = {

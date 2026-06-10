@@ -1,3 +1,4 @@
+import { toJson, useCart } from '@matst80/slask-finder-sdk'
 import {
   createContext,
   useCallback,
@@ -9,8 +10,6 @@ import {
 import useSWR from 'swr'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
-import { useCart } from '../hooks/cartHooks'
-import { toJson } from '../lib/datalayer/api'
 import { isDefined } from '../utils'
 import { CheckoutTexts, Day, ShippingOption, TimeRange } from './shipping-types'
 

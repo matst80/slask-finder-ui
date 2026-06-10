@@ -1,18 +1,4 @@
 import {
-  Eye,
-  Flashlight,
-  MonitorCheck,
-  Search,
-  ShoppingCart,
-  Sparkles,
-  TabletSmartphone,
-} from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { Link, useLoaderData } from 'react-router-dom'
-import { useFacetList } from '../hooks/searchHooks'
-import { useItemData, useSessions } from '../hooks/trackingHooks'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import {
   ActionEvent,
   BaseEvent,
   CartEvent,
@@ -24,8 +10,23 @@ import {
   SessionData,
   SuggestionEvent,
   TrackedEvent,
-} from '../lib/types'
+  useFacetList,
+  useItemData,
+  useSessions,
+} from '@matst80/slask-finder-sdk'
+import {
+  Eye,
+  Flashlight,
+  MonitorCheck,
+  Search,
+  ShoppingCart,
+  Sparkles,
+  TabletSmartphone,
+} from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Link, useLoaderData } from 'react-router-dom'
 import { JsonView } from '../pages/tracking/JsonView'
+import { useTranslations } from '../translations/useTranslations'
 import { cm, isDefined, makeImageUrl } from '../utils'
 import { Loader } from './Loader'
 import { TimeAgo } from './TimeAgo'

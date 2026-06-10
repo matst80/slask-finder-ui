@@ -1,5 +1,5 @@
-import { useReservations } from '../hooks/inventoryHooks'
-import { useTranslations } from '../lib/hooks/useTranslations'
+import { useReservations } from '@matst80/slask-finder-sdk'
+import { useTranslations } from '../translations/useTranslations'
 
 const FriendlyTime = ({ time }: { time: string }) => {
   const date = new Date(time)

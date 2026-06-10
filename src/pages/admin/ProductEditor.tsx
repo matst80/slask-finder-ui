@@ -1,4 +1,12 @@
 import {
+  BatchUpdateResponse,
+  getAdminItem,
+  Item,
+  ItemDetail,
+  ItemValues,
+  submitBatchUpdates,
+} from '@matst80/slask-finder-sdk'
+import {
   AlertCircle,
   CheckCircle,
   Code,
@@ -15,12 +23,6 @@ import { Button } from '../../components/ui/button'
 import { Card, CardContent, CardHeader } from '../../components/ui/card'
 import { Input } from '../../components/ui/input'
 import { useNotifications } from '../../components/ui-notifications/useNotifications'
-import {
-  BatchUpdateResponse,
-  getAdminItem,
-  submitBatchUpdates,
-} from '../../lib/datalayer/api'
-import { Item, ItemDetail, ItemValues } from '../../lib/types'
 
 export const ProductEditor = () => {
   const { showNotification } = useNotifications()

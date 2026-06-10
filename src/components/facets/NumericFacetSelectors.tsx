@@ -1,7 +1,6 @@
+import { NumberFacet, useQueryRangeFacet } from '@matst80/slask-finder-sdk'
 import { ChevronUp } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useQueryRangeFacet } from '../../lib/hooks/useQueryRangeFacet'
-import { NumberFacet } from '../../lib/types'
 import { cm, converters } from '../../utils'
 import { Slider } from './Slider'
 

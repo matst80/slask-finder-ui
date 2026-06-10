@@ -1,3 +1,4 @@
+import { deleteFacet, FieldListItem } from '@matst80/slask-finder-sdk'
 import { LoaderCircle } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import {
@@ -10,8 +11,6 @@ import { Loader } from '../../components/Loader'
 import { TimeAgo } from '../../components/TimeAgo'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
-import { deleteFacet } from '../../lib/datalayer/api'
-import { FieldListItem } from '../../lib/types'
 import { cm } from '../../utils'
 
 const byCount = (a: FieldListItem, b: FieldListItem) => {

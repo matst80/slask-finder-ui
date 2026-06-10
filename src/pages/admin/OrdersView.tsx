@@ -1,6 +1,6 @@
+import { toJson } from '@matst80/slask-finder-sdk'
 import useSWR from 'swr'
 import { PriceValue } from '../../components/Price'
-import { toJson } from '../../lib/datalayer/api'
 import { Order } from './order-types'
 
 const OrderItem = ({ order }: { order: Order }) => {

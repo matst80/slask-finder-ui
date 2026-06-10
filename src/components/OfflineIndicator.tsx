@@ -1,5 +1,5 @@
+import { usePWA } from '@matst80/slask-finder-sdk'
 import { Wifi, WifiOff } from 'lucide-react'
-import { usePWA } from '../hooks/usePWA'
 
 export const OfflineIndicator = () => {
   const { isOnline } = usePWA()

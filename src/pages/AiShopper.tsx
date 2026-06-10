@@ -1,3 +1,4 @@
+import { toJson, useAdmin, useFacetMap } from '@matst80/slask-finder-sdk'
 import {
   createContext,
   PropsWithChildren,
@@ -10,9 +11,6 @@ import Markdown from 'react-markdown'
 import { Link } from 'react-router-dom'
 import useSWRMutation from 'swr/mutation'
 import { Loader } from '../components/Loader'
-import { useAdmin } from '../hooks/appState'
-import { useFacetMap } from '../hooks/searchHooks'
-import { toJson } from '../lib/datalayer/api'
 import { availableFunctions, Tool, tools } from './tools'
 import { JsonView } from './tracking/JsonView'
 

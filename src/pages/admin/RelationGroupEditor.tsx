@@ -1,3 +1,13 @@
+import {
+  FacetId,
+  FacetListItem,
+  Relation,
+  RelationGroup,
+  RelationMatch,
+  useAdminRelationGroups,
+  useFacetMap,
+  useGroupDesigner,
+} from '@matst80/slask-finder-sdk'
 import fuzzysort from 'fuzzysort'
 import { ChevronUp, PlusIcon, TrashIcon } from 'lucide-react'
 import {
@@ -14,15 +24,6 @@ import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { useArrowKeyNavigation } from '../../components/useArrowKeyNavigation'
 import { useDropdownFocus } from '../../components/useDropdownFocus'
-import { useAdminRelationGroups, useFacetMap } from '../../hooks/searchHooks'
-import { useGroupDesigner } from '../../lib/hooks/GroupDesignerProvider'
-import {
-  FacetId,
-  FacetListItem,
-  Relation,
-  RelationGroup,
-  RelationMatch,
-} from '../../lib/types'
 
 const FacetValueTagEditor = ({
   data,

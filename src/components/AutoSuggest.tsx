@@ -1,4 +1,20 @@
-import { useAtomValue } from 'jotai'
+import type {
+  QueryRefinement,
+  SuggestedContent,
+  SuggestedProduct as SuggestedProductType,
+  SuggestResultItem,
+} from '@matst80/slask-finder-sdk'
+import {
+  CmsPicture,
+  fromQueryString,
+  ItemsQuery,
+  MIN_FUZZY_SCORE,
+  SuggestQuery,
+  useKeyFacetValuePopularity,
+  useQuery,
+  useSuggestions,
+  useTracking,
+} from '@matst80/slask-finder-sdk'
 import {
   ChevronUp,
   Cloud,
@@ -18,27 +34,7 @@ import {
   useState,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useKeyFacetValuePopularity } from '../hooks/popularityHooks'
-import { fromQueryString } from '../hooks/searchHooks'
-import { MIN_FUZZY_SCORE } from '../lib/hooks/SuggestionProvider'
-import type {
-  QueryRefinement,
-  SuggestedContent,
-  SuggestedProduct as SuggestedProductType,
-  SuggestResultItem,
-} from '../lib/hooks/suggestionContext'
-import { SuggestQuery } from '../lib/hooks/suggestionUtils'
-import { useTracking } from '../lib/hooks/TrackingContext'
-import { useQuery } from '../lib/hooks/useQuery'
-import { useSuggestions } from '../lib/hooks/useSuggestions'
-import { CmsPicture, ItemsQuery } from '../lib/types'
-import { useProductData } from '../lib/utils'
 import { cm, makeImageUrl } from '../utils'
-import {
-  isModelLoadingAtom,
-  modelLoadingProgressAtom,
-  modelLoadingStatusAtom,
-} from '../utils/jina'
 import { StockBalloon } from './ResultItem'
 import { toEcomTrackingEvent } from './toImpression'
 import { useArrowKeyNavigation } from './useArrowKeyNavigation'
@@ -110,8 +106,6 @@ type AutoSuggestProps = {
 export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
   const { inputRef, close } = useDropdownFocus()
   const { query: currentQuery, setQuery } = useQuery()
-  const isModelLoading = useAtomValue(isModelLoadingAtom)
-  const modelLoadingProgress = useAtomValue(modelLoadingProgressAtom)
   const embeddingSource = currentQuery.embeddingSource ?? 'server'
 
   const doSearch = useCallback(
@@ -230,14 +224,6 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
             aria-controls="suggestion-results"
             placeholder="Search..."
           />
-          {isModelLoading && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-100 overflow-hidden md:rounded-b-md z-20">
-              <div
-                className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-300 ease-out"
-                style={{ width: `${modelLoadingProgress ?? 0}%` }}
-              />
-            </div>
-          )}
           <button
             type="button"
             onClick={() =>
@@ -350,31 +336,9 @@ export const AutoSuggest = ({ onClear, onSearch }: AutoSuggestProps) => {
 
 const SuggestionResults = ({ onSearch, onClear }: AutoSuggestProps) => {
   const { items } = useSuggestions()
-  const isModelLoading = useAtomValue(isModelLoadingAtom)
-  const modelLoadingProgress = useAtomValue(modelLoadingProgressAtom)
-  const modelLoadingStatus = useAtomValue(modelLoadingStatusAtom)
 
   return (
     <>
-      {isModelLoading && (
-        <div className="p-3 bg-indigo-50/50 border-b border-indigo-100 flex flex-col gap-2">
-          <div className="flex justify-between items-center text-xs font-semibold text-indigo-600 animate-pulse">
-            <span className="flex items-center gap-1.5">
-              <Sparkles className="size-3.5 animate-spin text-indigo-500" />
-              {modelLoadingStatus}
-            </span>
-            {modelLoadingProgress !== null && (
-              <span>{modelLoadingProgress}%</span>
-            )}
-          </div>
-          <div className="w-full h-1.5 bg-indigo-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-indigo-600 rounded-full transition-all duration-300 ease-out"
-              style={{ width: `${modelLoadingProgress ?? 0}%` }}
-            />
-          </div>
-        </div>
-      )}
       {items.map((item, idx) => (
         <SuggestSelector
           {...item}
@@ -389,8 +353,8 @@ const SuggestionResults = ({ onSearch, onClear }: AutoSuggestProps) => {
 }
 
 const SuggestedProduct = (item: SuggestedProductType & { index: number }) => {
-  const { id, title, img, values, stock } = item
-  const { soldBy, isOutlet, grade, isOwn } = useProductData(values)
+  const { id, title, img, stock } = item
+
   const { track } = useTracking()
   const navigate = useNavigate()
   return (
@@ -413,15 +377,6 @@ const SuggestedProduct = (item: SuggestedProductType & { index: number }) => {
         <div className="flex items-center gap-2">
           <span>{title}</span>
         </div>
-
-        {isOutlet && grade != null && (
-          <em className="block text-xs text-gray-500 italic">{grade}</em>
-        )}
-        {!isOwn && (
-          <em className="block text-xs text-gray-500 italic">
-            Säljs av: {soldBy}
-          </em>
-        )}
       </div>
     </button>
   )

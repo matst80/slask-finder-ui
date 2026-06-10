@@ -1,8 +1,7 @@
+import { getTrackingPopularity, useItemData } from '@matst80/slask-finder-sdk'
 import { Link } from 'react-router-dom'
 import useSWR from 'swr'
-import { useItemData } from '../../hooks/trackingHooks'
-import { getTrackingPopularity } from '../../lib/datalayer/api'
-import { useTranslations } from '../../lib/hooks/useTranslations'
+import { useTranslations } from '../../translations/useTranslations'
 import { makeImageUrl } from '../../utils'
 
 const PopularItem = ({ itemId, value }: { itemId: number; value: number }) => {

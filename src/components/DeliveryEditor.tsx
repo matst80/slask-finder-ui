@@ -1,7 +1,10 @@
+import {
+  CheckoutDelivery,
+  PickupPoint,
+  useRemoveDelivery,
+  useSetPickupPoint,
+} from '@matst80/slask-finder-sdk'
 import { useState } from 'react'
-import { useRemoveDelivery, useSetPickupPoint } from '../hooks/checkoutHooks'
-import { CheckoutDelivery } from '../lib/datalayer/checkout-api'
-import { PickupPoint } from '../lib/types'
 
 type DeliveryEditorProps = {
   deliveries: CheckoutDelivery[]

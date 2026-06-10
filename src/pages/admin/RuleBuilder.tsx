@@ -1,15 +1,6 @@
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
-import useSWR from 'swr'
-import useSWRMutation from 'swr/mutation'
-import {
-  CustomDropdown,
-  DropdownItem,
-} from '../../components/ui/custom-dropdown'
-import { Input } from '../../components/ui/input'
-import { useFacetList } from '../../hooks/searchHooks'
-import { getPopularityRules, setPopularityRules } from '../../lib/datalayer/api'
 import {
   DiscountRule,
+  getPopularityRules,
   MatchRule,
   NumberComparitor,
   NumberLimitRule,
@@ -19,8 +10,18 @@ import {
   Rule,
   Rules,
   ruleTypes,
+  setPopularityRules,
+  useFacetList,
   ValueMatch,
-} from '../../lib/types'
+} from '@matst80/slask-finder-sdk'
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
+import useSWR from 'swr'
+import useSWRMutation from 'swr/mutation'
+import {
+  CustomDropdown,
+  DropdownItem,
+} from '../../components/ui/custom-dropdown'
+import { Input } from '../../components/ui/input'
 
 type EditorProps<T extends Rule> = T & {
   onChange: (data: T) => void

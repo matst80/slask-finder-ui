@@ -1,6 +1,6 @@
+import { CheckoutPayment } from '@matst80/slask-finder-sdk'
 import { Check } from 'lucide-react'
 import { useEffect, useRef } from 'react'
-import { CheckoutPayment } from '../lib/datalayer/checkout-api'
 import { CancelPaymentButton } from './CancelPaymentButton'
 import { PriceValue } from './Price'
 

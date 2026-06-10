@@ -1,3 +1,14 @@
+import {
+  FacetProvider,
+  FilteringQuery,
+  ImpressionProvider,
+  Item,
+  ItemValues,
+  QueryProvider,
+  useImpression,
+  useQuery,
+  useTracking,
+} from '@matst80/slask-finder-sdk'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLoaderData } from 'react-router-dom'
 import { Facets } from '../../components/Facets'
@@ -5,15 +16,8 @@ import { InfiniteHitList } from '../../components/InfiniteHitList'
 import { ResultHeader } from '../../components/ResultHeader'
 import { PlaceholderItem, ResultItemInner } from '../../components/ResultItem'
 import { toEcomTrackingEvent } from '../../components/toImpression'
-import { FacetProvider } from '../../lib/hooks/FacetProvider'
-import { ImpressionProvider } from '../../lib/hooks/ImpressionProvider'
-import { QueryProvider } from '../../lib/hooks/QueryProvider'
-import { useTracking } from '../../lib/hooks/TrackingContext'
-import { useImpression } from '../../lib/hooks/useImpression'
-import { useQuery } from '../../lib/hooks/useQuery'
-import { useTranslations } from '../../lib/hooks/useTranslations'
-import { FilteringQuery, Item, ItemValues } from '../../lib/types'
 import { TranslationKey } from '../../translations/translations'
+import { useTranslations } from '../../translations/useTranslations'
 import { cm } from '../../utils'
 import { ComponentId, Issue, RuleId } from './builder-types'
 import { BuilderFooterBar } from './components/BuilderFooterBar'

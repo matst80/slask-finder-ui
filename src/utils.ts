@@ -1,6 +1,11 @@
+import {
+  ItemDetail,
+  ItemPrice,
+  ItemValues,
+  MutationResult,
+} from '@matst80/slask-finder-sdk'
 import useSWRMutation, { SWRMutationConfiguration } from 'swr/mutation'
 import { useNotifications } from './components/ui-notifications/useNotifications'
-import { ItemPrice, ItemValues, MutationResult } from './lib/types'
 
 export function remove<T>(key: string | number) {
   return (prev: { [key: string]: T }) => {
@@ -217,6 +222,18 @@ type PrioProps = {
   prio?: number
 }
 
+export const getRating = (values: ItemDetail) => {
+  const rating = values['rating']
+  const numberOfRatings = values['numberOfRatings']
+  if (rating == null || numberOfRatings == null) {
+    return null
+  }
+  return {
+    rating: Number(rating) / 10,
+    numberOfRatings: Number(numberOfRatings),
+  }
+}
+
 export const byPriority = (a: PrioProps, b: PrioProps) =>
   (b.prio ?? 0) - (a.prio ?? 0)
 export const cm = (...arg: (string | string[] | false | undefined)[]) =>
@@ -245,7 +262,7 @@ export const useDebounce = <TArg extends unknown[], TRet>(
   fn: (...args: TArg) => TRet,
   delay: number,
 ) => {
-  let timeout: NodeJS.Timeout
+  let timeout: number | undefined
   return (...args: TArg) => {
     clearTimeout(timeout)
     timeout = globalThis.setTimeout(() => {

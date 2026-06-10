@@ -1,4 +1,4 @@
-import { BaseEcomEvent, Item } from '../lib/types'
+import { BaseEcomEvent, Item } from '@matst80/slask-finder-sdk'
 
 export const toEcomTrackingEvent = (
   item: Item,

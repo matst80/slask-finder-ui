@@ -1,3 +1,4 @@
+import { useDefaultMetricsQuery } from '@matst80/slask-finder-sdk'
 import {
   Activity,
   ArrowDown,
@@ -9,8 +10,7 @@ import {
   RefreshCw,
   Search,
 } from 'lucide-react'
-import { useDefaultMetricsQuery } from '../hooks/metricsHooks'
-import { useTranslations } from '../lib/hooks/useTranslations'
+import { useTranslations } from '../translations/useTranslations'
 
 type CardProps = {
   title: string

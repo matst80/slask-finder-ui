@@ -1,4 +1,4 @@
-import { useClipboard } from '../../lib/hooks/useClipboard'
+import { useClipboard } from '../../useClipboard'
 
 export const JsonView = ({ data }: { data: unknown }) => {
   const copy = useClipboard()

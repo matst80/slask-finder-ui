@@ -1,29 +1,28 @@
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useSWRConfig } from 'swr'
-import { useAdmin } from '../hooks/appState'
-import { useAddToCart } from '../hooks/cartHooks'
 import {
+  createFacetFromField,
+  facetValues,
+  ImpressionProvider,
+  ItemDetail,
+  Store,
   toQuery,
+  useAddToCart,
+  useAdmin,
   useCompatibleItems,
   useCosineRelatedItems,
   useFacetMap,
   useItemsSearch,
+  useQuery,
   useRelatedItems,
-} from '../hooks/searchHooks'
-import { useFirebaseMessaging } from '../hooks/useFirebaseMessaging'
-import { createFacetFromField, registerPriceWatch } from '../lib/datalayer/api'
-import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
-import { useQuery } from '../lib/hooks/useQuery'
-import { useSwitching } from '../lib/hooks/useSwitching'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import { facetValues, ItemDetail, Store } from '../lib/types'
-import { useProductData } from '../lib/utils'
-import { isDefined, makeImageUrl, useFetchMutation } from '../utils'
+  useSwitching,
+} from '@matst80/slask-finder-sdk'
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
+import { useTranslations } from '../translations/useTranslations'
+import { isDefined, makeImageUrl } from '../utils'
 import { GroupedProperties } from './GroupedProperties'
 import { Loader } from './Loader'
 import { CompareButton, DataViewItem, ResultItem } from './ResultItem'
-import { Stars } from './Stars'
 import { toEcomTrackingEvent } from './toImpression'
 import { Button, ButtonLink } from './ui/button'
 import { useNotifications } from './ui-notifications/useNotifications'
@@ -533,17 +532,14 @@ export const ItemDetails = (details: ItemDetail) => {
     title,
     img,
     bp,
-    //stock,
     buyable = true,
     description,
     buyableInStore,
     id,
-    values,
-    //disclaimer,
     lastUpdate,
     created,
   } = details
-  const productData = useProductData(values)
+
   const { showNotification } = useNotifications()
 
   const handleCreateFacet = async (fieldKey: string) => {
@@ -572,64 +568,7 @@ export const ItemDetails = (details: ItemDetail) => {
       })
     }
   }
-  const { token, subscribe } = useFirebaseMessaging()
-  const { trigger: registerWatch, isMutating: isRegistering } =
-    useFetchMutation(`/price-watch/${id}`, async () => {
-      if (!token) {
-        await subscribe()
-      }
-      if (!token) {
-        showNotification({
-          title: 'Failed',
-          message: 'Could not get push token.',
-          variant: 'error',
-        })
-        return false
-      }
-      return registerPriceWatch(Number(id), token)
-    })
 
-  const watchPriceChanges = async () => {
-    // Request Notification permission first
-    if (!('Notification' in window)) {
-      showNotification({
-        title: 'Not supported',
-        message: "This browser doesn't support notifications.",
-        variant: 'error',
-      })
-      return
-    }
-    let permission = Notification.permission
-    if (permission === 'default') {
-      try {
-        permission = await Notification.requestPermission()
-      } catch (e) {
-        console.debug('Notification permission error', e)
-      }
-    }
-    if (permission !== 'granted') {
-      showNotification({
-        title: 'Permission denied',
-        message: 'You need to allow notifications to watch price changes.',
-        variant: 'error',
-      })
-      return
-    }
-    const ok = await registerWatch()
-    if (ok) {
-      showNotification({
-        title: 'Watching price',
-        message: "You'll be notified if the price changes.",
-        variant: 'success',
-      })
-    } else {
-      showNotification({
-        title: 'Failed',
-        message: "Couldn't register price watch.",
-        variant: 'error',
-      })
-    }
-  }
   if (!details) return null
   const pft = details['modelId']
 
@@ -658,7 +597,7 @@ export const ItemDetails = (details: ItemDetail) => {
               <h2 className="text-3xl font-bold text-gray-900 mb-6 product-name">
                 {title}
               </h2>
-              {productData?.rating != null && (
+              {/* {productData?.rating != null && (
                 <div className="my-3">
                   <Stars
                     rating={productData.rating.rating}
@@ -666,7 +605,7 @@ export const ItemDetails = (details: ItemDetail) => {
                     showText={true}
                   />
                 </div>
-              )}
+              )} */}
               {bp && (
                 <ul className="space-y-3 text-gray-600">
                   {bp.split('\n').map((txt) =>
@@ -715,13 +654,13 @@ export const ItemDetails = (details: ItemDetail) => {
                         <span>{t('cart.add')}</span>
                       )}
                     </Button>
-                    <button
+                    {/* <button
                       onClick={watchPriceChanges}
                       disabled={isRegistering}
                       className="underline disabled:opacity-50"
                     >
                       {isRegistering ? 'Registering...' : 'Watch'}
-                    </button>
+                    </button> */}
                   </div>
                 </div>
 

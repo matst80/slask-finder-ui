@@ -1,5 +1,5 @@
+import { useFacetMap } from '@matst80/slask-finder-sdk'
 import { useMemo } from 'react'
-import { useFacetMap } from '../../hooks/searchHooks'
 import { cm } from '../../utils'
 import { Issue } from './builder-types'
 

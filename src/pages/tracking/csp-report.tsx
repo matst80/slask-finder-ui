@@ -1,3 +1,4 @@
+import { toJson } from '@matst80/slask-finder-sdk'
 import { CheckCircle2 } from 'lucide-react'
 import { useState } from 'react'
 import useSWR from 'swr'
@@ -8,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '../../components/ui/card'
-import { toJson } from '../../lib/datalayer/api'
 import { JsonView } from './JsonView'
 
 type CspIssue = {

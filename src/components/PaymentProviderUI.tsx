@@ -1,9 +1,7 @@
+import { CheckoutPayment } from '@matst80/slask-finder-sdk'
 import { Check } from 'lucide-react'
-import { CheckoutPayment } from '../lib/datalayer/checkout-api'
-import { PriceValue } from './Price'
-import '@adyen/adyen-web/styles/adyen.css'
-import { AdyenPaymentUI } from './AdyenPaymentUI'
 import { KlarnaPaymentUI } from './KlarnaPaymentUi'
+import { PriceValue } from './Price'
 
 type PaymentProviderUIProps = {
   payment: CheckoutPayment
@@ -21,8 +19,7 @@ export const PaymentProviderUI = ({ payment }: PaymentProviderUIProps) => {
   switch (payment.provider.toLowerCase()) {
     case 'klarna':
       return <KlarnaPaymentUI payment={payment} />
-    case 'adyen':
-      return <AdyenPaymentUI payment={payment} />
+
     default:
       if (payment.status === 'success' && payment.completedAt) {
         return (

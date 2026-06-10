@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { Sessions } from '../components/Sessions'
 import { ButtonLink } from '../components/ui/button'
-import { useTranslations } from '../lib/hooks/useTranslations'
+import { useTranslations } from '../translations/useTranslations'
 
 export const Tracking = () => {
   const t = useTranslations()

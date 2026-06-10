@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { useTranslations } from '../../lib/hooks/useTranslations'
 import { TranslationKey } from '../../translations/translations'
+import { useTranslations } from '../../translations/useTranslations'
 
 const items = [
   'facets',

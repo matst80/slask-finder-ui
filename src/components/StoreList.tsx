@@ -1,5 +1,4 @@
-import { useStores } from '../lib/datalayer/stores'
-import { Item } from '../lib/types'
+import { Item, useStores } from '@matst80/slask-finder-sdk'
 
 export const StoreList = ({ stock }: { stock: Item['stock'] }) => {
   const { data: stores } = useStores()

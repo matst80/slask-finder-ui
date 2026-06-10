@@ -1,11 +1,14 @@
+import {
+  FacetProvider,
+  ItemsQuery,
+  NumberValue,
+  QueryProvider,
+} from '@matst80/slask-finder-sdk'
 import { useMemo, useState } from 'react'
 import { Facets } from '../components/Facets'
 import { Slider } from '../components/facets/Slider'
 import { QueryUpdater } from '../components/QueryMerger'
 import { SearchResultList } from '../components/SearchResultList'
-import { FacetProvider } from '../lib/hooks/FacetProvider'
-import { QueryProvider } from '../lib/hooks/QueryProvider'
-import { ItemsQuery, NumberValue } from '../lib/types'
 import { AiShoppingProvider, MessageList, QueryInput } from './AiShopper'
 
 type Persona = Partial<ItemsQuery> & {

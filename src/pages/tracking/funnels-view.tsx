@@ -1,6 +1,6 @@
+import { getFunnelData } from '@matst80/slask-finder-sdk'
 import useSWR from 'swr'
-import { getFunnelData } from '../../lib/datalayer/api'
-import { useTranslations } from '../../lib/hooks/useTranslations'
+import { useTranslations } from '../../translations/useTranslations'
 import { FunnelChart } from './funnel-chart'
 
 const byEvents = (a: { value: number }, b: { value: number }) => {

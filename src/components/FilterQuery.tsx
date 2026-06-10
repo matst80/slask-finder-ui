@@ -1,6 +1,6 @@
+import { useQuery } from '@matst80/slask-finder-sdk'
 import { Filter } from 'lucide-react'
 import { useDeferredValue, useEffect, useState } from 'react'
-import { useQuery } from '../lib/hooks/useQuery'
 import { cm } from '../utils'
 
 type Props = {

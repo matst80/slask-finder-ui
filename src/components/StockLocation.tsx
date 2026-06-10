@@ -1,8 +1,11 @@
+import {
+  BaseEcomEvent,
+  Store,
+  useAddToCart,
+  useFavouriteStore,
+} from '@matst80/slask-finder-sdk'
 import { Fragment, useState } from 'react'
-import { useAddToCart } from '../hooks/cartHooks'
-import { useFavouriteStore } from '../hooks/useFavouriteStore'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import { BaseEcomEvent, Store } from '../lib/types'
+import { useTranslations } from '../translations/useTranslations'
 import { StoreWithStock } from './ItemDetails'
 import { ReservationSummary } from './ReservationSummary'
 import { Button } from './ui/button'

@@ -1,4 +1,4 @@
-import { ItemValues } from '../../lib/types'
+import { ItemValues } from '@matst80/slask-finder-sdk'
 import { isDefined } from '../../utils'
 import {
   ComponentId,

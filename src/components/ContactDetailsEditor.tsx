@@ -1,7 +1,10 @@
+import {
+  ContactDetails,
+  useCheckout,
+  useSetContactDetails,
+} from '@matst80/slask-finder-sdk'
 import { ChevronDown, ChevronUp, Pencil } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { useCheckout, useSetContactDetails } from '../hooks/checkoutHooks'
-import { ContactDetails } from '../lib/datalayer/checkout-api'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Label } from './ui/label'

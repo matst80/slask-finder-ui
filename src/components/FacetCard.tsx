@@ -1,5 +1,5 @@
+import { useKeyFacetValuePopularity } from '@matst80/slask-finder-sdk'
 import React, { useState } from 'react'
-import { useKeyFacetValuePopularity } from '../hooks/popularityHooks'
 
 interface FacetCardProps {
   facet: {

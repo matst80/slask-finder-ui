@@ -1,5 +1,5 @@
+import { ItemDetail } from '@matst80/slask-finder-sdk'
 import { useLoaderData } from 'react-router-dom'
-import { ItemDetail } from '../lib/types'
 import { ItemDetails } from './ItemDetails'
 import { Loader } from './Loader'
 

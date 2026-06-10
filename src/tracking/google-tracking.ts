@@ -1,7 +1,4 @@
-import {
-  GoogleTracker,
-  GoogleTrackingContext,
-} from '../lib/hooks/TrackingContext'
+import { GoogleTracker, GoogleTrackingContext } from '@matst80/slask-finder-sdk'
 
 type WindowWithDataLayer = Window & {
   gtag?: (event: 'event' | 'config', ...args: unknown[]) => void

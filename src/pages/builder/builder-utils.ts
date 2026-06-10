@@ -1,4 +1,4 @@
-import { KeyValue, NumberValue } from '../../lib/types'
+import { KeyValue, NumberValue } from '@matst80/slask-finder-sdk'
 import {
   AdditionalFilter,
   Component,

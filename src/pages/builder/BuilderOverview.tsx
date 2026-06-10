@@ -1,10 +1,12 @@
+import {
+  ImpressionProvider,
+  useAddMultipleToCart,
+  useFacetMap,
+} from '@matst80/slask-finder-sdk'
 import { Plus, RefreshCw, ShoppingBasketIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { Button, ButtonLink } from '../../components/ui/button'
-import { useAddMultipleToCart } from '../../hooks/cartHooks'
-import { useFacetMap } from '../../hooks/searchHooks'
-import { ImpressionProvider } from '../../lib/hooks/ImpressionProvider'
-import { useTranslations } from '../../lib/hooks/useTranslations'
+import { useTranslations } from '../../translations/useTranslations'
 import { isDefined } from '../../utils'
 import { flattenComponents } from './builder-utils'
 import { BuilderFooterBar } from './components/BuilderFooterBar'

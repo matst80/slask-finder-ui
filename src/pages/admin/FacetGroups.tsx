@@ -1,3 +1,10 @@
+// UI Components
+import {
+  FacetId,
+  updateFacetGroups,
+  useFacetGroups,
+  useFacetList,
+} from '@matst80/slask-finder-sdk'
 import fuzzysort from 'fuzzysort'
 // Icons
 import {
@@ -21,16 +28,12 @@ import {
   CardTitle,
 } from '../../components/ui/card'
 import { Checkbox } from '../../components/ui/checkbox'
-// UI Components
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { RadioGroup, RadioGroupItem } from '../../components/ui/radio-group'
 import { Separator } from '../../components/ui/separator'
 import { useNotifications } from '../../components/ui-notifications/useNotifications'
-import { useFacetGroups, useFacetList } from '../../hooks/searchHooks'
-import { updateFacetGroups } from '../../lib/datalayer/api'
-import { useTranslations } from '../../lib/hooks/useTranslations'
-import { FacetId } from '../../lib/types'
+import { useTranslations } from '../../translations/useTranslations'
 
 export const FacetGroups = () => {
   const t = useTranslations()

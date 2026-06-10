@@ -1,5 +1,5 @@
+import { useKeyboardAdminToggle } from '@matst80/slask-finder-sdk'
 import { Outlet } from 'react-router-dom'
-import { useKeyboardAdminToggle } from '../hooks/appState'
 
 export const Admin = () => {
   useKeyboardAdminToggle()

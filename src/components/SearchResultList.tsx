@@ -1,8 +1,10 @@
+import {
+  ImpressionProvider,
+  ItemsQuery,
+  useQuery,
+  useYourPopularItems,
+} from '@matst80/slask-finder-sdk'
 import { useEffect, useState } from 'react'
-import { useYourPopularItems } from '../hooks/searchHooks'
-import { ImpressionProvider } from '../lib/hooks/ImpressionProvider'
-import { useQuery } from '../lib/hooks/useQuery'
-import { ItemsQuery } from '../lib/types'
 import { InfiniteHitList } from './InfiniteHitList'
 import { PlaceholderItem, ResultItem } from './ResultItem'
 

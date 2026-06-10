@@ -1,6 +1,5 @@
+import { Item, useQuery } from '@matst80/slask-finder-sdk'
 import { Fragment, ReactNode } from 'react'
-import { useQuery } from '../lib/hooks/useQuery'
-import { Item } from '../lib/types'
 
 export const HitList = <T extends { item: Item }>({
   children,

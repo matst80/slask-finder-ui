@@ -1,5 +1,5 @@
+import { getLocation } from '@matst80/slask-finder-sdk'
 import { useCallback, useEffect, useState } from 'react'
-import { getLocation } from '../lib/datalayer/api'
 import { cookieObject, setCookie } from '../utils'
 import { YourLocation } from './map-utils'
 

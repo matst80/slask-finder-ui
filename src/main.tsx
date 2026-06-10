@@ -1,7 +1,16 @@
+import {
+  CompareProvider,
+  GroupDesignerProvider,
+  getRawData,
+  getTrackingSession,
+  ImpressionProvider,
+  QueryProvider,
+  SdkNotificationContext,
+  TrackingProvider,
+  useItemData,
+} from '@matst80/slask-finder-sdk'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './pages/App.tsx'
-import './index.css'
 import {
   createBrowserRouter,
   Outlet,
@@ -10,7 +19,7 @@ import {
 } from 'react-router'
 import { RouterProvider } from 'react-router/dom'
 import { SWRConfig } from 'swr'
-import { CookieConsent } from './CookieConsent.tsx'
+import { CookieConsent, useCookieAcceptance } from './CookieConsent.tsx'
 import { Banner } from './components/Banner.tsx'
 import OfflineIndicator from './components/OfflineIndicator.tsx'
 import { ProductPage } from './components/ProductPage.tsx'
@@ -20,18 +29,13 @@ import { SessionList } from './components/SessionList.tsx'
 import { SessionView } from './components/Sessions.tsx'
 import { SidebarMenu } from './components/SidebarMenu.tsx'
 import { NotificationsProvider } from './components/ui-notifications/notifications-provider.tsx'
-import { useItemData } from './hooks/trackingHooks.ts'
-import { getRawData, getTrackingSession } from './lib/datalayer/api.ts'
-import { CompareProvider } from './lib/hooks/CompareProvider.tsx'
-import { GroupDesignerProvider } from './lib/hooks/GroupDesignerProvider.tsx'
-import { ImpressionProvider } from './lib/hooks/ImpressionProvider.tsx'
-import { QueryProvider } from './lib/hooks/QueryProvider.tsx'
-import { TrackingProvider } from './lib/hooks/TrackingContext.tsx'
-import { TranslationProvider } from './lib/hooks/TranslationProvider.tsx'
+import { useNotifications } from './components/ui-notifications/useNotifications.tsx'
+import './index.css'
 import { PageContainer } from './PageContainer.tsx'
 import { Admin } from './pages/Admin.tsx'
 import { AdyenReturn } from './pages/AdyenReturn.tsx'
 import { AiShopper } from './pages/AiShopper.tsx'
+import App from './pages/App.tsx'
 import { DatasetViewer } from './pages/admin/DatasetViewer.tsx'
 import { EditFacetsView } from './pages/admin/EditFacetsView.tsx'
 import {
@@ -69,6 +73,7 @@ import { QueriesView } from './pages/tracking/queries.tsx'
 import { slaskTracker } from './tracking/slaskTracker.ts'
 import { english } from './translations/english.ts'
 import { swedish } from './translations/swedish.ts'
+import { TranslationProvider } from './translations/TranslationProvider.tsx'
 import { getLocale } from './utils.ts'
 
 // Import the functions you need from the SDKs you need
@@ -182,9 +187,9 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: 'config/:pft',
+    path: 'config/:pageId',
     loader: ({ params }) => {
-      return Promise.resolve(params.pft)
+      return Promise.resolve(params)
     },
     element: (
       <PageContainer>
@@ -400,25 +405,53 @@ const getBrowserTranslations = () => {
   return english
 }
 
+const TrackingProviderWrapper = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
+  const { accepted } = useCookieAcceptance()
+  return (
+    <TrackingProvider handlers={[slaskTracker()]} accepted={accepted}>
+      {children}
+    </TrackingProvider>
+  )
+}
+
+const SdkNotificationWrapper = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
+  const { showNotification } = useNotifications()
+  return (
+    <SdkNotificationContext.Provider value={showNotification}>
+      {children}
+    </SdkNotificationContext.Provider>
+  )
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <SWRConfig value={{ keepPreviousData: true }}>
-      <TrackingProvider handlers={[slaskTracker()]}>
+      <TrackingProviderWrapper>
         <GroupDesignerProvider>
           <CompareProvider compareAllFacets={true}>
             <TranslationProvider language={getBrowserTranslations()}>
               <NotificationsProvider>
-                <ImpressionProvider>
-                  <RouterProvider router={router} />
-                  <OfflineIndicator />
-                  <PWAInstallPrompt />
-                  <CookieConsent />
-                </ImpressionProvider>
+                <SdkNotificationWrapper>
+                  <ImpressionProvider>
+                    <RouterProvider router={router} />
+                    <OfflineIndicator />
+                    <PWAInstallPrompt />
+                    <CookieConsent />
+                  </ImpressionProvider>
+                </SdkNotificationWrapper>
               </NotificationsProvider>
             </TranslationProvider>
           </CompareProvider>
         </GroupDesignerProvider>
-      </TrackingProvider>
+      </TrackingProviderWrapper>
     </SWRConfig>
   </React.StrictMode>,
 )

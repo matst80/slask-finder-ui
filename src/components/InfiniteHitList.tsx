@@ -1,3 +1,4 @@
+import { Item, useQuery } from '@matst80/slask-finder-sdk'
 import {
   createElement,
   Fragment,
@@ -6,8 +7,6 @@ import {
   useEffect,
   useRef,
 } from 'react'
-import { useQuery } from '../lib/hooks/useQuery'
-import { Item } from '../lib/types'
 import { Loader } from './Loader'
 
 export const InfiniteHitList = ({

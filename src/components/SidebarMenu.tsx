@@ -1,6 +1,6 @@
+import { useAdmin } from '@matst80/slask-finder-sdk'
 import {
   BarChart2,
-  Bell,
   BotMessageSquare,
   Box,
   Edit,
@@ -17,10 +17,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useUser } from '../adminHooks'
 import { useCookieAcceptance } from '../CookieConsent'
-import { useAdmin } from '../hooks/appState'
-import { useFirebaseMessaging } from '../hooks/useFirebaseMessaging'
-import { useTranslations } from '../lib/hooks/useTranslations'
 import { TranslationKey } from '../translations/translations'
+import { useTranslations } from '../translations/useTranslations'
 import { cm } from '../utils'
 import { LanguageSelector } from './LanguageSelector'
 import { Button } from './ui/button'
@@ -211,7 +209,7 @@ const menu: NavigationItemType[] = [
   },
   {
     translationKey: 'menu.config',
-    url: '/config/PFT6938',
+    url: '/config/88436',
     accessKey: 'c',
     icon: <Watch size={20} />,
     color: menuColors.config,
@@ -396,25 +394,6 @@ const UserButton = () => {
   )
 }
 
-const NotificationBell = () => {
-  const { isSubscribed, subscribe, error } = useFirebaseMessaging()
-
-  return (
-    <div className="flex items-center gap-2">
-      <Button
-        onClick={subscribe}
-        disabled={isSubscribed}
-        size="icon"
-        variant={isSubscribed ? 'outline' : 'ghost'}
-        title={isSubscribed ? 'Subscribed' : 'Subscribe'}
-      >
-        <Bell className="size-5" />
-      </Button>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-    </div>
-  )
-}
-
 export const NavMenu = () => {
   const { accepted, manageConsent } = useCookieAcceptance()
   const t = useTranslations()
@@ -434,7 +413,6 @@ export const NavMenu = () => {
           <LanguageSelector />
           <div className="flex items-center gap-1">
             <UserButton />
-            <NotificationBell />
           </div>
         </div>
       </nav>

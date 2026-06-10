@@ -1,9 +1,11 @@
+import {
+  KeyFacet,
+  useKeyFacetValuePopularity,
+  useQueryKeyFacet,
+} from '@matst80/slask-finder-sdk'
 import fuzzysort from 'fuzzysort'
 import { ChevronUp, Star } from 'lucide-react'
 import { memo, useMemo, useState } from 'react'
-import { useKeyFacetValuePopularity } from '../../hooks/popularityHooks'
-import { useQueryKeyFacet } from '../../lib/hooks/useQueryKeyFacet'
-import { KeyFacet } from '../../lib/types'
 import { cm } from '../../utils'
 
 const toSorted = (values: Record<string, number>, selected: Set<string>) =>

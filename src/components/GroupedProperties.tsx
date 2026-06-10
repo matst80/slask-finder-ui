@@ -1,4 +1,19 @@
 import {
+  FacetGroup,
+  FacetId,
+  FacetListItem,
+  FacetValue,
+  ItemsQuery,
+  QueryProvider,
+  RelationGroup,
+  RelationMatch,
+  toQuery,
+  useAdmin,
+  useFacetGroups,
+  useFacetMap,
+  useGroupDesigner,
+} from '@matst80/slask-finder-sdk'
+import {
   InfoIcon,
   ListFilterPlus,
   PlugZapIcon,
@@ -7,21 +22,8 @@ import {
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAdmin } from '../hooks/appState'
-import { toQuery, useFacetGroups, useFacetMap } from '../hooks/searchHooks'
-import { useGroupDesigner } from '../lib/hooks/GroupDesignerProvider'
-import { QueryProvider } from '../lib/hooks/QueryProvider'
-import { useClipboard } from '../lib/hooks/useClipboard'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import {
-  FacetGroup,
-  FacetId,
-  FacetListItem,
-  FacetValue,
-  ItemsQuery,
-  RelationGroup,
-  RelationMatch,
-} from '../lib/types'
+import { useTranslations } from '../translations/useTranslations'
+import { useClipboard } from '../useClipboard'
 import { byPriority, cm, isDefined } from '../utils'
 import { QueryUpdater } from './QueryMerger'
 import { TotalResultText } from './ResultHeader'

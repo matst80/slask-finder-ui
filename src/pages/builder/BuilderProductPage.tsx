@@ -1,3 +1,8 @@
+import {
+  trackAction,
+  useCompareContext,
+  useTracking,
+} from '@matst80/slask-finder-sdk'
 import { useLoaderData } from 'react-router-dom'
 import { GroupedProperties } from '../../components/GroupedProperties'
 import { Loader } from '../../components/Loader'
@@ -5,10 +10,7 @@ import { Price } from '../../components/Price'
 import { StockList } from '../../components/StockList'
 import { toEcomTrackingEvent } from '../../components/toImpression'
 import { Button, ButtonLink } from '../../components/ui/button'
-import { trackAction } from '../../lib/datalayer/beacons'
-import { useCompareContext } from '../../lib/hooks/CompareProvider'
-import { useTracking } from '../../lib/hooks/TrackingContext'
-import { useTranslations } from '../../lib/hooks/useTranslations'
+import { useTranslations } from '../../translations/useTranslations'
 import { makeImageUrl } from '../../utils'
 import { ItemWithComponentId, isParentId } from './builder-types'
 import { BuilderFooterBar } from './components/BuilderFooterBar'

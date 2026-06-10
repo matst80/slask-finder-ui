@@ -1,7 +1,6 @@
+import { Item, useAddToCart } from '@matst80/slask-finder-sdk'
 import { motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import { useAddToCart } from '../hooks/cartHooks'
-import { Item } from '../lib/types'
 import { makeImageUrl } from '../utils'
 import { toEcomTrackingEvent } from './toImpression'
 

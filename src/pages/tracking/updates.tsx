@@ -1,6 +1,6 @@
+import { getTrackingUpdates } from '@matst80/slask-finder-sdk'
 import useSWR from 'swr'
 import { ResultItem } from '../../components/ResultItem'
-import { getTrackingUpdates } from '../../lib/datalayer/api'
 
 export const UpdatedItems = () => {
   const { data } = useSWR('/api/updated-items', getTrackingUpdates)

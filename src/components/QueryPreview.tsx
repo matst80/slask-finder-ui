@@ -1,7 +1,10 @@
+import {
+  ItemsQuery,
+  QueryProvider,
+  RelationMatch,
+} from '@matst80/slask-finder-sdk'
 import { ChevronUp } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { QueryProvider } from '../lib/hooks/QueryProvider'
-import { ItemsQuery, RelationMatch } from '../lib/types'
 import { ResultCarousel } from './ItemDetails'
 import { QueryUpdater } from './QueryMerger'
 import { TotalResultText } from './ResultHeader'

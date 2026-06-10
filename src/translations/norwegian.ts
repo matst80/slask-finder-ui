@@ -1,4 +1,4 @@
-import { BaseTranslationType } from '../lib/types'
+import { BaseTranslationType } from './translations'
 
 export const norwegian = {
   app_name: 'dash',

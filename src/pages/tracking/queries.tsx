@@ -1,6 +1,6 @@
+import { getTrackingQueries } from '@matst80/slask-finder-sdk'
 import useSWR from 'swr'
-import { getTrackingQueries } from '../../lib/datalayer/api'
-import { useTranslations } from '../../lib/hooks/useTranslations'
+import { useTranslations } from '../../translations/useTranslations'
 
 export const QueriesView = () => {
   const { data } = useSWR('/api/queries', getTrackingQueries)

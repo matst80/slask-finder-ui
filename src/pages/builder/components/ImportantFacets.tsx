@@ -1,7 +1,6 @@
 'use client'
 
-import { useFacetMap } from '../../../hooks/searchHooks'
-import { Item } from '../../../lib/types'
+import { Item, useFacetMap } from '@matst80/slask-finder-sdk'
 
 export const ImportantFacets = ({
   tableFacets,

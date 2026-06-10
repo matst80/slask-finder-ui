@@ -1,5 +1,5 @@
+import { FilteringQuery } from '@matst80/slask-finder-sdk'
 import { useContext, useMemo } from 'react'
-import { FilteringQuery } from '../../lib/types'
 import { BuilderContext } from './builder-context'
 import { ComponentId } from './builder-types'
 import { fixSingleArray, isRangeFilter, isStringFilter } from './builder-utils'

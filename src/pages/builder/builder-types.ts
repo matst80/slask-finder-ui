@@ -4,7 +4,7 @@ import {
   ItemValues,
   KeyValue,
   NumberValue,
-} from '../../lib/types'
+} from '@matst80/slask-finder-sdk'
 
 export type ItemWithComponentId = Item & {
   componentId: ComponentId

@@ -1,4 +1,4 @@
-import { useTranslations } from '../lib/hooks/useTranslations'
+import { useTranslations } from '../translations/useTranslations'
 import { Sessions } from './Sessions'
 
 export const SessionList = () => {

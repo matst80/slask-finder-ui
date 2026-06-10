@@ -1,7 +1,6 @@
+import { NumberFacet, useQueryRangeFacet } from '@matst80/slask-finder-sdk'
 import { ChevronUp, Star } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
-import { useQueryRangeFacet } from '../../lib/hooks/useQueryRangeFacet'
-import { NumberFacet } from '../../lib/types'
 import { cm } from '../../utils'
 
 export const StarRatingFacetSelector = ({

@@ -1,7 +1,6 @@
+import { useQuery, useStores } from '@matst80/slask-finder-sdk'
 import { MapPin } from 'lucide-react'
 import { useMemo } from 'react'
-import { useStores } from '../lib/datalayer/stores'
-import { useQuery } from '../lib/hooks/useQuery'
 
 export const SelectedStore = () => {
   const {

@@ -1,7 +1,7 @@
+import { useResetCart } from '@matst80/slask-finder-sdk'
 import { useEffect, useRef } from 'react'
 import { useLoaderData } from 'react-router-dom'
 import { ButtonLink } from '../components/ui/button'
-import { useResetCart } from '../hooks/cartHooks'
 
 export const Confirmation = () => {
   const ref = useRef<HTMLDivElement>(null)

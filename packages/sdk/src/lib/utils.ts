@@ -1,13 +1,34 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: value extraction */
-import { useMemo } from 'react'
-import { getPrice } from '../utils'
-import {
-  BaseTranslationType,
-  Item,
-  ItemDetail,
-  PathInto,
-  ValueMap,
-} from './types'
+import useSWRMutation, { SWRMutationConfiguration } from 'swr/mutation'
+import { useSdkNotification } from './hooks/NotificationContext'
+import { ItemPrice, ItemValues, MutationResult } from './types'
+
+export const isDefined = <T>(d: T): d is NonNullable<T> => d != null
+
+type PrioProps = {
+  prio?: number
+}
+
+export const byPriority = (a: PrioProps, b: PrioProps) =>
+  (b.prio ?? 0) - (a.prio ?? 0)
+
+export const getPrice = (values: ItemValues): ItemPrice => {
+  const current = Number(values['4'])
+  const original = values['5'] != null ? Number(values['5']) : null
+  const discount = values['8'] != null ? Number(values['8']) : null
+
+  if (original != null && original > current) {
+    return {
+      isDiscounted: true,
+      current,
+      original,
+      discount: discount ?? original - current,
+    }
+  }
+  return {
+    isDiscounted: false,
+    current: Number(current ?? 0),
+  }
+}
 
 // const FIELD_SEPARATOR = ":";
 // const ID_VALUE_SEPARATOR = "=";
@@ -116,65 +137,6 @@ import {
 //   return result.toString()
 // }
 
-export const setNestedValues = <T extends BaseTranslationType>(
-  obj: T,
-  onValue: (key: string, value: unknown) => void,
-  path: (string & keyof T)[] = [],
-) => {
-  Object.entries(obj).forEach(([key, value]) => {
-    if (value && typeof value === 'object') {
-      setNestedValues(value, onValue, [...path, key])
-    } else {
-      onValue([...path, key].join('.'), value)
-    }
-  })
-}
-
-export const getNestedProperty = <T extends BaseTranslationType>(
-  obj: T,
-  path: PathInto<T> & string,
-) => {
-  return path
-    .split('.')
-    .reduce(
-      (result, key) => (result ? result[key] : undefined),
-      obj as Record<string, any>,
-    )
-}
-
-export function extractFromObject(
-  object: Record<string, unknown>,
-  path: Array<string>,
-  index = 0,
-): string | undefined {
-  const key = path[index]
-  if (key === undefined) {
-    return ''
-  }
-  const result = object[key]
-  if (result == null) {
-    return undefined
-  }
-  if (typeof result === 'object') {
-    return extractFromObject(Object(result), path, index + 1)
-  }
-  return String(result)
-}
-
-export const replaceMustacheKeys = (
-  text: string,
-  object?: Record<string, unknown>,
-) =>
-  object
-    ? text.replace(/{{\s*([^}]+)\s*}}/g, (_, key) => {
-        const value = extractFromObject(object, key.trim().split('.'))
-        if (value === undefined) {
-          return key
-        }
-        return value
-      })
-    : text
-
 export const matchValue = (
   itemValue: string[] | string | number | undefined,
   filterValue: string[] | string | number,
@@ -198,36 +160,51 @@ export const matchValue = (
   }
   return false
 }
-export const getRating = (values: ItemDetail) => {
-  const rating = values['rating']
-  const numberOfRatings = values['numberOfRatings']
-  if (rating == null || numberOfRatings == null) {
-    return null
-  }
-  return {
-    rating: Number(rating) / 10,
-    numberOfRatings: Number(numberOfRatings),
-  }
+
+export const useFetchMutation = <T, U>(
+  key: string,
+  fn: (payload: U) => Promise<T>,
+  config?: SWRMutationConfiguration<T, Error, string, U>,
+) => {
+  return useSWRMutation(key, (_, { arg }) => fn(arg), {
+    revalidate: false,
+    populateCache: true,
+    ...config,
+  })
 }
-export const useProductData = (values: Item['values']) => {
-  return useMemo(() => {
-    if (!values) return {}
-    const rating = getRating(values)
 
-    const soldBy = values[ValueMap.SoldBy]
-    const isOutlet = values?.[ValueMap.Category1] == 'Outlet'
-    const grade = values[ValueMap.Grade]
-    const price = getPrice(values)
+export const useStateFetchMutation = <T, U>(
+  key: string,
+  fn: (payload: U) => Promise<MutationResult<T>>,
+  config?: SWRMutationConfiguration<MutationResult<T>, Error, string, U>,
+) => {
+  const showNotification = useSdkNotification()
+  return useSWRMutation(key, (_, { arg }) => fn(arg), {
+    revalidate: false,
+    populateCache: (data, current) => {
+      if (data?.mutations && data.mutations.length > 0) {
+        data.mutations
+          .filter((d) => d.error != null)
+          .forEach((mut) => {
+            showNotification({
+              title: `Error applying ${mut.type} mutation`,
+              message: mut.error?.message ?? 'Unknown error',
+              variant: 'warning',
+            })
+          })
+      }
+      return data?.result ?? current
+    },
+    ...config,
+  })
+}
 
-    const isOwn = soldBy == null || soldBy == 'Elgiganten' || soldBy == 'Elkjøp'
-
-    return {
-      isOwn,
-      rating,
-      soldBy,
-      isOutlet,
-      grade,
-      price,
-    }
-  }, [values])
+export const cookieObject = () => {
+  const cookies = document.cookie.split('; ')
+  const cookieObject: { [key: string]: string } = {}
+  for (const cookie of cookies) {
+    const [key, value] = cookie.split('=')
+    cookieObject[key] = decodeURIComponent(value)
+  }
+  return cookieObject
 }

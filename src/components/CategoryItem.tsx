@@ -1,7 +1,6 @@
+import { Category, useQuery } from '@matst80/slask-finder-sdk'
 import { SquareMinus, SquarePlus } from 'lucide-react'
 import { useState } from 'react'
-import { useQuery } from '../lib/hooks/useQuery'
-import { Category } from '../lib/types'
 import { textSize } from '../utils'
 
 const byName = (a: Category, b: Category) => a.value.localeCompare(b.value)

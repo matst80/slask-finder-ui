@@ -1,6 +1,4 @@
 import useSWR from 'swr'
-import { useCookieAcceptance } from '../CookieConsent'
-import { useNotifications } from '../components/ui-notifications/useNotifications'
 import { clearCart } from '../lib/datalayer/api'
 import { trackCart } from '../lib/datalayer/beacons'
 import {
@@ -17,8 +15,13 @@ import {
   UpsertSubscriptionDetails,
   upsertSubscriptionDetails,
 } from '../lib/datalayer/cart-api'
+import { useSdkNotification } from '../lib/hooks/NotificationContext'
 import { BaseEcomEvent, Item, LineItemMarkingRequest } from '../lib/types'
-import { useFetchMutation, useStateFetchMutation } from '../utils'
+import {
+  cookieObject,
+  useFetchMutation,
+  useStateFetchMutation,
+} from '../lib/utils'
 
 const cartKey = '/cart'
 
@@ -35,7 +38,7 @@ export const useResetCart = () => {
 }
 
 export const useAddVoucher = () => {
-  const { showNotification } = useNotifications()
+  const showNotification = useSdkNotification()
   return useStateFetchMutation(cartKey, (voucherCode: string) =>
     addVoucher(voucherCode)
       .then((data) => {
@@ -63,7 +66,7 @@ export const useRemoveVoucher = () => {
 }
 
 export const useAddMultipleToCart = () => {
-  const { showNotification } = useNotifications()
+  const showNotification = useSdkNotification()
   return useStateFetchMutation(
     cartKey,
     (items: (Item & { quantity?: number })[]) =>
@@ -99,8 +102,7 @@ export const useUpsertSubscriptionDetails = () => {
 }
 
 export const useAddToCart = () => {
-  const { accepted } = useCookieAcceptance()
-  const { showNotification } = useNotifications()
+  const showNotification = useSdkNotification()
   const { trigger, ...rest } = useStateFetchMutation(cartKey, addToCart)
   return {
     ...rest,
@@ -108,7 +110,9 @@ export const useAddToCart = () => {
       item: { sku: string; quantity: number; storeId?: string },
       trackingItem: BaseEcomEvent,
     ) => {
-      if (accepted === 'none' || accepted === null) {
+      const cookie = cookieObject()
+      const accepted = cookie.ca
+      if (accepted === 'none' || accepted == null) {
         showNotification({
           title: 'Error',
           message: `No use in adding to cart if you don't accept essential cookies.`,

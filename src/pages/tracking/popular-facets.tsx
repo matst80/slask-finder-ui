@@ -1,9 +1,11 @@
+import {
+  getTrackingFieldPopularity,
+  useFacetMap,
+} from '@matst80/slask-finder-sdk'
 import { useMemo } from 'react'
 import useSWR from 'swr'
 import { FacetCard } from '../../components/FacetCard'
-import { useFacetMap } from '../../hooks/searchHooks'
-import { getTrackingFieldPopularity } from '../../lib/datalayer/api'
-import { useTranslations } from '../../lib/hooks/useTranslations'
+import { useTranslations } from '../../translations/useTranslations'
 import { isDefined } from '../../utils'
 
 export const PopularFacetsView = () => {

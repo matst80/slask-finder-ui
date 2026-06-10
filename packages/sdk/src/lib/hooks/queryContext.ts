@@ -1,11 +1,12 @@
 import { createContext } from 'react'
-import { FacetId, HistoryQuery, Item, ItemsQuery, NumberField } from '../types'
-
-export type AddPageResult = {
-  currentPage: number
-  hasMorePages: boolean
-  totalPages: number
-}
+import {
+  AddPageResult,
+  FacetId,
+  HistoryQuery,
+  Item,
+  ItemsQuery,
+  NumberField,
+} from '../types'
 
 type QueryContextType = {
   query: ItemsQuery

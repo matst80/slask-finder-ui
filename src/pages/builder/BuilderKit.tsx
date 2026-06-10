@@ -1,8 +1,10 @@
+import {
+  getRawData,
+  ImpressionProvider,
+  Item,
+  matchValue,
+} from '@matst80/slask-finder-sdk'
 import { useEffect, useMemo } from 'react'
-import { getRawData } from '../../lib/datalayer/api'
-import { ImpressionProvider } from '../../lib/hooks/ImpressionProvider'
-import { Item } from '../../lib/types'
-import { matchValue } from '../../lib/utils'
 import { Component, ItemWithComponentId } from './builder-types'
 import { flattenComponents } from './builder-utils'
 import { componentRules } from './rules'

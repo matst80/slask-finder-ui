@@ -64,22 +64,6 @@ export type Item = {
   // biome-ignore lint/suspicious/noExplicitAny: dynamic backoffice props
 } & Record<string, any>
 
-export const ValueMap = {
-  //StockLevel: 3,
-  Price: 4,
-  OrgPrice: 5,
-  Rating: 6,
-  NumberOfRatings: 7,
-  SoldBy: 9,
-  ProductType: 31158,
-  Model: 30879,
-  Category1: 10,
-  Category2: 11,
-  Category3: 12,
-  Category4: 13,
-  Grade: 20,
-} as const
-
 export type ItemProperties = ItemValues
 
 export type UpdatedItem = ItemProps & {
@@ -299,7 +283,8 @@ export type FilteringQuery = {
   stock?: string[]
   string?: KeyField[]
   range?: NumberField[]
-  mode?: string
+  disableGrouping?: boolean
+  mode?: '' | 'bm25' | 'embeddings'
   embeddingSource?: 'local' | 'server'
 }
 
@@ -436,6 +421,16 @@ export type SetDeliveryRequest = {
 export type LineItemMarkingRequest = {
   type: number
   marking: string
+}
+
+export type AccessoryGroup = {
+  group: {
+    id: number
+    name?: string
+    [key: string]: unknown
+    accessories: number[]
+  }
+  items: Item[]
 }
 
 export type FacetListItem = {
@@ -806,17 +801,6 @@ export type SuggestionEvent = BaseEvent & {
   suggestions: number
 }
 
-export interface BaseTranslationType {
-  [key: string]: string | BaseTranslationType
-}
-
-export type PathInto<T extends BaseTranslationType> = keyof {
-  [K in keyof T as T[K] extends string
-    ? K
-    : T[K] extends BaseTranslationType
-      ? `${K & string}.${PathInto<T[K]> & string}`
-      : never]: string
-}
 export type StockData = {
   stock?: Stock
 }
@@ -935,4 +919,10 @@ export type SubscriptionDetails = {
   offeringCode: string
   signingType: string
   data: Record<string, unknown>
+}
+
+export type AddPageResult = {
+  currentPage: number
+  hasMorePages: boolean
+  totalPages: number
 }

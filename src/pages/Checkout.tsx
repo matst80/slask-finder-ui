@@ -1,3 +1,13 @@
+import {
+  CartItem,
+  useCart,
+  useChangeQuantity,
+  useCheckout,
+  useInitiatePayment,
+  useRemoveItemMarking,
+  useSetItemMarking,
+  useStartCheckout,
+} from '@matst80/slask-finder-sdk'
 import { Edit } from 'lucide-react'
 import { Activity, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -6,18 +16,6 @@ import { DeliveryEditor } from '../components/DeliveryEditor'
 import { PaymentProviderUI } from '../components/PaymentProviderUI'
 import { PriceValue } from '../components/Price'
 import { Button } from '../components/ui/button'
-import {
-  useCart,
-  useChangeQuantity,
-  useRemoveItemMarking,
-  useSetItemMarking,
-} from '../hooks/cartHooks'
-import {
-  useCheckout,
-  useInitiatePayment,
-  useStartCheckout,
-} from '../hooks/checkoutHooks'
-import { CartItem } from '../lib/types'
 import { makeImageUrl } from '../utils'
 import { QuantityInput } from './builder/QuantityInput'
 import { JsonView } from './tracking/JsonView'

@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -18,14 +21,11 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@adyen/adyen-web": "^6.25.1",
-    "@huggingface/transformers": "^4.2.0",
-    "firebase": "^12.3.0",
+    "@matst80/slask-finder-sdk": "*",
     "framer-motion": "^12.9.2",
     "fuzzysort": "^3.1.0",
     "jotai": "^2.12.3",
     "lucide-react": "^0.503.0",
-    "onnxruntime-web": "^1.26.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",

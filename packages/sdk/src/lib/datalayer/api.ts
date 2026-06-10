@@ -1,6 +1,7 @@
 import { CoreConfiguration } from '@adyen/adyen-web'
 import { ConvertedFacet, convertFacets } from '../hooks/suggestionUtils'
 import {
+  AccessoryGroup,
   ContentRecord,
   Facet,
   FacetGroup,
@@ -448,6 +449,14 @@ const parseQueryString = (input: string) => {
   }
 }
 
+export const getConfig = (query: string) =>
+  fetch(`${baseUrl}/api/config?${query}`).then((d) =>
+    toJson<{
+      items: Item[]
+      facets: Facet[]
+    }>(d),
+  )
+
 export const streamItems = (query: string, queryVectors?: QueryVectors) => {
   if (queryVectors) {
     const params = parseQueryString(query)
@@ -624,6 +633,11 @@ export const deleteFacet = (fieldId: number | string) =>
 
 export const getFacets = () =>
   fetch(`${baseUrl}/admin/facets`).then((d) => toJson<FacetListItem[]>(d))
+
+export const getAccessoryGroup = (id: string) =>
+  fetch(`${baseUrl}/api/accessories/${id}`).then((d) =>
+    toJson<AccessoryGroup[]>(d),
+  )
 
 export const getStaticPositions = () =>
   fetch(`${baseUrl}/admin/sort/static`).then((d) =>

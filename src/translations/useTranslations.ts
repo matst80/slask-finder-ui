@@ -1,17 +1,21 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: why */
 import { useCallback, useContext } from 'react'
-import { Translations } from '../../translations/translations'
-import { PathInto } from '../types'
-import { extractFromObject, replaceMustacheKeys } from '../utils'
 import { translationContext } from './translationContext'
+import {
+  BaseTranslationType,
+  extractFromObject,
+  PathInto,
+  replaceMustacheKeys,
+} from './translations'
 
-export const useTranslations = () => {
+export const useTranslations = <T extends BaseTranslationType = any>() => {
   const translations = useContext(translationContext)
   if (translations === null) {
     throw new Error('useTranslations must be used within a TranslationProvider')
   }
   return useCallback(
     (
-      key: PathInto<Translations>,
+      key: PathInto<T> & string,
       replacementValues?: Record<string, unknown>,
       defaultValue?: string,
     ): string => {

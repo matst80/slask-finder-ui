@@ -1,3 +1,4 @@
+import { getCurrentDataSet } from '@matst80/slask-finder-sdk'
 import fuzzysort from 'fuzzysort'
 import { SearchIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -13,7 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from '../../components/ui/table'
-import { getCurrentDataSet } from '../../lib/datalayer/api'
 
 const useDataset = () =>
   useSWR('/admin/dataset', getCurrentDataSet, {

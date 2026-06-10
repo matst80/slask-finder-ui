@@ -1,7 +1,9 @@
 import useSWR from 'swr'
 import {
+  getAccessoryGroup,
   getAdminRelations,
   getCompatible,
+  getConfig,
   getCosineRelated,
   getFacetGroups,
   getFacetList,
@@ -12,7 +14,7 @@ import {
   streamItems,
 } from '../lib/datalayer/api'
 import { FacetId, ItemsQuery, RelationGroup } from '../lib/types'
-import { isDefined } from '../utils'
+import { isDefined } from '../lib/utils'
 
 //import { isDefined } from '../utils'
 
@@ -191,7 +193,7 @@ export const fromQueryString = (input: string): ItemsQuery => {
     stock,
     string,
     filter,
-    mode,
+    mode: mode as ItemsQuery['mode'],
     embeddingSource,
   }
 }
@@ -211,6 +213,7 @@ export const toQuery = (
     filter,
     mode,
     embeddingSource,
+    disableGrouping,
   } = data
 
   const result = new URLSearchParams({})
@@ -231,6 +234,9 @@ export const toQuery = (
   }
   if (embeddingSource) {
     result.set('embeddingSource', embeddingSource)
+  }
+  if (disableGrouping) {
+    result.set('dg', '1')
   }
   range?.forEach(({ id, min, max }) => {
     result.append('rng', `${id}:${min}-${max}`)
@@ -268,6 +274,20 @@ export const useItemsSearch = (query: ItemsQuery) => {
     },
     {
       keepPreviousData: true,
+    },
+  )
+}
+
+export const useConfig = (query: ItemsQuery) => {
+  const slug = toQuery(query)
+  return useSWR(
+    `config-${slug}`,
+    () => {
+      return getConfig(slug)
+    },
+    {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
     },
   )
 }
@@ -512,6 +532,20 @@ export const useFacetGroups = () => {
     refreshInterval: 0,
     focusThrottleInterval: 3600,
   })
+}
+
+export const useAccessoryGroup = (id?: string) => {
+  return useSWR(
+    id ? 'accessory-group-' + id : null,
+    () => getAccessoryGroup(id!),
+    {
+      revalidateOnFocus: false,
+      refreshInterval: 0,
+      keepPreviousData: true,
+      revalidateIfStale: false,
+      focusThrottleInterval: 3600,
+    },
+  )
 }
 
 export const useRelatedItems = (id: number) => {

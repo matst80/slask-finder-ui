@@ -1,13 +1,17 @@
+import {
+  FacetId,
+  FacetValue,
+  ItemsQuery,
+  QueryProvider,
+  useAdmin,
+  useFacetMap,
+  useQuery,
+} from '@matst80/slask-finder-sdk'
 import { PlusIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAdmin } from '../hooks/appState'
-import { useFacetMap } from '../hooks/searchHooks'
-import { QueryProvider } from '../lib/hooks/QueryProvider'
-import { useClipboard } from '../lib/hooks/useClipboard'
-import { useQuery } from '../lib/hooks/useQuery'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import { FacetId, FacetValue, ItemsQuery } from '../lib/types'
+import { useTranslations } from '../translations/useTranslations'
+import { useClipboard } from '../useClipboard'
 import { byPriority, cm, isDefined } from '../utils'
 import { QueryUpdater } from './QueryMerger'
 import { TotalResultText } from './ResultHeader'

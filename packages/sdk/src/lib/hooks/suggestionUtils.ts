@@ -1,4 +1,3 @@
-import { byPriority, isDefined } from '../../utils'
 import {
   FacetListItem,
   isKeyFacet,
@@ -6,6 +5,7 @@ import {
   PopularFacet,
   PopularQuery,
 } from '../types'
+import { byPriority, isDefined } from '../utils'
 
 export type SuggestField = {
   name: string

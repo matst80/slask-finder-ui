@@ -1,3 +1,4 @@
+import { useQuery } from '@matst80/slask-finder-sdk'
 import { Edit, Link, Trash } from 'lucide-react'
 import { Loader } from '../../components/Loader'
 import { Button } from '../../components/ui/button'
@@ -10,7 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from '../../components/ui/table'
-import { useQuery } from '../../lib/hooks/useQuery'
 
 export const TableSearchResultList = () => {
   const {

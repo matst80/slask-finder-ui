@@ -1,3 +1,4 @@
+import { getWordConfig, WordConfig } from '@matst80/slask-finder-sdk'
 import { X } from 'lucide-react'
 import { useState } from 'react'
 import useSWR from 'swr'
@@ -10,7 +11,6 @@ import {
   CardHeader,
 } from '../../components/ui/card'
 import { Input } from '../../components/ui/input'
-import { getWordConfig, WordConfig } from '../../lib/datalayer/api'
 
 const useWordConfig = () => {
   return useSWR('/admin/words', getWordConfig, {

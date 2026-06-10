@@ -7,9 +7,9 @@ import {
   useState,
 } from 'react'
 import { fromQueryString, toQuery } from '../../hooks/searchHooks'
-import { getJinaColbertEmbeddingLocal } from '../../utils/jina'
 import * as api from '../datalayer/api'
 import {
+  AddPageResult,
   FacetId,
   HistoryQuery,
   Item,
@@ -17,65 +17,10 @@ import {
   isNumberValue,
   NumberField,
 } from '../types'
-import { AddPageResult, QueryContext } from './queryContext'
+import { QueryContext } from './queryContext'
 import { mergeFilters } from './queryUtils'
 
 const itemsCache = new Map<string, Item[]>()
-
-const embeddingCache = new Map<string, api.QueryVectors>()
-
-const getQueryVectors = async (
-  term: string | undefined,
-  embeddingSource?: 'local' | 'server',
-): Promise<api.QueryVectors | undefined> => {
-  if (!term) return undefined
-  const trimmed = term.trim()
-  if (!trimmed || trimmed === '*') return undefined
-
-  // Check cache first (shared between local and server)
-  if (embeddingCache.has(trimmed)) {
-    return embeddingCache.get(trimmed)
-  }
-
-  // Server embeddings - fetch from API
-  if (embeddingSource === 'server') {
-    try {
-      console.log('Fetching server query embedding for:', trimmed)
-      const res = await api.getServerEmbeddings(trimmed)
-      if (res) {
-        embeddingCache.set(trimmed, res)
-        return res
-      }
-    } catch (err) {
-      console.warn('Failed to fetch server embedding:', err)
-    }
-    return undefined
-  }
-
-  // Default: local browser embeddings
-  try {
-    console.log('Computing local query embedding for:', trimmed)
-    const startTime = performance.now()
-    const res = await getJinaColbertEmbeddingLocal(trimmed)
-    const duration = performance.now() - startTime
-    console.log(
-      `Local query embedding computed in ${duration.toFixed(2)}ms for: "${trimmed}"`,
-    )
-    const shape = res.shape
-    const num_tokens = shape.length === 3 ? shape[1] : shape[0]
-    const dim = shape.length === 3 ? shape[2] : shape[1]
-    const vectors = {
-      num_tokens,
-      dim,
-      vectors: res.data,
-    }
-    embeddingCache.set(trimmed, vectors)
-    return vectors
-  } catch (err) {
-    console.warn('Failed to generate local query embedding:', err)
-    return undefined
-  }
-}
 
 export type QueryProviderRef = {
   mergeQuery: (query: ItemsQuery) => void
@@ -227,30 +172,29 @@ export const QueryProvider = ({
     const virtualQuery = { ...query, page: virtualPage.current + 1 }
 
     const virtualKey = toQuery(virtualQuery)
-    const vectors =
-      query.mode === 'embeddings' && query.embeddingSource === 'local'
-        ? await getQueryVectors(query.query, 'local')
-        : undefined
-    return api.streamItems(virtualKey, vectors).then((data): AddPageResult => {
-      if (data?.items == null) {
-        return {
-          currentPage: virtualPage.current,
-          hasMorePages: false,
-          totalPages: virtualPage.current,
-        }
-      }
-      itemsCache.set(virtualKey, data.items)
 
-      virtualPage.current = data.page
-      setHits((prev) => [...prev, ...data.items])
-      const pageSize = data.pageSize ?? 20
-      const totalPages = Math.ceil((data.totalHits ?? 0) / pageSize)
-      return {
-        currentPage: data.page,
-        hasMorePages: data.page + 1 < totalPages,
-        totalPages: totalPages,
-      }
-    })
+    return api
+      .streamItems(virtualKey, undefined)
+      .then((data): AddPageResult => {
+        if (data?.items == null) {
+          return {
+            currentPage: virtualPage.current,
+            hasMorePages: false,
+            totalPages: virtualPage.current,
+          }
+        }
+        itemsCache.set(virtualKey, data.items)
+
+        virtualPage.current = data.page
+        setHits((prev) => [...prev, ...data.items])
+        const pageSize = data.pageSize ?? 20
+        const totalPages = Math.ceil((data.totalHits ?? 0) / pageSize)
+        return {
+          currentPage: data.page,
+          hasMorePages: data.page + 1 < totalPages,
+          totalPages: totalPages,
+        }
+      })
   }, [query])
   useEffect(() => {
     if (!attachToHash) {
@@ -280,13 +224,6 @@ export const QueryProvider = ({
   }, [attachToHash, initialQuery])
 
   useEffect(() => {
-    if (query.embeddingSource === 'local') {
-      // Only preload when explicitly switching to local embeddings
-      import('../../utils/jina').then(({ preloadModel }) => preloadModel())
-    }
-  }, [query.embeddingSource])
-
-  useEffect(() => {
     const cleanKey = itemsKey.replace(/&?mode=(embeddings|bm25)/, '')
     if (cleanKey === 'page=0&size=20') {
       return
@@ -303,26 +240,19 @@ export const QueryProvider = ({
     }
 
     setIsLoading(true)
-    console.log('streaming items', itemsKey)
-    const vectorPromise =
-      query.mode === 'embeddings' && query.embeddingSource === 'local'
-        ? getQueryVectors(query.query, 'local')
-        : Promise.resolve(undefined)
 
-    vectorPromise.then((vectors) => {
-      const apiStart = performance.now()
-      api.streamItems(itemsKey, vectors).then((data) => {
-        const duration = performance.now() - apiStart
-        console.log(
-          `Search items streamed in ${duration.toFixed(2)}ms for key: "${itemsKey}"`,
-        )
-        itemsCache.set(itemsKey, data?.items)
-        setHits(data?.items ?? [])
-        setTotalHits(data?.totalHits ?? 0)
-        setIsLoading(false)
-      })
+    const apiStart = performance.now()
+    api.streamItems(itemsKey, undefined).then((data) => {
+      const duration = performance.now() - apiStart
+      console.log(
+        `Search items streamed in ${duration.toFixed(2)}ms for key: "${itemsKey}"`,
+      )
+      itemsCache.set(itemsKey, data?.items)
+      setHits(data?.items ?? [])
+      setTotalHits(data?.totalHits ?? 0)
+      setIsLoading(false)
     })
-  }, [itemsKey, attachToHash, query.query, query.mode, query.embeddingSource])
+  }, [itemsKey, attachToHash, query.mode, query.embeddingSource])
 
   return (
     <QueryContext.Provider

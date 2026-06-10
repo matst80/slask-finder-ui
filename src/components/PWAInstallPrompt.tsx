@@ -1,6 +1,6 @@
+import { useIsInstalled } from '@matst80/slask-finder-sdk'
 import { Download, Smartphone, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useIsInstalled } from '../hooks/usePWA'
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]

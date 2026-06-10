@@ -1,5 +1,8 @@
-import { trackClick, trackImpression } from '../lib/datalayer/beacons'
-import { SlaskTracker } from '../lib/hooks/TrackingContext'
+import {
+  SlaskTracker,
+  trackClick,
+  trackImpression,
+} from '@matst80/slask-finder-sdk'
 
 export const slaskTracker = (): SlaskTracker => {
   return {

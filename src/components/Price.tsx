@@ -1,4 +1,4 @@
-import { ItemPrice, ItemValues } from '../lib/types'
+import { ItemPrice, ItemValues } from '@matst80/slask-finder-sdk'
 import { cm, getPrice } from '../utils'
 
 type ValueProps = {

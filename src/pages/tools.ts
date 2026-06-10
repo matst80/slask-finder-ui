@@ -1,12 +1,15 @@
 import {
+  addProductToCompare,
+  addToCart,
+  FacetListItem,
+  getCart,
   getCompatible,
   getRawData,
   getRelated,
   getYourPopularItems,
-} from '../lib/datalayer/api'
-import { addToCart, getCart, removeFromCart } from '../lib/datalayer/cart-api'
-import { addProductToCompare } from '../lib/hooks/CompareProvider'
-import { FacetListItem, Item } from '../lib/types'
+  Item,
+  removeFromCart,
+} from '@matst80/slask-finder-sdk'
 import { isDefined, makeImageUrl } from '../utils'
 
 type Parameter =

@@ -1,6 +1,5 @@
+import { Sort, useQuery } from '@matst80/slask-finder-sdk'
 import { ArrowUpDown } from 'lucide-react'
-import { useQuery } from '../lib/hooks/useQuery'
-import { Sort } from '../lib/types'
 
 export const Sorting = () => {
   const {

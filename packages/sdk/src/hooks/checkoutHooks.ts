@@ -16,7 +16,7 @@ import {
   startCheckout,
 } from '../lib/datalayer/checkout-api'
 import { PickupPoint } from '../lib/types'
-import { useFetchMutation, useStateFetchMutation } from '../utils'
+import { useFetchMutation, useStateFetchMutation } from '../lib/utils'
 
 const checkoutKey = '/checkout'
 

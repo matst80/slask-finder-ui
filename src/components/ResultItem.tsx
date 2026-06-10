@@ -1,16 +1,17 @@
+import {
+  createFacet,
+  Item,
+  StockData,
+  useCompareContext,
+} from '@matst80/slask-finder-sdk'
 import { GitCompareArrows, Plus, X } from 'lucide-react'
 import { memo, PropsWithChildren, useMemo, useState } from 'react'
 import { Link, useViewTransitionState } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 import { useAdminFacets } from '../adminHooks'
-import { createFacet } from '../lib/datalayer/api'
-import { useCompareContext } from '../lib/hooks/CompareProvider'
-import { useTranslations } from '../lib/hooks/useTranslations'
-import { Item, StockData } from '../lib/types'
-import { useProductData } from '../lib/utils'
+import { useTranslations } from '../translations/useTranslations'
 import { makeImageUrl } from '../utils'
 import { PriceElement } from './Price'
-import { Stars } from './Stars'
 import { TimeAgo } from './TimeAgo'
 import { useNotifications } from './ui-notifications/useNotifications'
 
@@ -202,7 +203,7 @@ export const ResultItemInner = ({
     title,
     img,
     badgeUrl,
-    values,
+    price,
     stock,
     id,
     children,
@@ -211,8 +212,6 @@ export const ResultItemInner = ({
     disclaimer,
     advertisingText,
   } = item
-  const { price, rating, grade, isOwn, isOutlet, soldBy } =
-    useProductData(values)
 
   const isTransitioning = useViewTransitionState(
     transitionUrl ?? `/product/${id}`,
@@ -234,13 +233,6 @@ export const ResultItemInner = ({
             className="size-16 object-contain absolute top-4 right-4 drop-shadow-lg"
           />
         )}
-        {isOutlet && (
-          <img
-            className="size-16 object-contain absolute top-4 left-4 drop-shadow-lg"
-            src="https://www.elgiganten.se/content/SE/outlet/outlet.svg"
-            alt="Outlet"
-          />
-        )}
       </div>
       <div className="p-4 space-y-1">
         <h2
@@ -253,7 +245,6 @@ export const ResultItemInner = ({
         </h2>
 
         <div className="flex flex-wrap justify-between gap-2">
-          {rating != null && <Stars {...rating} />}
           {lastUpdate != null && lastUpdate > 0 && (
             <span className="text-sm inline-block align-top bg-gray-100 rounded-bl-none after:absolute after:left-0 after:box-content after:border-transparent forced-colors:border forced-colors:after:hidden after:border-l-gray-100 rounded-border px-2 py-0.5 after:-bottom-[7px] after:border-[7px] absolute left-0 top-0 z-1">
               <TimeAgo ts={lastUpdate} />
@@ -286,15 +277,6 @@ export const ResultItemInner = ({
         )}
 
         {children}
-
-        {isOutlet && grade != null && (
-          <em className="block text-xs text-gray-500 italic">{grade}</em>
-        )}
-        {soldBy != null && !isOwn && (
-          <em className="block text-xs text-gray-500 italic">
-            Säljs av: {soldBy}
-          </em>
-        )}
       </div>
       {!hideCompare && (
         <CompareButton

@@ -1,10 +1,10 @@
-import { Save, Star } from 'lucide-react'
-import { useCallback, useMemo, useState } from 'react'
-import { useAdmin } from '../hooks/appState'
 import {
+  useAdmin,
   useItemsPopularity,
   useUpdatePopularity,
-} from '../hooks/popularityHooks'
+} from '@matst80/slask-finder-sdk'
+import { Save, Star } from 'lucide-react'
+import { useCallback, useMemo, useState } from 'react'
 
 const useItemPopularity = (id: string) => {
   const { data: popularity, mutate } = useItemsPopularity()

@@ -1,15 +1,18 @@
+import {
+  ImpressionProvider,
+  Item,
+  ItemValues,
+  useFacetMap,
+  useImpression,
+  useQuery,
+  useTracking,
+} from '@matst80/slask-finder-sdk'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { InfiniteHitList } from '../../../components/InfiniteHitList'
 import { Loader } from '../../../components/Loader'
 import { Price } from '../../../components/Price'
 import { toEcomTrackingEvent } from '../../../components/toImpression'
-import { useFacetMap } from '../../../hooks/searchHooks'
-import { ImpressionProvider } from '../../../lib/hooks/ImpressionProvider'
-import { useTracking } from '../../../lib/hooks/TrackingContext'
-import { useImpression } from '../../../lib/hooks/useImpression'
-import { useQuery } from '../../../lib/hooks/useQuery'
-import { Item, ItemValues } from '../../../lib/types'
 import { cm, isDefined, makeImageUrl } from '../../../utils'
 import { ComponentId, FacetId, Issue } from '../builder-types'
 import { useBuilderContext } from '../useBuilderContext'
