@@ -70,6 +70,7 @@ import { JsonView } from './pages/tracking/JsonView.tsx'
 import { PopularFacetsView } from './pages/tracking/popular-facets.tsx'
 import { PopularItemsView } from './pages/tracking/popular-items.tsx'
 import { QueriesView } from './pages/tracking/queries.tsx'
+import { WindowDesigner } from './pages/window-designer/WindowDesigner.tsx'
 import { slaskTracker } from './tracking/slaskTracker.ts'
 import { english } from './translations/english.ts'
 import { swedish } from './translations/swedish.ts'
@@ -112,6 +113,11 @@ const router = createBrowserRouter([
         </QueryProvider>
       </PageContainer>
     ),
+    errorElement: <BubbleError />,
+  },
+  {
+    path: '/window-designer',
+    element: <WindowDesigner />,
     errorElement: <BubbleError />,
   },
   {

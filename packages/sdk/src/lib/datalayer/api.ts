@@ -1,4 +1,3 @@
-import { CoreConfiguration } from '@adyen/adyen-web'
 import { ConvertedFacet, convertFacets } from '../hooks/suggestionUtils'
 import {
   AccessoryGroup,
@@ -39,12 +38,6 @@ export const getStores = async () => {
 export const getLocation = async (zip?: string) => {
   return fetch(`${baseUrl}/location${zip ? `?zip=${zip}` : ''}`).then((res) =>
     toJson<{ lat: number; lng: number }>(res),
-  )
-}
-
-export const getAdyenCheckout = async () => {
-  return fetch(`${baseUrl}/cart/adyen-session`).then((res) =>
-    toJson<CoreConfiguration['session']>(res),
   )
 }
 
