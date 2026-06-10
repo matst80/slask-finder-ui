@@ -350,6 +350,7 @@ export const buildRectGeometry = (c: WindowConfig): DerivedGeometry => {
     lights,
     rail,
     polyGlass: null,
+    polyBars: [],
     centerZ: c.frameDepth / 2,
   }
 }

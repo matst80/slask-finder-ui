@@ -45,7 +45,12 @@ const sectionToggles: Record<string, ToggleKey | undefined> = {
 }
 
 /** Sections that still apply to a fixed, free-form polygon window. */
-const polygonSections = new Set(['Window', 'Outer frame profile', 'Glass'])
+const polygonSections = new Set([
+  'Window',
+  'Outer frame profile',
+  'Glazing bars',
+  'Glass',
+])
 
 /** Outline used to preview the rectangular shape in the gallery. */
 const rectOutline = [
@@ -487,16 +492,14 @@ export const WindowDesigner = () => {
               onChange={(v) => setStyle('sashStyle', v)}
             />
           )}
-          {!isPolygon && (
-            <EnumSelect
-              label="Glazing bar"
-              value={config.mullionSide}
-              options={mullionSides}
-              onChange={(v) =>
-                setConfig((c) => ({ ...c, mullionSide: v as MullionSide }))
-              }
-            />
-          )}
+          <EnumSelect
+            label="Glazing bar"
+            value={config.mullionSide}
+            options={mullionSides}
+            onChange={(v) =>
+              setConfig((c) => ({ ...c, mullionSide: v as MullionSide }))
+            }
+          />
         </div>
 
         {!isPolygon && (

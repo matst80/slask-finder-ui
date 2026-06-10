@@ -12,6 +12,7 @@ export const WindowModel = ({ config }: { config: WindowConfig }) => {
       geo.frame.dispose()
       geo.rail?.dispose()
       geo.polyGlass?.dispose()
+      for (const m of geo.polyBars) m.geometry.dispose()
       for (const m of geo.structures) m.geometry.dispose()
       for (const m of geo.stops) m.geometry.dispose()
       for (const l of geo.lights) {
@@ -155,6 +156,15 @@ export const WindowModel = ({ config }: { config: WindowConfig }) => {
           />
         </mesh>
       )}
+
+      {geo.polyBars.map((m) => (
+        <mesh key={m.key} geometry={m.geometry} castShadow receiveShadow>
+          <meshStandardMaterial
+            color={config.sashColor}
+            {...frameMaterialProps}
+          />
+        </mesh>
+      ))}
 
       {geo.polyGlass && (
         <mesh geometry={geo.polyGlass}>

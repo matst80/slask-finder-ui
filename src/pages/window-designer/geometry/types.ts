@@ -46,5 +46,7 @@ export type DerivedGeometry = {
   rail: THREE.BufferGeometry | null
   /** Single fixed glass pane for a free-form polygon shape (else null). */
   polyGlass: THREE.BufferGeometry | null
+  /** Glazing bars across a free-form polygon's glass (else empty). */
+  polyBars: Keyed[]
   centerZ: number
 }
