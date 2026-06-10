@@ -27,7 +27,7 @@ const signedArea = (profile: Profile): number => {
 const toCCW = (profile: Profile): Profile =>
   signedArea(profile) < 0 ? [...profile].reverse() : profile
 
-type Vec2 = { x: number; y: number }
+export type Vec2 = { x: number; y: number }
 
 /** Rotate a 2D vector by -90 degrees (clockwise). */
 const rotMinus90 = (v: Vec2): Vec2 => ({ x: v.y, y: -v.x })
@@ -74,6 +74,13 @@ type BarOptions = {
   startCut: EndCut
   /** End treatment at the run end. */
   endCut: EndCut
+  /**
+   * Miter inset factor at the start/end (multiplies the point's lateral value
+   * when the cut is `'miter'`). `1` is the 45-degree rectangle corner; for an
+   * arbitrary polygon vertex of interior angle θ it is `1 / tan(θ / 2)`.
+   */
+  startMiter?: number
+  endMiter?: number
   /** Base offset along the depth (Z) axis. */
   depthOffset: number
 }
@@ -98,10 +105,14 @@ const addBar = (buffers: Buffers, rawProfile: Profile, opts: BarOptions) => {
       depthOffset + depth,
     )
 
+  const startMiter = opts.startMiter ?? 1
+  const endMiter = opts.endMiter ?? 1
   const runStart = (lateral: number) =>
-    opts.startCut === 'miter' ? lateral : opts.startCut
+    opts.startCut === 'miter' ? startMiter * lateral : opts.startCut
   const runEnd = (lateral: number) =>
-    opts.endCut === 'miter' ? runLength - lateral : runLength - opts.endCut
+    opts.endCut === 'miter'
+      ? runLength - endMiter * lateral
+      : runLength - opts.endCut
 
   // Side walls: one quad per profile edge, normal computed analytically so we
   // never depend on triangle winding for shading.
@@ -358,4 +369,119 @@ export const buildBarGeometry = (
   }
 
   return finalize(buffers)
+}
+
+// --- Free-form polygon frames -------------------------------------------------
+
+const sub = (a: Vec2, b: Vec2): Vec2 => ({ x: a.x - b.x, y: a.y - b.y })
+const len2 = (v: Vec2): number => Math.hypot(v.x, v.y)
+const normalize2 = (v: Vec2): Vec2 => {
+  const l = len2(v) || 1
+  return { x: v.x / l, y: v.y / l }
+}
+const dot2 = (a: Vec2, b: Vec2): number => a.x * b.x + a.y * b.y
+
+/** Signed area of a polygon in the XY plane (positive = counter-clockwise). */
+const polyArea = (pts: Vec2[]): number => {
+  let area = 0
+  for (let i = 0; i < pts.length; i++) {
+    const a = pts[i]
+    const b = pts[(i + 1) % pts.length]
+    area += a.x * b.y - b.x * a.y
+  }
+  return area / 2
+}
+
+/** Return the polygon wound counter-clockwise (so the interior is on the left). */
+const toCCWPoly = (pts: Vec2[]): Vec2[] =>
+  polyArea(pts) < 0 ? [...pts].reverse() : pts
+
+/**
+ * Sweep a frame profile around an arbitrary closed polygon, mitering each
+ * vertex by its angle bisector. The rectangular frame is the 4-vertex,
+ * all-90-degree special case; here each vertex of interior angle θ gets a miter
+ * inset factor of `1 / tan(θ / 2)`. `points` are the OUTER outline vertices in
+ * order (winding is normalised); the profile's lateral axis runs inward.
+ */
+export const buildPolygonFrame = (
+  points: Vec2[],
+  profile: Profile,
+  depthOffset = 0,
+): THREE.BufferGeometry => {
+  const pts = toCCWPoly(points)
+  const n = pts.length
+  const buffers: Buffers = { positions: [], normals: [] }
+
+  // Miter factor at vertex i from the interior angle between its two edges.
+  const miterFactor = (i: number): number => {
+    const prev = pts[(i - 1 + n) % n]
+    const cur = pts[i]
+    const next = pts[(i + 1) % n]
+    const a = normalize2(sub(prev, cur))
+    const b = normalize2(sub(next, cur))
+    const angle = Math.acos(Math.max(-1, Math.min(1, dot2(a, b))))
+    const t = Math.tan(angle / 2)
+    // Guard near-straight vertices (angle → π) from blowing up the inset.
+    return t < 1e-3 ? 1 / 1e-3 : 1 / t
+  }
+
+  for (let i = 0; i < n; i++) {
+    const A = pts[i]
+    const B = pts[(i + 1) % n]
+    const edge = sub(B, A)
+    const runLength = len2(edge)
+    if (runLength < 1e-6) continue
+    const runDir = normalize2(edge)
+    // Inward normal for a CCW polygon is the edge direction rotated +90.
+    const lateralDir: Vec2 = { x: -runDir.y, y: runDir.x }
+    addBar(buffers, profile, {
+      cornerStart: A,
+      runDir,
+      lateralDir,
+      runLength,
+      startCut: 'miter',
+      endCut: 'miter',
+      startMiter: miterFactor(i),
+      endMiter: miterFactor((i + 1) % n),
+      depthOffset,
+    })
+  }
+
+  return finalize(buffers)
+}
+
+/**
+ * Offset a polygon inward by `dist` (moving each edge along its inward normal
+ * and re-intersecting neighbouring edges). Used to derive the glass outline
+ * inside a polygon frame. Assumes a convex, CCW-or-CW simple polygon.
+ */
+export const offsetPolygon = (points: Vec2[], dist: number): Vec2[] => {
+  const pts = toCCWPoly(points)
+  const n = pts.length
+  // Each edge becomes a line (point + direction) shifted inward.
+  const lines = pts.map((A, i) => {
+    const B = pts[(i + 1) % n]
+    const dir = normalize2(sub(B, A))
+    const inward: Vec2 = { x: -dir.y, y: dir.x }
+    return {
+      p: { x: A.x + inward.x * dist, y: A.y + inward.y * dist },
+      d: dir,
+    }
+  })
+  // Vertex i of the offset polygon is where edge (i-1) meets edge i.
+  const result: Vec2[] = []
+  for (let i = 0; i < n; i++) {
+    const l1 = lines[(i - 1 + n) % n]
+    const l2 = lines[i]
+    // Solve l1.p + t*l1.d = l2.p + s*l2.d for t.
+    const denom = l1.d.x * l2.d.y - l1.d.y * l2.d.x
+    if (Math.abs(denom) < 1e-9) {
+      result.push(l2.p) // near-parallel: fall back to the offset corner
+      continue
+    }
+    const diff = sub(l2.p, l1.p)
+    const t = (diff.x * l2.d.y - diff.y * l2.d.x) / denom
+    result.push({ x: l1.p.x + l1.d.x * t, y: l1.p.y + l1.d.y * t })
+  }
+  return result
 }

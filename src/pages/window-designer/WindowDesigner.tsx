@@ -1,7 +1,6 @@
 import { ContactShadows, Environment, OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { useState } from 'react'
-import { type ProfileStyle, profileStyles } from './profiles'
 import {
   defaultConfig,
   type LightMode,
@@ -11,10 +10,12 @@ import {
   type SurfaceMaterial,
   surfaceMaterials,
   type WindowConfig,
-  WindowModel,
   type WindowType,
   windowTypes,
-} from './WindowModel'
+} from './config'
+import { type ProfileStyle, profileStyles } from './profiles'
+import { type WindowShape, windowShapeKeys, windowShapes } from './shapes'
+import { WindowModel } from './WindowModel'
 
 type NumericKey = {
   [K in keyof WindowConfig]: WindowConfig[K] extends number ? K : never
@@ -42,6 +43,21 @@ const sectionToggles: Record<string, ToggleKey | undefined> = {
   'Sash stop': 'sashStop',
   'Bottom rain rail': 'rainRail',
 }
+
+/** Sections that still apply to a fixed, free-form polygon window. */
+const polygonSections = new Set(['Window', 'Outer frame profile', 'Glass'])
+
+/** Outline used to preview the rectangular shape in the gallery. */
+const rectOutline = [
+  { x: -0.5, y: -0.5 },
+  { x: 0.5, y: -0.5 },
+  { x: 0.5, y: 0.5 },
+  { x: -0.5, y: 0.5 },
+]
+
+/** Map normalised outline vertices to an SVG polygon points string. */
+const shapePreviewPoints = (pts: { x: number; y: number }[]): string =>
+  pts.map((v) => `${(v.x + 0.5) * 88 + 6},${(0.5 - v.y) * 88 + 6}`).join(' ')
 
 const lightModeLabels: Record<LightMode, string> = {
   fixed: 'Fixed',
@@ -148,7 +164,7 @@ const sections: { title: string; sliders: SliderDef[] }[] = [
     ],
   },
   {
-    title: 'Glazing bars & glass',
+    title: 'Glazing bars',
     sliders: [
       { key: 'mullionsX', label: 'Vertical bars', min: 0, max: 5, step: 1 },
       { key: 'mullionsY', label: 'Horizontal bars', min: 0, max: 5, step: 1 },
@@ -173,6 +189,11 @@ const sections: { title: string; sliders: SliderDef[] }[] = [
         max: 0.02,
         step: 0.001,
       },
+    ],
+  },
+  {
+    title: 'Glass',
+    sliders: [
       {
         key: 'glassThickness',
         label: 'Glass thickness',
@@ -279,8 +300,55 @@ const Slider = ({
   </label>
 )
 
+const ShapeGallery = ({
+  value,
+  onChange,
+}: {
+  value: WindowShape
+  onChange: (v: WindowShape) => void
+}) => (
+  <div className="mb-5">
+    <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+      Shape
+    </h2>
+    <div className="grid grid-cols-4 gap-2">
+      {windowShapeKeys.map((key) => {
+        const preset = windowShapes[key]
+        const pts = preset.outline
+          ? preset.outline(preset.param?.default ?? 0.5)
+          : rectOutline
+        const active = value === key
+        return (
+          <button
+            key={key}
+            type="button"
+            title={preset.label}
+            onClick={() => onChange(key)}
+            className={`flex aspect-square items-center justify-center rounded-md border p-1.5 ${
+              active
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-gray-200 bg-white hover:bg-gray-50'
+            }`}
+          >
+            <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden>
+              <polygon
+                points={shapePreviewPoints(pts)}
+                className={active ? 'fill-blue-200' : 'fill-gray-200'}
+                stroke="#9ca3af"
+                strokeWidth={7}
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        )
+      })}
+    </div>
+  </div>
+)
+
 export const WindowDesigner = () => {
   const [config, setConfig] = useState<WindowConfig>(defaultConfig)
+  const isPolygon = config.shape !== 'rect'
 
   const set = (key: NumericKey, value: number) =>
     setConfig((c) => ({ ...c, [key]: value }))
@@ -290,9 +358,17 @@ export const WindowDesigner = () => {
     setConfig((c) => ({ ...c, [key]: value }))
   const setLight = (key: string, mode: LightMode) =>
     setConfig((c) => ({ ...c, lights: { ...c.lights, [key]: mode } }))
+  // Switching shape adopts that shape's default measurement.
+  const setShape = (shape: WindowShape) =>
+    setConfig((c) => ({
+      ...c,
+      shape,
+      shapeParam: windowShapes[shape].param?.default ?? c.shapeParam,
+    }))
 
   const cols = Math.max(1, Math.round(config.lightsX))
   const rows = Math.max(1, Math.round(config.lightsY))
+  const shapeParam = windowShapes[config.shape].param
 
   return (
     <div className="flex h-screen w-full flex-col bg-gray-100 md:flex-row">
@@ -353,15 +429,44 @@ export const WindowDesigner = () => {
           </button>
         </div>
 
+        <ShapeGallery value={config.shape} onChange={setShape} />
+
+        {shapeParam && (
+          <label className="mb-5 flex flex-col gap-1 text-xs text-gray-600">
+            <span className="flex items-center justify-between">
+              <span>{shapeParam.label}</span>
+              <span className="font-mono text-gray-400">
+                {(config.shapeParam * 100).toFixed(0)}%
+              </span>
+            </span>
+            <input
+              type="range"
+              min={shapeParam.min}
+              max={shapeParam.max}
+              step={0.01}
+              value={config.shapeParam}
+              onChange={(e) =>
+                setConfig((c) => ({
+                  ...c,
+                  shapeParam: Number(e.target.value),
+                }))
+              }
+              className="accent-blue-600"
+            />
+          </label>
+        )}
+
         <div className="mb-4 grid grid-cols-2 gap-3">
-          <EnumSelect
-            label="Type"
-            value={config.type}
-            options={windowTypes}
-            onChange={(v) =>
-              setConfig((c) => ({ ...c, type: v as WindowType }))
-            }
-          />
+          {!isPolygon && (
+            <EnumSelect
+              label="Type"
+              value={config.type}
+              options={windowTypes}
+              onChange={(v) =>
+                setConfig((c) => ({ ...c, type: v as WindowType }))
+              }
+            />
+          )}
           <EnumSelect
             label="Material"
             value={config.material}
@@ -375,76 +480,87 @@ export const WindowDesigner = () => {
             value={config.frameStyle}
             onChange={(v) => setStyle('frameStyle', v)}
           />
-          <StyleSelect
-            label="Sash style"
-            value={config.sashStyle}
-            onChange={(v) => setStyle('sashStyle', v)}
-          />
-          <EnumSelect
-            label="Glazing bar"
-            value={config.mullionSide}
-            options={mullionSides}
-            onChange={(v) =>
-              setConfig((c) => ({ ...c, mullionSide: v as MullionSide }))
-            }
-          />
+          {!isPolygon && (
+            <StyleSelect
+              label="Sash style"
+              value={config.sashStyle}
+              onChange={(v) => setStyle('sashStyle', v)}
+            />
+          )}
+          {!isPolygon && (
+            <EnumSelect
+              label="Glazing bar"
+              value={config.mullionSide}
+              options={mullionSides}
+              onChange={(v) =>
+                setConfig((c) => ({ ...c, mullionSide: v as MullionSide }))
+              }
+            />
+          )}
         </div>
 
-        <div className="mb-5">
-          <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-              Opening per light
-            </h2>
-            <label className="flex items-center gap-1.5 text-xs text-gray-600">
-              <input
-                type="checkbox"
-                checked={config.openInward}
-                onChange={(e) =>
-                  setConfig((c) => ({ ...c, openInward: e.target.checked }))
-                }
-                className="accent-blue-600"
-              />
-              Open inward
-            </label>
+        {!isPolygon && (
+          <div className="mb-5">
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                Opening per light
+              </h2>
+              <label className="flex items-center gap-1.5 text-xs text-gray-600">
+                <input
+                  type="checkbox"
+                  checked={config.openInward}
+                  onChange={(e) =>
+                    setConfig((c) => ({ ...c, openInward: e.target.checked }))
+                  }
+                  className="accent-blue-600"
+                />
+                Open inward
+              </label>
+            </div>
+            <div className="flex flex-col gap-2">
+              {Array.from({ length: rows }).map((_, rIdx) => {
+                // Render top row first so the grid matches the on-screen layout.
+                const j = rows - 1 - rIdx
+                return (
+                  <div
+                    key={j}
+                    className="grid gap-2"
+                    style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
+                  >
+                    {Array.from({ length: cols }).map((_, i) => {
+                      const key = `${i}-${j}`
+                      const mode = config.lights[key] ?? 'fixed'
+                      return (
+                        <select
+                          key={key}
+                          value={mode}
+                          onChange={(e) =>
+                            setLight(key, e.target.value as LightMode)
+                          }
+                          className="rounded-md border border-gray-200 bg-white px-1.5 py-1 text-xs capitalize"
+                          title={`Light ${key}`}
+                        >
+                          {lightModes.map((m) => (
+                            <option key={m} value={m} className="capitalize">
+                              {lightModeLabels[m]}
+                            </option>
+                          ))}
+                        </select>
+                      )
+                    })}
+                  </div>
+                )
+              })}
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            {Array.from({ length: rows }).map((_, rIdx) => {
-              // Render top row first so the grid matches the on-screen layout.
-              const j = rows - 1 - rIdx
-              return (
-                <div
-                  key={j}
-                  className="grid gap-2"
-                  style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
-                >
-                  {Array.from({ length: cols }).map((_, i) => {
-                    const key = `${i}-${j}`
-                    const mode = config.lights[key] ?? 'fixed'
-                    return (
-                      <select
-                        key={key}
-                        value={mode}
-                        onChange={(e) =>
-                          setLight(key, e.target.value as LightMode)
-                        }
-                        className="rounded-md border border-gray-200 bg-white px-1.5 py-1 text-xs capitalize"
-                        title={`Light ${key}`}
-                      >
-                        {lightModes.map((m) => (
-                          <option key={m} value={m} className="capitalize">
-                            {lightModeLabels[m]}
-                          </option>
-                        ))}
-                      </select>
-                    )
-                  })}
-                </div>
-              )
-            })}
-          </div>
-        </div>
+        )}
 
         {sections.map((section) => {
+          // Free-form polygons are fixed and single-glazed: only the outline,
+          // frame profile and glass apply.
+          if (isPolygon && !polygonSections.has(section.title)) {
+            return null
+          }
           // The threshold only applies to doors.
           if (section.title === 'Door threshold' && config.type !== 'door') {
             return null
